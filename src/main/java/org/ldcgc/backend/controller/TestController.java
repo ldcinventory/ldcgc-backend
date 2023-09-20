@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/test")
 public interface TestController {
 
-    @GetMapping
+    @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
-    @GetMapping
+    @GetMapping("/admin")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> testAccessWithAdminCredentials();
 
