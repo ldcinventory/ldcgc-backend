@@ -1,0 +1,90 @@
+application:
+  title: '@project.artifactId@'
+  version: '@project.version@'
+
+spring:
+  # ---- PROFILE ----
+  profiles:
+    include:
+      - messages
+      - swagger
+
+  # ---- LOGGING ----
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  # ---- MAIL ----
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_SMTP_PORT:1026}
+    username: ${MAIL_USER:admin}
+    password: ${MAIL_PASS:mypass}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 20000
+          starttls:
+            enable: ${MAIL_TLS_ENABLED:false}
+            required: ${MAIL_TLS_REQUIRED:false}
+          timeout: 5000
+          writetimeout: 5000
+
+  # ---- API ----
+  mvc:
+    servlet:
+      path: /api
+    throw-exception-if-no-handler-found: true
+
+  # ---- DB ----
+  datasource:
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+    driverClassName: org.postgresql.Driver
+    # DB_HOST:
+    # 'localhost' for backend unlinked in docker-compose
+    # 'db' for backend linked in docker-compose
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:mydb}
+    username: ${DB_USER:myuser}
+    password: ${DB_PASS:mypassword}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # DB_START_MODE
+      # create: create only when starts, destroying previous data
+      # create-drop: create when starts, destroy at the end
+      # update: update just the schema
+      ddl-auto: ${DB_START_MODE:none}
+      naming.implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    properties:
+      hibernate:
+        format_sql: false # true for show the queries
+        show_sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true # load schema from entities
+    show-sql: false # show sql queries formatted (true for formatted, requires spring.jpa.properties.hibernate.show_sql and spring.jpa.properties.hibernate.format_sql)
+
+
+# ---- SERVER ----
+server:
+  port: ${TOMCAT_PORT:8080}
+  tomcat:
+    connection-timeout: ${TIMEOUT_REQUESTS:30000}
+
+# ---- JWT ----
+jwtExpirationMs: ${JWT_EXPIRATION:86400}
+
+# LOGGING
+# -----------------------
+logging:
+  level:
+    root: ${LOGGING_ROOT:INFO}
+    org.springframework.web: ${LOGGING_SPRING_WEB:INFO}
+    org.springframework.boot.autoconfigure.logging: ${LOGGING_SPRING_BOOT:INFO}
+    org.ldcgc.backend: ${LOGGING_API:INFO}
+    org.hibernate.SQL: ${LOGGING_HIBERNATE:ERROR}
+    org.hibernate.type.descriptor.sql: ${LOGGING_HIBERNATE:ERROR}
+    org.hibernate.orm.jdbc.bind: ${LOGGING_HIBERNATE:ERROR}

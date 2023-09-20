@@ -1,0 +1,25 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### ECLIPSE ###
+.classpath
+.project
+.settings/
+
+
+### PERSISTED DATA FROM PG ###
+data/
+
+*.csv
+/.apt_generated/
+/.apt_generated_tests/
+.DS_Store

@@ -1,0 +1,89 @@
+# ---- SWAGGER ----
+springdoc:
+  swagger-ui:
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: alpha
+    use-root-path: true
+    with-credentials: true
+    tags-sorter: method
+
+  show-actuator: false
+  group-configs:
+    - group: common
+      paths-to-match: /common/**
+      display-name: Common
+    - group: accounts
+      paths-to-match: /accounts/**
+      paths-to-exclude: /accounts/terms/**
+      display-name: Account and Authorization
+    - group: terms
+      paths-to-match: /accounts/terms/**
+      display-name: Account (terms)
+    - group: users
+      paths-to-match: /users/**
+      display-name: User
+    - group: personas
+      paths-to-match: /personas/**
+      display-name: Personas
+    - group: my-schedule
+      paths-to-match: /schedule/me/**
+      display-name: Schedule (me)
+    - group: schedule
+      paths-to-match: /schedule/**
+      paths-to-exclude:
+        - /schedule/me/**
+        - /schedule/upload/**
+      display-name: Schedule (all)
+    - group: upload schedule
+      paths-to-match: /schedule/upload/**
+      display-name: Schedule (upload)
+    - group: my-availability
+      paths-to-match: /availability/me/**
+      display-name: Availability (me)
+    - group: availability
+      paths-to-match: /availability/**
+      paths-to-exclude: /availability/me/**
+      display-name: Availability (all)
+    - group: my-absence
+      paths-to-match: /absences/me/**
+      display-name: Absence (me)
+    - group: absence
+      paths-to-match: /absences/**
+      paths-to-exclude: /absences/me/**
+      display-name: Absence (all)
+    - group: areas
+      paths-to-match: /areas/**
+      display-name: Area
+    - group: geo
+      paths-to-match: /geo/**
+      display-name: Geo
+    - group: articles
+      paths-to-match: /articles/**
+      display-name: Articles
+    - group: events
+      paths-to-match: /events/**
+      display-name: Events
+    - group: calendar
+      paths-to-match: /calendar/**
+      display-name: Calendar
+    - group: search
+      paths-to-match: /search/**
+      display-name: Search
+    - group: history
+      paths-to-match: /history/**
+      display-name: History
+    - group: backup
+      paths-to-match: /backup/**
+      display-name: Backup
+    - group: config
+      paths-to-match: /config/**
+      display-name: Config
+    - group: testing
+      paths-to-match: /test/**
+      display-name: Testing
+  show-login-endpoint: true
+  enable-spring-security: true
+  api-docs:
+    path: /swagger/api-docs
+  override-with-generic-response: false

@@ -1,0 +1,10 @@
+messages:
+  info:
+    USER_REGISTERED: "User registered successfully!"
+    LOGOUT_SUCCESSFUL: "Logout successful"
+
+  app:
+    CREDENTIALS_EMAIL_TEMPLATE: "credentialsTemplate.html"
+
+  errors:
+    USER_NOT_FOUND: "User not found"
