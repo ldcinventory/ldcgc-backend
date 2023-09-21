@@ -109,7 +109,7 @@ You can expect to test the smtp test server with web UI access directly to `loca
 
 ---
 
-## Login Response
+## Login Response (near future)
 
 When the login endpoint was invoked, it returns a JSON response with two tokens:
 
@@ -124,3 +124,13 @@ When the login endpoint was invoked, it returns a JSON response with two tokens:
 These tokens let to call every endpoint that require authentication.
 
 **In the future**, we will provide refresh token to avoid accounts be disconnected after 24 hours (default time for a token to expire).
+
+---
+
+## Swagger
+
+This project builds a Swagger portal directly from code, in which you can explore the available endpoints. The url to access this resource is in: http://localhost:8080/api/swagger-ui/index.html
+
+---
+
+Have fun ;)
