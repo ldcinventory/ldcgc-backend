@@ -24,7 +24,7 @@ public interface UserController {
     //   |-> (/users/?page={pageIndex}&size={sizeIndex}&filter={filterString})
     //  Read specific account GET
     //   |-> (/users/{userId})
-    //  Update another account UPDATE
+    //  Update another account PUT
     //   |-> (/users/{userId})
     //  Delete another account DELETE
     //   |-> (/users/{userId})
