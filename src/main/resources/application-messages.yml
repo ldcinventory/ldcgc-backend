@@ -8,3 +8,7 @@ messages:
 
   errors:
     USER_NOT_FOUND: "User not found"
+
+    VOLUNTEER_ALREADY_EXIST: "There's a volunteer with this id"
+
+    ENDPOINT_NOT_IMPLEMENTED: "This endpoint is not implemented yet"
