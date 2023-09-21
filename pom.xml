@@ -13,7 +13,7 @@
 	<artifactId>backend</artifactId>
 	<version>0.0.1</version>
 	<name>backend</name>
-	<description>LDC Inventory Backend</description>
+	<description>LDC-GC Backend</description>
 	<url>https://ldgc.org</url>
 
 	<properties>
