@@ -51,7 +51,6 @@ public interface VolunteerController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> createVolunteer(
-            //@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer object")
             @RequestBody VolunteerDto volunteer);
 
     @GetMapping
@@ -71,7 +70,7 @@ public interface VolunteerController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> updateVolunteer(
             @PathVariable String volunteerId,
-            @RequestBody VolunteerDto volunteer);
+            VolunteerDto volunteer);
 
     @DeleteMapping("/{volunteerId}")
     @PreAuthorize("hasAnyRole('ADMIN')")

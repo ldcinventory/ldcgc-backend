@@ -13,7 +13,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AvailabilityDto implements Serializable {
 
-    VolunteerDto volunteer;
+    Integer volunteerId;
     List<EWeekday> availabilityDays;
 
 }

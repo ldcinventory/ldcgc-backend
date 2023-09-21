@@ -15,6 +15,6 @@ public class AbsenceDto implements Serializable {
     Integer id;
     LocalDate dateFrom;
     LocalDate dateTo;
-    VolunteerDto volunteer;
+    Integer volunteerId;
 
 }
