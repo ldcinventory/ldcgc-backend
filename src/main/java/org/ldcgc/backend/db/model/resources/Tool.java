@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.model.category.SubCategory;
+import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.LocationLvl2;
 
 import java.time.LocalDateTime;
@@ -66,5 +67,9 @@ public class Tool {
     @OneToOne
     @JoinColumn(name = "id")
     private LocationLvl2 location;
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Group group;
 
 }
