@@ -2,7 +2,7 @@ package org.ldcgc.backend.util.creation;
 
 import org.ldcgc.backend.exception.ApiError;
 import org.ldcgc.backend.exception.ApiSubError;
-import org.ldcgc.backend.payload.dto.other.MessageResponse;
+import org.ldcgc.backend.payload.dto.other.Message;
 import org.ldcgc.backend.util.conversion.Convert;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +34,7 @@ public class Constructor {
     }
 
     public static ResponseEntity<?> buildResponseMessage(HttpStatus httpStatus, String message) {
-        return ResponseEntity.status(httpStatus).body(MessageResponse.DTO.builder().message(message).build());
+        return ResponseEntity.status(httpStatus).body(Message.DTO.builder().message(message).build());
     }
 
     public static ResponseEntity<?> buildResponseObject(HttpStatus httpStatus) {
@@ -50,10 +50,10 @@ public class Constructor {
     }
 
     public static ResponseEntity<?> buildResponseObjectMessage(HttpStatus httpStatus, String message, Object object) {
-        return ResponseEntity.status(httpStatus).body(MessageResponse.DTOWithObject.builder().message(message).result(object).build());
+        return ResponseEntity.status(httpStatus).body(Message.DTOWithObject.builder().message(message).result(object).build());
     }
 
     public static ResponseEntity<?> buildResponseObjectLocation(HttpStatus httpStatus, String message, String location, HttpHeaders headers) {
-        return ResponseEntity.status(httpStatus).headers(headers).body(MessageResponse.DTOWithLocation.builder().message(message).location(location).build());
+        return ResponseEntity.status(httpStatus).headers(headers).body(Message.DTOWithLocation.builder().message(message).location(location).build());
     }
 }
