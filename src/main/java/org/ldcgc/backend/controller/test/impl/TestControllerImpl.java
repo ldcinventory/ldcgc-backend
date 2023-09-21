@@ -1,7 +1,7 @@
-package org.ldcgc.backend.controller.impl;
+package org.ldcgc.backend.controller.test.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.controller.TestController;
+import org.ldcgc.backend.controller.test.TestController;
 import org.ldcgc.backend.service.TestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

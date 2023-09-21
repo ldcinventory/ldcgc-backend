@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller;
+package org.ldcgc.backend.controller.test;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller;
+package org.ldcgc.backend.controller.test;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
