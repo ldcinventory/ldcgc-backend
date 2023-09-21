@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/volunteers")
 public interface VolunteerController {
 
-    @GetMapping
+    @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> createUser();
 
@@ -26,11 +27,10 @@ public interface VolunteerController {
             @RequestParam(required = false) String filterString,
             @RequestParam(required = false) String barcode);
 
-    @GetMapping
+    @GetMapping("/{volunteerId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> getUser(
-            @RequestParam(required = false) String volunteerId,
-            @RequestParam(required = false) String barcode);
+            @PathVariable String volunteerId);
 
     @PutMapping("/{volunteerId}")
     @PreAuthorize("hasAnyRole('ADMIN')")

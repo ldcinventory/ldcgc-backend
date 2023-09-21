@@ -20,7 +20,7 @@ public class VolunteerControllerImpl implements VolunteerController {
         return null;
     }
 
-    public ResponseEntity<?> getUser(String volunteerId, String barcode) {
+    public ResponseEntity<?> getUser(String volunteerId) {
         return null;
     }
 
