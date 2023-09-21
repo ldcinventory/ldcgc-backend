@@ -3,11 +3,11 @@
 ---
 ## Run in Cloud
 
-> (not yet accomplished...)
+> (not yet completed)
 
 ### Login
 
-To login on this server, is necessary login first on github with the project's account: `dev.publishers@gmail.com`.
+> (not yet completed)
 
 ### Environment Variables
 
