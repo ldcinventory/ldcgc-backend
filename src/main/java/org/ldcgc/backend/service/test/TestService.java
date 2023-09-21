@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service;
+package org.ldcgc.backend.service.test;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

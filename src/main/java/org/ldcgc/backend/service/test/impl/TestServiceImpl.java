@@ -1,6 +1,6 @@
-package org.ldcgc.backend.service.impl;
+package org.ldcgc.backend.service.test.impl;
 
-import org.ldcgc.backend.service.TestService;
+import org.ldcgc.backend.service.test.TestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
