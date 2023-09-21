@@ -1,11 +1,9 @@
 package org.ldcgc.backend.db.model.users;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.ldcgc.backend.category.ERole;
 import org.ldcgc.backend.db.model.category.SubCategory;
+import org.ldcgc.backend.db.model.group.Group;
 
 @Data
 @Builder(toBuilder = true)
@@ -51,5 +50,9 @@ public class User {
     @OneToOne
     @JoinColumn(name = "id")
     private SubCategory responsibility;
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Group group;
 
 }

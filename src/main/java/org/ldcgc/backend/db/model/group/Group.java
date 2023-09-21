@@ -1,31 +1,27 @@
-package org.ldcgc.backend.db.model.users;
+package org.ldcgc.backend.db.model.group;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import org.ldcgc.backend.db.model.location.LocationLvl2;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
-@Table(name = "volunteers")
-public class Volunteer {
+@Table(name = "groups")
+public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,17 +30,14 @@ public class Volunteer {
 
     private String name;
 
-    private String lastName;
+    private String description;
 
-    private Integer builderAssistantId;
+    private String urlImage;
 
-    private String barcode;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private LocationLvl2 locationLvl2;
 
-    @OneToOne(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private Availability availability;
-
-    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Absence> absences;
+    private String phoneNumber;
 
 }

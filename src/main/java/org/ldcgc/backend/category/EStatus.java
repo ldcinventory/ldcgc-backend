@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EStatus {
+public enum EStatus implements EnumMethods {
 
     AVAILABLE("Disponible"),
     NOT_AVAILABLE("No disponible"),
@@ -14,11 +14,5 @@ public enum EStatus {
     DEPRECATED("En desuso");
 
     private final String desc;
-
-    public boolean equalsAny(EStatus... statuses) {
-        for (EStatus status : statuses)
-            if (this == status) return true;
-        return false;
-    }
 
 }

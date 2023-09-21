@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum ERole {
+public enum ERole implements EnumMethods {
 
     ROLE_STANDARD("standard"),
     ROLE_MANAGER("manager"),
@@ -20,12 +20,6 @@ public enum ERole {
         }
 
         return null;
-    }
-
-    public final boolean equalsAny(ERole ...roles) {
-        for (ERole role : roles)
-            if (this == role) return true;
-        return false;
     }
 
 }
