@@ -10,9 +10,70 @@ springdoc:
 
   show-actuator: false
   group-configs:
+    # category
+    - group: categories
+      paths-to-match: /categories/**
+      display-name: Categories
+    # group
+    - group: groups
+      paths-to-match: /groups/**
+      display-name: Groups
+    # history
+    - group: register
+      paths-to-match:
+        - /resources/consumables/registers/**
+        - /resources/tools/registers/**
+      display-name:
+    - group: maintenance
+      paths-to-match: /maintenance/**
+      display-name: Maintenance
+    # location
+    - group: locations
+      paths-to-match: /locations/**
+      display-name: Locations
+    # resources
+    - group: consumables
+      paths-to-match: /resources/consumables/**
+      paths-to-exclude:
+        - /resources/consumables/registers/**
+        - /resources/import/**
+      display-name: Consumables
+    - group: import
+      paths-to-match: /resources/import/**
+      display-name: Import
+    - group: tools
+      paths-to-match: /resources/tools/**
+      paths-to-exclude:
+        - /resources/tools/registers/**
+        - /resources/import/**
+      display-name: Tools
+    # search
+    - group: search
+      paths-to-match: /search/**
+      display-name: Search
+    # testing
     - group: testing
-      paths-to-match: /test/**
+      paths-to-match:
+      - /test/**
+      - /alive
       display-name: Testing
+    # users
+    - group: accounts-eula
+      paths-to-match:
+        - /accounts/**
+        - /eula/**
+      display-name: Accounts+EULA
+    - group: users-volunteers
+      paths-to-match:
+        - /users/**
+        - /volunteers/**
+      display-name: Users+Volunteers
+    - group: availabilities
+      paths-to-match: /availabilities/**
+      display-name: Availabilities
+    - group: absences
+      paths-to-match: /absences/**
+      display-name: Absences
   show-login-endpoint: true
   enable-spring-security: true
   api-docs:
