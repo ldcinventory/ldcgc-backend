@@ -15,23 +15,24 @@ public class VolunteerServiceImpl implements VolunteerService {
 
     private VolunteerRepository volunteerRepository;
 
-    public ResponseEntity<?> createUser() {
+    public ResponseEntity<?> createVolunteer() {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> listUsers(String pageIndex, String sizeIndex, String filterString, String barcode) {
+    public ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> getUser(String volunteerId) {
+    public ResponseEntity<?> getVolunteer(String volunteerId) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> updateUser(String volunteerId) {
+    public ResponseEntity<?> updateVolunteer(String volunteerId) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> deleteUser(String volunteerId) {
+    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
         return Constructor.generic501();
     }
+
 }

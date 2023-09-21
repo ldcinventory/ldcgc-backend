@@ -1,5 +1,6 @@
 package org.ldcgc.backend.controller.users;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,15 +14,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/volunteers")
+@Tag(name = "Volunteers", description = "Volunteers methods with CRUD functions")
 public interface VolunteerController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> createUser();
+    ResponseEntity<?> createVolunteer();
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> listUsers(
+    ResponseEntity<?> listVolunteers(
             @RequestParam(required = false) String pageIndex,
             @RequestParam(required = false) String sizeIndex,
             @RequestParam(required = false) String filterString,
@@ -29,18 +31,17 @@ public interface VolunteerController {
 
     @GetMapping("/{volunteerId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> getUser(
+    ResponseEntity<?> getVolunteer(
             @PathVariable String volunteerId);
 
     @PutMapping("/{volunteerId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> updateUser(
+    ResponseEntity<?> updateVolunteer(
             @PathVariable String volunteerId);
 
     @DeleteMapping("/{volunteerId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> deleteUser(
+    ResponseEntity<?> deleteVolunteer(
             @PathVariable String volunteerId);
-
 
 }

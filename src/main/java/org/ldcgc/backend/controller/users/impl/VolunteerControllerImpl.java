@@ -12,23 +12,23 @@ public class VolunteerControllerImpl implements VolunteerController {
 
     private VolunteerService volunteerService;
 
-    public ResponseEntity<?> createUser() {
+    public ResponseEntity<?> createVolunteer() {
         return null;
     }
 
-    public ResponseEntity<?> listUsers(String pageIndex, String sizeIndex, String filterString, String barcode) {
+    public ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode) {
         return null;
     }
 
-    public ResponseEntity<?> getUser(String volunteerId) {
+    public ResponseEntity<?> getVolunteer(String volunteerId) {
         return null;
     }
 
-    public ResponseEntity<?> updateUser(String volunteerId) {
+    public ResponseEntity<?> updateVolunteer(String volunteerId) {
         return null;
     }
 
-    public ResponseEntity<?> deleteUser(String volunteerId) {
+    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
         return null;
     }
 }

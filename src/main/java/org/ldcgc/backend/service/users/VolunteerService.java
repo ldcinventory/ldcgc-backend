@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 @Service
 public interface VolunteerService {
 
-    ResponseEntity<?> createUser();
+    ResponseEntity<?> createVolunteer();
 
-    ResponseEntity<?> listUsers(String pageIndex, String sizeIndex, String filterString, String barcode);
+    ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode);
 
-    ResponseEntity<?> getUser(String volunteerId);
+    ResponseEntity<?> getVolunteer(String volunteerId);
 
-    ResponseEntity<?> updateUser(String volunteerId);
+    ResponseEntity<?> updateVolunteer(String volunteerId);
 
-    ResponseEntity<?> deleteUser(String volunteerId);
+    ResponseEntity<?> deleteVolunteer(String volunteerId);
 }
