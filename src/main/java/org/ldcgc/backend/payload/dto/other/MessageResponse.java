@@ -1,4 +1,4 @@
-package org.ldcgc.backend.payload.dto;
+package org.ldcgc.backend.payload.dto.other;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

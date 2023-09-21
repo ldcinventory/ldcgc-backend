@@ -2,7 +2,7 @@ package org.ldcgc.backend.util.creation;
 
 import org.ldcgc.backend.exception.ApiError;
 import org.ldcgc.backend.exception.ApiSubError;
-import org.ldcgc.backend.payload.dto.MessageResponse;
+import org.ldcgc.backend.payload.dto.other.MessageResponse;
 import org.ldcgc.backend.util.conversion.Convert;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
