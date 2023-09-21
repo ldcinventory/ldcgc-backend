@@ -23,7 +23,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> getUser(String volunteerId, String barcode) {
+    public ResponseEntity<?> getUser(String volunteerId) {
         return Constructor.generic501();
     }
 
