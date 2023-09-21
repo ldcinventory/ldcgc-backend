@@ -13,7 +13,7 @@ public class SubCategory implements Serializable {
         Integer id;
         String name;
         Boolean locked = false;
-        Integer category;
+        Category.DTO category;
     }
 
 }
