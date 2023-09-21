@@ -21,6 +21,8 @@
 		<openapi.version>2.2.0</openapi.version>
 		<spring-boot.version>3.1.3</spring-boot.version>
 		<lombok.version>1.18.30</lombok.version>
+		<mapstruc.version>1.5.5.Final</mapstruc.version>
+		<lombok-mapstruc.version>0.2.0</lombok-mapstruc.version>
 		<nimbus.version>9.35</nimbus.version>
 		<javamail.version>8.1.3</javamail.version>
 		<junit.version>5.10.0</junit.version>
@@ -74,6 +76,19 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok-mapstruct-binding</artifactId>
+			<version>${lombok-mapstruc.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- MapStruct -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruc.version}</version>
 		</dependency>
 
 		<!-- Mail -->
@@ -165,6 +180,16 @@
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>${lombok-mapstruc.version}</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruc.version}</version>
 						</path>
 						<path>
 							<groupId>org.springframework.boot</groupId>
