@@ -8,12 +8,12 @@ import org.ldcgc.backend.category.EWeekday;
 import java.io.Serializable;
 import java.util.List;
 
-public class Availability implements Serializable {
+@Value
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AvailabilityDto implements Serializable {
 
-    @Value @Builder @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class DTO {
-        List<EWeekday> availabilityDays;
-        Volunteer.DTO volunteer;
-    }
+    VolunteerDto volunteer;
+    List<EWeekday> availabilityDays;
 
 }

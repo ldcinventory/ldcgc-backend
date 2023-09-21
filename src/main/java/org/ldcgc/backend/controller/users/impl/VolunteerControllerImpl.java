@@ -2,6 +2,7 @@ package org.ldcgc.backend.controller.users.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.VolunteerController;
+import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,25 +11,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class VolunteerControllerImpl implements VolunteerController {
 
-    private VolunteerService volunteerService;
+    private final VolunteerService volunteerService;
 
-    public ResponseEntity<?> createVolunteer() {
-        return null;
+    public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
+        return volunteerService.createVolunteer(volunteer);
     }
 
     public ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode) {
-        return null;
+        return volunteerService.listVolunteers(pageIndex, sizeIndex, filterString, barcode);
     }
 
     public ResponseEntity<?> getVolunteer(String volunteerId) {
-        return null;
+        return volunteerService.getVolunteer(volunteerId);
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId) {
-        return null;
+    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
+        return volunteerService.updateVolunteer(volunteerId, volunteer);
     }
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        return null;
+        return volunteerService.deleteVolunteer(volunteerId);
     }
 }

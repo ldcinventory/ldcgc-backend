@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.users.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
+import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class VolunteerServiceImpl implements VolunteerService {
 
-    private VolunteerRepository volunteerRepository;
+    private final VolunteerRepository volunteerRepository;
 
-    public ResponseEntity<?> createVolunteer() {
+    public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
         return Constructor.generic501();
     }
 
@@ -27,7 +28,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId) {
+    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
         return Constructor.generic501();
     }
 
