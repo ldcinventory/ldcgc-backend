@@ -15,7 +15,7 @@ Is necessary indicate some values as environment variables:
 
 **SPRING BOOT**
 
-+ `ENVIRONMENT`: values `dev` or `pro`. Used to select Spring profile to use on startup.
++ `ENVIRONMENT_PROFILE` (mandatory for make it run in cloud and local environment (not docker)): values `dev` or `pro`. Used to select Spring profile to use on startup.
 + `JWT_EXPIRATION`: set value in seconds the time the JWT is valid.
 
 **DB**
@@ -62,6 +62,10 @@ Paste the token previously copied and that's all. Now docker will be able to dow
 A Docker-based project, you just execute this command to run the multi-container:
 
 `docker-compose up`
+
+or, for make-it-easier-for-you purposes, you can run:
+
+`./run.sh` in Mac, `run.bat` in Windows, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
 
 All previous environment variables can be changed through command line invocation to docker-compose specifying explicitly **before** the `docker-compose up` command. For example, to change DB_NAME we'd run as follows:
 

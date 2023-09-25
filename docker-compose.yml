@@ -46,6 +46,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     environment:
+      - ENVIRONMENT_PROFILE=docker
       - DB_HOST=${DB_HOST:-ldcgc-db}
       - LOGGING_ROOT=${LOGGING_ROOT:-INFO}
       - LOGGING_SPRING_WEB=${LOGGING_SPRING_WEB:-ERROR}
