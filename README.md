@@ -115,6 +115,8 @@ You can expect to test the smtp test server with web UI access directly to `loca
 
 ## Login Response (near future)
 
+_(In progress)_
+
 When the login endpoint was invoked, it returns a JSON response with two tokens:
 
 ```
