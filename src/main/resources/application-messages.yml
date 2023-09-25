@@ -1,14 +1,23 @@
 messages:
   info:
-    USER_REGISTERED: "User registered successfully!"
+    USER_CREATED: "User created successfully!"
+    USER_UPDATED: "User details updated"
+    USER_DELETED: "User deleted"
+
+    VOLUNTEER_CREATED: "Volunteer created"
+    VOLUNTEER_UPDATED: "Volunteer details updated"
+    VOLUNTEER_DELETED: "Volunteer deleted"
+
     LOGOUT_SUCCESSFUL: "Logout successful"
 
   app:
     CREDENTIALS_EMAIL_TEMPLATE: "credentialsTemplate.html"
 
   errors:
+    USER_ALREADY_EXIST: "There's a user with this id or email"
     USER_NOT_FOUND: "User not found"
 
     VOLUNTEER_ALREADY_EXIST: "There's a volunteer with this id"
+    VOLUNTEER_NOT_FOUND: "The volunteer you're searching for with this id couldn't be found"
 
     ENDPOINT_NOT_IMPLEMENTED: "This endpoint is not implemented yet"
