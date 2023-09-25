@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AvailabilityDto implements Serializable {
 

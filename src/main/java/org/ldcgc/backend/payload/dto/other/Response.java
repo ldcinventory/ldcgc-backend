@@ -7,24 +7,18 @@ import lombok.Value;
 import java.io.Serializable;
 import java.util.List;
 
-public class Message implements Serializable {
+public class Response implements Serializable {
 
-    @Value @Builder @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Value @Builder(toBuilder = true) @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTO {
-        String message;
+        String status;
         List<String> details;
-    }
-
-    @Value @Builder @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class DTOWithObject {
-        String message;
-        List<String> details;
-        Object result;
+        Object data;
     }
 
     @Value @Builder @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTOWithLocation {
-        String message;
+        String status;
         String location;
     }
 

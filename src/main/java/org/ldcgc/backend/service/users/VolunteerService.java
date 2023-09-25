@@ -9,7 +9,7 @@ public interface VolunteerService {
 
     ResponseEntity<?> createVolunteer(VolunteerDto volunteer);
 
-    ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode);
+    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer sizeIndex, String filterString, String barcode);
 
     ResponseEntity<?> getVolunteer(String volunteerId);
 

@@ -17,7 +17,7 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.createVolunteer(volunteer);
     }
 
-    public ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode) {
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer sizeIndex, String filterString, String barcode) {
         return volunteerService.listVolunteers(pageIndex, sizeIndex, filterString, barcode);
     }
 

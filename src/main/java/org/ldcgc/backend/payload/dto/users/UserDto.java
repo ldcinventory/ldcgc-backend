@@ -10,7 +10,7 @@ import org.ldcgc.backend.payload.dto.group.GroupDto;
 import java.io.Serializable;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto implements Serializable {
 

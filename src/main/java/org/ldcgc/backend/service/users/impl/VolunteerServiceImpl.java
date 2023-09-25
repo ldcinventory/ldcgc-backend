@@ -20,7 +20,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> listVolunteers(String pageIndex, String sizeIndex, String filterString, String barcode) {
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer sizeIndex, String filterString, String barcode) {
         return Constructor.generic501();
     }
 

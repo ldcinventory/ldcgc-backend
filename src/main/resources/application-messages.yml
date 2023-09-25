@@ -1,6 +1,7 @@
 messages:
   info:
     USER_CREATED: "User created successfully!"
+    USER_LISTED: "Found %s user/s"
     USER_UPDATED: "User details updated"
     USER_DELETED: "User deleted"
 
