@@ -17,9 +17,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.ldcgc.backend.category.ERole;
 import org.ldcgc.backend.db.model.category.SubCategory;
 import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.util.common.ERole;
 
 @Data
 @Builder(toBuilder = true)

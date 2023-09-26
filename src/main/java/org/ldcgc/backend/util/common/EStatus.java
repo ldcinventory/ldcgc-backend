@@ -1,7 +1,8 @@
-package org.ldcgc.backend.category;
+package org.ldcgc.backend.util.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.ldcgc.backend.util.compare.EnumMethods;
 
 @Getter
 @RequiredArgsConstructor

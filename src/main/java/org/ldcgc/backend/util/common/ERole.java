@@ -1,8 +1,9 @@
-package org.ldcgc.backend.category;
+package org.ldcgc.backend.util.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.ldcgc.backend.util.compare.EnumMethods;
 
 @RequiredArgsConstructor
 @Getter

@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.category.EStatus;
+import org.ldcgc.backend.util.common.EStatus;
 
 @Data
 @Builder(toBuilder = true)

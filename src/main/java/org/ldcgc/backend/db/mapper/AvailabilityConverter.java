@@ -1,7 +1,7 @@
 package org.ldcgc.backend.db.mapper;
 
 import jakarta.persistence.AttributeConverter;
-import org.ldcgc.backend.category.EWeekday;
+import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.Arrays;
 import java.util.List;

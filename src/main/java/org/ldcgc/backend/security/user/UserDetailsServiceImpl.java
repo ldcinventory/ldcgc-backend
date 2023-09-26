@@ -10,7 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static org.ldcgc.backend.util.retrieving.Messages.getErrorMessage;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -36,7 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if(username.equals("user"))
             return user;
 
-        throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage("USER_NOT_FOUND"));
+        throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND));
     }
 
 }

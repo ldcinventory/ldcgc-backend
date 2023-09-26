@@ -3,7 +3,7 @@ package org.ldcgc.backend.payload.dto.users;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import org.ldcgc.backend.category.EWeekday;
+import org.ldcgc.backend.util.common.EWeekday;
 
 import java.io.Serializable;
 import java.util.List;

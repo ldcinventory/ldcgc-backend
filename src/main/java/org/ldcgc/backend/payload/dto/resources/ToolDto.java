@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import org.ldcgc.backend.category.EStatus;
 import org.ldcgc.backend.payload.dto.category.SubCategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationLvl2Dto;
+import org.ldcgc.backend.util.common.EStatus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

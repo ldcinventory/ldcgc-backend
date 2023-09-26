@@ -16,8 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.category.EWeekday;
 import org.ldcgc.backend.db.mapper.AvailabilityConverter;
+import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
 

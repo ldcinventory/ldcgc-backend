@@ -1,4 +1,4 @@
-package org.ldcgc.backend.category;
+package org.ldcgc.backend.util.compare;
 
 public interface EnumMethods {
 

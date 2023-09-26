@@ -14,7 +14,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.ldcgc.backend.util.retrieving.Messages.getInfoMessage;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_DELETED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_UPDATED;
+import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Slf4j
 @Component
@@ -29,15 +33,15 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<?> updateMyUser(String token, UserDto user) {
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage("USER_UPDATED"), UserMock.getMockedUser(user));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(user));
     }
 
     public ResponseEntity<?> deleteMyUser(String token) {
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage("USER_DELETED"));
+        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
     }
 
     public ResponseEntity<?> createUser(UserDto user) {
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage("USER_CREATED"), UserMock.getMockedUser(user));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_CREATED), UserMock.getMockedUser(user));
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
@@ -46,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     public ResponseEntity<?> listUsers(Integer pageIndex, Integer sizeIndex, String filterString, Integer userId) {
         if(userId != null)
-            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage("USER_LISTED"), 1), UserMock.getMockedUser(userId));
+            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), 1), UserMock.getMockedUser(userId));
 
         if(StringUtils.isNotEmpty(filterString)) {
             List<UserDto> users = UserMock.getListOfMockedUsers(100).stream()
@@ -54,18 +58,18 @@ public class UserServiceImpl implements UserService {
                     StringUtils.containsIgnoreCase(user.getVolunteer().getLastName(), filterString) ||
                     StringUtils.containsIgnoreCase(user.getEmail(), filterString))
                 .toList();
-            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage("USER_LISTED"), users.size()), users);
+            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), users.size()), users);
         }
 
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage("USER_LISTED"), sizeIndex), UserMock.getListOfMockedUsers(sizeIndex));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), sizeIndex), UserMock.getListOfMockedUsers(sizeIndex));
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage("USER_UPDATED"), UserMock.getMockedUser(userId));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(userId));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage("USER_DELETED"));
+        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
     }
 }

@@ -1,7 +1,5 @@
 package org.ldcgc.backend.util.mock;
 
-import org.ldcgc.backend.category.ERole;
-import org.ldcgc.backend.category.EWeekday;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.SubCategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
@@ -9,6 +7,8 @@ import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,12 +16,12 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static org.ldcgc.backend.category.EWeekday.FRIDAY;
-import static org.ldcgc.backend.category.EWeekday.HOLIDAY;
-import static org.ldcgc.backend.category.EWeekday.MONDAY;
-import static org.ldcgc.backend.category.EWeekday.SUNDAY;
-import static org.ldcgc.backend.category.EWeekday.TUESDAY;
-import static org.ldcgc.backend.category.EWeekday.WEDNESDAY;
+import static org.ldcgc.backend.util.common.EWeekday.FRIDAY;
+import static org.ldcgc.backend.util.common.EWeekday.HOLIDAY;
+import static org.ldcgc.backend.util.common.EWeekday.MONDAY;
+import static org.ldcgc.backend.util.common.EWeekday.SUNDAY;
+import static org.ldcgc.backend.util.common.EWeekday.TUESDAY;
+import static org.ldcgc.backend.util.common.EWeekday.WEDNESDAY;
 
 public class UserMock {
 

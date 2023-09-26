@@ -165,14 +165,6 @@ public interface UserController {
         content = @Content(mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
     )
-    @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Not implemented" , value = "This endpoint is not implemented yet"),
-            })
-    )
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     ResponseEntity<?> listUsers(
@@ -196,14 +188,6 @@ public interface UserController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "User doesn't exists", value = "The user you're searching for with this id doesn't exist"),
-            })
-    )
-    @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
             })
     )
     @PutMapping("/{userId}")

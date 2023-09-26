@@ -55,7 +55,6 @@ services:
       - LOGGING_HIBERNATE=${LOGGING_HIBERNATE:-ERROR}
       - DB_START_MODE=${DB_START_MODE:-create-drop}
       - LOAD_INITIAL_DATA=${LOAD_INITIAL_DATA:-true}
-      - CSV_FILE=${CSV_FILE:-brothers.csv}
     depends_on:
       postgresql:
         condition: service_healthy

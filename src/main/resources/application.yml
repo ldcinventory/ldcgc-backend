@@ -7,7 +7,6 @@ spring:
   # ---- PROFILE ----
   profiles:
     include:
-      - messages
       - swagger
       - ${ENVIRONMENT_PROFILE}
 
