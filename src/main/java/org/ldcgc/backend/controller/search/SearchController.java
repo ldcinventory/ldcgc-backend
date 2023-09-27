@@ -43,7 +43,7 @@ public interface SearchController {
     //   |-> (/search/users?page={pageIndex}&size={sizeIndex}&filter={filterString})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")

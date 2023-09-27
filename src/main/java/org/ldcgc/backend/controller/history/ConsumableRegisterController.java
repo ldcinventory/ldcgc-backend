@@ -23,7 +23,7 @@ public interface ConsumableRegisterController {
     //   |-> (/resources/consumables/registers/{registerId})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")

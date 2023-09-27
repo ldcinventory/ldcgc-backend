@@ -63,7 +63,7 @@ public interface UserController {
             })
     )
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> getMyUser(@RequestHeader("Authorization") String token);
 
     @Operation(summary = "Update my user")
@@ -155,7 +155,7 @@ public interface UserController {
             })
     )
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> getUser(@PathVariable Integer userId);
 
     @Operation(summary = "List users (admin)")
@@ -166,7 +166,7 @@ public interface UserController {
             array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> listUsers(
         @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,

@@ -23,7 +23,7 @@ public interface MaintenanceController {
     //   |-> (/maintenance/{maintenanceId})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")

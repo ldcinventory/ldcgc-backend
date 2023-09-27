@@ -36,7 +36,7 @@ public interface CategoryController {
     //   |-> (/categories/{categoryName}/subcategories/{subCategoryName})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")
