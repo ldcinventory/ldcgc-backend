@@ -25,7 +25,7 @@ public interface ConsumableController {
     //   |-> (/resources/consumables/{consumableId})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")

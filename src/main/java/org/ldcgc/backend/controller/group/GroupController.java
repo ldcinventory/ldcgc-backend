@@ -26,7 +26,7 @@ public interface GroupController {
     //   |-> (/groups/{groupId})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")
