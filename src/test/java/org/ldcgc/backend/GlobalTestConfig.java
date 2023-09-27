@@ -4,7 +4,7 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-class GlobalTestConfig implements BeforeAllCallback, AfterAllCallback {
+public class GlobalTestConfig implements BeforeAllCallback, AfterAllCallback {
 
     public void beforeAll(ExtensionContext extensionContext) {
         // Set environment variables for testing
