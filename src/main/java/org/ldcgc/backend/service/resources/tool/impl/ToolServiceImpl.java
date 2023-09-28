@@ -14,10 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ToolServiceImpl implements ToolService {
 
-    @Override
-    public ResponseEntity<?> createTool(ToolDto tool)
-    {
-
+    public ResponseEntity<?> createTool(ToolDto tool) {
         return Constructor.buildResponseObject(HttpStatus.OK, tool);
     }
 }

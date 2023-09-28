@@ -1,12 +1,9 @@
 package org.ldcgc.backend.payload.dto.location;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
 
 import java.io.Serializable;
 import java.util.List;
