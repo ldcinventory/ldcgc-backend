@@ -1,25 +1,22 @@
 package org.ldcgc.backend.transformer.resources.tool.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.transformer.resources.tool.ToolMapper;
 import org.ldcgc.backend.transformer.resources.tool.ToolTransformer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ToolTransformerImpl implements ToolTransformer {
 
-    @Autowired
-    private ToolMapper mapper;
-
-    @Override
     public ToolDto toDto(Tool tool) {
-        return mapper.toDto(tool);
+        return ToolMapper.INSTANCE.toDto(tool);
     }
 
-    @Override
     public Tool toMo(ToolDto toolDto) {
-        return mapper.toMo(toolDto);
+        return ToolMapper.INSTANCE.toMo(toolDto);
     }
+
 }
