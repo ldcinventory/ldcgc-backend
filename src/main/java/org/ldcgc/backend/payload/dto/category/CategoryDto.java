@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Value
 @Builder
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryDto implements Serializable {
 
@@ -18,16 +20,5 @@ public class CategoryDto implements Serializable {
     String name;
     Boolean locked;
     List<SubCategoryDto> subCategories;
-
-    @JsonCreator
-    public CategoryDto(@JsonProperty("id") Integer id,
-                          @JsonProperty("name") String name,
-                          @JsonProperty("locked") Boolean locked,
-                          @JsonProperty("subCategories") List<SubCategoryDto> subCategories) {
-        this.id = id;
-        this.name = name;
-        this.locked = locked;
-        this.subCategories = subCategories;
-    }
 
 }

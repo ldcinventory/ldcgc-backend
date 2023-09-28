@@ -11,12 +11,9 @@ import org.ldcgc.backend.controller.resources.impl.ToolControllerImpl;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.tools.ToolService;
-import org.ldcgc.backend.util.creation.Constructor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -29,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(GlobalTestConfig.class)
-@SpringBootTest()
+@SpringBootTest
 public class ToolControllerImplTest {
 
     // check different styles of mock or autowire beans in
