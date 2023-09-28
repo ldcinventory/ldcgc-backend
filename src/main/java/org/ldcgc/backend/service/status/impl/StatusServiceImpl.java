@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.status.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.ldcgc.backend.db.model.resources.Status;
 import org.ldcgc.backend.db.repository.resources.StatusRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.service.status.StatusService;
@@ -20,7 +21,7 @@ public class StatusServiceImpl implements StatusService {
 
     public int getIdByEStatus(EStatus name) {
         return repository.findByName(name)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, STATUS_NOT_FOUND.getMessage()))
-                .getId();
+            .map(Status::getId)
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, STATUS_NOT_FOUND.getMessage()));
     }
 }
