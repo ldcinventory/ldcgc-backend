@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller.resources;
+package org.ldcgc.backend.controller.resources.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -7,10 +7,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.GlobalTestConfig;
-import org.ldcgc.backend.controller.resources.impl.ToolControllerImpl;
+import org.ldcgc.backend.controller.resources.tool.impl.ToolControllerImpl;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.service.tools.ToolService;
+import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,10 +29,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class ToolControllerImplTest {
 
-    // check different styles of mock or autowire beans in
-    // https://www.baeldung.com/spring-boot-testing#mocking-with-mockbean
     @InjectMocks
-    private ToolController toolController = new ToolControllerImpl();
+    private ToolController controller = new ToolControllerImpl();
     private final PodamFactory factory = new PodamFactoryImpl();
     static ObjectMapper objectMapper = new ObjectMapper();
     @Mock
@@ -48,7 +46,7 @@ public class ToolControllerImplTest {
         ToolDto tool = ToolDto.builder().build();
 
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
-        ResponseEntity<?> response = toolController.createTool(tool);
+        ResponseEntity<?> response = controller.createTool(tool);
 
         assertTrue(Objects.nonNull(response));
     }
@@ -58,7 +56,7 @@ public class ToolControllerImplTest {
         ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
-        ResponseEntity<?> response = toolController.createTool(tool);
+        ResponseEntity<?> response = controller.createTool(tool);
 
         ToolDto toolResponse = objectMapper.convertValue(((Response.DTO) Objects.requireNonNull(response.getBody())).getData(), ToolDto.class);
         assertEquals(tool, toolResponse);
@@ -68,7 +66,7 @@ public class ToolControllerImplTest {
     void shouldCallService() {
         ToolDto tool = ToolDto.builder().build();
 
-        toolController.createTool(tool);
+        controller.createTool(tool);
 
         verify(service, times(1)).createTool(tool);
     }

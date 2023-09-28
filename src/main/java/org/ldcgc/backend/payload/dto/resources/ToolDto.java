@@ -1,12 +1,8 @@
 package org.ldcgc.backend.payload.dto.resources;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.ldcgc.backend.payload.dto.category.SubCategoryDto;

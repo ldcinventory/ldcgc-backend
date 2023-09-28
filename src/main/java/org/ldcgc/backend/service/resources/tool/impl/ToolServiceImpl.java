@@ -1,9 +1,9 @@
-package org.ldcgc.backend.service.tools.impl;
+package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.service.tools.ToolService;
+import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 public class ToolServiceImpl implements ToolService {
 
     @Override
-    public ResponseEntity<?> createTool(ToolDto tool) {
+    public ResponseEntity<?> createTool(ToolDto tool)
+    {
+
         return Constructor.buildResponseObject(HttpStatus.OK, tool);
     }
 }

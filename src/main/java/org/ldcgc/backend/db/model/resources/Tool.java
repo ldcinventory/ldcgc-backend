@@ -62,7 +62,7 @@ public class Tool {
 
     @OneToOne
     @JoinColumn(name = "id")
-    private SubCategory status;
+    private Status status;
 
     @OneToOne
     @JoinColumn(name = "id")

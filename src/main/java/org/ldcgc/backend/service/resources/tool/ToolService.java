@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.tools;
+package org.ldcgc.backend.service.resources.tool;
 
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
