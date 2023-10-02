@@ -15,7 +15,7 @@ Is necessary indicate some values as environment variables:
 
 **SPRING BOOT**
 
-+ `ENVIRONMENT_PROFILE` (mandatory for make it run in cloud and local environment (not docker)): values `dev` or `pro`. Used to select Spring profile to use on startup.
++ `ENVIRONMENT_PROFILE` (mandatory for make it run in cloud and local environment (not docker)): values `dev` or `pro`. Used to select Spring profile to use on startup (default `dev`).
 + `JWT_EXPIRATION`: set value in seconds the time the JWT is valid.
 
 **DB**
@@ -44,6 +44,7 @@ Is necessary indicate some values as environment variables:
 + `LOGGING_SPRING_BOOT`: level of logging for the spring boot auto-configuration information (default `ERROR`).
 + `LOGGING_API`: level of logging for the API package (default `ERROR`).
 + `LOGGING_HIBERNATE`: level of logging for the hibernate queries and functionality (default `ERROR`).
++ `LOGGING_TESTS`: level of logging for the tests (default `ERROR`).
 
 ---
 
