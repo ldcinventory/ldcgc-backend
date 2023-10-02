@@ -3,11 +3,13 @@ package org.ldcgc.backend.payload.dto.location;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
 
 @Value
 @Builder
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LocationLvl2Dto implements Serializable {
 
@@ -15,5 +17,6 @@ public class LocationLvl2Dto implements Serializable {
     String name;
     String description;
     LocationLvl1Dto locationLvl1;
+
 
 }

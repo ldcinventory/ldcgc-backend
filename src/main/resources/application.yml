@@ -8,7 +8,7 @@ spring:
   profiles:
     include:
       - swagger
-      - ${ENVIRONMENT_PROFILE}
+      - ${ENVIRONMENT_PROFILE:dev}
 
   # ---- LOGGING ----
   output:
@@ -77,3 +77,5 @@ logging:
     org.hibernate.SQL: ${LOGGING_HIBERNATE:ERROR}
     org.hibernate.type.descriptor.sql: ${LOGGING_HIBERNATE:ERROR}
     org.hibernate.orm.jdbc.bind: ${LOGGING_HIBERNATE:ERROR}
+    org.junit.jupiter.api: ${LOGGING_TESTS:ERROR}
+    uk.co.jemos.podam: ${LOGGING_TESTS:ERROR}
