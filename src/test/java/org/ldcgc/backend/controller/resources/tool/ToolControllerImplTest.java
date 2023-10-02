@@ -5,8 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.ldcgc.backend.GlobalTestConfig;
 import org.ldcgc.backend.controller.resources.tool.impl.ToolControllerImpl;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
@@ -27,7 +25,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @Slf4j
-@ExtendWith(GlobalTestConfig.class)
 @SpringBootTest
 public class ToolControllerImplTest {
 

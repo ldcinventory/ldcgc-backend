@@ -1,4 +1,4 @@
-package org.ldcgc.backend.transformer.status;
+package org.ldcgc.backend.transformer.resources.status;
 
 import org.mapstruct.Qualifier;
 
@@ -10,4 +10,4 @@ import java.lang.annotation.Target;
 @Qualifier
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface EStatusToStatus { }
+public @interface StatusToEStatus { }
