@@ -6,7 +6,6 @@ import org.ldcgc.backend.db.repository.resources.StatusRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.service.status.StatusService;
 import org.ldcgc.backend.util.common.EStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.STATUS_NOT_
 @RequiredArgsConstructor
 public class StatusServiceImpl implements StatusService {
 
-    @Autowired
     private final StatusRepository repository;
 
     public int getIdByEStatus(EStatus name) {
