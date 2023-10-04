@@ -45,6 +45,8 @@ public class Message implements EnumMethods {
         VOLUNTEER_ALREADY_EXIST("There's a volunteer with this id"),
         VOLUNTEER_NOT_FOUND("The volunteer you're searching for with this id couldn't be found"),
 
+        TOOL_NOT_FOUND("Tool with id %s not found"),
+
         STATUS_NOT_FOUND("Status not found"),
 
         ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet");
