@@ -1,13 +1,12 @@
 package org.ldcgc.backend.payload.dto.resources;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.ldcgc.backend.payload.dto.category.SubCategoryDto;
+import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.payload.dto.location.LocationLvl2Dto;
+import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.util.common.EStatus;
 
 import java.io.Serializable;
@@ -20,17 +19,16 @@ import java.time.LocalDateTime;
 public class ToolDto implements Serializable {
     Integer id;
     String barcode;
-    SubCategoryDto category;
-    SubCategoryDto brand;
+    CategoryDto category;
+    CategoryDto brand;
     String name;
     String model;
     String description;
     String urlImages;
     Integer maintenancePeriod;
-    SubCategoryDto maintenanceTime;
+    CategoryDto maintenanceTime;
     LocalDateTime lastMaintenance;
     EStatus status;
-    @JsonAlias("location")
-    LocationLvl2Dto locationLvl2;
+    LocationDto location;
     GroupDto group;
 }

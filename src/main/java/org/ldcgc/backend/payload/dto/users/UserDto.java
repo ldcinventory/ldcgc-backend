@@ -3,7 +3,7 @@ package org.ldcgc.backend.payload.dto.users;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import org.ldcgc.backend.payload.dto.category.SubCategoryDto;
+import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.util.common.ERole;
 
@@ -19,7 +19,7 @@ public class UserDto implements Serializable {
     String password;
     ERole role;
     VolunteerDto volunteer;
-    SubCategoryDto responsibility;
+    CategoryDto responsibility;
     GroupDto group;
 
 }

@@ -3,7 +3,7 @@ package org.ldcgc.backend.payload.dto.history;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import org.ldcgc.backend.payload.dto.category.SubCategoryDto;
+import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 
@@ -20,7 +20,7 @@ public class MaintenanceDto implements Serializable {
     LocalDateTime outRegistration;
     ToolDto tool;
     VolunteerDto volunteer;
-    SubCategoryDto inStatus;
-    SubCategoryDto outStatus;
+    CategoryDto inStatus;
+    CategoryDto outStatus;
 
 }

@@ -3,6 +3,7 @@ package org.ldcgc.backend.payload.dto.users;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
+import org.ldcgc.backend.payload.dto.group.GroupDto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,5 +21,6 @@ public class VolunteerDto implements Serializable {
     boolean isActive;
     AvailabilityDto availability;
     List<AbsenceDto> absences;
+    GroupDto groupDto;
 
 }
