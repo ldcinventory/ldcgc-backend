@@ -3,6 +3,10 @@ package org.ldcgc.backend.db.repository.users;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
+
+    Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
 
 }

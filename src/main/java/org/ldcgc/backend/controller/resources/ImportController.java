@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller.resources.tool;
+package org.ldcgc.backend.controller.resources;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

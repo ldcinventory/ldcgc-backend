@@ -1,9 +1,11 @@
-package org.ldcgc.backend.controller.resources.tool;
+package org.ldcgc.backend.controller.resources;
 
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,13 +20,17 @@ public interface ToolController {
     //  Read all tools (paginated/filtered) GET
     //   |-> (/resources/tools?page={pageIndex}&size={sizeIndex}&filter={filterString})
     //  Read specific tool GET
-    //   |-> (/resources/tools/{consumableId})
+    //   |-> (/resources/tools/{toolId})
     //  Set barcode for tool PATCH
-    //   |-> (/resources/tools/{consumableId})
+    //   |-> (/resources/tools/{toolId})
     //  Update tool details PUT
-    //   |-> (/resources/tools/{consumableId})
+    //   |-> (/resources/tools/{toolId})
     //  Delete tool DELETE
-    //   |-> (/resources/tools/{consumableId})
+    //   |-> (/resources/tools/{toolId})
+
+    @GetMapping("/{toolId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")

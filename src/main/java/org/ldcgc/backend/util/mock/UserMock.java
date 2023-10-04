@@ -1,7 +1,6 @@
 package org.ldcgc.backend.util.mock;
 
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
-import org.ldcgc.backend.payload.dto.category.SubCategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
@@ -10,6 +9,7 @@ import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EWeekday;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -41,13 +41,13 @@ public class UserMock {
             .id(0)
             .email("test@ymail.com")
             //.password("Admin1234!")
-            .responsibility(SubCategoryDto.builder()
+            .responsibility(CategoryDto.builder()
                 .id(0)
                 .name("Coordinador GC")
-                .category(CategoryDto.builder()
+                .categories(Collections.singletonList(CategoryDto.builder()
                     .id(0)
                     .name("Responsabilidades")
-                    .build())
+                    .build()))
                 .build())
             .group(GroupDto.builder()
                 .id(0)

@@ -1,11 +1,11 @@
-package org.ldcgc.backend.controller.resources.tool;
+package org.ldcgc.backend.controller.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.controller.resources.tool.impl.ToolControllerImpl;
+import org.ldcgc.backend.controller.resources.impl.ToolControllerImpl;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;

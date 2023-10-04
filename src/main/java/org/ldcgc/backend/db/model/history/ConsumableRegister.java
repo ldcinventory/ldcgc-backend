@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.model.resources.Tool;
+import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.users.Volunteer;
 
 import java.time.LocalDateTime;
@@ -38,11 +38,11 @@ public class ConsumableRegister {
     private Integer stockLeft;
 
     @OneToOne
-    @JoinColumn(name = "id")
-    private Tool tool;
+    @JoinColumn(name = "consumable_id", referencedColumnName = "id")
+    private Consumable consumable;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
 }

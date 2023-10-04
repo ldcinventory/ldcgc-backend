@@ -36,11 +36,11 @@ public class ToolRegister {
     private LocalDateTime outRegistration;
 
     @OneToOne
-    @JoinColumn(name= "id")
+    @JoinColumn(name = "tool_id", referencedColumnName = "id")
     private Tool tool;
 
     @OneToOne
-    @JoinColumn(name= "id")
+    @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
 }

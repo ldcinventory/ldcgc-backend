@@ -1,4 +1,4 @@
-package org.ldcgc.backend.payload.mapper;
+package org.ldcgc.backend.payload.mapper.users;
 
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.users.UserDto;

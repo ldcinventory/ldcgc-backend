@@ -6,5 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ToolService {
+    ResponseEntity<?> getTool(Integer toolId);
     ResponseEntity<?> createTool(ToolDto tool);
+
 }

@@ -8,14 +8,15 @@ import org.ldcgc.backend.db.repository.resources.StatusRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.ldcgc.backend.transformer.resources.tool.ToolMapper;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.STATUS_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Slf4j
@@ -26,9 +27,15 @@ public class ToolServiceImpl implements ToolService {
     private final ToolRepository toolRepository;
     private final StatusRepository statusRepository;
 
+    public ResponseEntity<?> getTool(Integer toolId) {
+        Tool tool = toolRepository.findById(toolId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
+        return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
+    }
+
     public ResponseEntity<?> createTool(ToolDto tool) {
 
-        Tool entityTool = ToolMapper.INSTANCE.toMo(tool);
+        Tool entityTool = ToolMapper.MAPPER.toMo(tool);
 
         Status status = statusRepository.findByName(tool.getStatus()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
@@ -38,4 +45,5 @@ public class ToolServiceImpl implements ToolService {
 
         return Constructor.buildResponseObject(HttpStatus.OK, entityTool);
     }
+
 }

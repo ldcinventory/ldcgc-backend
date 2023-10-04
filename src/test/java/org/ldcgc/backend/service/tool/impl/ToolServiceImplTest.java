@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.ldcgc.backend.transformer.resources.tool.ToolMapper;
+import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;

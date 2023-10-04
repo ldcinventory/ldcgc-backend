@@ -1,7 +1,6 @@
-package org.ldcgc.backend.controller.resources.tool.impl;
+package org.ldcgc.backend.controller.resources.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.controller.resources.tool.ToolController;
+import org.ldcgc.backend.controller.resources.ToolController;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 public class ToolControllerImpl implements ToolController {
 
     @Autowired
-    ToolService service;
+    private ToolService toolService;
+
+    public ResponseEntity<?> getTool(Integer toolId) {
+        return toolService.getTool(toolId);
+    }
 
     public ResponseEntity<?> createTool(ToolDto tool) {
-        return service.createTool(tool);
+        return toolService.createTool(tool);
     }
+
 }
