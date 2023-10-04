@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.ldcgc.backend.db.model.category.SubCategory;
+import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.util.common.ERole;
 
@@ -44,15 +45,15 @@ public class User {
     private ERole role;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory responsibility;
+    @ManyToOne
+    @JoinColumn(name = "responsibility_id", referencedColumnName = "id")
+    private Category responsibility;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -13,10 +14,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.model.category.SubCategory;
+import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.db.model.location.LocationLvl2;
+import org.ldcgc.backend.db.model.history.Maintenance;
+import org.ldcgc.backend.db.model.location.Location;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -32,17 +35,17 @@ public class Tool {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    // TODO validation to not allow null once a barcode is registered
+    // TODO validation to not allow null nor duplications once a barcode is registered
     //  (i.e. after batch a tool could have a null barcode)
     private String barcode;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory category;
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory brand;
+    @ManyToOne
+    @JoinColumn(name = "brand_id", referencedColumnName = "id")
+    private Category brand;
 
     private String name;
 
@@ -50,26 +53,38 @@ public class Tool {
 
     private String description;
 
+    private Float weight;
+
+    private Float price;
+
+    private LocalDate purchaseDate;
+
     private String urlImages;
 
     private Integer maintenancePeriod;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory maintenanceTime;
+    @ManyToOne
+    @JoinColumn(name = "maintenanceTime_id", referencedColumnName = "id")
+    private Category maintenanceTime;
 
     private LocalDateTime lastMaintenance;
 
+    private LocalDateTime nextMaintenance;
+
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "lastMaintenanceDetails_id", referencedColumnName = "id")
+    private Maintenance lastMaintenanceDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
     private Status status;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private LocationLvl2 location;
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
 }

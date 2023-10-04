@@ -6,16 +6,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.model.category.SubCategory;
+import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.db.model.location.LocationLvl2;
+import org.ldcgc.backend.db.model.location.Location;
+
+import java.time.LocalDate;
 
 @Data
 @Builder(toBuilder = true)
@@ -34,19 +36,23 @@ public class Consumable {
     //  (i.e. after batch a tool could have a null barcode)
     private String barcode;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory category;
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory brand;
+    @ManyToOne
+    @JoinColumn(name = "brand_id", referencedColumnName = "id")
+    private Category brand;
 
     private String name;
 
     private String model;
 
     private String description;
+
+    private Float price;
+
+    private LocalDate purchaseDate;
 
     private String urlImages;
 
@@ -55,16 +61,16 @@ public class Consumable {
 
     private Integer minStock;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory stockType;
+    @ManyToOne
+    @JoinColumn(name = "stock_id", referencedColumnName = "id")
+    private Category stockType;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private LocationLvl2 location;
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
 }

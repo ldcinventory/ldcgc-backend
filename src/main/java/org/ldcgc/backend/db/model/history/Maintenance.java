@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -13,11 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.model.category.SubCategory;
+import org.ldcgc.backend.db.model.resources.Status;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder(toBuilder = true)
@@ -32,24 +33,28 @@ public class Maintenance {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    private LocalDateTime inRegistration;
+    private LocalDate inRegistration;
 
-    private LocalDateTime outRegistration;
+    private LocalDate outRegistration;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    private String details;
+
+    private String urlImages;
+
+    @ManyToOne
+    @JoinColumn(name = "tool_id", referencedColumnName = "id")
     private Tool tool;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @ManyToOne
+    @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory inStatus;
+    @ManyToOne
+    @JoinColumn(name = "in_status_id", referencedColumnName = "id")
+    private Status inStatus;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private SubCategory outStatus;
+    @ManyToOne
+    @JoinColumn(name = "out_status_id", referencedColumnName = "id")
+    private Status outStatus;
 
 }

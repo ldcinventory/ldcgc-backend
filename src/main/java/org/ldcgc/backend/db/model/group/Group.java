@@ -6,14 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.model.location.LocationLvl2;
+import org.ldcgc.backend.db.model.location.Location;
 
 @Data
 @Builder(toBuilder = true)
@@ -32,12 +32,13 @@ public class Group {
 
     private String description;
 
+    private String phoneNumber;
+
     private String urlImage;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private LocationLvl2 locationLvl2;
+    @ManyToOne
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
 
-    private String phoneNumber;
 
 }
