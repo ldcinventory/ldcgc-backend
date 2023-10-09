@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
@@ -94,58 +95,94 @@ public class InitializationData {
 
             // TODO LOCATIONS (waiting for more info)
 
-            List<String> locations = List.of("Guadalajara SR", "Salón Hilario Sangrador", "Oficina", "Estantería 2", "Ferretería", "Almacén C/Carrascales", "SR Getafe", "Estantería 1", "Arcón-suelo 2", "Arcón-suelo 1", "Arcón-medio 2", "Arcón-medio 1", "Betel");
+            //List<String> locations = List.of("Guadalajara SR", "Salón Hilario Sangrador", "Oficina", "Estantería 2", "Ferretería", "Almacén C/Carrascales", "SR Getafe", "Estantería 1", "Arcón-suelo 2", "Arcón-suelo 1", "Arcón-medio 2", "Arcón-medio 1", "Betel");
 
+            // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
+            locationRepository.save(Location.builder()
+                .name("Guadalajara SR")
+                .description("Calle León Felipe, 6, bajo derecha")
+                .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
+                .level(0)
+                .build());
             // Leganés SR Maestro (Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés)
             locationRepository.save(Location.builder()
-                    .name("Leganés SR Maestro")
-                    .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
-                    .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
+                .name("Leganés SR Maestro")
+                .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
+                .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
+                .level(0)
                 .build());
             // Parla SR Zurbarán (Salón del Reino situado en Calle Zurbarán 1 posterior Parla)
             locationRepository.save(Location.builder()
                 .name("Parla SR Zurbarán")
                 .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
                 .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
+                .level(0)
                 .build());
             // Local/Almacén Cristopher
             locationRepository.save(Location.builder()
                 .name("Local/Almacén Cristopher")
                 .description("Local/Almacén Cristopher")
+                .level(0)
                 .build());
             // Local/Almacén Geñi
             locationRepository.save(Location.builder()
                 .name("Local/Almacén Geñi")
                 .description("Local/Almacén Geñi")
+                .level(0)
+                .build());
+            // Betel
+            locationRepository.save(Location.builder()
+                .name("Betel")
+                .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
+                .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
+                .level(0)
                 .build());
             // SA Ajalvir
             locationRepository.save(Location.builder()
                 .name("SA Ajalvir")
                 .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
                 .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
+                .level(0)
                 .build());
             // Oficina (no es necesario indicar dirección)
             locationRepository.save(Location.builder()
                 .name("Oficina")
                 .description("Oficina")
+                .level(0)
                 .build());
             // Ferreteria (no es necesario indicar dirección)
             // ==> "Arcón" o "Estantería" estará ubicado en Ferreteria
-            Location ferreteria = new Location("Ferretería");
+            Location ferreteria = new Location("Ferretería", 0);
             ferreteria.setLocations(List.of(
-                new Location("Estantería 1", ferreteria),
-                new Location("Estantería 2", ferreteria),
-                new Location("Arcón-suelo 1", ferreteria),
-                new Location("Arcón-suelo 2", ferreteria),
-                new Location("Arcón-medio 1", ferreteria),
-                new Location("Arcón-medio 2", ferreteria)
+                new Location("Estantería 1", ferreteria, 1),
+                new Location("Estantería 2", ferreteria, 1),
+                new Location("Arcón-suelo 1", ferreteria, 1),
+                new Location("Arcón-suelo 2", ferreteria, 1),
+                new Location("Arcón-medio 1", ferreteria, 1),
+                new Location("Arcón-medio 2", ferreteria, 1)
             ));
 
             ferreteria = locationRepository.save(ferreteria);
 
-            // CHEST
+            Map<String, Location> locationMap = locationRepository.findAllByLevel(0).stream().collect(Collectors.toMap(Location::getName, l -> l));
 
-            List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',');
+            // CHEST
+            // select c.Name, REPLACE(REPLACE(l.Name, CHAR(13), ''), CHAR(10), '')
+            // from Chests c, Locations l
+            // where c.LocationId = l.LocationId;
+
+            List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',', false);
+
+            chests.forEach(c -> {
+                Location entityFromMap = locationMap.get(c.get(1));
+                entityFromMap.getLocations().add(Location.builder()
+                    .name(c.get(0))
+                    .parent(entityFromMap)
+                    .description(c.get(0))
+                    .level(2)
+                    .build());
+                locationRepository.save(entityFromMap);
+            });
 
             // GROUP
 
@@ -178,7 +215,7 @@ public class InitializationData {
 
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
-            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',');
+            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
             volunteers.forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
                 .builderAssistantId(vFieldList.get(1))
                 .name(vFieldList.get(2))
@@ -216,15 +253,15 @@ public class InitializationData {
             //            and t.CategoryId = c.CategoryId;)
 
             List<Category> brandEntities = categoryRepository.findAllByParent_Name("Fabricantes");
-            Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(b -> b.getName(), b -> b));
+            Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             List<Category> resourceCategoryEntities = categoryRepository.findAllByParent_Name("Recursos");
-            Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(b -> b.getName(), b -> b));
+            Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             final Status available = statusRepository.findByName(EStatus.AVAILABLE).orElseThrow(() ->
                 new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
 
-            List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',');
+            List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
             tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
                 .barcode(tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
@@ -253,7 +290,7 @@ public class InitializationData {
             //                  where cn.BrandId = b.BrandId
             //                  and cn.CategoryId = c.CategoryId;)
 
-            List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',');
+            List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
             consumables.forEach(cFieldList -> consumableRepository.save(Consumable.builder()
                 .barcode(cFieldList.get(0))
                 .brand(brandsMap.get(cFieldList.get(1)))
@@ -273,7 +310,7 @@ public class InitializationData {
 
             // CHEST REGISTRATION
 
-            List<List<String>> chestRegister = Files.getContentFromCSV(chestRegisterCSV, ',');
+            List<List<String>> chestRegister = Files.getContentFromCSV(chestRegisterCSV, ',', false);
 
             // MAINTENANCE ( select m.MaintenanceDate as outRegistration, m.AdditionalInformation as details,
             //                      m.UrlImage as urlImages, t.Barcode, v.BuilderAssistantId,
@@ -282,7 +319,7 @@ public class InitializationData {
             //               where m.ToolId = t.ToolId
             //                 and m.VolunteerId = v.VolunteerId;
 
-            List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',');
+            List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
             maintenance.forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                 final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
@@ -298,15 +335,14 @@ public class InitializationData {
 
             // USERS
 
-            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',');
+            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', false);
 
             Category responsibilityCat = Category.builder()
                 .name("Responsabilidades")
                 .locked(true)
                 .build();
 
-            List<Category> responsibilities = Arrays.asList("Coordinador", "Auxiliar de coordinador", "Voluntario")
-                .stream().map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
+            List<Category> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario").map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
 
             responsibilityCat.setCategories(responsibilities);
 

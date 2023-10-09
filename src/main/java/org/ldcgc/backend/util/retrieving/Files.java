@@ -10,12 +10,12 @@ import java.util.List;
 
 public class Files {
 
-    public static List<List<String>> getContentFromCSV(Resource file, char delimiter) throws IOException {
+    public static List<List<String>> getContentFromCSV(Resource file, char delimiter, boolean skipFirstLine) throws IOException {
         List<List<String>> csvArrayList = new ArrayList<>();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
         String line;
-        reader.readLine(); // skip first line
+        if(skipFirstLine) reader.readLine(); // skip first line
         while ((line = reader.readLine()) != null) {
             List<String> values = new ArrayList<>();
             boolean inQuotedField = false;

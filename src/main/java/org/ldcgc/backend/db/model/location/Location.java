@@ -27,15 +27,17 @@ import java.util.List;
 @Table(name = "locations")
 public class Location {
 
-    public Location(String name) {
+    public Location(String name, Integer level) {
         this.name = name;
         this.description = name;
+        this.level = level;
     }
 
-    public Location(String name, Location parent) {
+    public Location(String name, Location parent, Integer level) {
         this.name = name;
         this.description = name;
         this.parent = parent;
+        this.level = level;
     }
 
     @Id
@@ -48,6 +50,8 @@ public class Location {
     private String description;
 
     private String url;
+
+    private Integer level;
 
     @ManyToOne
     private Location parent;
