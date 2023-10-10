@@ -57,8 +57,7 @@ public class ToolControllerImplTest {
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
         ResponseEntity<?> response = controller.createTool(tool);
 
-        ToolDto toolResponse = objectMapper.convertValue(((Response.DTO) Objects.requireNonNull(response.getBody())).getData(), ToolDto.class);
-        assertEquals(tool, toolResponse);
+        assertEquals(tool, ((Response.DTO) response.getBody()).getData());
     }
 
     @Test

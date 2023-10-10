@@ -1,22 +1,23 @@
 package org.ldcgc.backend.db.model.history;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.model.resources.Status;
+import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
+import org.ldcgc.backend.util.common.EStatus;
 
 import java.time.LocalDate;
 
@@ -49,12 +50,12 @@ public class Maintenance {
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
-    @ManyToOne
-    @JoinColumn(name = "in_status_id", referencedColumnName = "id")
-    private Status inStatus;
+    @Convert(converter = StatusConverter.class)
+    @Column(columnDefinition = "int")
+    private EStatus inStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "out_status_id", referencedColumnName = "id")
-    private Status outStatus;
+    @Convert(converter = StatusConverter.class)
+    @Column(columnDefinition = "int")
+    private EStatus outStatus;
 
 }

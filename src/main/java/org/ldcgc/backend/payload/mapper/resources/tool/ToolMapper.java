@@ -5,7 +5,6 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
@@ -15,10 +14,10 @@ public interface ToolMapper {
 
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);
 
-    @Mapping(source = "status.name", target = "status")
+    //@Mapping(source = "status.name", target = "status")
     ToolDto toDto(Tool tool);
 
-    @Mapping(target = "status", ignore = true)
+    //@Mapping(target = "status", ignore = true)
     Tool toMo(ToolDto toolDto);
 
 }

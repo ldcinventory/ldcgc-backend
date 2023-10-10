@@ -1,6 +1,7 @@
 package org.ldcgc.backend.db.model.resources;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,10 +15,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
+import org.ldcgc.backend.util.common.EStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,9 +78,9 @@ public class Tool {
     @JoinColumn(name = "lastMaintenanceDetails_id", referencedColumnName = "id")
     private Maintenance lastMaintenanceDetails;
 
-    @ManyToOne
-    @JoinColumn(name = "status_id", referencedColumnName = "id")
-    private Status status;
+    @Convert(converter = StatusConverter.class)
+    @Column(columnDefinition = "int")
+    private EStatus status;
 
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")

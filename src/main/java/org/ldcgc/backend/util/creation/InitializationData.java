@@ -8,7 +8,6 @@ import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
-import org.ldcgc.backend.db.model.resources.Status;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
@@ -17,11 +16,9 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.history.MaintenanceRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
-import org.ldcgc.backend.db.repository.resources.StatusRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
-import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.retrieving.Files;
@@ -31,7 +28,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Arrays;
@@ -43,8 +39,6 @@ import java.util.stream.Stream;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.STATUS_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Configuration
 @RequiredArgsConstructor
@@ -59,7 +53,6 @@ public class InitializationData {
     private final ConsumableRepository consumableRepository;
     private final MaintenanceRepository maintenanceRepository;
     private final GroupRepository groupRepository;
-    private final StatusRepository statusRepository;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -87,11 +80,6 @@ public class InitializationData {
             jdbcTemplate.execute("ALTER DATABASE \"%s\" REFRESH COLLATION VERSION;".formatted(dbName));
             // set accent-insensitive on searches
             jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS unaccent;");
-
-            // STATUSES
-
-            statusRepository.saveAll(
-                Arrays.stream(EStatus.values()).map(s -> Status.builder().name(s).build()).toList());
 
             // TODO LOCATIONS (waiting for more info)
 
@@ -258,8 +246,9 @@ public class InitializationData {
             List<Category> resourceCategoryEntities = categoryRepository.findAllByParent_Name("Recursos");
             Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
-            final Status available = statusRepository.findByName(EStatus.AVAILABLE).orElseThrow(() ->
-                new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
+            // TODO check status when final migration
+            //final Status available = statusRepository.findByName(EStatus.AVAILABLE).orElseThrow(() ->
+            //    new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
             tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
@@ -273,7 +262,7 @@ public class InitializationData {
                 //.location(null)
                 .group(_8g)
                 .category(resourceCategoriesMap.get(tFieldList.get(5)))
-                .status(available)
+                .status(EStatus.NOT_AVAILABLE)
                 .weight(convertToFloat(tFieldList.get(6)))
                 .price(convertToFloat(tFieldList.get(7)))
                 .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
@@ -329,7 +318,8 @@ public class InitializationData {
                     .urlImages(mFieldList.get(2))
                     .tool(tool)
                     .volunteer(volunteer)
-                    .outStatus(available)
+                    .inStatus(EStatus.AVAILABLE)
+                    .outStatus(EStatus.AVAILABLE)
                     .build());
             });
 

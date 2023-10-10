@@ -8,13 +8,22 @@ import org.ldcgc.backend.util.compare.EnumMethods;
 @RequiredArgsConstructor
 public enum EStatus implements EnumMethods {
 
-    AVAILABLE("Disponible"),
-    NOT_AVAILABLE("No disponible"),
-    IN_MAINTENANCE("En mantenimiento"),
-    DAMAGED("Dañado"),
-    NEW("Nueva"),
-    DEPRECATED("En desuso");
+    AVAILABLE("Disponible", 0),
+    NOT_AVAILABLE("No disponible", 1),
+    IN_MAINTENANCE("En mantenimiento", 2),
+    DAMAGED("Dañado", 3),
+    NEW("Nueva", 4),
+    DEPRECATED("En desuso", 5);
 
     private final String desc;
+    private final Integer id;
+
+    public static EStatus getStatusFromId(Integer id) {
+        for(EStatus status : EStatus.values())
+            if(status.getId().equals(id))
+                return status;
+
+        return null;
+    }
 
 }
