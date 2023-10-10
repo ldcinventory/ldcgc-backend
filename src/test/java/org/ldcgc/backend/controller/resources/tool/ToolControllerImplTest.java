@@ -1,10 +1,11 @@
-package org.ldcgc.backend.controller.resources;
+package org.ldcgc.backend.controller.resources.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.ldcgc.backend.controller.resources.ToolController;
 import org.ldcgc.backend.controller.resources.impl.ToolControllerImpl;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.verify;
 
 @Slf4j
 @SpringBootTest
-public class ToolControllerImplTest {
+class ToolControllerImplTest {
 
     @InjectMocks
     private ToolController controller = new ToolControllerImpl();
@@ -57,7 +58,7 @@ public class ToolControllerImplTest {
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
         ResponseEntity<?> response = controller.createTool(tool);
 
-        assertEquals(tool, ((Response.DTO) response.getBody()).getData());
+        assertEquals(tool, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData());
     }
 
     @Test
