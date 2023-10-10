@@ -1,10 +1,11 @@
 package org.ldcgc.backend.controller.resources;
 
+import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/resources/consumables")
@@ -24,12 +25,12 @@ public interface ConsumableController {
     //  Delete consumable DELETE
     //   |-> (/resources/consumables/{consumableId})
 
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
-    ResponseEntity<?> testAccessWithCredentials();
-
-    @GetMapping("/admin")
+    @GetMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> testAccessWithAdminCredentials();
+    ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> createConsumable(@RequestBody ConsumableDto consumable);
 
 }

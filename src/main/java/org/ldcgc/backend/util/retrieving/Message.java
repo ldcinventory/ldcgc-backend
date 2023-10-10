@@ -47,6 +47,8 @@ public class Message implements EnumMethods {
 
         TOOL_NOT_FOUND("Tool with id %s not found"),
 
+        CONSUMABLE_NOT_FOUND("Consumable with id %s not found"),
+
         STATUS_NOT_FOUND("Status not found"),
 
         ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet");
