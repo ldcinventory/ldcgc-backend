@@ -20,7 +20,8 @@ public class Message implements EnumMethods {
         VOLUNTEER_LISTED("Found %s volunteer/s"),
         VOLUNTEER_UPDATED("Volunteer details updated"),
         VOLUNTEER_DELETED("Volunteer deleted"),
-        LOGOUT_SUCCESSFUL("Logout successful");
+        LOGOUT_SUCCESSFUL("Logout successful"),
+        CONSUMABLE_LISTED("Found %s consumable/s");
 
         private final String message;
 

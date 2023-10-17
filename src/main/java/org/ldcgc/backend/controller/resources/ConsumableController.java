@@ -1,7 +1,6 @@
 package org.ldcgc.backend.controller.resources;
 
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -25,12 +24,33 @@ public interface ConsumableController {
     //  Delete consumable DELETE
     //   |-> (/resources/consumables/{consumableId})
 
+    @GetMapping("/user")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    ResponseEntity<?> testAccessWithCredentials();
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> testAccessWithAdminCredentials();
+
     @GetMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
+    ResponseEntity<?> getConsumable(Integer consumableId);
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> createConsumable(@RequestBody ConsumableDto consumable);
 
+    @PutMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> updateConsumable(@RequestBody ConsumableDto consumable);
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+                                      @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
+                                      @RequestParam(required = false) String filterString);
+
+    @DeleteMapping("/{consumableId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
 }

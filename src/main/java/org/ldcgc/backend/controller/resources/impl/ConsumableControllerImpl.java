@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller.resources.impl;
+/*package org.ldcgc.backend.controller.resources.impl;
 
 import org.ldcgc.backend.controller.resources.ConsumableController;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ConsumableConstrollerImpl implements ConsumableController {
+public class ConsumableControllerImpl implements ConsumableController {
 
-    @Autowired
+    @Autowired(required = true)
     private ConsumableService consumableService;
 
     @Override
@@ -23,10 +23,12 @@ public class ConsumableConstrollerImpl implements ConsumableController {
         return null;
     }
 
+    @Override
     public ResponseEntity<?> getConsumable(Integer consumableId) {
         return consumableService.getConsumable(consumableId);
     }
 
+    @Override
     public ResponseEntity<?> createConsumable(ConsumableDto consumable) {
         return consumableService.createConsumable(consumable);
     }
@@ -45,6 +47,4 @@ public class ConsumableConstrollerImpl implements ConsumableController {
     public ResponseEntity<?> deleteConsumable(Integer consumableId) {
         return consumableService.deleteConsumable(consumableId);
     }
-
-
-}
+}*/

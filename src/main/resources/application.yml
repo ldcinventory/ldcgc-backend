@@ -79,3 +79,4 @@ logging:
     org.hibernate.orm.jdbc.bind: ${LOGGING_HIBERNATE:ERROR}
     org.junit.jupiter.api: ${LOGGING_TESTS:ERROR}
     uk.co.jemos.podam: ${LOGGING_TESTS:ERROR}
+    #spring.jpa.show-sql: ${LOGGING_API:DEBUG}
