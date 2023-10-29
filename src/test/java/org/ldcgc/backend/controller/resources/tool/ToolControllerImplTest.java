@@ -2,6 +2,7 @@ package org.ldcgc.backend.controller.resources.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,17 +43,18 @@ class ToolControllerImplTest {
     }
 
     @Test
-    void shouldReturnResponseEntity() {
+    void postShouldReturnResponseEntity() {
         ToolDto tool = ToolDto.builder().build();
 
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
         ResponseEntity<?> response = controller.createTool(tool);
 
+        verify(service, times(1)).createTool(tool);
         assertTrue(Objects.nonNull(response));
     }
 
     @Test
-    void shouldReturnSameToolDtoBody() {
+    void postShouldReturnSameToolDtoBody() {
         ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
@@ -62,11 +64,26 @@ class ToolControllerImplTest {
     }
 
     @Test
-    void shouldCallService() {
-        ToolDto tool = ToolDto.builder().build();
+    void getShouldReturnToolDtoBody() {
+        Integer toolId = factory.manufacturePojo(Integer.class);
+        ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
-        controller.createTool(tool);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).getTool(toolId);
+        ResponseEntity<?> response = controller.getTool(toolId);
 
-        verify(service, times(1)).createTool(tool);
+        assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
+        verify(service, times(1)).getTool(toolId);
+    }
+
+    @Test
+    void putShouldReturnToolDtoBody() {
+        Integer toolId = factory.manufacturePojo(Integer.class);
+        ToolDto tool = factory.manufacturePojo(ToolDto.class);
+
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).updateTool(toolId, tool);
+        ResponseEntity<?> response = controller.updateTool(toolId, tool);
+
+        verify(service, times(1)).updateTool(toolId, tool);
+        assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
     }
 }

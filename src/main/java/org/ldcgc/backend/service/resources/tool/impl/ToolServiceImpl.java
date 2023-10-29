@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
@@ -31,11 +33,18 @@ public class ToolServiceImpl implements ToolService {
 
     public ResponseEntity<?> createTool(ToolDto tool) {
 
-        Tool entityTool = ToolMapper.MAPPER.toMo(tool);
+        Tool entityTool = toolRepository.save(ToolMapper.MAPPER.toMo(tool));
 
-        entityTool = toolRepository.save(entityTool);
+        ToolDto toolDto = ToolMapper.MAPPER.toDto(entityTool);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, entityTool);
+        return Constructor.buildResponseObject(HttpStatus.OK, toolDto);
+    }
+
+    @Override
+    public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
+        //Optional<Tool> tool = toolRepository.findById(toolId);
+        toolRepository.save(ToolMapper.MAPPER.toMo(toolDto));
+        return Constructor.buildResponseObject(HttpStatus.OK, toolDto);
     }
 
 }

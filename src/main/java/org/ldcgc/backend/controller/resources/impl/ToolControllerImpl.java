@@ -1,6 +1,7 @@
 package org.ldcgc.backend.controller.resources.impl;
 
 import org.ldcgc.backend.controller.resources.ToolController;
+import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,10 @@ public class ToolControllerImpl implements ToolController {
 
     public ResponseEntity<?> createTool(ToolDto tool) {
         return toolService.createTool(tool);
+    }
+
+    public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
+        return toolService.updateTool(toolId, toolDto);
     }
 
 }

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
 public interface ToolService {
     ResponseEntity<?> getTool(Integer toolId);
     ResponseEntity<?> createTool(ToolDto tool);
-
+    ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
 }

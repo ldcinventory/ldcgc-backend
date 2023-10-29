@@ -4,23 +4,15 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/resources/tools")
 public interface ToolController {
 
     // TODO
-    //  Create tool POST
-    //   |-> (/resources/tools)
     //  Read all tools (paginated/filtered) GET
     //   |-> (/resources/tools?page={pageIndex}&size={sizeIndex}&filter={filterString})
-    //  Read specific tool GET
-    //   |-> (/resources/tools/{toolId})
     //  Set barcode for tool PATCH
     //   |-> (/resources/tools/{toolId})
     //  Update tool details PUT
@@ -35,5 +27,9 @@ public interface ToolController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
+
+    @PutMapping("/{toolId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
 }

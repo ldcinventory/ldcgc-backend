@@ -14,10 +14,8 @@ public interface ToolMapper {
 
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);
 
-    //@Mapping(source = "status.name", target = "status")
     ToolDto toDto(Tool tool);
 
-    //@Mapping(target = "status", ignore = true)
     Tool toMo(ToolDto toolDto);
 
 }
