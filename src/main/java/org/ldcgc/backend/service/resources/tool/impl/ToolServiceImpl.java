@@ -13,7 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
@@ -54,6 +57,15 @@ public class ToolServiceImpl implements ToolService {
         toolRepository.delete(tool);
 
         return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
+    }
+
+    @Override
+    public ResponseEntity<?> getAllTools() {
+        List<ToolDto> allTools = toolRepository.findAll().stream()
+                .map(ToolMapper.MAPPER::toDto)
+                .toList();
+
+        return Constructor.buildResponseObject(HttpStatus.OK, allTools);
     }
 
 }

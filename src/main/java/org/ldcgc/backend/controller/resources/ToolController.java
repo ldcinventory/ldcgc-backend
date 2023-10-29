@@ -1,5 +1,6 @@
 package org.ldcgc.backend.controller.resources;
 
+import jakarta.websocket.server.PathParam;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +15,6 @@ public interface ToolController {
     //  Read all tools (paginated/filtered) GET
     //   |-> (/resources/tools?page={pageIndex}&size={sizeIndex}&filter={filterString})
     //  Set barcode for tool PATCH
-    //   |-> (/resources/tools/{toolId})
-    //  Update tool details PUT
-    //   |-> (/resources/tools/{toolId})
-    //  Delete tool DELETE
     //   |-> (/resources/tools/{toolId})
 
     @GetMapping("/{toolId}")
@@ -35,5 +32,9 @@ public interface ToolController {
     @DeleteMapping("/{toolId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
+
+    @GetMapping()
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
 
 }

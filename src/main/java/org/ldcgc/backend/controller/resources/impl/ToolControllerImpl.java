@@ -29,4 +29,9 @@ public class ToolControllerImpl implements ToolController {
     public ResponseEntity<?> deleteTool(Integer toolId){
         return toolService.deleteTool(toolId);
     }
+
+    @Override
+    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String filterString) {
+        return toolService.getAllTools();
+    }
 }
