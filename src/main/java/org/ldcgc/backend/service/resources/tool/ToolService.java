@@ -9,4 +9,5 @@ public interface ToolService {
     ResponseEntity<?> getTool(Integer toolId);
     ResponseEntity<?> createTool(ToolDto tool);
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
+    ResponseEntity<?> deleteTool(Integer toolId);
 }

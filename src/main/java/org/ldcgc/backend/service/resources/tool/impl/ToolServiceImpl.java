@@ -27,7 +27,7 @@ public class ToolServiceImpl implements ToolService {
 
     public ResponseEntity<?> getTool(Integer toolId) {
         Tool tool = toolRepository.findById(toolId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
+                new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
         return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
     }
 
@@ -45,6 +45,15 @@ public class ToolServiceImpl implements ToolService {
         //Optional<Tool> tool = toolRepository.findById(toolId);
         toolRepository.save(ToolMapper.MAPPER.toMo(toolDto));
         return Constructor.buildResponseObject(HttpStatus.OK, toolDto);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteTool(Integer toolId) {
+        Tool tool = toolRepository.findById(toolId)
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
+        toolRepository.delete(tool);
+
+        return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
     }
 
 }

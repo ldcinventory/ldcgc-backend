@@ -32,4 +32,8 @@ public interface ToolController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
+    @DeleteMapping("/{toolId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
+
 }
