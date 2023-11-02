@@ -134,8 +134,6 @@ public class ConsumableConstrollerImpl implements ConsumableController {
                 System.out.println("##################\n");
 
 
-
-
             }
 
             workbook.close();
