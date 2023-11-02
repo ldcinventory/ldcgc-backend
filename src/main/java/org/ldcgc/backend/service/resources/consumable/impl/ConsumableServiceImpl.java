@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.resources.resource.impl;
+package org.ldcgc.backend.service.resources.consumable.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,7 @@ import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
-import org.ldcgc.backend.service.resources.resource.ConsumableService;
+import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.resources.resource;
+package org.ldcgc.backend.service.resources.consumable;
 
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.springframework.http.ResponseEntity;
@@ -15,4 +15,6 @@ public interface ConsumableService {
     ResponseEntity<?> updateConsumable(ConsumableDto consumableDto);
 
     ResponseEntity<?> deleteConsumable(Integer consumableId);
+
+
 }

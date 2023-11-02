@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @Controller
 @RequestMapping("/resources/consumables")
@@ -53,4 +56,7 @@ public interface ConsumableController {
     @DeleteMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
+
+    @PostMapping("/uploadExcel")
+    ResponseEntity<?> uploadExcelFile(@RequestParam("file") MultipartFile file);
 }
