@@ -114,9 +114,7 @@ You can expect to test the smtp test server with web UI access directly to `loca
 
 ---
 
-## Login Response (near future)
-
-_(In progress)_
+## Login Response
 
 When the login endpoint was invoked, it returns a JSON response with two tokens:
 
@@ -129,6 +127,11 @@ When the login endpoint was invoked, it returns a JSON response with two tokens:
 ```
 
 These tokens let to call every endpoint that require authentication.
+
+(**Temporary**) When calling to methods, you can skip the login and invoke using a special header `useMockedUser`, with one of these three possible values:
+- for an _admin_ user, `admin` value,
+- for a _manager_ user, `manager` value,
+- and for a _standard_ user, `user` value.
 
 **In the future**, we will provide refresh token to avoid accounts be disconnected after 24 hours (default time for a token to expire).
 

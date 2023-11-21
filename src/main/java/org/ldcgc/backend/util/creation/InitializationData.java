@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,8 @@ public class InitializationData {
     private final GroupRepository groupRepository;
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${DB_NAME:mydb}") private String dbName;
 
@@ -342,7 +345,7 @@ public class InitializationData {
 
             userRepository.save(User.builder()
                 .email("admin")
-                .password("admin")
+                .password(passwordEncoder.encode("admin"))
                 .group(_8g)
                 .role(ERole.ROLE_ADMIN)
                 .responsibility(responsibilitiesEntities.stream()
@@ -352,9 +355,9 @@ public class InitializationData {
 
             userRepository.save(User.builder()
                 .email("manager")
-                .password("manager")
+                .password(passwordEncoder.encode("manager"))
                 .group(_8g)
-                .role(ERole.ROLE_USER)
+                .role(ERole.ROLE_MANAGER)
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
                     .orElse(null))
@@ -362,7 +365,7 @@ public class InitializationData {
 
             userRepository.save(User.builder()
                 .email("user")
-                .password("user")
+                .password(passwordEncoder.encode("user"))
                 .group(_8g)
                 .role(ERole.ROLE_USER)
                 .responsibility(responsibilitiesEntities.stream()

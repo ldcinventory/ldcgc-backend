@@ -3,8 +3,12 @@ package org.ldcgc.backend.service.users.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.ldcgc.backend.db.model.users.User;
+import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
+import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.UserDto;
+import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.mock.UserMock;
@@ -14,10 +18,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND_TOKEN;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_DELETED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_UPDATED;
+import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Slf4j
@@ -25,27 +32,50 @@ import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    // TODO implement user repository instead mock
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
 
     public ResponseEntity<?> getMyUser(String token) {
-        return Constructor.buildResponseObject(HttpStatus.OK, UserMock.getMockedUser());
+
+        String publicKey = token;
+
+        Integer userId = 1; //tokenRepository.getUserIdFromPublicKey(publicKey).orElse(1);
+
+        /*
+        Integer userId = tokenRepository.getUserIdFromPublicKey(publicKey).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN))
+        );
+
+         */
+        // TODO
+        //JwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey("secret".getBytes(StandardCharsets.UTF_8)).build();
+        //JwtClaimsSet claims = jwtDecoder.decode(token);
+
+        return getUser(userId);
     }
 
     public ResponseEntity<?> updateMyUser(String token, UserDto user) {
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(user));
+        // TODO
+        return updateUser(1, user);
     }
 
     public ResponseEntity<?> deleteMyUser(String token) {
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
+        // TODO
+        return deleteUser(1);
     }
 
     public ResponseEntity<?> createUser(UserDto user) {
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_CREATED), UserMock.getMockedUser(user));
+        User userEntity = UserMapper.MAPPER.toEntity(user);
+        userEntity = userRepository.save(userEntity);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_CREATED), UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
-        return Constructor.buildResponseObject(HttpStatus.OK, UserMock.getMockedUser(userId));
+        User user = userRepository.findById(userId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+
+        return Constructor.buildResponseObject(HttpStatus.OK, UserMapper.MAPPER.toDTO(user));
     }
 
     public ResponseEntity<?> listUsers(Integer pageIndex, Integer sizeIndex, String filterString, Integer userId) {
@@ -66,10 +96,23 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
+        if(!userRepository.existsById(userId))
+            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN));
+
         return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(userId));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
+        if(!userRepository.existsById(userId))
+            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN));
+
+        userRepository.deleteById(userId);
+
         return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
     }
+
+    public Integer getUserIdFromToken(String token) {
+        return null;
+    }
+
 }

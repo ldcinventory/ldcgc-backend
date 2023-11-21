@@ -10,6 +10,16 @@ spring:
       - swagger
       - ${ENVIRONMENT_PROFILE:dev}
 
+  security:
+    crypto:
+      password:
+        argon2:
+          iterations: ${ARGON_ITERATIONS:16}
+          memory: ${ARGON_MEMORY:128}
+          parallelism: ${ARGON_THREADS:2}
+          salt-length: ${ARGON_SALT_LENGTH:16}
+          hash-length: ${ARGON_HASH_LENGTH:64}
+
   # ---- LOGGING ----
   output:
     ansi:

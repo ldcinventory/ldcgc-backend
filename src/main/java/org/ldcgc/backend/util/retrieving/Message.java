@@ -39,8 +39,13 @@ public class Message implements EnumMethods {
     @Getter
     @RequiredArgsConstructor
     public enum ErrorMessage implements EnumMethods {
+        TOKEN_NOT_PARSEABLE("This token is not parseable"),
+        TOKEN_NOT_VALID("This token is not valid"),
+
         USER_ALREADY_EXIST("There's a user with this id or email"),
         USER_NOT_FOUND("User not found"),
+        USER_NOT_FOUND_TOKEN("User id or user from token not found, or token is not valid"),
+        USER_PASSWORD_DOESNT_MATCH("Password provided for this email doesn't match our records"),
 
         VOLUNTEER_ALREADY_EXIST("There's a volunteer with this id"),
         VOLUNTEER_NOT_FOUND("The volunteer you're searching for with this id couldn't be found"),
@@ -49,6 +54,7 @@ public class Message implements EnumMethods {
 
         STATUS_NOT_FOUND("Status not found"),
 
+        RUNTIME_EXCEPTION("Error processing data, check your request"),
         ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet");
 
         private final String message;

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,25 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Users methods with CRUD functions, some for Admin")
 public interface UserController {
-
-    // TODO
-    //  Read self account GET
-    //   |-> (/users/me)
-    //  Update self account PUT
-    //   |-> (/users/me)
-    //  Delete self account DELETE
-    //   |-> (/users/me)
-    //  -- ADMIN role
-    //  Create account POST
-    //   |-> (/users)
-    //  Read all accounts (can filter by parameters) GET
-    //   |-> (/users/?page={pageIndex}&size={sizeIndex}&filter={filterString})
-    //  Read specific account GET
-    //   |-> (/users/{userId})
-    //  Update another account PUT
-    //   |-> (/users/{userId})
-    //  Delete another account DELETE
-    //   |-> (/users/{userId})
 
     // users
 
@@ -64,7 +45,7 @@ public interface UserController {
     )
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
-    ResponseEntity<?> getMyUser(@RequestHeader("Authorization") String token);
+    ResponseEntity<?> getMyUser(@RequestAttribute("Authorization") String token);
 
     @Operation(summary = "Update my user")
     @ApiResponse(
@@ -85,7 +66,7 @@ public interface UserController {
     )
     @PutMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> updateMyUser(@RequestHeader("Authorization") String token, @RequestBody UserDto user);
+    ResponseEntity<?> updateMyUser(@RequestAttribute("Authorization") String token, @RequestBody UserDto user);
 
     @Operation(summary = "Delete my user")
     @ApiResponse(
@@ -106,7 +87,7 @@ public interface UserController {
     )
     @DeleteMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> deleteMyUser(@RequestHeader("Authorization") String token);
+    ResponseEntity<?> deleteMyUser(@RequestAttribute("Authorization") String token);
 
     // admin
 
