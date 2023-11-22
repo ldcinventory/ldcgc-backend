@@ -41,6 +41,7 @@ public class Message implements EnumMethods {
     public enum ErrorMessage implements EnumMethods {
         TOKEN_NOT_PARSEABLE("This token is not parseable"),
         TOKEN_NOT_VALID("This token is not valid"),
+        TOKEN_NOT_FOUND("This token doesn't exist in DB"),
 
         USER_ALREADY_EXIST("There's a user with this id or email"),
         USER_NOT_FOUND("User not found"),

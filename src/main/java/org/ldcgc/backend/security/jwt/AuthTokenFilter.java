@@ -9,11 +9,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -31,15 +33,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtils jwtUtils;
+    private final TokenRepository tokenRepository;
 
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
 
         final String jwtHeaderPayload = request.getHeader("x-header-payload-token");
         final String jwtSignature = request.getHeader("x-signature-token");
-        //final String jwtFromHeader = request.getHeader("Authorization");
 
         final boolean authIsNotPresent = StringUtils.isBlank(jwtHeaderPayload) && StringUtils.isBlank(jwtSignature);
-            //&& StringUtils.isBlank(jwtFromHeader);
 
         if (authIsNotPresent) {
             filterChain.doFilter(request, response);
@@ -65,6 +66,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                tokenRepository.deleteExpiredTokens();
 
         } catch (ParseException | JOSEException | IllegalArgumentException | NullPointerException e) {
             throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(TOKEN_NOT_VALID));

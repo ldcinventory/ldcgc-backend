@@ -13,12 +13,14 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.OctetKeyPair;
 import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
+import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.ApiError;
@@ -32,10 +34,12 @@ import java.text.ParseException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
+import static org.ldcgc.backend.util.process.Process.runInBackground;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_PARSEABLE;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
@@ -53,7 +57,7 @@ public class JwtUtils {
     private final TokenRepository tokenRepository;
 
     private static Clock clock = Clock.systemUTC();
-    private static final Map<String, JWK> keyCache = new HashMap<>();
+    //private static final Map<String, JWK> keyCache = new HashMap<>();
     private static final String ISSUER_URL = "https://gc8inventory.es";
 
     public SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
@@ -65,7 +69,7 @@ public class JwtUtils {
             .generate();
         OctetKeyPair publicJWK = jwk.toPublicJWK();
 
-        keyCache.put(jwk.getKeyID(), jwk);
+        //keyCache.put(jwk.getKeyID(), jwk);
 
         // Create the EdDSA signer
         JWSSigner signer = new Ed25519Signer(jwk);
@@ -105,27 +109,25 @@ public class JwtUtils {
 
         JWSVerifier verifier = new Ed25519Verifier(publicJWK);
 
-        /*
         Token token = Token.builder()
-            .token(s)
-            .keyId(jwk.getKeyID())
-            .jwk()
+            .jwtID(jwk.getKeyID())
+            .jwk(Base64.encode(jwk.toJSONString().getBytes()).toString())
             .userId(user.getId())
-            .issuedAt(now)
-            .expiresAt(expirationTime)
+            .issuedAt(convertDateToLocalDateTime(now))
+            .expiresAt(convertDateToLocalDateTime(expirationTime))
             .refreshTokenId(null)
             .build();
         runInBackground(() -> tokenRepository.save(token));
-         */
+
+        // clean old tokens for this user
+        runInBackground(() -> tokenRepository.deleteAllExpiredTokensFromUser(user.getId()));
+
+        Preconditions.checkArgument(signedJWT.verify(verifier));
+        Preconditions.checkArgument(new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime()));
+        Preconditions.checkArgument(signedJWT.getJWTClaimsSet().getIssuer().equals(ISSUER_URL));
 
         return signedJWT;
 
-        //assertTrue(signedJWT.verify(verifier));
-
-        // Retrieve / verify the JWT claims according to the app requirements
-        //assertEquals("alice", signedJWT.getJWTClaimsSet().getSubject());
-        //assertEquals("https://c2id.com", signedJWT.getJWTClaimsSet().getIssuer());
-        //assertTrue(new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime()));
     }
 
     public String getEmailFromJwtToken(SignedJWT signedJWT) throws ParseException {
@@ -153,14 +155,25 @@ public class JwtUtils {
         // parse signed token into header / claims
         JWSHeader jwsHeader = signedJwt.getHeader();
 
+        // must exist and match the algorithm
+        String kid = jwsHeader.getKeyID();
+        String alg = jwsHeader.getAlgorithm().getName();
+
+        String jwkString = tokenRepository.findByJwtID(kid)
+            .map(Token::getJwk)
+            .map(Base64::from)
+            .map(Base64::decode)
+            .map(String::new)
+            .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(TOKEN_NOT_FOUND)));
+
         // header must have algorithm("alg") and "kid"
         Preconditions.checkNotNull(jwsHeader.getAlgorithm());
         Preconditions.checkNotNull(jwsHeader.getKeyID());
 
         JWTClaimsSet claims = signedJwt.getJWTClaimsSet();
 
-        // claims must have audience, issuer
-        //Preconditions.checkArgument(claims.getAudience().contains(expectedAudience));
+        //TODO: claims must have audience, issuer
+        // |> Preconditions.checkArgument(claims.getAudience().contains(expectedAudience));
         Preconditions.checkArgument(claims.getIssuer().equals(ISSUER_URL));
 
         // claim must have issued at time in the past
@@ -173,12 +186,9 @@ public class JwtUtils {
         Preconditions.checkNotNull(claims.getSubject());
         Preconditions.checkNotNull(((Map) claims.getClaim("userClaims")).get("email"));
 
-        // must exist and match the algorithm
-        String kid = jwsHeader.getKeyID();
-        String alg = jwsHeader.getAlgorithm().getName();
-        JWK jwk = keyCache.get(kid);
+        JWK jwk = JWK.parse(jwkString);
         Preconditions.checkNotNull(jwk);
-        // -- confirm that algorithm matches
+        // confirm algorithm matches
         Preconditions.checkArgument(jwk != null && jwk.getAlgorithm().getName().equals(alg));
 
         // verify using public key : lookup with key id, algorithm name provided

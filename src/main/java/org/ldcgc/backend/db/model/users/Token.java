@@ -30,7 +30,11 @@ public class Token {
     private Integer id;
 
     @NotBlank
-    private String token;
+    private String jwtID;
+
+    @NotBlank
+    @Column(columnDefinition = "TEXT")
+    private String jwk;
 
     @NotNull
     private LocalDateTime expiresAt;
@@ -44,6 +48,7 @@ public class Token {
     @NotBlank
     private ERole role;
 
+    // TODO
     private Integer refreshTokenId;
 
     public boolean isExpired() {
