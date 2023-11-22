@@ -56,7 +56,7 @@ public class JwtUtils {
 
     private final TokenRepository tokenRepository;
 
-    private static Clock clock = Clock.systemUTC();
+    private static final Clock clock = Clock.systemUTC();
     //private static final Map<String, JWK> keyCache = new HashMap<>();
     private static final String ISSUER_URL = "https://gc8inventory.es";
 
@@ -189,7 +189,7 @@ public class JwtUtils {
         JWK jwk = JWK.parse(jwkString);
         Preconditions.checkNotNull(jwk);
         // confirm algorithm matches
-        Preconditions.checkArgument(jwk != null && jwk.getAlgorithm().getName().equals(alg));
+        Preconditions.checkArgument(jwk.getAlgorithm().getName().equals(alg));
 
         // verify using public key : lookup with key id, algorithm name provided
         OctetKeyPair publicJWK = OctetKeyPair.parse(jwk.toJSONString()).toPublicJWK();
