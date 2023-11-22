@@ -16,15 +16,15 @@ public class SwaggerConfig {
     private String version;
 
     @Bean
-    public OpenAPI ipreachAPI() {
+    public OpenAPI gc8InventoryAPI() {
         return new OpenAPI()
                 .info(new Info().title("LDC-GC API")
                         .description("LDC-GC Backend")
                         .version(version)
-                        .license(new License().name("Apache 2.0").url("https://ldcgc.org")))
+                        .license(new License().name("Apache 2.0").url("https://gc8inventory.es")))
                 .externalDocs(new ExternalDocumentation()
                         .description("LDC Inventory Help")
-                        .url("https://help.ipreach.net"));
+                        .url("https://help.gc8inventory.es"));
     }
 
     private SecurityScheme securityScheme(String name) {
