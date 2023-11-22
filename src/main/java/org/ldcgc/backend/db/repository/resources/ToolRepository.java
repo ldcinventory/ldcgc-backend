@@ -12,4 +12,5 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     List<Tool> findAllByBrand_Name(String brand);
 
+    List<Tool> findByBarcodeIn(List<String> barcodes);
 }

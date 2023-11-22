@@ -17,7 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
+import uk.co.jemos.podam.common.PodamCollection;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,5 +88,29 @@ class ToolControllerImplTest {
 
         verify(service, times(1)).updateTool(toolId, tool);
         assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
+    }
+
+    @Test
+    void deleteShouldReturnToolDtoBody() {
+        Integer toolId = factory.manufacturePojo(Integer.class);
+        ToolDto tool = factory.manufacturePojo(ToolDto.class);
+
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).deleteTool(toolId);
+        ResponseEntity<?> response = controller.deleteTool(toolId);
+
+        verify(service, times(1)).deleteTool(toolId);
+        assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
+    }
+
+    @Test
+    void getAllShouldReturnToolDtoList() {
+        List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
+
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(service).getAllTools();
+        ResponseEntity<?> response = controller.getAllTools(0, 0, "");
+
+        verify(service, times(1)).getAllTools();
+        assertEquals(ArrayList.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
+        assertEquals(ToolDto.class, ((ArrayList<?>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).get(0).getClass());
     }
 }

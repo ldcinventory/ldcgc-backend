@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @Controller
 @RequestMapping("/resources/tools")
@@ -36,5 +39,9 @@ public interface ToolController {
     @GetMapping()
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
+
+    @PostMapping("/excel")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);
 
 }

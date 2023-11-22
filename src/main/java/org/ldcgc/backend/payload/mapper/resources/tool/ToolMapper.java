@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(uses = { LocationMapper.class, CategoryMapper.class },
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolMapper {
@@ -17,5 +19,6 @@ public interface ToolMapper {
     ToolDto toDto(Tool tool);
 
     Tool toMo(ToolDto toolDto);
+    List<Tool> toMo(List<ToolDto> tools);
 
 }

@@ -4,23 +4,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
+import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.impl.ToolServiceImpl;
-import org.mapstruct.factory.Mappers;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Slf4j
@@ -34,6 +35,8 @@ class ToolServiceImplTest {
     private ToolRepository repository;
 
     private PodamFactory factory = new PodamFactoryImpl();
+
+
     @Test
     void createToolShouldReturnResponseEntity() {
         ToolDto toolDto = ToolDto.builder().build();
@@ -68,17 +71,57 @@ class ToolServiceImplTest {
         ToolDto toolDto = factory.manufacturePojo(ToolDto.class);
         Tool tool = ToolMapper.MAPPER.toMo(toolDto);
 
-        //doReturn(Optional.of(tool)).when(repository).findById(tool.getId());
         doReturn(tool).when(repository).save(tool);
 
         ResponseEntity<?> response = service.updateTool(tool.getId(), toolDto);
 
-        //verify(repository, times(1)).findById(toolDto.getId());
         verify(repository, times(1)).save(tool);
         assertTrue(Objects.nonNull(response));
         assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
     }
-/*
+
     @Test
-    void*/
+    void deleteToolShouldReturnResponseEntity() {
+        Tool tool = factory.manufacturePojo(Tool.class);
+        Integer toolId = tool.getId();
+
+        doReturn(Optional.of(tool)).when(repository).findById(toolId);
+
+        ResponseEntity<?> response = service.deleteTool(toolId);
+
+        verify(repository, times(1)).findById(toolId);
+        verify(repository, times(1)).delete(tool);
+
+        assertTrue(Objects.nonNull(response));
+        assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
+    }
+
+    @Test()
+    void deleteToolShouldThrowErrorWhenToolNotFound() {
+        Tool tool = factory.manufacturePojo(Tool.class);
+        Integer toolId = tool.getId();
+
+        doReturn(Optional.empty()).when(repository).findById(toolId);
+
+        assertThrows(RequestException.class, () -> service.deleteTool(toolId));
+
+        verify(repository, times(1)).findById(toolId);
+        verify(repository, times(0)).delete(tool);
+    }
+
+    @Test
+    void getAllToolsShouldReturnList() {
+        List<Tool> tools = factory.manufacturePojo(ArrayList.class, Tool.class);
+
+        doReturn(tools).when(repository).findAll();
+
+        ResponseEntity<?> response = service.getAllTools();
+
+        verify(repository, times(1)).findAll();
+
+        assertTrue(Objects.nonNull(response));
+        assertEquals("java.util.ImmutableCollections$ListN", ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass().getName());
+        assertEquals(ToolDto.class, ((List<?>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).get(0).getClass());
+    }
+
 }

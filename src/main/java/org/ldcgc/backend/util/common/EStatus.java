@@ -32,4 +32,11 @@ public enum EStatus implements EnumMethods {
                 .orElseThrow(() ->new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.STATUS_NOT_FOUND)));
     }
 
+    public static EStatus getStatusFromName(String name){
+        return Arrays.stream(EStatus.values())
+                .filter(status -> status.toString().equals(name))
+                .findFirst()
+                .orElseThrow(() ->new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.STATUS_NOT_FOUND)));
+    }
+
 }

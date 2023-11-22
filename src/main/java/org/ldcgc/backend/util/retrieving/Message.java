@@ -49,7 +49,13 @@ public class Message implements EnumMethods {
 
         STATUS_NOT_FOUND("Status not found"),
 
-        ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet");
+        ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet"),
+
+        LOCATION_NOT_FOUND("Location %s not found. Please, enter a valid location"),
+
+        GROUP_NOT_FOUND("Group %s not found. Please, enter a valid location"),
+
+        CATEGORY_NOT_FOUND("Category %s not found. Please, enter a valid location");
 
         private final String message;
 

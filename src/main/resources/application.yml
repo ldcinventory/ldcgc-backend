@@ -59,7 +59,7 @@ spring:
 
 # ---- SERVER ----
 server:
-  port: ${TOMCAT_PORT:8080}
+  port: ${TOMCAT_PORT:8081}
   tomcat:
     connection-timeout: ${TIMEOUT_REQUESTS:30000}
 
