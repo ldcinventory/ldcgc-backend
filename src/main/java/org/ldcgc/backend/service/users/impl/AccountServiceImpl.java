@@ -9,6 +9,7 @@ import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
+import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -69,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
         headers.set("Expires", now.plus(Duration.ofMinutes(10)).toString());
 
-        return Constructor.buildResponseObjectHeader(HttpStatus.OK, UserMock.getRandomMockedUser(), headers);
+        return Constructor.buildResponseObjectHeader(HttpStatus.OK, UserMapper.MAPPER.toDTO(userEntity), headers);
     }
 
     public ResponseEntity<?> logout(String token) {
