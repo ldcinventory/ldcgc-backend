@@ -13,7 +13,6 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.mock.UserMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
         User userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND)));
 
-        if(!passwordEncoder.matches(user.getPassword(), userEntity.getPassword()))
+        if (!passwordEncoder.matches(user.getPassword(), userEntity.getPassword()))
             throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_PASSWORD_DOESNT_MATCH));
 
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(userEntity.getRole().name());

@@ -79,10 +79,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<?> listUsers(Integer pageIndex, Integer sizeIndex, String filterString, Integer userId) {
-        if(userId != null)
+        if (userId != null)
             return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), 1), UserMock.getMockedUser(userId));
 
-        if(StringUtils.isNotEmpty(filterString)) {
+        if (StringUtils.isNotEmpty(filterString)) {
             List<UserDto> users = UserMock.getListOfMockedUsers(100).stream()
                 .filter(user -> StringUtils.containsIgnoreCase(user.getVolunteer().getName(), filterString) ||
                     StringUtils.containsIgnoreCase(user.getVolunteer().getLastName(), filterString) ||
@@ -96,14 +96,14 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
-        if(!userRepository.existsById(userId))
+        if (!userRepository.existsById(userId))
             throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN));
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(userId));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
-        if(!userRepository.existsById(userId))
+        if (!userRepository.existsById(userId))
             throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN));
 
         userRepository.deleteById(userId);
