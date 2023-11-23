@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GruopServiceImpl implements GroupsService {
 
-    GroupRepository repository;
+    private final GroupRepository repository;
     @Override
     public List<GroupDto> getAllGroups() {
         return repository.findAll().stream()

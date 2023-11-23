@@ -240,10 +240,10 @@ public class InitializationData {
             //            where t.BrandId = b.BrandId
             //            and t.CategoryId = c.CategoryId;)
 
-            List<Category> brandEntities = categoryRepository.findAllByParent_Name("Fabricantes");
+            List<Category> brandEntities = categoryRepository.findAllByParentName("Fabricantes");
             Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
-            List<Category> resourceCategoryEntities = categoryRepository.findAllByParent_Name("Recursos");
+            List<Category> resourceCategoryEntities = categoryRepository.findAllByParentName("Recursos");
             Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             // TODO check status when final migration
@@ -338,7 +338,7 @@ public class InitializationData {
 
             categoryRepository.saveAndFlush(responsibilityCat);
 
-            List<Category> responsibilitiesEntities = categoryRepository.findAllByParent_Name("Responsabilidades");
+            List<Category> responsibilitiesEntities = categoryRepository.findAllByParentName("Responsabilidades");
 
             userRepository.save(User.builder()
                 .email("admin")

@@ -51,11 +51,15 @@ public class Message implements EnumMethods {
 
         ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet"),
 
-        LOCATION_NOT_FOUND("Location %s not found. Please, enter a valid location"),
+        LOCATION_NOT_FOUND("Location with id %s not found."),
 
-        GROUP_NOT_FOUND("Group %s not found. Please, enter a valid location"),
+        GROUP_NOT_FOUND("Group with id %s not found."),
 
-        CATEGORY_NOT_FOUND("Category %s not found. Please, enter a valid location");
+        CATEGORY_NOT_FOUND("%s with id %s not found."),
+
+        LOCATION_NOT_FOUND_EXCEL("Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s"),
+        GROUP_NOT_FOUND_EXCEL("Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s"),
+        CATEGORY_NOT_FOUND_EXCEL("%s %s not found. Please, fix the excel sheet or add it. Valid %ss: %s");
 
         private final String message;
 

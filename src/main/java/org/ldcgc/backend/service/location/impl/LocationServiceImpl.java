@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
-    LocationRepository repository;
+    private final LocationRepository repository;
 
     @Override
     public List<LocationDto> getAllLocations() {
