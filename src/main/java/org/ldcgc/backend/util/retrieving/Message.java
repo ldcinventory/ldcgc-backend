@@ -55,11 +55,11 @@ public class Message implements EnumMethods {
 
         GROUP_NOT_FOUND("Group with id %s not found."),
 
-        CATEGORY_NOT_FOUND("%s with id %s not found."),
+        CATEGORY_PARENT_NOT_FOUND("%s with id %s not found."),
 
         LOCATION_NOT_FOUND_EXCEL("Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s"),
         GROUP_NOT_FOUND_EXCEL("Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s"),
-        CATEGORY_NOT_FOUND_EXCEL("%s %s not found. Please, fix the excel sheet or add it. Valid %ss: %s");
+        CATEGORY_SON_NOT_FOUND("%s %s not found. Please, use a valid one or add it. Valid %ss: %s");
 
         private final String message;
 

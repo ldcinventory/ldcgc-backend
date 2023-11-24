@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -90,64 +91,43 @@ public class ToolServiceImpl implements ToolService {
     }
 
     private List<ToolDto> convertExcelTools(List<ToolExcelDto> toolsExcel) {
-        List<ToolDto> tools = toolRepository.findByBarcodeIn(toolsExcel.stream()
-                        .map(ToolExcelDto::getBarcode).toList())
+        List<ToolDto> tools = toolRepository.findByBarcodeIn(toolsExcel.stream().map(ToolExcelDto::getBarcode).toList())
                 .stream()
                 .map(ToolMapper.MAPPER::toDto)
                 .toList();
-
-        List<CategoryDto> categories = categoryService.getCategoriesByParent(CategoryParentEnum.CATEGORIES);
-        List<CategoryDto> brands = categoryService.getCategoriesByParent(CategoryParentEnum.BRANDS);
-        List<CategoryDto> maintenanceTimes = categoryService.getCategoriesByParent(CategoryParentEnum.MAINTENANCE_TIME);
-        List<LocationDto> locations = locationService.getAllLocations();
+        CategoryDto brandParent = categoryService.getCategoryParent(CategoryParentEnum.BRANDS);
+        CategoryDto categoryParent = categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES);
         List<GroupDto> groups = groupsService.getAllGroups();
+        List<LocationDto> locations = locationService.getAllLocations();
+        CategoryDto maintenanceTimeParent = categoryService.getCategoryParent(CategoryParentEnum.MAINTENANCE_TIME);
 
         return toolsExcel.stream()
                 .map(toolExcel -> ToolDto.builder()
-                        .id(tools.stream()
-                                .filter(tool -> tool.getBarcode().equals(toolExcel.getBarcode()))
-                                .map(ToolDto::getId)
-                                .findFirst()
-                                .orElse(null))
+                        .id(getIdByBarcode(toolExcel, tools))
                         .barcode(toolExcel.getBarcode())
-                        .brand(brands.stream()
-                                .filter(brand -> brand.getName().equalsIgnoreCase(toolExcel.getBrand()))
-                                .findFirst()
-                                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(CATEGORY_NOT_FOUND_EXCEL)
-                                        .formatted(CategoryParentEnum.BRANDS.getName(), toolExcel.getBrand(), CategoryParentEnum.BRANDS.getName(),
-                                                brands.stream().map(CategoryDto::getName).toList().toString()))))
-                        .category(categories.stream()
-                                .filter(category -> category.getName().equalsIgnoreCase(toolExcel.getCategory()))
-                                .findFirst()
-                                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(CATEGORY_NOT_FOUND)
-                                        .formatted(CategoryParentEnum.CATEGORIES.getName(), toolExcel.getCategory(), CategoryParentEnum.CATEGORIES.getName(),
-                                                categories.stream().map(CategoryDto::getName).toList().toString()))))
-                        .group(groups.stream()
-                                .filter(group -> group.getName().equalsIgnoreCase(toolExcel.getGroup()))
-                                .findFirst()
-                                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(GROUP_NOT_FOUND)
-                                        .formatted(toolExcel.getGroup(), groups.stream().map(GroupDto::getName).toList().toString())))
-                        )
+                        .brand(categoryService.findCategorySonInParentByName(toolExcel.getBrand(), brandParent))
+                        .category(categoryService.findCategorySonInParentByName(toolExcel.getCategory(), categoryParent))
+                        .group(groupsService.findGroupInListByName(toolExcel.getGroup(), groups))
                         .description(toolExcel.getDescription())
                         .lastMaintenance(toolExcel.getLastMaintenance())
-                        .location(locations.stream()
-                                .filter(location -> location.getName().equalsIgnoreCase(toolExcel.getLocation()))
-                                .findFirst()
-                                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(LOCATION_NOT_FOUND)
-                                        .formatted(toolExcel.getLocation(), locations.stream().map(LocationDto::getName).toList().toString())))
-                        )
+                        .location(locationService.findLocationInListByName(toolExcel.getLocation(), locations))
                         .maintenancePeriod(toolExcel.getMaintenancePeriod())
-                        .maintenanceTime(maintenanceTimes.stream()
-                                .filter(maintenanceTime -> maintenanceTime.getName().equalsIgnoreCase(toolExcel.getMaintenanceTime()))
-                                .findFirst()
-                                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(CATEGORY_NOT_FOUND)
-                                        .formatted(CategoryParentEnum.MAINTENANCE_TIME.getName(), toolExcel.getMaintenanceTime(), CategoryParentEnum.MAINTENANCE_TIME.getName(),
-                                                maintenanceTimes.stream().map(CategoryDto::getName).toList().toString()))))
+                        .maintenanceTime(categoryService.findCategorySonInParentByName(toolExcel.getMaintenanceTime(), maintenanceTimeParent))
                         .model(toolExcel.getModel())
                         .name(toolExcel.getName())
-                        .status(EStatus.getStatusFromName(toolExcel.getStatus()))
+                        .status(EStatus.getStatusByName(toolExcel.getStatus()))
                         .urlImages(toolExcel.getUrlImages())
                         .build())
                 .toList();
+    }
+
+
+    @Nullable
+    private Integer getIdByBarcode(ToolExcelDto toolExcel, List<ToolDto> tools) {
+        return tools.stream()
+                .filter(tool -> tool.getBarcode().equals(toolExcel.getBarcode()))
+                .map(ToolDto::getId)
+                .findFirst()
+                .orElse(null);
     }
 }

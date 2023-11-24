@@ -8,4 +8,6 @@ import java.util.List;
 @Service
 public interface LocationService {
     List<LocationDto> getAllLocations();
+
+    LocationDto findLocationInListByName(String locationName, List<LocationDto> locations);
 }

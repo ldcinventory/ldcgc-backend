@@ -8,4 +8,6 @@ import java.util.List;
 @Service
 public interface GroupsService {
     List<GroupDto> getAllGroups();
+
+    GroupDto findGroupInListByName(String groupName, List<GroupDto> groups);
 }
