@@ -164,7 +164,7 @@ public class InitializationData {
 
             List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',', false);
 
-            chests.forEach(c -> {
+            chests.parallelStream().forEach(c -> {
                 Location entityFromMap = locationMap.get(c.get(1));
                 entityFromMap.getLocations().add(Location.builder()
                     .name(c.get(0))
@@ -207,7 +207,7 @@ public class InitializationData {
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
             List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
-            volunteers.forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
+            volunteers.parallelStream().forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
                 .builderAssistantId(vFieldList.get(1))
                 .name(vFieldList.get(2))
                 .lastName(vFieldList.get(3))
@@ -254,7 +254,7 @@ public class InitializationData {
             //    new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-            tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
+            tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
                 .barcode(tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
                             ? brandsMap.get("<empty>")
@@ -283,7 +283,7 @@ public class InitializationData {
             //                  and cn.CategoryId = c.CategoryId;)
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-            consumables.forEach(cFieldList -> consumableRepository.save(Consumable.builder()
+            consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
                 .barcode(cFieldList.get(0))
                 .brand(brandsMap.get(cFieldList.get(1)))
                 .model(cFieldList.get(2))
@@ -312,7 +312,7 @@ public class InitializationData {
             //                 and m.VolunteerId = v.VolunteerId;
 
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
-            maintenance.forEach(mFieldList -> {
+            maintenance.parallelStream().forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                 final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
                 maintenanceRepository.save(Maintenance.builder()
