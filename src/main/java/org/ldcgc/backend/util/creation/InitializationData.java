@@ -164,7 +164,7 @@ public class InitializationData {
 
             List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',', false);
 
-            chests.parallelStream().forEach(c -> {
+            chests.forEach(c -> {
                 Location entityFromMap = locationMap.get(c.get(1));
                 entityFromMap.getLocations().add(Location.builder()
                     .name(c.get(0))
