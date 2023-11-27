@@ -39,17 +39,8 @@ public class UserServiceImpl implements UserService {
 
         String publicKey = token;
 
-        Integer userId = 1; //tokenRepository.getUserIdFromPublicKey(publicKey).orElse(1);
-
-        /*
-        Integer userId = tokenRepository.getUserIdFromPublicKey(publicKey).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN))
-        );
-
-         */
-        // TODO
-        //JwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey("secret".getBytes(StandardCharsets.UTF_8)).build();
-        //JwtClaimsSet claims = jwtDecoder.decode(token);
+        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
+            -> new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN)));
 
         return getUser(userId);
     }
