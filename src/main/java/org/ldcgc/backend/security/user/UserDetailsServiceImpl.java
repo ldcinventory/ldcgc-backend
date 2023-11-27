@@ -1,6 +1,7 @@
 package org.ldcgc.backend.security.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,41 +28,48 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     public static String useMockedUser;
 
-    @Value("${SKIP_LOGIN:true}") private boolean skipLogin;
+    @Setter
+    @Value("${SKIP_LOGIN:false}") private boolean skipLogin;
 
     public UserDetailsImpl loadUserByUsername(String userId) throws UsernameNotFoundException {
 
-        if(skipLogin || useMockedUser.equals("admin")) {
-            UserDetails userDetails = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))
-                .build();
-            return new UserDetailsImpl(userDetails, 1, null, null);
+        if(skipLogin) {
+
+            // set to false to avoid skipLogin in next calls by accident
+            skipLogin = false;
+
+            if (useMockedUser.equals("admin")) {
+                UserDetails userDetails = User.builder()
+                    .username("admin")
+                    .password(passwordEncoder.encode("admin"))
+                    .roles("ADMIN")
+                    .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                    .build();
+                return new UserDetailsImpl(userDetails, 1, null, null);
+            }
+
+            if (useMockedUser.equals("manager")) {
+                UserDetails userDetails = User.builder()
+                    .username("manager")
+                    .password(passwordEncoder.encode("manager"))
+                    .roles("MANAGER")
+                    .authorities(new SimpleGrantedAuthority("ROLE_MANAGER"))
+                    .build();
+                return new UserDetailsImpl(userDetails, 1, null, null);
+            }
+
+            if (useMockedUser.equals("standard")) {
+                UserDetails userDetails = User.builder()
+                    .username("user")
+                    .password(passwordEncoder.encode("user"))
+                    .roles("USER")
+                    .authorities(new SimpleGrantedAuthority("ROLE_USER"))
+                    .build();
+                return new UserDetailsImpl(userDetails, 1, null, null);
+            }
         }
 
-        if(useMockedUser.equals("manager")) {
-            UserDetails userDetails = User.builder()
-                .username("manager")
-                .password(passwordEncoder.encode("manager"))
-                .roles("MANAGER")
-                .authorities(new SimpleGrantedAuthority("ROLE_MANAGER"))
-                .build();
-            return new UserDetailsImpl(userDetails, 1, null, null);
-        }
-
-        if(useMockedUser.equals("standard")) {
-            UserDetails userDetails = User.builder()
-                .username("user")
-                .password(passwordEncoder.encode("user"))
-                .roles("USER")
-                .authorities(new SimpleGrantedAuthority("ROLE_USER"))
-                .build();
-            return new UserDetailsImpl(userDetails, 1, null, null);
-        }
-
-        org.ldcgc.backend.db.model.users.User user = userRepository.findByEmail(userId).orElseThrow(() ->
+        org.ldcgc.backend.db.model.users.User user = userRepository.findById(Integer.valueOf(userId)).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND)));
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -69,7 +77,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         UserDetails userDetails = User.builder()
             .username(user.getEmail())
-            .password(passwordEncoder.encode(user.getPassword()))
+            .password(user.getPassword())
             .roles(user.getRole().getRoleName().toUpperCase())
             .authorities(authorities)
             .build();
