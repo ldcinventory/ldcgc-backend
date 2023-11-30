@@ -8,6 +8,7 @@ spring:
   profiles:
     include:
       - swagger
+      - endpoints
       - ${ENVIRONMENT_PROFILE:dev}
 
   security:
@@ -46,7 +47,6 @@ spring:
   mvc:
     servlet:
       path: /api
-    throw-exception-if-no-handler-found: true
 
   # ---- DB ----
   jpa:
@@ -60,7 +60,7 @@ spring:
       naming.implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     properties:
       hibernate:
-        format_sql: false # true for show the queries
+        format_sql: false # true for showing the queries
         show_sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true # load schema from entities
