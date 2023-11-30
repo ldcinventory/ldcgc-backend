@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
@@ -32,8 +33,8 @@ public interface AccountController {
     ResponseEntity<?> recoverCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
     // Validate temp token GET
-    @GetMapping("/validate?recover-token={token}")
-    ResponseEntity<?> validateToken(@PathVariable String token) throws ParseException;
+    @GetMapping("/validate")
+    ResponseEntity<?> validateToken(@RequestParam(name = "recovery-token") String token) throws ParseException;
 
     // Set new credentials POST (send email + new pass + token in payload)
     @PostMapping("/new-credentials")

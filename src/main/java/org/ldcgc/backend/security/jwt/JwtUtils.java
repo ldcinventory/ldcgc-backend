@@ -113,6 +113,7 @@ public class JwtUtils {
             .jwtID(jwk.getKeyID())
             .jwk(Base64.encode(jwk.toJSONString().getBytes()).toString())
             .userId(user.getId())
+            .role(user.getRole())
             .issuedAt(convertDateToLocalDateTime(now))
             .expiresAt(convertDateToLocalDateTime(expirationTime))
             .isRecoveryToken(isRecoveryToken)
@@ -148,7 +149,9 @@ public class JwtUtils {
 
     public SignedJWT getDecodedJwt(String jwt) {
         try {
-            return SignedJWT.parse(jwt.split("Bearer ")[1]);
+            if(jwt.matches("^Bearer .*"))
+                return SignedJWT.parse(jwt.split("Bearer ")[1]);
+            return SignedJWT.parse(jwt);
         } catch (ParseException e) {
             ApiError apiError = ApiError.builder()
                 .error(ApiSubError.builder()
