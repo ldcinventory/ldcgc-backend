@@ -5,9 +5,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Optional;
@@ -41,6 +45,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         return Constructor.buildResponseObjectHeader(
             HttpStatus.valueOf(apiError.getHttpStatus().value()), apiError, new HttpHeaders());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ApiError apiError = ApiError.builder()
+            .status(status.value())
+            .endpoint(ex.getAllValidationResults().get(0).getMethodParameter().getMethod().getName())
+            .clazz(ex.getAllValidationResults().get(0).getMethodParameter().getDeclaringClass().getName())
+            .method(((ServletWebRequest) request).getRequest().getAttribute("org.springframework.web.util.ServletRequestPathUtils.PATH").toString())
+            .build();
+        return Constructor.buildExceptionResponseMessageObject(
+            HttpStatus.valueOf(status.value()), ex.getReason(), apiError);
     }
 
 }

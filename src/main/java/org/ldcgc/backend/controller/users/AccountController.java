@@ -3,6 +3,7 @@ package org.ldcgc.backend.controller.users;
 import com.nimbusds.jose.JOSEException;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
+import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -24,18 +25,18 @@ public interface AccountController {
 
     @PostMapping("/logout")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
-    ResponseEntity<?> logout(@RequestAttribute("Authorization") String token);
+    ResponseEntity<?> logout(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     // Send recovery credentials by POST (send email with token in url)
     @PostMapping("/recover")
-    ResponseEntity<?> recoverCredentials(@RequestBody UserCredentialsDto userCredentials);
+    ResponseEntity<?> recoverCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
     // Validate temp token GET
     @GetMapping("/validate?recover-token={token}")
-    ResponseEntity<?> validateToken(@PathVariable String token);
+    ResponseEntity<?> validateToken(@PathVariable String token) throws ParseException;
 
     // Set new credentials POST (send email + new pass + token in payload)
     @PostMapping("/new-credentials")
-    ResponseEntity<?> newCredentials(@RequestBody UserCredentialsDto userCredentials);
+    ResponseEntity<?> newCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException;
 
 }

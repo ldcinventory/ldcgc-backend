@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.payload.dto.users.UserDto;
+import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.text.ParseException;
 
 @Controller
 @RequestMapping("/users")
@@ -45,7 +48,7 @@ public interface UserController {
     )
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
-    ResponseEntity<?> getMyUser(@RequestAttribute("Authorization") String token);
+    ResponseEntity<?> getMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token);
 
     @Operation(summary = "Update my user")
     @ApiResponse(
@@ -66,7 +69,7 @@ public interface UserController {
     )
     @PutMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> updateMyUser(@RequestAttribute("Authorization") String token, @RequestBody UserDto user);
+    ResponseEntity<?> updateMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token, @RequestBody UserDto user) throws ParseException;
 
     @Operation(summary = "Delete my user")
     @ApiResponse(
@@ -87,7 +90,7 @@ public interface UserController {
     )
     @DeleteMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> deleteMyUser(@RequestAttribute("Authorization") String token);
+    ResponseEntity<?> deleteMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     // admin
 
@@ -136,7 +139,7 @@ public interface UserController {
             })
     )
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> getUser(@PathVariable Integer userId);
 
     @Operation(summary = "List users (admin)")
@@ -147,7 +150,7 @@ public interface UserController {
             array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> listUsers(
         @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
@@ -172,7 +175,7 @@ public interface UserController {
             })
     )
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody UserDto user);
 
     @Operation(summary = "Delete any user (admin)")
