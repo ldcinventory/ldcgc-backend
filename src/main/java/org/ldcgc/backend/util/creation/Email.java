@@ -50,7 +50,7 @@ public class Email {
         try {
             final MimeMessage mimeMessage = Email.INSTANCE.sender.createMimeMessage();
             buildCredentialsEmail(mimeMessage, email, jwt);
-            runInBackground(() -> Email.INSTANCE.sender.send(mimeMessage));
+            Email.INSTANCE.sender.send(mimeMessage);
             log.info("email sent!");
         } catch (MessagingException | IOException e) {
             log.error("There was an error sending email to: {}. The error was {}", email, e.getLocalizedMessage());
