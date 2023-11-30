@@ -21,19 +21,19 @@ public class AccountControllerImpl implements AccountController {
         return accountService.login(user);
     }
 
-    public ResponseEntity<?> logout(String token) {
+    public ResponseEntity<?> logout(String token) throws ParseException {
         return accountService.logout(token);
     }
 
-    public ResponseEntity<?> recoverCredentials(UserCredentialsDto userCredentials) {
+    public ResponseEntity<?> recoverCredentials(UserCredentialsDto userCredentials) throws ParseException, JOSEException {
         return accountService.recoverCredentials(userCredentials);
     }
 
-    public ResponseEntity<?> validateToken(String token) {
+    public ResponseEntity<?> validateToken(String token) throws ParseException {
         return accountService.validateToken(token);
     }
 
-    public ResponseEntity<?> newCredentials(UserCredentialsDto userCredentials) {
+    public ResponseEntity<?> newCredentials(UserCredentialsDto userCredentials) throws ParseException {
         return accountService.newCredentials(userCredentials);
     }
 

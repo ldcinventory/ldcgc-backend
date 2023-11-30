@@ -15,9 +15,9 @@ import java.text.ParseException;
 public interface AccountService {
 
     ResponseEntity<?> login(@RequestBody UserDto user) throws ParseException, JOSEException;
-    ResponseEntity<?> logout(@RequestAttribute("Authorization") String token);
-    ResponseEntity<?> recoverCredentials(@RequestBody UserCredentialsDto userCredentials);
-    ResponseEntity<?> validateToken(@PathVariable String token);
-    ResponseEntity<?> newCredentials(@RequestBody UserCredentialsDto userCredentials);
+    ResponseEntity<?> logout(@RequestAttribute("Authorization") String token) throws ParseException;
+    ResponseEntity<?> recoverCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
+    ResponseEntity<?> validateToken(@PathVariable String token) throws ParseException;
+    ResponseEntity<?> newCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException;
 
 }
