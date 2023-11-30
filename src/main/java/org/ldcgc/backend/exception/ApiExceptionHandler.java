@@ -1,5 +1,6 @@
 package org.ldcgc.backend.exception;
 
+import jakarta.mail.SendFailedException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSendException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -57,6 +59,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             .build();
         return Constructor.buildExceptionResponseMessageObject(
             HttpStatus.valueOf(status.value()), ex.getReason(), apiError);
+    }
+
+    @ExceptionHandler(MailSendException.class)
+    public final ResponseEntity<?> handleMailSendException(MailSendException ex) {
+        String error = "SMTP ";
+        if(ex.getMessage().contains("SMTPAddressFailedException: 501 "))
+            error += ex.getMessage().split("SMTPAddressFailedException: 501 ")[1];
+        ApiError apiError = ApiError.builder()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .httpStatus(HttpStatus.BAD_REQUEST)
+            .clazz("org.ldcgc.backend.util.creation.Email")
+            .method("sendRecoveringCredentials")
+            .message(error)
+            .build();
+        return Constructor.buildExceptionResponseObject(HttpStatus.BAD_REQUEST, apiError);
     }
 
 }
