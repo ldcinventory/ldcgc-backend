@@ -7,4 +7,5 @@ public class Generator {
     public static String getEncryptedPassword(String plainPassword) {
         return BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
     }
+
 }

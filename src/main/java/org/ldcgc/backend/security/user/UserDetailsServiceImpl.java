@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Setter
     @Value("${SKIP_LOGIN:false}") private boolean skipLogin;
 
-    public UserDetailsImpl loadUserByUsername(String userId) throws UsernameNotFoundException {
+    public UserDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
 
         if(skipLogin) {
 
@@ -69,7 +69,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         }
 
-        org.ldcgc.backend.db.model.users.User user = userRepository.findById(Integer.valueOf(userId)).orElseThrow(() ->
+        org.ldcgc.backend.db.model.users.User user = userRepository.findByEmail(email).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND)));
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

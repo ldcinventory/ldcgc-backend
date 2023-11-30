@@ -57,7 +57,7 @@ public class JwtUtils {
     private final TokenRepository tokenRepository;
 
     private static final Clock clock = Clock.systemUTC();
-    //private static final Map<String, JWK> keyCache = new HashMap<>();
+
     private static final String ISSUER_URL = "https://gc8inventory.es";
 
     public SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
@@ -86,9 +86,9 @@ public class JwtUtils {
         // Prepare JWT with claims set
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
             .jwtID(jwk.getKeyID())
-            .subject("token")
             .issuer(ISSUER_URL)
             .issueTime(now)
+            .subject(user.getId().toString())
             .claim("userClaims", claims)
             .expirationTime(expirationTime)
             .build();
@@ -115,9 +115,13 @@ public class JwtUtils {
             .userId(user.getId())
             .issuedAt(convertDateToLocalDateTime(now))
             .expiresAt(convertDateToLocalDateTime(expirationTime))
+            .isRecoveryToken(isRecoveryToken)
             .refreshTokenId(null)
             .build();
         runInBackground(() -> tokenRepository.save(token));
+
+        // set again to false to future tokens since JwtUtils is a Component
+        setIsRecoveryToken(false);
 
         // clean old tokens for this user
         runInBackground(() -> tokenRepository.deleteAllExpiredTokensFromUser(user.getId()));
@@ -132,6 +136,14 @@ public class JwtUtils {
 
     public String getEmailFromJwtToken(SignedJWT signedJWT) throws ParseException {
         return ((Map) signedJWT.getJWTClaimsSet().getClaim("userClaims")).get("email").toString();
+    }
+
+    public Integer getUserIdFromJwtToken(SignedJWT signedJWT) throws ParseException {
+        return Integer.valueOf(signedJWT.getJWTClaimsSet().getSubject());
+    }
+
+    public Integer getUserIdFromStringToken(String token) throws ParseException {
+        return Integer.valueOf(getDecodedJwt(token).getJWTClaimsSet().getSubject());
     }
 
     public SignedJWT getDecodedJwt(String jwt) {
@@ -150,7 +162,7 @@ public class JwtUtils {
 
     public boolean verifyJwt(SignedJWT signedJwt, String expectedAudience) throws ParseException, JOSEException, IllegalArgumentException, NullPointerException {
 
-        log.debug("Validating JWT with aud {}", expectedAudience);
+        Preconditions.checkArgument(tokenRepository.findByJwtID(signedJwt.getHeader().getKeyID()).isPresent());
 
         // parse signed token into header / claims
         JWSHeader jwsHeader = signedJwt.getHeader();

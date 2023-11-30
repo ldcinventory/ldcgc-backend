@@ -48,6 +48,9 @@ public class Token {
     @NotBlank
     private ERole role;
 
+    @NotBlank
+    private boolean isRecoveryToken;
+
     // TODO
     private Integer refreshTokenId;
 
