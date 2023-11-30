@@ -20,6 +20,14 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
 
     @Modifying
     @Transactional
+    @Query("DELETE from Token t WHERE t.userId = :userId")
+    void deleteAllTokensFromUser(Integer userId);
+
+    @Modifying
+    @Transactional
     @Query("DELETE from Token t WHERE t.expiresAt < current_timestamp")
     void deleteExpiredTokens();
+
+    @Query("SELECT t.userId FROM Token t WHERE t.jwtID = :jwtID")
+    Optional<Integer> getUserIdFromJwtId(String jwtID);
 }
