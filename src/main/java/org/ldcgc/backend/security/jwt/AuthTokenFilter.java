@@ -26,6 +26,7 @@ import java.text.ParseException;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_VALID;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
+import static org.ldcgc.backend.validator.Endpoint.isTokenEndpoint;
 
 @Component
 @RequiredArgsConstructor
@@ -78,8 +79,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
 
         request.setAttribute("Authorization", jwt);
-        response.setHeader("x-header-payload-token", jwtHeaderPayload);
-        response.setHeader("x-signature-token", jwtSignature);
+
+        if (isTokenEndpoint(request.getMethod(), request.getRequestURI())) {
+            response.setHeader("x-header-payload-token", jwtHeaderPayload);
+            response.setHeader("x-signature-token", jwtSignature);
+        }
 
         filterChain.doFilter(request, response);
 
