@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         User userEntity = UserMapper.MAPPER.toEntity(user);
         userEntity = userRepository.save(userEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_CREATED), UserMapper.MAPPER.toDTO(userEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, getInfoMessage(USER_CREATED), UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
