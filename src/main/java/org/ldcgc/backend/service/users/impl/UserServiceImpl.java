@@ -9,6 +9,7 @@ import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
+import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.mock.UserMock;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
@@ -34,10 +36,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private final JwtUtils jwtUtils;
 
     public ResponseEntity<?> getMyUser(String token) {
-
-        String publicKey = token;
+        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
 
         Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
             -> new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN)));
@@ -45,14 +47,28 @@ public class UserServiceImpl implements UserService {
         return getUser(userId);
     }
 
-    public ResponseEntity<?> updateMyUser(String token, UserDto user) {
-        // TODO
-        return updateUser(1, user);
+    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException {
+
+        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+
+        User userEntity = userRepository.findById(userId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+
+        UserMapper.MAPPER.update(user, userEntity);
+
+        userRepository.saveAndFlush(userEntity);
+
+        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_UPDATED));
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) {
-        // TODO
-        return deleteUser(1);
+    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
+
+        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+
+        userRepository.deleteById(userId);
+        tokenRepository.deleteAllTokensFromUser(userId);
+
+        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
     }
 
     public ResponseEntity<?> createUser(UserDto user) {
@@ -100,10 +116,6 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
-    }
-
-    public Integer getUserIdFromToken(String token) {
-        return null;
     }
 
 }

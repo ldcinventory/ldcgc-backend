@@ -7,6 +7,8 @@ import org.ldcgc.backend.service.users.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
@@ -17,11 +19,11 @@ public class UserControllerImpl implements UserController {
         return userService.getMyUser(token);
     }
 
-    public ResponseEntity<?> updateMyUser(String token, UserDto user) {
+    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException {
         return userService.updateMyUser(token, user);
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) {
+    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
         return userService.deleteMyUser(token);
     }
 
