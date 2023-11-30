@@ -42,13 +42,13 @@ public class Token {
     @NotNull
     private LocalDateTime issuedAt;
 
-    @NotBlank
+    @NotNull
     private Integer userId;
 
-    @NotBlank
+    @NotNull
     private ERole role;
 
-    @NotBlank
+    @NotNull
     private boolean isRecoveryToken;
 
     // TODO

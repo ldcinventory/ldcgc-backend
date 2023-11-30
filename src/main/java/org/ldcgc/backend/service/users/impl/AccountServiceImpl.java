@@ -100,7 +100,7 @@ public class AccountServiceImpl implements AccountService {
         SignedJWT jwt = jwtUtils.generateNewToken(user);
         jwtUtils.setIsRecoveryToken(false); // reset recovery token state
 
-        return sendRecoveringCredentials(userCredentials.getEmail(), jwt.toString());
+        return sendRecoveringCredentials(userCredentials.getEmail(), jwt.getParsedString());
     }
 
     public ResponseEntity<?> validateToken(String token) throws ParseException {
