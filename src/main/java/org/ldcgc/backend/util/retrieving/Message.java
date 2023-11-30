@@ -57,7 +57,7 @@ public class Message implements EnumMethods {
         JWT_NOT_FOR_RECOVERY("This token is not for recover the account. Sorry, mate!"),
         RECOVERY_TOKEN_NOT_VALID_NOT_FOUND("This recovery token is not valid or is not found"),
 
-        USER_ALREADY_EXIST("There's a user with this id or email"),
+        USER_ALREADY_EXIST("There's already a user with this id or email"),
         USER_NOT_FOUND("User not found"),
         USER_NOT_FOUND_TOKEN("User id or user from token not found, or token is not valid"),
         USER_PASSWORD_DOESNT_MATCH("Password provided for this email doesn't match our records"),

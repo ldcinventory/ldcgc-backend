@@ -39,11 +39,12 @@ public interface UserController {
             schema = @Schema(implementation = UserDto.class))
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User from token not found", value = "User id or user from token not found, or token is not valid"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @GetMapping("/me")
@@ -60,11 +61,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @PutMapping("/me")
@@ -81,11 +82,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @DeleteMapping("/me")
@@ -104,19 +105,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "409",
+        description = "Conflict",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "User already exists" , value = "There's a user with this id or email"),
-            })
-    )
-    @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Not implemented" , value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User exists", value = "There's already a user with this id or email")
             })
     )
     @PostMapping
@@ -131,11 +124,11 @@ public interface UserController {
             schema = @Schema(implementation = UserDto.class))
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @GetMapping("/{userId}")
@@ -167,11 +160,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "User doesn't exists", value = "The user you're searching for with this id doesn't exist"),
+                @ExampleObject(name = "User not found", value = "User not found"),
             })
     )
     @PutMapping("/{userId}")
@@ -188,19 +181,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "User doesn't exists", value = "The user you're searching for with this id doesn't exist"),
-            })
-    )
-    @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found"),
             })
     )
     @DeleteMapping("/{userId}")

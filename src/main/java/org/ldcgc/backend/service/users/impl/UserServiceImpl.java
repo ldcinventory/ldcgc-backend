@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.List;
 
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_ALREADY_EXIST;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND_TOKEN;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
@@ -72,6 +73,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<?> createUser(UserDto user) {
+        if(userRepository.findByEmail(user.getEmail()).isPresent())
+            throw new RequestException(HttpStatus.CONFLICT, getErrorMessage(USER_ALREADY_EXIST));
+
         User userEntity = UserMapper.MAPPER.toEntity(user);
         userEntity = userRepository.save(userEntity);
 
@@ -104,14 +108,14 @@ public class UserServiceImpl implements UserService {
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
         if (!userRepository.existsById(userId))
-            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN));
+            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND));
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(userId));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
         if (!userRepository.existsById(userId))
-            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN));
+            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND));
 
         userRepository.deleteById(userId);
 
