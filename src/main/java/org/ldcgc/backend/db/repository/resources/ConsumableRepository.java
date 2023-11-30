@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ConsumableRepository extends JpaRepository<Consumable, Integer> {
 
     Page<Consumable> findByNameContainingOrDescriptionContaining(String likeNamePattern, String likeDescriptionPattern, Pageable pageable);
@@ -20,4 +22,5 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
     //Boolean update(Consumable consumable);
 
     void deleteById(@NotNull Integer consumableId);
+    List<Consumable> findByBarcodeIn(List<String> barcodes);
 }

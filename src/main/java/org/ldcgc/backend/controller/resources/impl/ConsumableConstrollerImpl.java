@@ -14,11 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -62,7 +58,10 @@ public class ConsumableConstrollerImpl implements ConsumableController {
     public ResponseEntity<?> deleteConsumable(Integer consumableId) {
         return consumableService.deleteConsumable(consumableId);
     }
-
+    @Override
+    public ResponseEntity<?> uploadExcel(MultipartFile file){
+        return consumableService.uploadExcel(file);
+    }
     @Override
     public ResponseEntity<?> uploadExcelFile(MultipartFile file) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -121,8 +120,10 @@ public class ConsumableConstrollerImpl implements ConsumableController {
                 }
 
                 String brandName  = "";
+                Integer brandId = null;
                 if(sheet.getRow(i).getCell(9) != null){
                     brandName = sheet.getRow(i).getCell(9).toString();
+                    brandId = Optional.ofNullable(categoryService.getCategoryIdByName(brandName)).orElse(0);
                 }
 
                 String purchaseDate = "";
@@ -130,7 +131,7 @@ public class ConsumableConstrollerImpl implements ConsumableController {
                     purchaseDate = sheet.getRow(i).getCell(10).getStringCellValue();
                 }
 
-                System.out.printf("Nombre: %s\n Description: %s\n Barcode: %s\n Model: %s\n MinStock: %s\n Price: %s\n Stock: %s\n PurchasedDate: %s\n Category Name: %s\n CategoryId: %d\n Brand Name: %s\n", name, description, barcode, model, minStock, price, stock, purchaseDate, categoryName, categoryId, brandName);
+                System.out.printf("Nombre: %s\n Description: %s\n Barcode: %s\n Model: %s\n MinStock: %s\n Price: %s\n Stock: %s\n PurchasedDate: %s\n Category Name: %s\n CategoryId: %d\n Brand Name: %s\n BrandId: %d\n", name, description, barcode, model, minStock, price, stock, purchaseDate, categoryName, categoryId, brandName, brandId);
                 System.out.println("##################\n");
 
 

@@ -37,7 +37,7 @@ public interface ConsumableController {
 
     @GetMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> getConsumable(Integer consumableId);
+    ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -56,7 +56,8 @@ public interface ConsumableController {
     @DeleteMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
-
     @PostMapping("/uploadExcel")
+    ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file);
+    @PostMapping("/uploadExcelFile")
     ResponseEntity<?> uploadExcelFile(@RequestParam("file") MultipartFile file);
 }
