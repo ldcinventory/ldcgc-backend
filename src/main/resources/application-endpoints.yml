@@ -10,8 +10,11 @@ exempted:
 nonToken:
   GET:
     - "/api/alive"
+    - "/api/accounts/validate"
   POST:
     - "/api/accounts/logout"
+    - "/api/accounts/recover"
+    - "/api/accounts/new-credentials"
   PUT:
   PATCH:
   DELETE:
