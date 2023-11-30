@@ -19,7 +19,7 @@ public interface UserService {
 
     ResponseEntity<?> getUser(Integer userId);
 
-    ResponseEntity<?> listUsers(Integer pageIndex, Integer sizeIndex, String filterString, Integer userId);
+    ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId);
 
     ResponseEntity<?> updateUser(Integer userId, UserDto user);
 

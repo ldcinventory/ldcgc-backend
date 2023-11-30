@@ -13,6 +13,9 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.mock.UserMock;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -89,21 +92,24 @@ public class UserServiceImpl implements UserService {
         return Constructor.buildResponseObject(HttpStatus.OK, UserMapper.MAPPER.toDTO(user));
     }
 
-    public ResponseEntity<?> listUsers(Integer pageIndex, Integer sizeIndex, String filterString, Integer userId) {
-        if (userId != null)
-            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), 1), UserMock.getMockedUser(userId));
+    public ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId) {
+        if (userId != null) return getUser(userId);
 
-        if (StringUtils.isNotEmpty(filterString)) {
-            List<UserDto> users = UserMock.getListOfMockedUsers(100).stream()
-                .filter(user -> StringUtils.containsIgnoreCase(user.getVolunteer().getName(), filterString) ||
-                    StringUtils.containsIgnoreCase(user.getVolunteer().getLastName(), filterString) ||
-                    StringUtils.containsIgnoreCase(user.getEmail(), filterString))
-                .toList();
-            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), users.size()), users);
-        }
+        Pageable paging = PageRequest.of(pageIndex, size);
+        Page<User> pageUsers;
 
+        if(StringUtils.isBlank(filterString))
+            pageUsers = userRepository.findAll(paging);
+        else
+            pageUsers = userRepository.findAllFiltered(filterString, paging);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(USER_LISTED), sizeIndex), UserMock.getListOfMockedUsers(sizeIndex));
+        List<User> userList = pageUsers.getContent();
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.OK,
+            String.format(getInfoMessage(USER_LISTED), pageUsers.getTotalElements()),
+            userList.stream().map(UserMapper.MAPPER::toDTO).toList());
+
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {

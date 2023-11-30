@@ -146,7 +146,7 @@ public interface UserController {
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> listUsers(
         @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
+        @RequestParam(required = false, defaultValue = "25") Integer size,
         @RequestParam(required = false) String filterString,
         @RequestParam(required = false) Integer userId);
 

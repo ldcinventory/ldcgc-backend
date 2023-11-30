@@ -35,8 +35,8 @@ public class UserControllerImpl implements UserController {
         return userService.getUser(userId);
     }
 
-    public ResponseEntity<?> listUsers(Integer pageIndex, Integer sizeIndex, String filterString, Integer userId) {
-        return userService.listUsers(pageIndex, sizeIndex, filterString, userId);
+    public ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId) {
+        return userService.listUsers(pageIndex, size, filterString, userId);
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
