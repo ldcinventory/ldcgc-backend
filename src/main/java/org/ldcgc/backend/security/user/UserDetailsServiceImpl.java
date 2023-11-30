@@ -1,10 +1,8 @@
 package org.ldcgc.backend.security.user;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
