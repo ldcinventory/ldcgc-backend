@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
 
         Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
-            -> new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN)));
+            -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN)));
 
         return getUser(userId);
     }
@@ -104,14 +104,14 @@ public class UserServiceImpl implements UserService {
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
         if (!userRepository.existsById(userId))
-            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN));
+            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN));
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMock.getMockedUser(userId));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
         if (!userRepository.existsById(userId))
-            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND_TOKEN));
+            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN));
 
         userRepository.deleteById(userId);
 

@@ -70,7 +70,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         org.ldcgc.backend.db.model.users.User user = userRepository.findByEmail(email).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().name()));

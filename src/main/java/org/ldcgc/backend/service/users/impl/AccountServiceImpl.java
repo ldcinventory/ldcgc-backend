@@ -58,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<?> login(UserDto user) throws ParseException, JOSEException {
 
         User userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
 
         if (!passwordEncoder.matches(user.getPassword(), userEntity.getPassword()))
             throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_PASSWORD_DOESNT_MATCH));
@@ -94,7 +94,7 @@ public class AccountServiceImpl implements AccountService {
 
     public ResponseEntity<?> recoverCredentials(UserCredentialsDto userCredentials) throws ParseException, JOSEException {
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
 
         jwtUtils.setIsRecoveryToken(true);
         SignedJWT jwt = jwtUtils.generateNewToken(user);
