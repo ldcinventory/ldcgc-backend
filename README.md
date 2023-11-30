@@ -108,15 +108,15 @@ url: localhost:5434
 ---
 
 ## SMTP
-> just in case you want to use your own MailDev / SMTP instance. It needs to change the `docker-compose.yml` file.
+> Just in case you want to use your own MailDev / SMTP instance. It needs to change the `docker-compose.yml` file.
 
-You can expect to test the smtp test server with web UI access directly to `localhost:1081`, to check if mails come directly from backend to this **fake** smtp service.
+You can expect to test the smtp test server with web UI access directly to `localhost:1026`, to check if mails come directly from backend to this **fake** smtp service.
 
 ---
 
 ## Login Response
 
-When the login endpoint was invoked, it returns a JSON response with two tokens:
+When the login endpoint was invoked, it returns a JSON response with a token in 2 special headers:
 
 ```
 {
@@ -126,14 +126,14 @@ When the login endpoint was invoked, it returns a JSON response with two tokens:
 }
 ```
 
-These tokens let to call every endpoint that require authentication.
+Both headers are required to call the most part of the endpoints of the app.
 
 (**Temporary**) When calling to methods, you can skip the login and invoke using a special header `useMockedUser`, with one of these three possible values:
 - for an _admin_ user, `admin` value,
 - for a _manager_ user, `manager` value,
 - and for a _standard_ user, `user` value.
 
-**In the future**, we will provide refresh token to avoid accounts be disconnected after 24 hours (default time for a token to expire).
+**In the future**, we will provide **refresh token** to avoid accounts be disconnected after 24 hours (default time for a token to expire).
 
 ---
 
