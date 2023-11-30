@@ -26,10 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    public static String useMockedUser;
-
-    @Setter
-    @Value("${SKIP_LOGIN:false}") private boolean skipLogin;
+    private static String useMockedUser;
+    private static boolean skipLogin;
 
     public UserDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -84,6 +82,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new UserDetailsImpl(userDetails, user.getId(), user.getAcceptedEULA(), user.getAcceptedEULAManager());
 
+    }
+
+    public static void setMockedUser(String mockedUser) {
+        UserDetailsServiceImpl.useMockedUser = mockedUser;
+        UserDetailsServiceImpl.skipLogin = true;
     }
 
 }

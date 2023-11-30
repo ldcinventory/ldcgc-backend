@@ -58,10 +58,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             String userEmail = jwtUtils.getEmailFromJwtToken(decodedJWT);
 
-            if(StringUtils.isNotBlank(request.getHeader("useMockedUser"))) {
-                UserDetailsServiceImpl.useMockedUser = request.getHeader("useMockedUser");
-                userDetailsService.setSkipLogin(true);
-            }
+            if(StringUtils.isNotBlank(request.getHeader("useMockedUser")))
+                UserDetailsServiceImpl.setMockedUser(request.getHeader("useMockedUser"));
 
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
 
