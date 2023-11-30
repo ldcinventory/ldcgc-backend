@@ -40,6 +40,14 @@ public class Constructor {
         return ResponseEntity.status(httpStatus).body(buildResponseData(object));
     }
 
+    public static ResponseEntity<Object> buildExceptionResponseObject(HttpStatus httpStatus, Object object) {
+        return ResponseEntity.status(httpStatus).body(buildResponseData(object));
+    }
+
+    public static ResponseEntity<Object> buildExceptionResponseMessageObject(HttpStatus httpStatus, String message, Object object) {
+        return ResponseEntity.status(httpStatus).body(buildResponseMessageObject(message, object));
+    }
+
     public static ResponseEntity<?> buildResponseObjectHeader(HttpStatus httpStatus, Object object, HttpHeaders headers) {
         return ResponseEntity.status(httpStatus).headers(headers).body(buildResponseData(object));
     }
@@ -53,11 +61,11 @@ public class Constructor {
     }
 
     private static Response.DTO buildResponseMessage(String message) {
-        return Response.DTO.builder().status(message).build();
+        return Response.DTO.builder().message(message).build();
     }
 
     private static Response.DTO buildResponseMessageDetails(String message, List<String> details) {
-        return Response.DTO.builder().status(message).details(details).build();
+        return Response.DTO.builder().message(message).details(details).build();
     }
 
     private static Response.DTOWithLocation buildResponseMessageLocation(String message, String location) {
@@ -69,6 +77,7 @@ public class Constructor {
     }
 
     private static Response.DTO buildResponseMessageObject(String message, Object object) {
-        return Response.DTO.builder().status(message).data(object).build();
+        return Response.DTO.builder().message(message).data(object).build();
     }
+
 }
