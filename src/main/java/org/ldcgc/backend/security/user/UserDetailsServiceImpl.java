@@ -24,11 +24,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    // TODO delete these 2 parameters in the future to force login
     private static String useMockedUser;
     private static boolean skipLogin;
 
     public UserDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
 
+        // TODO delete this section in the future to force login
         if(skipLogin) {
 
             // set to false to avoid skipLogin in next calls by accident
@@ -82,6 +85,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     }
 
+    // TODO delete this section in the future to force login
     public static void setMockedUser(String mockedUser) {
         UserDetailsServiceImpl.useMockedUser = mockedUser;
         UserDetailsServiceImpl.skipLogin = true;
