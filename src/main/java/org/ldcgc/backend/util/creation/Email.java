@@ -22,9 +22,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.util.process.Process.runInBackground;
+import static org.ldcgc.backend.util.retrieving.Message.AppMessage.COPYRIGHT;
 import static org.ldcgc.backend.util.retrieving.Message.AppMessage.CREDENTIALS_EMAIL_TEMPLATE;
 import static org.ldcgc.backend.util.retrieving.Message.AppMessage.CREDENTIALS_RECOVERY_SUBJECT;
+import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EMAIL_IMAGE_PARAMETER;
+import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EMAIL_IMAGE_PNG;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EMAIL_CREDENTIALS_SENDING_ERROR;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EMAIL_NOT_SENT;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EMAIL_SENDING_ERROR;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.CREDENTIALS_EMAIL_SENT;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EMAIL_SENT;
 import static org.ldcgc.backend.util.retrieving.Message.getAppMessage;
@@ -46,14 +51,16 @@ public class Email {
         Email.INSTANCE = this;
     }
 
+    private static final String logo = "static/img/ldcgc8-logo.png";
+
     public static ResponseEntity<?> sendRecoveringCredentials(String email, String jwt) {
         try {
             final MimeMessage mimeMessage = Email.INSTANCE.sender.createMimeMessage();
             buildCredentialsEmail(mimeMessage, email, jwt);
             Email.INSTANCE.sender.send(mimeMessage);
-            log.info("email sent!");
+            log.info(getInfoMessage(EMAIL_SENT));
         } catch (MessagingException | IOException e) {
-            log.error("There was an error sending email to: {}. The error was {}", email, e.getLocalizedMessage());
+            log.error(getErrorMessage(EMAIL_CREDENTIALS_SENDING_ERROR), email, e.getLocalizedMessage());
             throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorMessage(EMAIL_NOT_SENT));
         }
         return Constructor.buildResponseMessage(HttpStatus.CREATED, getInfoMessage(CREDENTIALS_EMAIL_SENT));
@@ -64,9 +71,9 @@ public class Email {
             throws MessagingException, IOException {
 
         final Context context = new Context();
-        context.setVariable("ldcgcLogo", "image");
+        context.setVariable("ldcgcLogo", getAppMessage(EMAIL_IMAGE_PARAMETER));
         context.setVariable("userTempToken", jwt);
-        context.setVariable("copyright", String.format("© gc8inventory %d", LocalDateTime.now().getYear()));
+        context.setVariable("copyright", String.format(getAppMessage(COPYRIGHT), LocalDateTime.now().getYear()));
 
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED, "UTF-8");
         message.setTo(email);
@@ -86,9 +93,9 @@ public class Email {
             final MimeMessage mimeMessage = Email.INSTANCE.sender.createMimeMessage();
             buildEmail(mimeMessage, email, subject, template, context);
             runInBackground(() -> Email.INSTANCE.sender.send(mimeMessage));
-            log.info("email sent!");
+            log.info(getInfoMessage(EMAIL_SENT));
         } catch (MessagingException | IOException e) {
-            log.error("There was an error sending email with 'subject' {} to: {}. The error was {}", subject, email, e.getLocalizedMessage());
+            log.error(getErrorMessage(EMAIL_SENDING_ERROR), subject, email, e.getLocalizedMessage());
             throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorMessage(EMAIL_NOT_SENT));
         }
         return Constructor.buildResponseMessage(HttpStatus.CREATED, getInfoMessage(EMAIL_SENT));
@@ -110,17 +117,16 @@ public class Email {
     }
 
     private static void processLogo(MimeMessageHelper helper) throws MessagingException, IOException {
-        final String classPathResource = "static/img/ldcgc8-logo.png";
-        processInlineImage(helper, classPathResource);
-        byte[] ldcgc8logo = new ClassPathResource("static/img/ldcgc8-logo.png").getInputStream().readAllBytes();
+        processInlineImage(helper, logo);
+        byte[] ldcgc8logo = new ClassPathResource(logo).getInputStream().readAllBytes();
         final InputStreamSource imageSource = new ByteArrayResource(ldcgc8logo);
-        helper.addInline("image", imageSource, "image/png");
+        helper.addInline(getAppMessage(EMAIL_IMAGE_PARAMETER), imageSource, getAppMessage(EMAIL_IMAGE_PNG));
     }
 
     private static void processInlineImage(MimeMessageHelper helper, String classPathResource) throws MessagingException, IOException {
         byte[] ldcgc8logo = new ClassPathResource(classPathResource).getInputStream().readAllBytes();
         final InputStreamSource imageSource = new ByteArrayResource(ldcgc8logo);
-        helper.addInline("image", imageSource, "image/png");
+        helper.addInline(getAppMessage(EMAIL_IMAGE_PARAMETER), imageSource, getAppMessage(EMAIL_IMAGE_PNG));
     }
 
 }

@@ -40,7 +40,12 @@ public class Message implements EnumMethods {
     public enum AppMessage implements EnumMethods {
 
         CREDENTIALS_EMAIL_TEMPLATE("credentialsTemplate.html"),
-        CREDENTIALS_RECOVERY_SUBJECT("GC8Inventory : [Recuperación de credenciales] 🙃")
+        CREDENTIALS_RECOVERY_SUBJECT("GC8Inventory : [Recuperación de credenciales] 🙃"),
+
+        EMAIL_IMAGE_PARAMETER("image"),
+        EMAIL_IMAGE_PNG("image/png"),
+
+        COPYRIGHT("© gc8inventory %d")
 
         ;
 
@@ -63,6 +68,8 @@ public class Message implements EnumMethods {
         USER_PASSWORD_DOESNT_MATCH("Password provided for this email doesn't match our records"),
 
         EMAIL_NOT_SENT("Email not sent!"),
+        EMAIL_SENDING_ERROR("There was an error sending email with 'subject' {} to: {}. The error was {}"),
+        EMAIL_CREDENTIALS_SENDING_ERROR("There was an error sending email to: {}. The error was {}"),
 
         VOLUNTEER_ALREADY_EXIST("There's a volunteer with this id"),
         VOLUNTEER_NOT_FOUND("The volunteer you're searching for with this id couldn't be found"),
