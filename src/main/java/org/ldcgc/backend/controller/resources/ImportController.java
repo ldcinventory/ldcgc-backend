@@ -6,6 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+
 @Controller
 @RequestMapping("/resources/import")
 public interface ImportController {
@@ -18,16 +21,16 @@ public interface ImportController {
 
     /* TODO example
     @PostMapping(value = "/resources/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> importTools(@RequestPart MultipartFile document);
      */
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> testAccessWithAdminCredentials();
 
 }
