@@ -69,8 +69,6 @@ public class JwtUtils {
             .generate();
         OctetKeyPair publicJWK = jwk.toPublicJWK();
 
-        //keyCache.put(jwk.getKeyID(), jwk);
-
         // Create the EdDSA signer
         JWSSigner signer = new Ed25519Signer(jwk);
 
