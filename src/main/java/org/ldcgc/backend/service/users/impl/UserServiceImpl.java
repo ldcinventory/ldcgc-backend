@@ -96,12 +96,9 @@ public class UserServiceImpl implements UserService {
         if (userId != null) return getUser(userId);
 
         Pageable paging = PageRequest.of(pageIndex, size);
-        Page<User> pageUsers;
-
-        if(StringUtils.isBlank(filterString))
-            pageUsers = userRepository.findAll(paging);
-        else
-            pageUsers = userRepository.findAllFiltered(filterString, paging);
+        Page<User> pageUsers = StringUtils.isBlank(filterString) ?
+            userRepository.findAll(paging) :
+            userRepository.findAllFiltered(filterString, paging);
 
         List<User> userList = pageUsers.getContent();
 
