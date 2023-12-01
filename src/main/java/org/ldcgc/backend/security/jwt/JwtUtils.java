@@ -34,6 +34,7 @@ import java.text.ParseException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 public class JwtUtils {
 
     @Value("${jwtExpirationMs}")
-    private int jwtExpirationMs;
+    private int jwtExpirationSeconds;
 
     @Getter @Setter
     private Boolean isRecoveryToken = false;
@@ -78,8 +79,8 @@ public class JwtUtils {
         );
 
         Date now = new Date();
-        // expiration time is set to next 24 hours
-        Date expirationTime = new Date(now.toInstant().plusSeconds(24 * 60 * 60).toEpochMilli());
+        // expiration time is set by parameter (default: 24 hours -> 86400 seconds)
+        Date expirationTime = new Date(now.toInstant().plusSeconds(jwtExpirationSeconds).toEpochMilli());
 
         // Prepare JWT with claims set
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -197,7 +198,7 @@ public class JwtUtils {
 
         // must have subject, email
         Preconditions.checkNotNull(claims.getSubject());
-        Preconditions.checkNotNull(((Map) claims.getClaim("userClaims")).get("email"));
+        Preconditions.checkNotNull(((LinkedHashMap) claims.getClaim("userClaims")).get("email"));
 
         JWK jwk = JWK.parse(jwkString);
         Preconditions.checkNotNull(jwk);

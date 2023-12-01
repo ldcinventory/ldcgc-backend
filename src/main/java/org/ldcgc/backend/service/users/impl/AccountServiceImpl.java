@@ -29,8 +29,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
@@ -74,11 +72,8 @@ public class AccountServiceImpl implements AccountService {
 
         HttpHeaders headers = new HttpHeaders();
 
-        LocalDateTime now = LocalDateTime.now();
-
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
-        headers.set("Expires", now.plus(Duration.ofMinutes(10)).toString());
 
         return Constructor.buildResponseObjectHeader(HttpStatus.OK, UserMapper.MAPPER.toDTO(userEntity), headers);
     }

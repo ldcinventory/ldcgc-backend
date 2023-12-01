@@ -13,6 +13,7 @@ import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_VALID;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
@@ -36,6 +38,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final TokenRepository tokenRepository;
 
+    @Value("${jwtExpirationMs}")
+    private int jwtExpirationSeconds;
+
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
 
         final String jwtHeaderPayload = request.getHeader("x-header-payload-token");
@@ -44,6 +49,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         final boolean authIsNotPresent = StringUtils.isBlank(jwtHeaderPayload) && StringUtils.isBlank(jwtSignature);
 
         if (authIsNotPresent) {
+            response.setHeader("Expires", LocalDateTime.now().plusSeconds(jwtExpirationSeconds).toString());
             filterChain.doFilter(request, response);
             return;
         }
@@ -81,6 +87,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         if (isTokenEndpoint(request.getMethod(), request.getRequestURI())) {
             response.setHeader("x-header-payload-token", jwtHeaderPayload);
             response.setHeader("x-signature-token", jwtSignature);
+            try {
+                response.setHeader("Expires", decodedJWT.getJWTClaimsSet().getExpirationTime().toString());
+            } catch (ParseException e) {
+                response.setHeader("Expires", LocalDateTime.now().plusSeconds(jwtExpirationSeconds).toString());
+            }
         }
 
         filterChain.doFilter(request, response);
