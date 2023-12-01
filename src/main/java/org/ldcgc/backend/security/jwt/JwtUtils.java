@@ -33,7 +33,6 @@ import java.text.ParseException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -202,7 +201,7 @@ public class JwtUtils {
 
         // must have subject, email
         Preconditions.checkNotNull(claims.getSubject());
-        Preconditions.checkNotNull(((LinkedHashMap) claims.getClaim("userClaims")).get("email"));
+        Preconditions.checkNotNull(((Map) claims.getClaim("userClaims")).get("email"));
 
         JWK jwk = JWK.parse(jwkString);
         Preconditions.checkNotNull(jwk);
