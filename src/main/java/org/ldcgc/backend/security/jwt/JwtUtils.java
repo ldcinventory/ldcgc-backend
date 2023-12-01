@@ -16,7 +16,6 @@ import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +51,7 @@ public class JwtUtils {
     @Value("${jwtExpirationMs}")
     private int jwtExpirationSeconds;
 
-    @Getter @Setter
+    @Setter
     private Boolean isRecoveryToken = false;
 
     private final TokenRepository tokenRepository;
@@ -132,6 +131,11 @@ public class JwtUtils {
 
         return signedJWT;
 
+    }
+
+    public SignedJWT generateNewRecoveryToken(User user) throws ParseException, JOSEException {
+        setIsRecoveryToken(true);
+        return generateNewToken(user);
     }
 
     public String getEmailFromJwtToken(SignedJWT signedJWT) throws ParseException {

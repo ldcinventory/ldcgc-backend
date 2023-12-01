@@ -91,9 +91,7 @@ public class AccountServiceImpl implements AccountService {
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
 
-        jwtUtils.setIsRecoveryToken(true);
-        SignedJWT jwt = jwtUtils.generateNewToken(user);
-        jwtUtils.setIsRecoveryToken(false); // reset recovery token state
+        SignedJWT jwt = jwtUtils.generateNewRecoveryToken(user);
 
         return sendRecoveringCredentials(userCredentials.getEmail(), jwt.getParsedString());
     }
