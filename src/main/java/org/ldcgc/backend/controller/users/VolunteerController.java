@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
+
 @Controller
 @RequestMapping("/volunteers")
 @Tag(name = "Volunteers", description = "Volunteers methods with CRUD functions")
@@ -52,7 +55,7 @@ public interface VolunteerController {
             })
     )
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createVolunteer(
         @RequestBody VolunteerDto volunteer);
 
@@ -72,7 +75,7 @@ public interface VolunteerController {
             })
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listVolunteers(
         @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
@@ -103,7 +106,7 @@ public interface VolunteerController {
             })
     )
     @GetMapping("/{volunteerId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getVolunteer(
         @Parameter(description = "Volunteer Id")
         @PathVariable String volunteerId);
@@ -134,7 +137,7 @@ public interface VolunteerController {
             })
     )
     @PutMapping("/{volunteerId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateVolunteer(
         @PathVariable String volunteerId,
         VolunteerDto volunteer);
@@ -165,7 +168,7 @@ public interface VolunteerController {
             })
     )
     @DeleteMapping("/{volunteerId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteVolunteer(
         @PathVariable String volunteerId);
 

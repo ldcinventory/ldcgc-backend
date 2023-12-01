@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,8 @@ public class InitializationData {
     private final GroupRepository groupRepository;
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${DB_NAME:mydb}") private String dbName;
 
@@ -204,7 +207,7 @@ public class InitializationData {
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
             List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
-            volunteers.forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
+            volunteers.parallelStream().forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
                 .builderAssistantId(vFieldList.get(1))
                 .name(vFieldList.get(2))
                 .lastName(vFieldList.get(3))
@@ -251,7 +254,7 @@ public class InitializationData {
             //    new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-            tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
+            tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
                 .barcode(tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
                             ? brandsMap.get("<empty>")
@@ -280,7 +283,7 @@ public class InitializationData {
             //                  and cn.CategoryId = c.CategoryId;)
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-            consumables.forEach(cFieldList -> consumableRepository.save(Consumable.builder()
+            consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
                 .barcode(cFieldList.get(0))
                 .brand(brandsMap.get(cFieldList.get(1)))
                 .model(cFieldList.get(2))
@@ -309,7 +312,7 @@ public class InitializationData {
             //                 and m.VolunteerId = v.VolunteerId;
 
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
-            maintenance.forEach(mFieldList -> {
+            maintenance.parallelStream().forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                 final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
                 maintenanceRepository.save(Maintenance.builder()
@@ -341,8 +344,8 @@ public class InitializationData {
             List<Category> responsibilitiesEntities = categoryRepository.findAllByParentName("Responsabilidades");
 
             userRepository.save(User.builder()
-                .email("admin")
-                .password("admin")
+                .email("admin@admin")
+                .password(passwordEncoder.encode("admin"))
                 .group(_8g)
                 .role(ERole.ROLE_ADMIN)
                 .responsibility(responsibilitiesEntities.stream()
@@ -351,18 +354,18 @@ public class InitializationData {
                 .build());
 
             userRepository.save(User.builder()
-                .email("manager")
-                .password("manager")
+                .email("manager@manager")
+                .password(passwordEncoder.encode("manager"))
                 .group(_8g)
-                .role(ERole.ROLE_USER)
+                .role(ERole.ROLE_MANAGER)
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
                     .orElse(null))
                 .build());
 
             userRepository.save(User.builder()
-                .email("user")
-                .password("user")
+                .email("user@user")
+                .password(passwordEncoder.encode("user"))
                 .group(_8g)
                 .role(ERole.ROLE_USER)
                 .responsibility(responsibilitiesEntities.stream()

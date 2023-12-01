@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+
 @Controller
 @RequestMapping("/resources/tools")
 public interface ToolController {
@@ -27,11 +29,11 @@ public interface ToolController {
     //   |-> (/resources/tools/{toolId})
 
     @GetMapping("/{toolId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
     @PutMapping("/{toolId}")
