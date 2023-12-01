@@ -1,0 +1,20 @@
+#exempted endpoints to process token filter
+exempted:
+  GET:
+  POST:
+  PUT:
+  PATCH:
+  DELETE:
+
+#endpoints that don't return token in headers
+nonToken:
+  GET:
+    - "/api/alive"
+    - "/api/accounts/validate"
+  POST:
+    - "/api/accounts/logout"
+    - "/api/accounts/recover"
+    - "/api/accounts/new-credentials"
+  PUT:
+  PATCH:
+  DELETE:

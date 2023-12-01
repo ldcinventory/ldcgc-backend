@@ -10,11 +10,11 @@ import org.ldcgc.backend.util.compare.EnumMethods;
 public enum ERole implements EnumMethods {
 
     @JsonProperty("user")
-    ROLE_USER("user"),
+    ROLE_USER("USER"),
     @JsonProperty("manager")
-    ROLE_MANAGER("manager"),
+    ROLE_MANAGER("MANAGER"),
     @JsonProperty("admin")
-    ROLE_ADMIN("admin");
+    ROLE_ADMIN("ADMIN");
 
     private final String roleName;
 

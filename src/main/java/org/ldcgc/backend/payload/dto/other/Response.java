@@ -11,7 +11,7 @@ public class Response implements Serializable {
 
     @Value @Builder(toBuilder = true) @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTO {
-        String status;
+        String message;
         List<String> details;
         Object data;
     }

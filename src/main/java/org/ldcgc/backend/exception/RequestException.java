@@ -19,6 +19,12 @@ public class RequestException extends RuntimeException {
         httpStatus = _httpStatus;
     }
 
+    public RequestException(HttpStatus _httpStatus, String message, ApiError _apiError) {
+        super(message);
+        httpStatus = _httpStatus;
+        apiError = _apiError;
+    }
+
     public RequestException(HttpStatus _httpStatus, String message, String _location) {
         super(message);
         httpStatus = _httpStatus;
@@ -33,7 +39,6 @@ public class RequestException extends RuntimeException {
         super(message);
         apiError = _apiError;
         httpStatus = HttpStatus.valueOf(_apiError.getHttpStatus().value());
-
     }
 
 }

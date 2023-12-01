@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.payload.dto.users.UserDto;
+import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -16,34 +17,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.text.ParseException;
 
 @Controller
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Users methods with CRUD functions, some for Admin")
 public interface UserController {
-
-    // TODO
-    //  Read self account GET
-    //   |-> (/users/me)
-    //  Update self account PUT
-    //   |-> (/users/me)
-    //  Delete self account DELETE
-    //   |-> (/users/me)
-    //  -- ADMIN role
-    //  Create account POST
-    //   |-> (/users)
-    //  Read all accounts (can filter by parameters) GET
-    //   |-> (/users/?page={pageIndex}&size={sizeIndex}&filter={filterString})
-    //  Read specific account GET
-    //   |-> (/users/{userId})
-    //  Update another account PUT
-    //   |-> (/users/{userId})
-    //  Delete another account DELETE
-    //   |-> (/users/{userId})
 
     // users
 
@@ -55,16 +39,17 @@ public interface UserController {
             schema = @Schema(implementation = UserDto.class))
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User from token not found", value = "User id or user from token not found, or token is not valid"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
-    ResponseEntity<?> getMyUser(@RequestHeader("Authorization") String token);
+    ResponseEntity<?> getMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token);
 
     @Operation(summary = "Update my user")
     @ApiResponse(
@@ -76,16 +61,16 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @PutMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> updateMyUser(@RequestHeader("Authorization") String token, @RequestBody UserDto user);
+    ResponseEntity<?> updateMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token, @RequestBody UserDto user) throws ParseException;
 
     @Operation(summary = "Delete my user")
     @ApiResponse(
@@ -97,16 +82,16 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @DeleteMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    ResponseEntity<?> deleteMyUser(@RequestHeader("Authorization") String token);
+    ResponseEntity<?> deleteMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     // admin
 
@@ -120,19 +105,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "409",
+        description = "Conflict",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "User already exists" , value = "There's a user with this id or email"),
-            })
-    )
-    @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Not implemented" , value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User exists", value = "There's already a user with this id or email")
             })
     )
     @PostMapping
@@ -147,15 +124,15 @@ public interface UserController {
             schema = @Schema(implementation = UserDto.class))
     )
     @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found")
             })
     )
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> getUser(@PathVariable Integer userId);
 
     @Operation(summary = "List users (admin)")
@@ -166,10 +143,10 @@ public interface UserController {
             array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> listUsers(
         @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
+        @RequestParam(required = false, defaultValue = "25") Integer size,
         @RequestParam(required = false) String filterString,
         @RequestParam(required = false) Integer userId);
 
@@ -183,15 +160,15 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "User doesn't exists", value = "The user you're searching for with this id doesn't exist"),
+                @ExampleObject(name = "User not found", value = "User not found"),
             })
     )
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody UserDto user);
 
     @Operation(summary = "Delete any user (admin)")
@@ -204,19 +181,11 @@ public interface UserController {
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "404",
+        description = "Not found",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "User doesn't exists", value = "The user you're searching for with this id doesn't exist"),
-            })
-    )
-    @ApiResponse(
-        responseCode = "501",
-        description = "Not implemented",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Not implemented", value = "This endpoint is not implemented yet"),
+                @ExampleObject(name = "User not found", value = "User not found"),
             })
     )
     @DeleteMapping("/{userId}")
