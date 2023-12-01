@@ -24,6 +24,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+
 @Controller
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Users methods with CRUD functions, some for Admin")
@@ -48,7 +52,7 @@ public interface UserController {
             })
     )
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> getMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token);
 
     @Operation(summary = "Update my user")
@@ -69,7 +73,7 @@ public interface UserController {
             })
     )
     @PutMapping("/me")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token, @RequestBody UserDto user) throws ParseException;
 
     @Operation(summary = "Delete my user")
@@ -90,7 +94,7 @@ public interface UserController {
             })
     )
     @DeleteMapping("/me")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     // admin
@@ -113,7 +117,7 @@ public interface UserController {
             })
     )
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createUser(@RequestBody UserDto user);
 
     @Operation(summary = "Get any user (admin)")
@@ -132,7 +136,7 @@ public interface UserController {
             })
     )
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getUser(@PathVariable Integer userId);
 
     @Operation(summary = "List users (admin)")
@@ -143,7 +147,7 @@ public interface UserController {
             array = @ArraySchema(schema = @Schema(implementation = UserDto.class)))
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listUsers(
         @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @RequestParam(required = false, defaultValue = "25") Integer size,
@@ -168,7 +172,7 @@ public interface UserController {
             })
     )
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody UserDto user);
 
     @Operation(summary = "Delete any user (admin)")
@@ -189,7 +193,7 @@ public interface UserController {
             })
     )
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteUser(@PathVariable Integer userId);
 
 }

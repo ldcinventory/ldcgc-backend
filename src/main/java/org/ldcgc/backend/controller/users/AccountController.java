@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+
 @Controller
 @RequestMapping("/accounts")
 public interface AccountController {
@@ -69,7 +71,7 @@ public interface AccountController {
             })
     )
     @PostMapping("/logout")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> logout(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     @Operation(summary = "Send recovery credentials (an email with token in url)")
