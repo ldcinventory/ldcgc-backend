@@ -344,7 +344,7 @@ public class InitializationData {
             List<Category> responsibilitiesEntities = categoryRepository.findAllByParent_Name("Responsabilidades");
 
             userRepository.save(User.builder()
-                .email("admin")
+                .email("admin@admin")
                 .password(passwordEncoder.encode("admin"))
                 .group(_8g)
                 .role(ERole.ROLE_ADMIN)
@@ -354,7 +354,7 @@ public class InitializationData {
                 .build());
 
             userRepository.save(User.builder()
-                .email("manager")
+                .email("manager@manager")
                 .password(passwordEncoder.encode("manager"))
                 .group(_8g)
                 .role(ERole.ROLE_MANAGER)
@@ -364,7 +364,7 @@ public class InitializationData {
                 .build());
 
             userRepository.save(User.builder()
-                .email("user")
+                .email("user@user")
                 .password(passwordEncoder.encode("user"))
                 .group(_8g)
                 .role(ERole.ROLE_USER)
