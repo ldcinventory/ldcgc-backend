@@ -19,15 +19,19 @@ import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
+import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.retrieving.Files;
+import org.ldcgc.backend.util.retrieving.Message;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -40,6 +44,7 @@ import java.util.stream.Stream;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
+import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Configuration
 @RequiredArgsConstructor
@@ -221,7 +226,7 @@ public class InitializationData {
             List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
             Category brand = Category.builder()
-                .name("Fabricantes")
+                .name("Marcas")
                 .locked(true)
                 .build();
 
@@ -243,10 +248,14 @@ public class InitializationData {
             //            where t.BrandId = b.BrandId
             //            and t.CategoryId = c.CategoryId;)
 
-            List<Category> brandEntities = categoryRepository.findAllByParentName("Fabricantes");
+            List<Category> brandEntities = categoryRepository.findByName(CategoryParentEnum.BRANDS.getBbddName()).map(Category::getCategories)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                            .formatted(CategoryParentEnum.BRANDS.getName(), CategoryParentEnum.BRANDS.getBbddName())));
             Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
-            List<Category> resourceCategoryEntities = categoryRepository.findAllByParentName("Recursos");
+            List<Category> resourceCategoryEntities = categoryRepository.findByName(CategoryParentEnum.RESOURCES.getBbddName()).map(Category::getCategories)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                            .formatted(CategoryParentEnum.RESOURCES.getName(), CategoryParentEnum.RESOURCES.getBbddName())));
             Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             // TODO check status when final migration
@@ -341,7 +350,9 @@ public class InitializationData {
 
             categoryRepository.saveAndFlush(responsibilityCat);
 
-            List<Category> responsibilitiesEntities = categoryRepository.findAllByParentName("Responsabilidades");
+            List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSABILITIES.getBbddName()).map(Category::getCategories)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                            .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
             userRepository.save(User.builder()
                 .email("admin@admin")

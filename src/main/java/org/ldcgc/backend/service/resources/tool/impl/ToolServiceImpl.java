@@ -20,12 +20,18 @@ import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.ExcelUtils;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.*;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
@@ -71,12 +77,11 @@ public class ToolServiceImpl implements ToolService {
     }
 
     @Override
-    public ResponseEntity<?> getAllTools() {
-        List<ToolDto> allTools = toolRepository.findAll().stream()
-                .map(ToolMapper.MAPPER::toDto)
-                .toList();
+    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String filterString) {
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(filterString));
+        Page<ToolDto> page = toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, allTools);
+        return Constructor.buildResponseObject(HttpStatus.OK, page);
     }
 
     @Override

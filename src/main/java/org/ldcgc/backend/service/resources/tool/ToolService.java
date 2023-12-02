@@ -5,14 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-
 @Service
 public interface ToolService {
     ResponseEntity<?> getTool(Integer toolId);
     ResponseEntity<?> createTool(ToolDto tool);
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
-    ResponseEntity<?> getAllTools();
+    ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String filterString);
     ResponseEntity<?> uploadToolsExcel(MultipartFile file);
 }

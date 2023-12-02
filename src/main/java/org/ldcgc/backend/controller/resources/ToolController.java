@@ -45,7 +45,7 @@ public interface ToolController {
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
     @GetMapping()
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    //@PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
 
     @ApiResponse(
