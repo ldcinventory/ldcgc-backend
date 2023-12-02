@@ -1,5 +1,5 @@
 
-LDC Inventory management for Volunteers 👷 and Tools ‍🛠️
+LDC Inventory management for Volunteers 👷 and Tools ‍🛠️ (Group 8)
 ............................................................
 :'##:::::::'########:::'######::::::::::'######::::'######::
 : ##::::::: ##.... ##:'##... ##::::::::'##... ##::'##... ##:
@@ -10,4 +10,4 @@ LDC Inventory management for Volunteers 👷 and Tools ‍🛠️
 :........::........::::......:::::::::::......:::::......:::
 
 ${application.title} v${application.version} - visit the awesome ${application.url}
-Powered by Spring Boot ${spring-boot.version}, made in Spain with ❤️
+Powered by Spring Boot ${spring-boot.version} and JDK ${java.version}, made in Spain with ❤️ (love)
