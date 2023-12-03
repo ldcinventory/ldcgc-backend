@@ -22,8 +22,13 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.List;
 
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.*;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.*;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_ALREADY_EXIST;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND_TOKEN;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_DELETED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_UPDATED;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
