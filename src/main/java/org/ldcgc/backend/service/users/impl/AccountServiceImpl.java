@@ -32,13 +32,8 @@ import java.text.ParseException;
 import java.util.Collections;
 
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.JWT_NOT_FOR_RECOVERY;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_PASSWORD_DOESNT_MATCH;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.LOGOUT_SUCCESSFUL;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.RECOVERY_TOKEN_VALID;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREDENTIALS_UPDATED;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.*;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.*;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 

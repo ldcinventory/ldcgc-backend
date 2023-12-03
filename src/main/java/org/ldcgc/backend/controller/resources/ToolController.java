@@ -5,16 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.checkerframework.checker.units.qual.C;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 
@@ -37,15 +33,15 @@ public interface ToolController {
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
     @PutMapping("/{toolId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
     ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
     @DeleteMapping("/{toolId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
     @GetMapping()
-    //@PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
     ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
 
     @ApiResponse(
@@ -63,7 +59,7 @@ public interface ToolController {
                     })
     )
     @PostMapping("/excel")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
     ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);
 
 }

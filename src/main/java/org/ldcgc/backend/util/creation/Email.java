@@ -22,19 +22,11 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.util.process.Process.runInBackground;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.COPYRIGHT;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.CREDENTIALS_EMAIL_TEMPLATE;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.CREDENTIALS_RECOVERY_SUBJECT;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EMAIL_IMAGE_PARAMETER;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EMAIL_IMAGE_PNG;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EMAIL_CREDENTIALS_SENDING_ERROR;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EMAIL_NOT_SENT;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EMAIL_SENDING_ERROR;
+import static org.ldcgc.backend.util.retrieving.Message.AppMessage.*;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.*;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.CREDENTIALS_EMAIL_SENT;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EMAIL_SENT;
-import static org.ldcgc.backend.util.retrieving.Message.getAppMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
+import static org.ldcgc.backend.util.retrieving.Message.*;
 
 @Getter
 @RequiredArgsConstructor
