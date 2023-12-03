@@ -40,15 +40,15 @@ public interface ToolController {
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
     @PutMapping("/{toolId}")
-    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
     @DeleteMapping("/{toolId}")
-    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
     @GetMapping()
-    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
 
     @ApiResponse(
@@ -66,7 +66,7 @@ public interface ToolController {
                     })
     )
     @PostMapping("/excel")
-    @PreAuthorize("hasAnyRole(ADMIN_LEVEL)")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);
 
 }
