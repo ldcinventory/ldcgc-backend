@@ -6,12 +6,8 @@ import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.excel.ToolExcelDto;
-import org.ldcgc.backend.payload.dto.excel.ToolExcelMasterDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.category.CategoryService;
-import org.ldcgc.backend.service.groups.GroupsService;
-import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.ExcelUtils;
@@ -36,9 +32,6 @@ import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 public class ToolServiceImpl implements ToolService {
 
     private final ToolRepository toolRepository;
-    private final CategoryService categoryService;
-    private final LocationService locationService;
-    private final GroupsService groupsService;
 
     private final ToolExcelService toolExcelService;
 

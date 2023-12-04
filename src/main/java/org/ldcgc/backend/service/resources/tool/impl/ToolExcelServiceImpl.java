@@ -15,7 +15,6 @@ import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
-import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EStatus;
 
 import java.util.List;
