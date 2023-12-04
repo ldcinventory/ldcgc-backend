@@ -1,11 +1,12 @@
 package org.ldcgc.backend.payload.dto.excel;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Builder
+@Getter
 @Value
 public class ToolExcelDto {
     String barcode;

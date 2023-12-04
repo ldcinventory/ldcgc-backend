@@ -2,22 +2,18 @@ package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
-import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.dto.excel.ToolExcelDto;
-import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.ldcgc.backend.payload.dto.excel.ToolExcelMasterDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
+import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.ExcelUtils;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +39,8 @@ public class ToolServiceImpl implements ToolService {
     private final CategoryService categoryService;
     private final LocationService locationService;
     private final GroupsService groupsService;
+
+    private final ToolExcelService toolExcelService;
 
     public ResponseEntity<?> getTool(Integer toolId) {
         Tool tool = toolRepository.findById(toolId).orElseThrow(() ->
@@ -86,51 +84,10 @@ public class ToolServiceImpl implements ToolService {
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
         List<ToolExcelDto> toolsExcel = ExcelUtils.excelToTools(file);
 
-        List<ToolDto> toolsToSave = convertExcelTools(toolsExcel);
+        List<ToolDto> toolsToSave = toolExcelService.convertExcelToTools(toolsExcel);
 
         toolRepository.saveAll(toolsToSave.stream().map(ToolMapper.MAPPER::toMo).toList());
 
         return Constructor.buildResponseObject(HttpStatus.OK, toolsToSave);
-    }
-
-    private List<ToolDto> convertExcelTools(List<ToolExcelDto> toolsExcel) {
-        List<ToolDto> tools = toolRepository.findByBarcodeIn(toolsExcel.stream().map(ToolExcelDto::getBarcode).toList())
-                .stream()
-                .map(ToolMapper.MAPPER::toDto)
-                .toList();
-        CategoryDto brandParent = categoryService.getCategoryParent(CategoryParentEnum.BRANDS);
-        CategoryDto categoryParent = categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES);
-        List<GroupDto> groups = groupsService.getAllGroups();
-        List<LocationDto> locations = locationService.getAllLocations();
-        CategoryDto maintenanceTimeParent = categoryService.getCategoryParent(CategoryParentEnum.MAINTENANCE_TIME);
-
-        return toolsExcel.stream()
-                .map(toolExcel -> ToolDto.builder()
-                        .id(getIdByBarcode(toolExcel, tools))
-                        .barcode(toolExcel.getBarcode())
-                        .brand(categoryService.findCategorySonInParentByName(toolExcel.getBrand(), brandParent))
-                        .category(categoryService.findCategorySonInParentByName(toolExcel.getCategory(), categoryParent))
-                        .group(groupsService.findGroupInListByName(toolExcel.getGroup(), groups))
-                        .description(toolExcel.getDescription())
-                        .lastMaintenance(toolExcel.getLastMaintenance())
-                        .location(locationService.findLocationInListByName(toolExcel.getLocation(), locations))
-                        .maintenancePeriod(toolExcel.getMaintenancePeriod())
-                        .maintenanceTime(categoryService.findCategorySonInParentByName(toolExcel.getMaintenanceTime(), maintenanceTimeParent))
-                        .model(toolExcel.getModel())
-                        .name(toolExcel.getName())
-                        .status(EStatus.getStatusByName(toolExcel.getStatus()))
-                        .urlImages(toolExcel.getUrlImages())
-                        .build())
-                .toList();
-    }
-
-
-    @Nullable
-    private Integer getIdByBarcode(ToolExcelDto toolExcel, List<ToolDto> tools) {
-        return tools.stream()
-                .filter(tool -> tool.getBarcode().equals(toolExcel.getBarcode()))
-                .map(ToolDto::getId)
-                .findFirst()
-                .orElse(null);
     }
 }
