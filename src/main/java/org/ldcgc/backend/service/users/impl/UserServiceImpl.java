@@ -1,7 +1,6 @@
 package org.ldcgc.backend.service.users.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -32,7 +31,6 @@ import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_UPDATED
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {

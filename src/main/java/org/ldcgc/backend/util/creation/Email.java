@@ -36,10 +36,10 @@ import static org.ldcgc.backend.util.retrieving.Message.getAppMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
+@Slf4j
 @Getter
 @RequiredArgsConstructor
 @Component
-@Slf4j
 public class Email {
 
     private final TemplateEngine templateEngine;

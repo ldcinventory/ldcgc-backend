@@ -1,7 +1,6 @@
 package org.ldcgc.backend.service.category.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
@@ -15,7 +14,6 @@ import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CATEGORY_PA
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CATEGORY_SON_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {

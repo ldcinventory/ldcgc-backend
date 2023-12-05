@@ -1,7 +1,6 @@
 package org.ldcgc.backend.service.location.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
@@ -15,7 +14,6 @@ import java.util.List;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.LOCATION_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {

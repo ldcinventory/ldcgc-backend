@@ -1,7 +1,6 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -26,7 +25,6 @@ import java.util.List;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ToolServiceImpl implements ToolService {

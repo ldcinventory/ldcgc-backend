@@ -1,7 +1,6 @@
 package org.ldcgc.backend.util.creation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -48,7 +47,6 @@ import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Configuration
 @RequiredArgsConstructor
-@Slf4j
 public class InitializationData {
 
     private final UserRepository userRepository;

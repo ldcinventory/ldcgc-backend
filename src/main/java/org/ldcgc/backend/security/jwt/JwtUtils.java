@@ -18,7 +18,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -42,7 +41,6 @@ import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_F
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_PARSEABLE;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {

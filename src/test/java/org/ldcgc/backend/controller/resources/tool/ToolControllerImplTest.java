@@ -2,7 +2,6 @@ package org.ldcgc.backend.controller.resources.tool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.controller.resources.ToolController;
@@ -25,7 +24,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@Slf4j
 @SpringBootTest
 class ToolControllerImplTest {
 

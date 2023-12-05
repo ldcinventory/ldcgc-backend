@@ -1,6 +1,5 @@
 package org.ldcgc.backend.service.tool.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@Slf4j
 @SpringBootTest
 class ToolServiceImplTest {
 
