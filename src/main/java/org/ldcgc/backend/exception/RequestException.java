@@ -9,6 +9,7 @@ public class RequestException extends RuntimeException {
     private HttpStatus httpStatus;
     private ApiError apiError;
     private String location;
+    //TODO: Incluir objetos a través del constructor. Cuando esté hecho, refactorizar CategoryServiceImpl (linea 33), LocationServiceImpl (linea 33) y GroupServiceImpl (línea 33)
 
     public RequestException(String message) {
         super(message);

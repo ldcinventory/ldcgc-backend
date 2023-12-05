@@ -1,14 +1,23 @@
 package org.ldcgc.backend.controller.resources;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 
@@ -17,25 +26,52 @@ import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 public interface ToolController {
 
     // TODO
-    //  Create tool POST
-    //   |-> (/resources/tools)
     //  Read all tools (paginated/filtered) GET
     //   |-> (/resources/tools?page={pageIndex}&size={sizeIndex}&filter={filterString})
-    //  Read specific tool GET
-    //   |-> (/resources/tools/{toolId})
     //  Set barcode for tool PATCH
     //   |-> (/resources/tools/{toolId})
-    //  Update tool details PUT
-    //   |-> (/resources/tools/{toolId})
-    //  Delete tool DELETE
-    //   |-> (/resources/tools/{toolId})
 
+    // TODO Document this endpoint for swagger
     @GetMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
+    // TODO Document this endpoint for swagger
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
+
+    // TODO Document this endpoint for swagger
+    @PutMapping("/{toolId}")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
+
+    // TODO Document this endpoint for swagger
+    @DeleteMapping("/{toolId}")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
+
+    // TODO Document this endpoint for swagger
+    @GetMapping()
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not found",
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Brand not found", value = "Brand Hammer not found. Please, enter a valid Brand.")
+                    })
+    )
+    @PostMapping("/excel")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);
 
 }

@@ -8,16 +8,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(uses = { LocationMapper.class, CategoryMapper.class },
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolMapper {
 
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);
 
-    //@Mapping(source = "status.name", target = "status")
     ToolDto toDto(Tool tool);
 
-    //@Mapping(target = "status", ignore = true)
     Tool toMo(ToolDto toolDto);
+    List<Tool> toMo(List<ToolDto> tools);
 
 }
