@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.tool.impl;
+package org.ldcgc.backend.service.resources.tool;
 
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.db.model.resources.Tool;
