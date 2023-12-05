@@ -28,5 +28,4 @@ public interface LocationMapper {
             return LocationMapper.MAPPER.toDto(location);
         }).toList();
     }
-
 }

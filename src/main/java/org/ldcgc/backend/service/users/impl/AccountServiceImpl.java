@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -42,7 +41,6 @@ import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREDENT
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
