@@ -1,6 +1,5 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
@@ -16,12 +15,14 @@ import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.util.common.EStatus;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Getter
+@Component
 @RequiredArgsConstructor
 public class ToolExcelServiceImpl implements ToolExcelService {
+
     private final ToolRepository toolRepository;
     private final CategoryService categoryService;
     private final LocationService locationService;
