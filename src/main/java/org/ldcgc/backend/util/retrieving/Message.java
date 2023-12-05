@@ -27,7 +27,13 @@ public class Message implements EnumMethods {
         CREDENTIALS_EMAIL_SENT("Credentials email sent"),
         EMAIL_SENT("Email sent"),
 
-        LOGOUT_SUCCESSFUL("Logout successful")
+        LOGOUT_SUCCESSFUL("Logout successful"),
+
+        TOOL_CREATED("Tool created successfully!"),
+        TOOL_LISTED("Found %s tool/s"),
+        TOOL_UPDATED("Tool details updated"),
+        TOOL_UPLOADED("Tools uploaded from Excel file successfully. Imported %s tools"),
+        TOOL_DELETED("Tool deleted")
 
         ;
 

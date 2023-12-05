@@ -23,7 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_CREATED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_DELETED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_LISTED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_UPDATED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_UPLOADED;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
+import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -45,13 +51,13 @@ public class ToolServiceImpl implements ToolService {
 
         ToolDto toolDto = ToolMapper.MAPPER.toDto(entityTool);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, toolDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(TOOL_CREATED), toolDto);
     }
 
     @Override
     public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
         toolRepository.save(ToolMapper.MAPPER.toMo(toolDto));
-        return Constructor.buildResponseObject(HttpStatus.OK, toolDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(TOOL_UPDATED), toolDto);
     }
 
     @Override
@@ -60,7 +66,7 @@ public class ToolServiceImpl implements ToolService {
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
         toolRepository.delete(tool);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
+        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(TOOL_DELETED));
     }
 
     @Override
@@ -68,7 +74,10 @@ public class ToolServiceImpl implements ToolService {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(filterString));
         Page<ToolDto> page = toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, page);
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.OK,
+            String.format(getInfoMessage(TOOL_LISTED), page.getTotalElements()),
+            page);
     }
 
     @Override
@@ -79,6 +88,9 @@ public class ToolServiceImpl implements ToolService {
 
         toolRepository.saveAll(toolsToSave.stream().map(ToolMapper.MAPPER::toMo).toList());
 
-        return Constructor.buildResponseObject(HttpStatus.OK, toolsToSave);
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.OK,
+            String.format(getInfoMessage(TOOL_UPLOADED), toolsToSave.size()),
+            toolsToSave);
     }
 }
