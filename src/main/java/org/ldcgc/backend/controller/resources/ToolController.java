@@ -31,22 +31,27 @@ public interface ToolController {
     //  Set barcode for tool PATCH
     //   |-> (/resources/tools/{toolId})
 
+    // TODO Document this endpoint for swagger
     @GetMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
+    // TODO Document this endpoint for swagger
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
+    // TODO Document this endpoint for swagger
     @PutMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
+    // TODO Document this endpoint for swagger
     @DeleteMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
+    // TODO Document this endpoint for swagger
     @GetMapping()
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
