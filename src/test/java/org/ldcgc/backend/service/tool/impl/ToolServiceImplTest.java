@@ -34,7 +34,7 @@ class ToolServiceImplTest {
     @Mock
     private ToolRepository repository;
 
-    private PodamFactory factory = new PodamFactoryImpl();
+    private final PodamFactory factory = new PodamFactoryImpl();
 
 
     @Test
