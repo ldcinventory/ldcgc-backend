@@ -1,7 +1,6 @@
 package org.ldcgc.backend.service.groups.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
@@ -15,10 +14,9 @@ import java.util.List;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.GROUP_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
-public class GruopServiceImpl implements GroupsService {
+public class GroupServiceImpl implements GroupsService {
 
     private final GroupRepository repository;
     @Override
