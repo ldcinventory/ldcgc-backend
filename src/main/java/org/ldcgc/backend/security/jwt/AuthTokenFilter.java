@@ -64,10 +64,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             String userEmail = jwtUtils.getEmailFromJwtToken(decodedJWT);
 
-            // TODO delete this section in the future to force login
-            if(StringUtils.isNotBlank(request.getHeader("useMockedUser")))
-                UserDetailsServiceImpl.setMockedUser(request.getHeader("useMockedUser"));
-
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,

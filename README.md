@@ -3,11 +3,26 @@
 ---
 ## Run in Cloud
 
-> (not yet completed)
+> (not yet implemented)
 
 ### Login
 
-> (not yet completed)
+To perform a login in this API, just go with default credentials for testing purposes:
+
+> User: `admin@admin` Password: `admin`
+
+> User: `manager@manager` Password: `manager`
+
+> User: `user@user` Password: `user` 
+
+Call the api to endpoint `/api/account/login` with the payload:
+
+```
+{
+  "email": "user@user",
+  "password": "user"
+}
+```
 
 ### Environment Variables
 
@@ -128,10 +143,6 @@ When the login endpoint was invoked, it returns a JSON response with a token in 
 
 Both headers are required to call the most part of the endpoints of the app.
 
-(**Temporary**) When calling to methods, you can skip the login and invoke using a special header `useMockedUser`, with one of these three possible values:
-- for an _admin_ user, `admin` value,
-- for a _manager_ user, `manager` value,
-- and for a _standard_ user, `user` value.
 
 **In the future**, we will provide **refresh token** to avoid accounts be disconnected after 24 hours (default time for a token to expire).
 
