@@ -84,7 +84,6 @@ public class Message implements EnumMethods {
 
         STATUS_NOT_FOUND("Status not found"),
 
-
         LOCATION_NOT_FOUND("Location with id %s not found."),
 
         GROUP_NOT_FOUND("Group with id %s not found."),
