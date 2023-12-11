@@ -1,6 +1,7 @@
 package org.ldcgc.backend.controller.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.CoreMatchers;
 import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +29,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -37,6 +37,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @WebMvcTest(controllers = AccountController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
@@ -65,6 +67,8 @@ class AccountControllerImplTest {
     @MockBean private ContextConstants contextConstants;
     // mapper
     @Autowired private ObjectMapper mapper;
+
+    private final String requestRoot = "/accounts";
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
@@ -99,12 +103,16 @@ class AccountControllerImplTest {
     }
 
     @Test
-    public void authenticateUserWithValidCredentials() throws Exception {
+    public void authenticateUser() throws Exception {
+
+        final String request = requestRoot + "/login";
+
+        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
 
         given(accountService.login(ArgumentMatchers.any())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser));
 
-        mockMvc.perform(postRequest("/accounts/login")
+        mockMvc.perform(postRequest(request)
                 .content(mapper.writeValueAsString(mockedUserLogin)))
             .andDo(print())
             .andExpect(status().isOk())
@@ -119,7 +127,10 @@ class AccountControllerImplTest {
     //@WithMockUser(username="admin",roles={"USER","MANAGER","ADMIN"})
     public void logoutUser() throws Exception {
 
-        // validation
+        final String request = requestRoot + "/logout";
+
+        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+
         given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
 
         given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
@@ -129,14 +140,33 @@ class AccountControllerImplTest {
         given(accountService.logout(ArgumentMatchers.any())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(LOGOUT_SUCCESSFUL)));
 
-        ReflectionTestUtils.setField(constrainValidationFactory, "isValid", true);
-
-        mockMvc.perform(postRequest("/accounts/logout", ERole.ROLE_USER))
+        mockMvc.perform(postRequest(request, ERole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(getInfoMessage(LOGOUT_SUCCESSFUL)))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
 
+    }
+
+    @Test
+    public void recoverCredentials() {
+        final String request = requestRoot + "/recover";
+
+        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+    }
+
+    @Test
+    public void validateTokenWhenRecoveringCredentials() {
+        final String request = requestRoot + "/validate";
+
+        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+    }
+
+    @Test
+    public void setNewPasswordWhenRecoveringCredentials() {
+        final String request = requestRoot + "/new-credentials";
+
+        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
     }
 
 }
