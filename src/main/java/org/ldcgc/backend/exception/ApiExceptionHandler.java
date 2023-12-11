@@ -42,7 +42,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .message(ex.getMessage())
                 .build();
 
-        log.error(String.format("%d :: RequestException: %s", ex, HttpStatus.BAD_REQUEST.value(), getErrorMessage(RUNTIME_EXCEPTION)));
+        log.error(String.format("%s :: %d :: RequestException: %s", ex, HttpStatus.BAD_REQUEST.value(), getErrorMessage(RUNTIME_EXCEPTION)));
 
         return Constructor.buildResponseObjectHeader(
             HttpStatus.valueOf(apiError.getHttpStatus().value()), apiError, new HttpHeaders());
