@@ -12,6 +12,7 @@ import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.history.MaintenanceRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -51,7 +52,7 @@ public class InitializationData {
     private final ToolRepository toolRepository;
     private final ConsumableRepository consumableRepository;
     private final MaintenanceRepository maintenanceRepository;
-    private final GroupsRepository groupRepository;
+    private final GroupRepository groupRepository;
 
     private final JdbcTemplate jdbcTemplate;
 

@@ -58,6 +58,4 @@ public interface ConsumableController {
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
     @PostMapping("/uploadExcel")
     ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file);
-    @PostMapping("/uploadExcelFile")
-    ResponseEntity<?> uploadExcelFile(@RequestParam("file") MultipartFile file);
 }
