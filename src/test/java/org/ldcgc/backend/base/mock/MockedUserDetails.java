@@ -1,12 +1,15 @@
-package org.ldcgc.backend.controller.mock;
+package org.ldcgc.backend.base.mock;
 
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.common.value.qual.MinLen;
+import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EWeekday;
@@ -14,7 +17,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,11 +42,12 @@ import static org.ldcgc.backend.util.common.EWeekday.WEDNESDAY;
 public class MockedUserDetails {
 
     private final PasswordEncoder passwordEncoder;
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!·$%&/()=|@#?¿´‚ºª'¡`+´ç-.,<>;:_¨Ç^*[]{}";
 
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
-        UserDetails admin = User.builder()
+        UserDetails admin = org.springframework.security.core.userdetails.User.builder()
             .username("admin")
             .password(passwordEncoder.encode("admin"))
             .roles("ADMIN")
@@ -52,7 +55,7 @@ public class MockedUserDetails {
             .build();
         UserDetailsImpl finalAdmin = new UserDetailsImpl(admin, 1, null, null);
 
-        UserDetails manager = User.builder()
+        UserDetails manager = org.springframework.security.core.userdetails.User.builder()
             .username("manager")
             .password(passwordEncoder.encode("manager"))
             .roles("MANAGER")
@@ -60,7 +63,7 @@ public class MockedUserDetails {
             .build();
         UserDetailsImpl finalManager = new UserDetailsImpl(manager, 1, null, null);
 
-        UserDetails user = User.builder()
+        UserDetails user = org.springframework.security.core.userdetails.User.builder()
             .username("user")
             .password(passwordEncoder.encode("user"))
             .roles("USER")
@@ -141,7 +144,7 @@ public class MockedUserDetails {
             .ints(1, 1000, 500000).iterator().nextInt());
     }
 
-    public static UserDto getRandomMockedUser() {
+    public static UserDto getRandomMockedUserDto() {
         VolunteerDto volunteerFromMocked = getMockedUser().getVolunteer();
         AvailabilityDto availabilityFromMocked = getMockedUser().getVolunteer().getAvailability();
         Integer id = new Random().ints(1, 0, 500000).iterator().nextInt();
@@ -161,8 +164,24 @@ public class MockedUserDetails {
             .build();
     }
 
+    public static UserDto getRandomMockedUserDtoLogin() {
+        UserDto userDto = getRandomMockedUserDto();
+        return UserDto.builder()
+            .email(userDto.getEmail())
+            .password(getRandomPassword())
+            .build();
+    }
+
+    public static User getRandomMockedUser() {
+        return UserMapper.MAPPER.toEntity(getRandomMockedUserDto());
+    }
+
+    public static User getRandomMockedUser(ERole role) {
+        return UserMapper.MAPPER.toEntity(getRandomMockedUserDto().toBuilder().role(role).build());
+    }
+
     public static List<UserDto> getListOfMockedUsers(Integer listSize) {
-        return IntStream.range(0, listSize).mapToObj(x -> getRandomMockedUser()).toList();
+        return IntStream.range(0, listSize).mapToObj(x -> getRandomMockedUserDto()).toList();
     }
 
     private static String getRandomElementFromList(List<String> list) {
@@ -183,6 +202,19 @@ public class MockedUserDetails {
         });
 
         return weekdays.stream().toList();
+    }
+
+    private static String getRandomPassword(@MinLen(8) int length) {
+        StringBuilder sb = new StringBuilder(length);
+
+        for(int i = 0; i < length; i++)
+            sb.append(ALPHABET.charAt(new Random().nextInt(ALPHABET.length())));
+
+        return sb.toString();
+    }
+
+    private static String getRandomPassword() {
+        return getRandomPassword(8);
     }
 
 }
