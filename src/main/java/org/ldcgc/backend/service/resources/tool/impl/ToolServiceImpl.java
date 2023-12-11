@@ -21,7 +21,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_ALREADY_EXISTS;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_CREATED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_DELETED;
@@ -36,7 +38,6 @@ import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 public class ToolServiceImpl implements ToolService {
 
     private final ToolRepository toolRepository;
-
     private final ToolExcelService toolExcelService;
 
     public ResponseEntity<?> getTool(Integer toolId) {
@@ -46,6 +47,9 @@ public class ToolServiceImpl implements ToolService {
     }
 
     public ResponseEntity<?> createTool(ToolDto tool) {
+        Optional<Tool> repeatedTool = toolRepository.findFirstByBarcode(tool.getBarcode());
+        if(repeatedTool.isPresent())
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(getErrorMessage(TOOL_ALREADY_EXISTS), tool.getBarcode()));
 
         Tool entityTool = toolRepository.save(ToolMapper.MAPPER.toMo(tool));
 
@@ -56,6 +60,7 @@ public class ToolServiceImpl implements ToolService {
 
     @Override
     public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
+        //TODO: case when the tool is not present but the barcode is. Should we throw an error?
         toolRepository.save(ToolMapper.MAPPER.toMo(toolDto));
         return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(TOOL_UPDATED), toolDto);
     }
