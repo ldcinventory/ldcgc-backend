@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.exception.RequestException;
 import org.springframework.core.io.ByteArrayResource;
@@ -44,7 +45,7 @@ public class Email {
 
     private final TemplateEngine templateEngine;
     private final JavaMailSender sender;
-    private static Email INSTANCE;
+    @Setter private static Email INSTANCE;
 
     @PostConstruct
     public void init() {
