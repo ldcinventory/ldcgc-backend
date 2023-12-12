@@ -2,11 +2,14 @@ package org.ldcgc.backend.service.users.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
+import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
+import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
@@ -16,10 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_ALREADY_EXIST;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_TOKEN_NOT_EXIST;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_CREATED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_DELETED;
@@ -31,7 +36,9 @@ import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 @RequiredArgsConstructor
 public class VolunteerServiceImpl implements VolunteerService {
 
+    private final JwtUtils jwtUtils;
     private final VolunteerRepository volunteerRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
 
@@ -59,6 +66,15 @@ public class VolunteerServiceImpl implements VolunteerService {
             HttpStatus.OK,
             String.format(getInfoMessage(USER_LISTED), pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
+    }
+
+    public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
+
+        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+        Volunteer volunteer = userRepository.findById(userId).map(User::getVolunteer).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_TOKEN_NOT_EXIST)));
+
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
     }
 
     public ResponseEntity<?> getVolunteer(String volunteerId) {
