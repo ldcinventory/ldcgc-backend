@@ -18,7 +18,10 @@ public class TestRequestFactory {
     private static MockHttpServletRequestBuilder defaultRequestValues(MockHttpServletRequestBuilder requestBuilder, ERole tokenUserRole) {
 
         if(tokenUserRole == null)
-            tokenUserRole = ERole.ROLE_USER;
+            return requestBuilder
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8);
 
         return requestBuilder
             .contentType(MediaType.APPLICATION_JSON)
