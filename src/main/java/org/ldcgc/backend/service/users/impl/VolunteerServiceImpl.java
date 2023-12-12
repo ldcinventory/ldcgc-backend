@@ -1,12 +1,31 @@
 package org.ldcgc.backend.service.users.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
+import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_ALREADY_EXIST;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_NOT_FOUND;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_CREATED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_DELETED;
+import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_UPDATED;
+import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
+import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -15,23 +34,58 @@ public class VolunteerServiceImpl implements VolunteerService {
     private final VolunteerRepository volunteerRepository;
 
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
-        return Constructor.generic501();
+
+        if(volunteerRepository.findByBuilderAssistantId(volunteer.getBuilderAssistantId()).isPresent())
+            throw new RequestException(HttpStatus.CONFLICT, String.format(getErrorMessage(VOLUNTEER_ALREADY_EXIST), volunteer.getBuilderAssistantId()));
+
+        Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
+        volunteerEntity = volunteerRepository.save(volunteerEntity);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, getInfoMessage(VOLUNTEER_CREATED), VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer sizeIndex, String filterString, String barcode) {
-        return Constructor.generic501();
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
+
+        if (builderAssistantId != null) return getVolunteer(builderAssistantId);
+
+        Pageable paging = PageRequest.of(pageIndex, size);
+        Page<Volunteer> pageUsers = StringUtils.isBlank(filterString) ?
+            volunteerRepository.findAll(paging) :
+            volunteerRepository.findAllFiltered(filterString, paging);
+
+        List<Volunteer> userList = pageUsers.getContent();
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.OK,
+            String.format(getInfoMessage(USER_LISTED), pageUsers.getTotalElements()),
+            userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
     }
 
     public ResponseEntity<?> getVolunteer(String volunteerId) {
-        return Constructor.generic501();
+
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
+
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
-        return Constructor.generic501();
+
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
+
+        VolunteerMapper.MAPPER.update(volunteer, volunteerEntity);
+
+        volunteerRepository.save(volunteerEntity);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(VOLUNTEER_UPDATED), VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        return Constructor.generic501();
+        if(!volunteerRepository.findByBuilderAssistantId(volunteerId).isPresent())
+            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND));
+
+        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(VOLUNTEER_DELETED));
     }
 
 }
