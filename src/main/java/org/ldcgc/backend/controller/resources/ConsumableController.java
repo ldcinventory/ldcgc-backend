@@ -9,6 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
+import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+
 @Controller
 @RequestMapping("/resources/consumables")
 public interface ConsumableController {
@@ -28,11 +31,11 @@ public interface ConsumableController {
     //   |-> (/resources/consumables/{consumableId})
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> testAccessWithCredentials();
 
     @GetMapping("/admin")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> testAccessWithAdminCredentials();
 
     @GetMapping("/{consumableId}")

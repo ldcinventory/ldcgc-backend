@@ -1,6 +1,7 @@
 package org.ldcgc.backend.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +18,18 @@ public class ApiError {
 
     private String timestamp;
 
-    private int status;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer status;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private HttpStatusCode httpStatus;
 
     private String endpoint;
+
+    @JsonProperty("class")
+    private String clazz;
+
+    private String method;
 
     private String message;
 

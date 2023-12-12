@@ -22,6 +22,8 @@ import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.util.common.ERole;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
@@ -43,6 +45,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ERole role;
+
+    private LocalDateTime acceptedEULA;
+
+    private LocalDateTime acceptedEULAManager;
 
     @OneToOne
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")

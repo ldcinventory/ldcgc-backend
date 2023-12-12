@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Integer getCategoryIdByName(String categoryName) {
-        return null;
+        return repository.findCategoryIdByName(categoryName);
     }
 
     @Override

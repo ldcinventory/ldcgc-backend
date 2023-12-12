@@ -1,7 +1,6 @@
 package org.ldcgc.backend.util.creation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -19,16 +18,21 @@ import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
+import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.retrieving.Files;
+import org.ldcgc.backend.util.retrieving.Message;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +43,10 @@ import java.util.stream.Stream;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
+import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Configuration
 @RequiredArgsConstructor
-@Slf4j
 public class InitializationData {
 
     private final UserRepository userRepository;
@@ -55,6 +59,8 @@ public class InitializationData {
     private final GroupRepository groupRepository;
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${DB_NAME:mydb}") private String dbName;
 
@@ -204,7 +210,7 @@ public class InitializationData {
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
             List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
-            volunteers.forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
+            volunteers.parallelStream().forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
                 .builderAssistantId(vFieldList.get(1))
                 .name(vFieldList.get(2))
                 .lastName(vFieldList.get(3))
@@ -218,7 +224,7 @@ public class InitializationData {
             List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
             Category brand = Category.builder()
-                .name("Fabricantes")
+                .name("Marcas")
                 .locked(true)
                 .build();
 
@@ -240,10 +246,14 @@ public class InitializationData {
             //            where t.BrandId = b.BrandId
             //            and t.CategoryId = c.CategoryId;)
 
-            List<Category> brandEntities = categoryRepository.findAllByParent_Name("Fabricantes");
+            List<Category> brandEntities = categoryRepository.findByName(CategoryParentEnum.BRANDS.getBbddName()).map(Category::getCategories)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                            .formatted(CategoryParentEnum.BRANDS.getName(), CategoryParentEnum.BRANDS.getBbddName())));
             Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
-            List<Category> resourceCategoryEntities = categoryRepository.findAllByParent_Name("Recursos");
+            List<Category> resourceCategoryEntities = categoryRepository.findByName(CategoryParentEnum.RESOURCES.getBbddName()).map(Category::getCategories)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                            .formatted(CategoryParentEnum.RESOURCES.getName(), CategoryParentEnum.RESOURCES.getBbddName())));
             Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             // TODO check status when final migration
@@ -251,7 +261,7 @@ public class InitializationData {
             //    new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-            tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
+            tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
                 .barcode(tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
                             ? brandsMap.get("<empty>")
@@ -280,7 +290,7 @@ public class InitializationData {
             //                  and cn.CategoryId = c.CategoryId;)
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-            consumables.forEach(cFieldList -> consumableRepository.save(Consumable.builder()
+            consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
                 .barcode(cFieldList.get(0))
                 .brand(brandsMap.get(cFieldList.get(1)))
                 .model(cFieldList.get(2))
@@ -309,7 +319,7 @@ public class InitializationData {
             //                 and m.VolunteerId = v.VolunteerId;
 
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
-            maintenance.forEach(mFieldList -> {
+            maintenance.parallelStream().forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                 final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
                 maintenanceRepository.save(Maintenance.builder()
@@ -338,11 +348,13 @@ public class InitializationData {
 
             categoryRepository.saveAndFlush(responsibilityCat);
 
-            List<Category> responsibilitiesEntities = categoryRepository.findAllByParent_Name("Responsabilidades");
+            List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSABILITIES.getBbddName()).map(Category::getCategories)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                            .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
             userRepository.save(User.builder()
-                .email("admin")
-                .password("admin")
+                .email("admin@admin")
+                .password(passwordEncoder.encode("admin"))
                 .group(_8g)
                 .role(ERole.ROLE_ADMIN)
                 .responsibility(responsibilitiesEntities.stream()
@@ -351,18 +363,18 @@ public class InitializationData {
                 .build());
 
             userRepository.save(User.builder()
-                .email("manager")
-                .password("manager")
+                .email("manager@manager")
+                .password(passwordEncoder.encode("manager"))
                 .group(_8g)
-                .role(ERole.ROLE_USER)
+                .role(ERole.ROLE_MANAGER)
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
                     .orElse(null))
                 .build());
 
             userRepository.save(User.builder()
-                .email("user")
-                .password("user")
+                .email("user@user")
+                .password(passwordEncoder.encode("user"))
                 .group(_8g)
                 .role(ERole.ROLE_USER)
                 .responsibility(responsibilitiesEntities.stream()
