@@ -15,7 +15,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
     @Query("""
             SELECT v FROM Volunteer v
             WHERE LOWER(v.name) LIKE LOWER(CONCAT('%', :filterString,'%'))
-              AND LOWER(v.lastName) LIKE LOWER(CONCAT('%', :filterString,'%'))
+               OR LOWER(v.lastName) LIKE LOWER(CONCAT('%', :filterString,'%'))
             """)
     Page<Volunteer> findAllFiltered(String filterString, Pageable pageable);
 
