@@ -20,6 +20,7 @@ import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
@@ -38,7 +39,7 @@ public class Availability {
     // and instantiate it in backend as a List of EWeekday enum
     @Convert(converter = AvailabilityConverter.class)
     @Column(columnDefinition = "text")
-    private List<EWeekday> availabilityDays;
+    private Set<EWeekday> availabilityDays;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

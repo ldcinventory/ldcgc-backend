@@ -5,13 +5,14 @@ import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AvailabilityConverter implements AttributeConverter<List<EWeekday>, String> {
+public class AvailabilityConverter implements AttributeConverter<Set<EWeekday>, String> {
 
     private static final String DELIMITER = ",";
 
-    public String convertToDatabaseColumn(List<EWeekday> attribute) {
+    public String convertToDatabaseColumn(Set<EWeekday> attribute) {
         if (attribute == null || attribute.isEmpty()) {
             return null;
         }
@@ -20,13 +21,13 @@ public class AvailabilityConverter implements AttributeConverter<List<EWeekday>,
                 .collect(Collectors.joining(DELIMITER));
     }
 
-    public List<EWeekday> convertToEntityAttribute(String dbData) {
+    public Set<EWeekday> convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isEmpty()) {
             return null;
         }
         return Arrays.stream(dbData.split(DELIMITER))
                 .map(EWeekday.abbrvWeekdayMap::get)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
 }
