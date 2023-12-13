@@ -98,7 +98,7 @@ public class VolunteerServiceImpl implements VolunteerService {
     }
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        if(!volunteerRepository.findByBuilderAssistantId(volunteerId).isPresent())
+        if(volunteerRepository.findByBuilderAssistantId(volunteerId).isEmpty())
             throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND));
 
         return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(VOLUNTEER_DELETED));
