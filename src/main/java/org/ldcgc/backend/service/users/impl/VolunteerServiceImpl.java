@@ -1,5 +1,6 @@
 package org.ldcgc.backend.service.users.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.users.User;
@@ -34,6 +35,7 @@ import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class VolunteerServiceImpl implements VolunteerService {
 
     private final JwtUtils jwtUtils;
@@ -46,6 +48,10 @@ public class VolunteerServiceImpl implements VolunteerService {
             throw new RequestException(HttpStatus.CONFLICT, String.format(getErrorMessage(VOLUNTEER_ALREADY_EXIST), volunteer.getBuilderAssistantId()));
 
         Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
+
+        if(volunteer.getAvailability() != null)
+            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
+
         volunteerEntity = volunteerRepository.save(volunteerEntity);
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, getInfoMessage(VOLUNTEER_CREATED), VolunteerMapper.MAPPER.toDTO(volunteerEntity));
@@ -90,7 +96,10 @@ public class VolunteerServiceImpl implements VolunteerService {
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
 
-        VolunteerMapper.MAPPER.update(volunteer, volunteerEntity);
+        VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
+
+        if(volunteer.getAvailability() != null)
+            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
 
         volunteerRepository.save(volunteerEntity);
 
