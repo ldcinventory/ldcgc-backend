@@ -1,6 +1,7 @@
 package org.ldcgc.backend.controller.users;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -53,7 +54,9 @@ public interface UserController {
     )
     @GetMapping("/me")
     @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> getMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token);
+    ResponseEntity<?> getMyUser(
+        @Parameter(description = "Valid JWT of the user to get details", required = true)
+        @RequestAttribute("Authorization") @UserFromTokenInDb String token);
 
     @Operation(summary = "Update my user")
     @ApiResponse(
@@ -74,7 +77,11 @@ public interface UserController {
     )
     @PutMapping("/me")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> updateMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token, @RequestBody UserDto user) throws ParseException;
+    ResponseEntity<?> updateMyUser(
+        @Parameter(description = "Valid JWT of the user to update", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
+            @RequestBody UserDto user) throws ParseException;
 
     @Operation(summary = "Delete my user")
     @ApiResponse(
@@ -95,7 +102,9 @@ public interface UserController {
     )
     @DeleteMapping("/me")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> deleteMyUser(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
+    ResponseEntity<?> deleteMyUser(
+        @Parameter(description = "Valid JWT of the user to delete", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     // admin
 
@@ -118,7 +127,9 @@ public interface UserController {
     )
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> createUser(@RequestBody UserDto user);
+    ResponseEntity<?> createUser(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
+            @RequestBody UserDto user);
 
     @Operation(summary = "Get any user (admin)")
     @ApiResponse(
@@ -137,7 +148,9 @@ public interface UserController {
     )
     @GetMapping("/{userId}")
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> getUser(@PathVariable Integer userId);
+    ResponseEntity<?> getUser(
+        @Parameter(description = "User id", required = true)
+            @PathVariable Integer userId);
 
     @Operation(summary = "List users (admin)")
     @ApiResponse(
@@ -149,10 +162,14 @@ public interface UserController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listUsers(
-        @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @RequestParam(required = false, defaultValue = "25") Integer size,
-        @RequestParam(required = false) String filterString,
-        @RequestParam(required = false) Integer userId);
+        @Parameter(description = "Page index")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Filter to search user email")
+            @RequestParam(required = false) String filterString,
+        @Parameter(description = "User Id (ignores the other params)")
+            @RequestParam(required = false) Integer userId);
 
     @Operation(summary = "Update any user (admin)")
     @ApiResponse(
@@ -173,7 +190,11 @@ public interface UserController {
     )
     @PutMapping("/{userId}")
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> updateUser(@PathVariable Integer userId, @RequestBody UserDto user);
+    ResponseEntity<?> updateUser(
+        @Parameter(description = "User id", required = true)
+            @PathVariable Integer userId,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
+            @RequestBody UserDto user);
 
     @Operation(summary = "Delete any user (admin)")
     @ApiResponse(
@@ -194,6 +215,8 @@ public interface UserController {
     )
     @DeleteMapping("/{userId}")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> deleteUser(@PathVariable Integer userId);
+    ResponseEntity<?> deleteUser(
+        @Parameter(description = "User id", required = true)
+            @PathVariable Integer userId);
 
 }

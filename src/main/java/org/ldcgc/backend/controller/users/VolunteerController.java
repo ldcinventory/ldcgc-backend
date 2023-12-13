@@ -47,13 +47,14 @@ public interface VolunteerController {
         description = "Conflict",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer already exists" , value = "There's a volunteer with this id"),
+                @ExampleObject(name = "Volunteer already exists" , value = "There's a volunteer with this builder assistant id"),
             })
     )
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createVolunteer(
-        @RequestBody VolunteerDto volunteer);
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
+            @RequestBody VolunteerDto volunteer);
 
     @Operation(summary = "List volunteers")
     @ApiResponse(
@@ -65,10 +66,14 @@ public interface VolunteerController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listVolunteers(
-        @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @RequestParam(required = false, defaultValue = "25") Integer size,
-        @RequestParam(required = false) String filterString,
-        @RequestParam(required = false) String volunteerId);
+        @Parameter(description = "Page index")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Filter to search user name OR last name")
+            @RequestParam(required = false) String filterString,
+        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
+            @RequestParam(required = false) String volunteerId);
 
     @Operation(summary = "Get my volunteer")
     @ApiResponse(
@@ -88,7 +93,8 @@ public interface VolunteerController {
     @GetMapping("/me")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getMyVolunteer(
-        @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
+        @Parameter(description = "Valid JWT of the user to get own volunteer details", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     @Operation(summary = "Get any volunteer")
     @ApiResponse(
@@ -108,8 +114,8 @@ public interface VolunteerController {
     @GetMapping("/{volunteerId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getVolunteer(
-        @Parameter(description = "Volunteer Id")
-        @PathVariable String volunteerId);
+        @Parameter(description = "Volunteer Builder Assistant Id")
+            @PathVariable String volunteerId);
 
     @Operation(summary = "Update any volunteer")
     @ApiResponse(
@@ -131,8 +137,10 @@ public interface VolunteerController {
     @PutMapping("/{volunteerId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateVolunteer(
-        @PathVariable String volunteerId,
-        @RequestBody VolunteerDto volunteer);
+        @Parameter(description = "Volunteer Builder Assistant Id", required = true)
+            @PathVariable String volunteerId,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
+            @RequestBody VolunteerDto volunteer);
 
     @Operation(summary = "Delete any volunteer")
     @ApiResponse(
@@ -154,6 +162,7 @@ public interface VolunteerController {
     @DeleteMapping("/{volunteerId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteVolunteer(
-        @PathVariable String volunteerId);
+        @Parameter(description = "Volunteer Builder Assistant Id", required = true)
+            @PathVariable String volunteerId);
 
 }
