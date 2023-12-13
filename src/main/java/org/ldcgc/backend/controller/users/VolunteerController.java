@@ -35,16 +35,16 @@ public interface VolunteerController {
 
     @Operation(summary = "Create a volunteer")
     @ApiResponse(
-        responseCode = "200",
-        description = "OK",
+        responseCode = "201",
+        description = "Created",
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer created", value = "User registered successfully!")
+                @ExampleObject(name = "Volunteer created", value = "Volunteer registered successfully!")
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "409",
+        description = "Conflict",
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Volunteer already exists" , value = "There's a volunteer with this id"),
@@ -85,7 +85,7 @@ public interface VolunteerController {
                 @ExampleObject(name = "Volunteer from token not exist", value = "The volunteer from this token doesn't exist or is not found"),
             })
     )
-    @GetMapping("/{volunteerId}")
+    @GetMapping("/me")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getMyVolunteer(
         @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
@@ -98,8 +98,8 @@ public interface VolunteerController {
             schema = @Schema(implementation = VolunteerDto.class))
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = "404",
+        description = "Not Found",
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Volunteer doesn't exists", value = "The volunteer you're searching for with this id couldn't be found"),
