@@ -6,7 +6,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
+import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
+
+@Mapper(nullValuePropertyMappingStrategy = IGNORE, nullValueCheckStrategy = ALWAYS,
+    uses = { AvailabilityMapper.class, AbsenceMapper.class })
 public interface VolunteerMapper {
 
     VolunteerMapper MAPPER = Mappers.getMapper(VolunteerMapper.class);
@@ -14,6 +18,7 @@ public interface VolunteerMapper {
     Volunteer toEntity(VolunteerDto volunteerRequest);
 
     VolunteerDto toDTO(Volunteer volunteer);
-    void update(VolunteerDto volunteerDto, @MappingTarget Volunteer volunteer);
+
+    void update(@MappingTarget Volunteer volunteer, VolunteerDto volunteerDto);
 
 }
