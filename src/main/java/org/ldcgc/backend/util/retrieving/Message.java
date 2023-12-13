@@ -77,7 +77,7 @@ public class Message implements EnumMethods {
         EMAIL_SENDING_ERROR("There was an error sending email with 'subject' {} to: {}. The error was {}"),
         EMAIL_CREDENTIALS_SENDING_ERROR("There was an error sending email to: {}. The error was {}"),
 
-        VOLUNTEER_ALREADY_EXIST("There's a volunteer with this id: %s"),
+        VOLUNTEER_ALREADY_EXIST("There's a volunteer with this builder assistant id: %s"),
         VOLUNTEER_TOKEN_NOT_EXIST("The volunteer from this token doesn't exist or is not found"),
         VOLUNTEER_NOT_FOUND("The volunteer you're searching for with this id couldn't be found"),
 
