@@ -2,6 +2,7 @@ package org.ldcgc.backend.controller.users;
 
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,7 +52,9 @@ public interface AccountController {
             })
     )
     @PostMapping("/login")
-    ResponseEntity<?> login(@RequestBody UserDto user) throws ParseException, JOSEException;
+    ResponseEntity<?> login(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
+            @RequestBody UserDto user) throws ParseException, JOSEException;
 
     @Operation(summary = "Perform a logout for a user")
     @ApiResponse(
@@ -72,7 +75,9 @@ public interface AccountController {
     )
     @PostMapping("/logout")
     @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> logout(@RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
+    ResponseEntity<?> logout(
+        @Parameter(description = "Valid JWT of the user to update", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     @Operation(summary = "Send recovery credentials (an email with token in url)")
     @ApiResponse(
@@ -92,7 +97,9 @@ public interface AccountController {
             })
     )
     @PostMapping("/recover")
-    ResponseEntity<?> recoverCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
+    ResponseEntity<?> recoverCredentials(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email)", required = true)
+            @RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
     @Operation(summary = "Validate recovery token from email")
     @ApiResponse(
@@ -121,7 +128,9 @@ public interface AccountController {
             })
     )
     @GetMapping("/validate")
-    ResponseEntity<?> validateToken(@RequestParam(name = "recovery-token") String token) throws ParseException;
+    ResponseEntity<?> validateToken(
+        @Parameter(description = "Valid JWT of the user to update", required = true)
+            @RequestParam(name = "recovery-token") String token) throws ParseException;
 
     @Operation(summary = "Set new credentials for the user")
     @ApiResponse(
@@ -141,6 +150,8 @@ public interface AccountController {
             })
     )
     @PostMapping("/new-credentials")
-    ResponseEntity<?> newCredentials(@RequestBody UserCredentialsDto userCredentials) throws ParseException;
+    ResponseEntity<?> newCredentials(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
+            @RequestBody UserCredentialsDto userCredentials) throws ParseException;
 
 }
