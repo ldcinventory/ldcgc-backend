@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.util.List;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_ALREADY_EXIST;
@@ -48,15 +47,20 @@ public class UserServiceImpl implements UserService {
         return getUser(userId);
     }
 
-    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException {
-        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+    public ResponseEntity<?> updateMyUser(String token, UserDto user) {
+        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
+
+        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
+            -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN)));
 
         return updateUser(userId, user);
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
+    public ResponseEntity<?> deleteMyUser(String token) {
+        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
 
-        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
+            -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN)));
 
         userRepository.deleteById(userId);
         tokenRepository.deleteAllTokensFromUser(userId);
@@ -101,6 +105,9 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
         User userEntity = userRepository.findById(userId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+
+        if(userEntity.getEmail().equals(user.getEmail()))
+            throw new RequestException(HttpStatus.CONFLICT, getErrorMessage(USER_ALREADY_EXIST));
 
         UserMapper.MAPPER.update(user, userEntity);
         userRepository.save(userEntity);
