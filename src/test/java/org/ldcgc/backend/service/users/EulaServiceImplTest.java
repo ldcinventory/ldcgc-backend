@@ -16,9 +16,9 @@ import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserD
 
 @Slf4j
 @SpringBootTest
-class AccountServiceImplTest {
+class EulaServiceImplTest {
 
-    @MockBean private AccountService accountService;
+    @MockBean EulaService eulaService;
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
@@ -28,7 +28,7 @@ class AccountServiceImplTest {
     public void init() {
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(accountService)
+            .standaloneSetup(eulaService)
             .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
             .setHandlerExceptionResolvers()
             .build();
@@ -38,68 +38,77 @@ class AccountServiceImplTest {
 
     }
 
-    // -> login
+    // getEula
+
     @Test
-    public void whenAuthenticateUser_returnUserDetails() {
+    public void whenGetEula_returnUserNotFound() {
 
     }
 
     @Test
-    public void whenAuthenticateUser_returnEmailIsInvalid() {
+    public void whenGetEula_returnStandardEula() {
 
     }
 
     @Test
-    public void whenAuthenticateUser_returnPasswordIsInvalid() {
-
-    }
-
-    // -> logout
-    @Test
-    public void whenLogoutUser_returnOK() {
-
-    }
-
-    // -> recover
-    @Test
-    public void whenRecoverCredentials_returnEmailSent() {
+    public void whenGetEula_returnManagerEula() {
 
     }
 
     @Test
-    public void whenRecoverCredentials_returnUserNotFound() {
+    public void whenGetEula_returnEulaAlreadyAccepted() {
 
     }
 
-    // -> validate token
-    @Test
-    public void whenValidatingTokenRecoveringCredentials_returnTokenValidated() {
-
-    }
+    // putEula
 
     @Test
-    public void whenValidatingTokenRecoveringCredentials_returnTokenNotExist() {
+    public void whenUpdateEula_returnUserNotFound() {
 
     }
 
     @Test
-    public void whenValidatingTokenRecoveringCredentials_returnTokenNotForRecovery() {
+    public void whenUpdateEulaAndUserIsStandard_returnEulaAlreadyAccepted() {
 
     }
 
     @Test
-    public void whenValidatingTokenRecoveringCredentials_returnUserNotFound() {
-
-    }
-
-    // -> new credentials
-    @Test
-    public void whenSettingNewCredentials_returnCredentialsUpdated() {
+    public void whenUpdateEulaAndUserIsManagerOrAdmin_returnEulaAlreadyAccepted() {
 
     }
 
     @Test
-    public void whenSettingNewCredentials_returnUserNotFound() {
+    public void whenAcceptStandardEula_returnStandardEulaAccepted() {
+
+    }
+
+    @Test
+    public void whenAcceptManagerEula_returnManagerEulaAccepted() {
+
+    }
+
+    @Test
+    public void whenPendingEula_returnStandardEulaPending() {
+
+    }
+
+    @Test
+    public void whenPendingEula_returnManagerEulaPending() {
+
+    }
+
+    @Test
+    public void whenRejectStandardEula_returnUserDeleted() {
+
+    }
+
+    @Test
+    public void whenRejectManagerEula_returnUserDowngraded() {
+
+    }
+
+    @Test
+    public void whenUpdateEula_returnActionInvalid() {
 
     }
 

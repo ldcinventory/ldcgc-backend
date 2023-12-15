@@ -136,7 +136,6 @@ class AccountControllerImplTest {
     }
 
     @Test
-    //@WithMockUser(username="admin",roles={"USER","MANAGER","ADMIN"})
     public void logoutUser() throws Exception {
 
         final String request = requestRoot + "/logout";

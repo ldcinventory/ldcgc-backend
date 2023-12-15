@@ -94,6 +94,7 @@ public class Message implements EnumMethods {
         VOLUNTEER_ALREADY_EXIST("There's a volunteer with this builder assistant id: %s"),
         VOLUNTEER_TOKEN_NOT_EXIST("The volunteer from this token doesn't exist or is not found"),
         VOLUNTEER_NOT_FOUND("The volunteer you're searching for with this id couldn't be found"),
+        VOLUNTEER_ID_ALREADY_TAKEN("Volunteer's Builder Assistant Id already assigned to another volunteer"),
 
         TOOL_NOT_FOUND("Tool with id %s not found"),
 

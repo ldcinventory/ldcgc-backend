@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_ALREADY_EXIST;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_ID_ALREADY_TAKEN;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_TOKEN_NOT_EXIST;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
@@ -95,6 +96,9 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
+
+        if(volunteerEntity.getBuilderAssistantId().equals(volunteer.getBuilderAssistantId()))
+            throw new RequestException(HttpStatus.CONFLICT, getErrorMessage(VOLUNTEER_ID_ALREADY_TAKEN));
 
         VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
 

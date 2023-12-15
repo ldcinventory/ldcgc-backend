@@ -16,9 +16,9 @@ import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserD
 
 @Slf4j
 @SpringBootTest
-class AccountServiceImplTest {
+class VolunteerServiceImplTest {
 
-    @MockBean private AccountService accountService;
+    @MockBean VolunteerService volunteerService;
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
@@ -28,7 +28,7 @@ class AccountServiceImplTest {
     public void init() {
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(accountService)
+            .standaloneSetup(volunteerService)
             .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
             .setHandlerExceptionResolvers()
             .build();
@@ -38,68 +38,79 @@ class AccountServiceImplTest {
 
     }
 
-    // -> login
+    //create vounteer
     @Test
-    public void whenAuthenticateUser_returnUserDetails() {
+    public void whenCreateVolunteer_returnVolunteerAlreadyExists() {
 
     }
 
     @Test
-    public void whenAuthenticateUser_returnEmailIsInvalid() {
+    public void whenCreateVolunteer_returnVolunteerCreated() {
+
+    }
+
+    //list volunteer
+    @Test
+    public void whenListVolunteerAndSearchByBuilderAssistantId_returnOneVolunteer() {
 
     }
 
     @Test
-    public void whenAuthenticateUser_returnPasswordIsInvalid() {
-
-    }
-
-    // -> logout
-    @Test
-    public void whenLogoutUser_returnOK() {
-
-    }
-
-    // -> recover
-    @Test
-    public void whenRecoverCredentials_returnEmailSent() {
+    public void whenListVolunteer_returnOneVolunteer() {
 
     }
 
     @Test
-    public void whenRecoverCredentials_returnUserNotFound() {
+    public void whenListVolunteer_returnMultipleVolunteers() {
 
     }
 
-    // -> validate token
+    //get my volunteer
     @Test
-    public void whenValidatingTokenRecoveringCredentials_returnTokenValidated() {
-
-    }
-
-    @Test
-    public void whenValidatingTokenRecoveringCredentials_returnTokenNotExist() {
+    public void whenGetMyVolunteer_returnVolunteerNotFound() {
 
     }
 
     @Test
-    public void whenValidatingTokenRecoveringCredentials_returnTokenNotForRecovery() {
+    public void whenGetMyVolunteer_returnMyVolunteer() {
+
+    }
+
+    //get volunteer
+    @Test
+    public void whenGetVolunteer_returnVolunteerNotFound() {
 
     }
 
     @Test
-    public void whenValidatingTokenRecoveringCredentials_returnUserNotFound() {
+    public void whenGetVolunteer_returnMyVolunteer() {
 
     }
 
-    // -> new credentials
+    //update volunteer
     @Test
-    public void whenSettingNewCredentials_returnCredentialsUpdated() {
+    public void whenUpdateVolunteer_returnVolunteerNotFound() {
 
     }
 
     @Test
-    public void whenSettingNewCredentials_returnUserNotFound() {
+    public void whenUpdateVolunteer_returnVolunteerBuilderAssistanIdTaken() {
+
+    }
+
+    @Test
+    public void whenUpdateVolunteer_returnVolunteerUpdated() {
+
+    }
+
+    //delete volunteer
+    @Test
+    public void whenDeleteVolunteer_returnVolunteerNotFound() {
+
+    }
+
+    @Test
+    public void whenDeleteVolunteer_returnVolunteerDeleted() {
 
     }
 
