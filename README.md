@@ -129,6 +129,16 @@ You can expect to test the smtp test server with web UI access directly to `loca
 
 ---
 
+## EULA
+
+The end user license agreement is the contract between the user and the application, and regulates the terms and conditions for every person in the application to use it. When a user tries to login and that user didn't accept the terms and conditions to use the app, or when the EULA has changed and the user is already logged (i.e. they have a valid token and EULA changes while using the app), the app will return a `403 FORBIDDEN` in order to prevent a user can change anything without EULA accepted.
+
+A standard user may accept a standard EULA, a manager or admin may accept a standard and a manager EULA.
+
+**Temp**: to skip eula while frontend is aligning this functionality, a special header is provided skip it. The header is `skip-eula` and must be set as `true`.
+
+---
+
 ## Login Response
 
 When the login endpoint was invoked, it returns a JSON response with a token in 2 special headers:

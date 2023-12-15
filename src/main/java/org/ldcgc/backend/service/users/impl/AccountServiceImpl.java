@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.users.impl;
 import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
@@ -26,11 +27,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.Objects;
 
+import static java.lang.Boolean.FALSE;
+import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
+import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
+import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EULA_ENDPOINT;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_MANAGER_NOT_ACCEPTED;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_STANDARD_NOT_ACCEPTED;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.JWT_NOT_FOR_RECOVERY;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
@@ -38,6 +48,7 @@ import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_PASSWO
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.LOGOUT_SUCCESSFUL;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.RECOVERY_TOKEN_VALID;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREDENTIALS_UPDATED;
+import static org.ldcgc.backend.util.retrieving.Message.getAppMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
@@ -72,6 +83,20 @@ public class AccountServiceImpl implements AccountService {
 
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
+
+        HttpServletRequest actualRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        // skip eula
+        if(FALSE.equals(Boolean.parseBoolean(actualRequest.getHeader("skip-eula")))) {
+
+            // get eula details (standard user)
+            if (userEntity.getAcceptedEULA() == null)
+                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, getErrorMessage(EULA_STANDARD_NOT_ACCEPTED), getAppMessage(EULA_ENDPOINT), headers);
+
+            // get eula details (manager)
+            if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
+                && userEntity.getAcceptedEULAManager() == null)
+                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, getErrorMessage(EULA_MANAGER_NOT_ACCEPTED), getAppMessage(EULA_ENDPOINT), headers);
+        }
 
         return Constructor.buildResponseObjectHeader(HttpStatus.OK, UserMapper.MAPPER.toDTO(userEntity), headers);
     }

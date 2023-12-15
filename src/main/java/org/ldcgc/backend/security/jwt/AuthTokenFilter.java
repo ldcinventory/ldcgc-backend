@@ -26,9 +26,15 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 
+import static java.lang.Boolean.FALSE;
+import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
+import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_MANAGER_NOT_ACCEPTED;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_STANDARD_NOT_ACCEPTED;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_VALID;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.validator.Endpoint.isTokenEndpoint;
+import static org.ldcgc.backend.validator.Endpoint.notExemptedEndpoint;
 
 @Component
 @RequiredArgsConstructor
@@ -65,6 +71,21 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String userEmail = jwtUtils.getEmailFromJwtToken(decodedJWT);
 
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
+
+            // skip eula if header or exempted endpoint (i.e.: get/accept eula)
+            if(notExemptedEndpoint(request.getMethod(), request.getRequestURI())
+                && FALSE.equals(Boolean.parseBoolean(request.getHeader("skip-eula")))) {
+
+                // get eula details (standard user)
+                if (userDetails.getAcceptedEULA() == null)
+                    throw new RequestException(HttpStatus.FORBIDDEN, getErrorMessage(EULA_STANDARD_NOT_ACCEPTED));
+
+                // get eula details (manager)
+                if((userDetails.getAuthorities().contains(new SimpleGrantedAuthority(ROLE_MANAGER.name())) ||
+                    userDetails.getAuthorities().contains(new SimpleGrantedAuthority(ROLE_ADMIN.name())))
+                    && userDetails.getAcceptedEULAManager() == null)
+                    throw new RequestException(HttpStatus.FORBIDDEN, getErrorMessage(EULA_MANAGER_NOT_ACCEPTED));
+            }
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
                     null, userDetails.getAuthorities());

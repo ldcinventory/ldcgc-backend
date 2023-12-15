@@ -1,14 +1,10 @@
 package org.ldcgc.backend.util.common;
 
-public enum EEULAStatus {
+import org.ldcgc.backend.util.compare.EnumMethods;
+
+public enum EEULAStatus implements EnumMethods {
 
     // EULA
     ACCEPT, PENDING, REJECT, REMOVE, DELETE;
-
-    public final boolean equalsAny(EEULAStatus ...eulaStatuses) {
-        for (EEULAStatus eulaStatus : eulaStatuses)
-            if (this == eulaStatus) return true;
-        return false;
-    }
 
 }

@@ -19,6 +19,13 @@ public class Message implements EnumMethods {
         USER_CREDENTIALS_UPDATED("User credentials updated"),
         USER_DELETED("User deleted"),
 
+        EULA_ALREADY_ACCEPTED("EULA for %s already accepted"),
+        EULA_ACCEPTED("EULA for %s accepted"),
+        EULA_REJECTED("EULA for %s rejected. %s"),
+        EULA_PENDING("EULA for %s pending"),
+        EULA_DELETE_USER("The user is deleted"),
+        EULA_DOWNGRADE_USER("The user in downgrade to standard user"),
+
         VOLUNTEER_CREATED("Volunteer created"),
         VOLUNTEER_LISTED("Found %s volunteer/s"),
         VOLUNTEER_UPDATED("Volunteer details updated"),
@@ -44,6 +51,9 @@ public class Message implements EnumMethods {
     @Getter
     @RequiredArgsConstructor
     public enum AppMessage implements EnumMethods {
+
+        EULA_SELECT_ACTION("EULA for %s: Please select an action to do"),
+        EULA_ENDPOINT("/api/eula"),
 
         CREDENTIALS_EMAIL_TEMPLATE("credentialsTemplate.html"),
         CREDENTIALS_RECOVERY_SUBJECT("GC8Inventory : [Recuperación de credenciales] 🙃"),
@@ -73,6 +83,10 @@ public class Message implements EnumMethods {
         USER_NOT_FOUND_TOKEN("User id or user from token not found, or token is not valid"),
         USER_PASSWORD_DOESNT_MATCH("Password provided for this email doesn't match our records"),
 
+        EULA_ACTION_INVALID("EULA action is not valid"),
+        EULA_STANDARD_NOT_ACCEPTED("EULA for users not accepted yet"),
+        EULA_MANAGER_NOT_ACCEPTED("EULA for managers not accepted yet"),
+
         EMAIL_NOT_SENT("Email not sent!"),
         EMAIL_SENDING_ERROR("There was an error sending email with 'subject' {} to: {}. The error was {}"),
         EMAIL_CREDENTIALS_SENDING_ERROR("There was an error sending email to: {}. The error was {}"),
@@ -95,7 +109,9 @@ public class Message implements EnumMethods {
         GROUP_NOT_FOUND_EXCEL("Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s"),
         CATEGORY_SON_NOT_FOUND("%s %s not found. Please, use a valid one or add it. Valid %ss: %s"),
         RUNTIME_EXCEPTION("Error processing data, check your request"),
-        ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet");
+        ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet")
+
+        ;
 
         private final String message;
 

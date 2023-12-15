@@ -1,8 +1,10 @@
-#exempted endpoints to process token filter
+#exempted endpoints from processing the token filter
 exempted:
   GET:
+    - "/api/eula"
   POST:
   PUT:
+    - "/api/eula"
   PATCH:
   DELETE:
 

@@ -2,6 +2,7 @@ package org.ldcgc.backend.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.RUNTIME_EXCEPTION;
@@ -49,11 +51,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, @NotNull HttpHeaders headers, HttpStatusCode status, @NotNull WebRequest request) {
         ApiError apiError = ApiError.builder()
             .status(status.value())
-            .endpoint(ex.getAllValidationResults().get(0).getMethodParameter().getMethod().getName())
-            .clazz(ex.getAllValidationResults().get(0).getMethodParameter().getDeclaringClass().getName())
+            .endpoint(ex.getAllValidationResults().getFirst().getMethodParameter().getMethod().getName())
+            .clazz(ex.getAllValidationResults().getFirst().getMethodParameter().getDeclaringClass().getName())
             .method(((ServletWebRequest) request).getRequest().getAttribute("org.springframework.web.util.ServletRequestPathUtils.PATH").toString())
             .build();
         return Constructor.buildExceptionResponseMessageObject(
@@ -63,7 +65,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MailSendException.class)
     public final ResponseEntity<?> handleMailSendException(MailSendException ex) {
         String error = "SMTP ";
-        if(ex.getMessage().contains("SMTPAddressFailedException: 501 "))
+        if(Objects.requireNonNull(ex.getMessage()).contains("SMTPAddressFailedException: 501 "))
             error += ex.getMessage().split("SMTPAddressFailedException: 501 ")[1];
         ApiError apiError = ApiError.builder()
             .status(HttpStatus.BAD_REQUEST.value())
