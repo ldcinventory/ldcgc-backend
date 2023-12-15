@@ -6,7 +6,7 @@ exempted:
   PATCH:
   DELETE:
 
-#endpoints that don't return token in headers
+#endpoints that don't need/nor return token in headers
 nonToken:
   GET:
     - "/api/alive"
