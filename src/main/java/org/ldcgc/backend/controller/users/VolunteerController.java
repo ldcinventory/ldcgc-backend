@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,21 +35,64 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 @Tag(name = "Volunteers", description = "Volunteers methods with CRUD functions")
 public interface VolunteerController {
 
-    @Operation(summary = "Create a volunteer")
+    @Operation(summary = "Get my volunteer")
     @ApiResponse(
-        responseCode = "201",
-        description = "Created",
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = VolunteerDto.class))
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer created", value = "Volunteer registered successfully!")
+                @ExampleObject(name = "Volunteer from token not exist", value = Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST),
+            })
+    )
+    @GetMapping("/me")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> getMyVolunteer(
+        @Parameter(description = "Valid JWT of the user to get own volunteer details", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
+
+    @Operation(summary = "Get any volunteer")
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = VolunteerDto.class))
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
+            })
+    )
+    @GetMapping("/{volunteerId}")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> getVolunteer(
+        @Parameter(description = "Volunteer Builder Assistant Id")
+            @PathVariable String volunteerId);
+
+    @Operation(summary = "Create a volunteer")
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = VolunteerDto.class),
+            examples = {
+                @ExampleObject(name = "Volunteer created", value = Messages.Info.VOLUNTEER_CREATED)
             })
     )
     @ApiResponse(
-        responseCode = "409",
-        description = "Conflict",
+        responseCode = SwaggerConfig.HTTP_409,
+        description = SwaggerConfig.HTTP_REASON_409,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer already exists" , value = "There's a volunteer with this builder assistant id"),
+                @ExampleObject(name = "Volunteer already exists" , value = Messages.Error.VOLUNTEER_ALREADY_EXIST, description = "%s will be replaced with a builder assistant id"),
             })
     )
     @PostMapping
@@ -58,10 +103,13 @@ public interface VolunteerController {
 
     @Operation(summary = "List volunteers")
     @ApiResponse(
-        responseCode = "200",
-        description = "OK",
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = VolunteerDto.class)))
+            array = @ArraySchema(schema = @Schema(implementation = VolunteerDto.class)),
+            examples = {
+                @ExampleObject(name = "Volunteers found", value = Messages.Info.USER_LISTED, description = "%s will be replaced by the number of volunteers found")
+            })
     )
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
@@ -75,63 +123,31 @@ public interface VolunteerController {
         @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
             @RequestParam(required = false) String volunteerId);
 
-    @Operation(summary = "Get my volunteer")
-    @ApiResponse(
-        responseCode = "200",
-        description = "OK",
-        content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = VolunteerDto.class))
-    )
-    @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Volunteer from token not exist", value = "The volunteer from this token doesn't exist or is not found"),
-            })
-    )
-    @GetMapping("/me")
-    @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> getMyVolunteer(
-        @Parameter(description = "Valid JWT of the user to get own volunteer details", required = true)
-            @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
-
-    @Operation(summary = "Get any volunteer")
-    @ApiResponse(
-        responseCode = "200",
-        description = "OK",
-        content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = VolunteerDto.class))
-    )
-    @ApiResponse(
-        responseCode = "404",
-        description = "Not Found",
-        content = @Content(mediaType = "application/json",
-            examples = {
-                @ExampleObject(name = "Volunteer doesn't exists", value = "The volunteer you're searching for with this id couldn't be found"),
-            })
-    )
-    @GetMapping("/{volunteerId}")
-    @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> getVolunteer(
-        @Parameter(description = "Volunteer Builder Assistant Id")
-            @PathVariable String volunteerId);
 
     @Operation(summary = "Update any volunteer")
     @ApiResponse(
-        responseCode = "200",
-        description = "OK",
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = VolunteerDto.class),
             examples = {
-                @ExampleObject(name = "Volunteer updated", value = "Volunteer details updated")
+                @ExampleObject(name = "Volunteer updated", value = Messages.Info.VOLUNTEER_UPDATED)
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer doesn't exists", value = "The volunteer you're searching for with this id couldn't be found"),
+                @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_409,
+        description = SwaggerConfig.HTTP_REASON_409,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Volunteer from token not exist", value = Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN),
             })
     )
     @PutMapping("/{volunteerId}")
@@ -144,19 +160,19 @@ public interface VolunteerController {
 
     @Operation(summary = "Delete any volunteer")
     @ApiResponse(
-        responseCode = "200",
-        description = "OK",
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer deleted", value = "Volunteer deleted")
+                @ExampleObject(name = "Volunteer deleted", value = Messages.Info.VOLUNTEER_DELETED)
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Volunteer doesn't exists", value = "The volunteer you're searching for with this id couldn't be found"),
+                @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
             })
     )
     @DeleteMapping("/{volunteerId}")

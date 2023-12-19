@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.util.common.EEULAStatus;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,24 +24,23 @@ public interface EulaController {
 
     @Operation(
         summary = "Get EULA terms document",
-        description = "Defines a GET operation to get EULA terms in order to provide user information about the use of this personal data within iPreach service",
+        description = "Defines a GET operation to get EULA terms in order to provide user information about the use of this personal data within GC8Inventory service",
         operationId = "getEULA"
     )
     @ApiResponse(
-        responseCode = "200",
-        description = "OK",
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Google docs url" , value = "https://docs.google.com/document/d/e/2PACX-1vTMAT1BQXKqh0zNooCJPFCWHYP7lXUGXdVemuGbZt9DgkZIoVoBwLPnx7DBzjwyJ0LxCpNfRKUA3nfl/pub?embedded=true")
+                @ExampleObject(name = "Google docs url" , value = Messages.App.EULA_SELECT_ACTION, description = "%s will be replaced by 'every user' or 'managers and admins', and will be provided a list of available actions.")
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "JWT not included" , value = "The petition must contain a token"),
-                @ExampleObject(name = "JWT not valid" , value = "The token provided is not valid, or the user has already accepted the EULA terms")
+                @ExampleObject(name = "User not found", value = Messages.Error.USER_NOT_FOUND)
             })
     )
     @GetMapping
@@ -53,22 +54,29 @@ public interface EulaController {
         operationId = "putEULA"
     )
     @ApiResponse(
-        responseCode = "200",
-        description = "OK",
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Confirmed" , value = "Account confirmed"),
-                @ExampleObject(name = "Removed" , value = "Account removed (link provided to activate again)"),
-                @ExampleObject(name = "Deleted" , value = "Account deleted permanently")
+                @ExampleObject(name = "Accepted" , value = Messages.Info.EULA_ACCEPTED, description = "%s will be replaced by 'every user' or 'managers and admins'"),
+                @ExampleObject(name = "Pending" , value = Messages.Info.EULA_PENDING, description = "%s will be replaced by 'every user' or 'managers and admins'"),
+                @ExampleObject(name = "Rejected" , value = Messages.Info.EULA_REJECTED, description = "%s will be replaced by 'every user' or 'managers and admins'. According to the level of the user role, it will be deleted or downgraded.")
             })
     )
     @ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "JWT not included" , value = "The petition must contain a token"),
-                @ExampleObject(name = "JWT not valid" , value = "The token provided is not valid, or the user has already accepted the EULA terms")
+                @ExampleObject(name = "EULA Action Invalid" , value = Messages.Error.EULA_ACTION_INVALID)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_409,
+        description = SwaggerConfig.HTTP_REASON_409,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "EULA Already Accepted" , value = Messages.Info.EULA_ACCEPTED, description = "%s will be replaced by 'every user' or 'managers and admins'")
             })
     )
     @PutMapping

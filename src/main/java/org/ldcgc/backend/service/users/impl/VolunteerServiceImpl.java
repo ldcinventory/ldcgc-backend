@@ -33,6 +33,23 @@ public class VolunteerServiceImpl implements VolunteerService {
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
 
+    public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
+
+        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+        Volunteer volunteer = userRepository.findById(userId).map(User::getVolunteer).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST));
+
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
+    }
+
+    public ResponseEntity<?> getVolunteer(String volunteerId) {
+
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+    }
+
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
 
         if(volunteerRepository.findByBuilderAssistantId(volunteer.getBuilderAssistantId()).isPresent())
@@ -63,23 +80,6 @@ public class VolunteerServiceImpl implements VolunteerService {
             HttpStatus.OK,
             String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
-    }
-
-    public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
-
-        Integer userId = jwtUtils.getUserIdFromStringToken(token);
-        Volunteer volunteer = userRepository.findById(userId).map(User::getVolunteer).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST));
-
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
-    }
-
-    public ResponseEntity<?> getVolunteer(String volunteerId) {
-
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
-
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
