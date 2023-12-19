@@ -23,6 +23,7 @@ import java.util.List;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_ALREADY_EXIST;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND_TOKEN;
+import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_PERMISSION_ROLE;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_DELETED;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
@@ -53,7 +54,12 @@ public class UserServiceImpl implements UserService {
         Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
             -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN)));
 
-        return updateUser(userId, user);
+        User userEntity = getUserFromUserId(userId);
+
+        if(!userEntity.getRole().equals(user.getRole()))
+            throw new RequestException(HttpStatus.FORBIDDEN, getErrorMessage(USER_PERMISSION_ROLE));
+
+        return updateUser(userEntity, user);
     }
 
     public ResponseEntity<?> deleteMyUser(String token) {
@@ -103,9 +109,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
-        User userEntity = userRepository.findById(userId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+        return updateUser(getUserFromUserId(userId), user);
+    }
 
+    private ResponseEntity<?> updateUser(User userEntity, UserDto user) {
         if(userEntity.getEmail().equals(user.getEmail()))
             throw new RequestException(HttpStatus.CONFLICT, getErrorMessage(USER_ALREADY_EXIST));
 
@@ -122,6 +129,11 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
+    }
+
+    private User getUserFromUserId(Integer userId) {
+        return userRepository.findById(userId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
     }
 
 }
