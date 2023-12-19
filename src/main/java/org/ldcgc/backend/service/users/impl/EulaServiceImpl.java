@@ -45,7 +45,7 @@ public class EulaServiceImpl implements EulaService {
         if(user.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN) && user.getAcceptedEULAManager() == null)
             return getEULAManager();
 
-        return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER));
+        return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(Messages.Info.EULA_ALREADY_ACCEPTED, user.getRole().equals(ROLE_USER) ? EVERY_USER : MANAGERS));
     }
 
     private ResponseEntity<?> getEULAStandard() {

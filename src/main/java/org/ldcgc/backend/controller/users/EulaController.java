@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.util.common.EEULAStatus;
 import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +47,7 @@ public interface EulaController {
     @GetMapping
     ResponseEntity<?> getEULA(
         @Parameter(description = "Valid JWT of the user to update", required = true)
-            @RequestAttribute("Authorization") String token) throws ParseException;
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     @Operation(
         summary = "Accept/Reject EULA terms document",
@@ -82,7 +83,7 @@ public interface EulaController {
     @PutMapping
     ResponseEntity<?> putEULA(
         @Parameter(description = "Valid JWT of the user to update", required = true)
-            @RequestAttribute("Authorization") String token,
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "indicate how to proceed with the EULA")
             @RequestParam EEULAStatus action) throws ParseException;
 
