@@ -19,13 +19,13 @@ public class TestRequestFactory {
 
         if(tokenUserRole == null)
             return requestBuilder
-                .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8);
 
         return requestBuilder
-            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
             .requestAttr("Authorization", generateNewStringToken(getRandomMockedUser(tokenUserRole)));
     }
