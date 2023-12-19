@@ -23,7 +23,7 @@ import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.retrieving.Files;
-import org.ldcgc.backend.util.retrieving.Message;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +43,6 @@ import java.util.stream.Stream;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Configuration
 @RequiredArgsConstructor
@@ -247,18 +246,18 @@ public class InitializationData {
             //            and t.CategoryId = c.CategoryId;)
 
             List<Category> brandEntities = categoryRepository.findByName(CategoryParentEnum.BRANDS.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
                             .formatted(CategoryParentEnum.BRANDS.getName(), CategoryParentEnum.BRANDS.getBbddName())));
             Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             List<Category> resourceCategoryEntities = categoryRepository.findByName(CategoryParentEnum.RESOURCES.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
                             .formatted(CategoryParentEnum.RESOURCES.getName(), CategoryParentEnum.RESOURCES.getBbddName())));
             Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             // TODO check status when final migration
             //final Status available = statusRepository.findByName(EStatus.AVAILABLE).orElseThrow(() ->
-            //    new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(STATUS_NOT_FOUND)));
+            //    new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
             tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
@@ -349,7 +348,7 @@ public class InitializationData {
             categoryRepository.saveAndFlush(responsibilityCat);
 
             List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSABILITIES.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND)
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
                             .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
             userRepository.save(User.builder()

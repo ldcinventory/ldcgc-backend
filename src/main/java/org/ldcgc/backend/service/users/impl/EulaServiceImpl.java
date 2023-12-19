@@ -10,6 +10,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.EulaService;
 import org.ldcgc.backend.util.common.EEULAStatus;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,18 +22,6 @@ import java.util.List;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.common.ERole.ROLE_USER;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EULA_SELECT_ACTION;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_ACTION_INVALID;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EULA_ACCEPTED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EULA_ALREADY_ACCEPTED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EULA_DELETE_USER;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EULA_DOWNGRADE_USER;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EULA_PENDING;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.EULA_REJECTED;
-import static org.ldcgc.backend.util.retrieving.Message.getAppMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -47,7 +36,7 @@ public class EulaServiceImpl implements EulaService {
 
     public ResponseEntity<?> getEULA(String token) throws ParseException {
         User user = userRepository.findById(jwtUtils.getUserIdFromStringToken(token))
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
         // any user must accept standard EULA
         if(user.getAcceptedEULA() == null)
@@ -56,7 +45,7 @@ public class EulaServiceImpl implements EulaService {
         if(user.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN) && user.getAcceptedEULAManager() == null)
             return getEULAManager();
 
-        return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(getInfoMessage(EULA_ALREADY_ACCEPTED), EVERY_USER));
+        return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER));
     }
 
     private ResponseEntity<?> getEULAStandard() {
@@ -65,7 +54,7 @@ public class EulaServiceImpl implements EulaService {
             .url("https://docs.google.com/document/d/e/2PACX-1vTMAT1BQXKqh0zNooCJPFCWHYP7lXUGXdVemuGbZt9DgkZIoVoBwLPnx7DBzjwyJ0LxCpNfRKUA3nfl/pub?embedded=true")
             .build();
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getAppMessage(EULA_SELECT_ACTION), EVERY_USER), eulaDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER), eulaDto);
     }
 
     private ResponseEntity<?> getEULAManager() {
@@ -74,18 +63,18 @@ public class EulaServiceImpl implements EulaService {
             .url("https://docs.google.com/document/d/e/2PACX-1vSXbZBtWjquXaJr9Spx7_LD9KNWg7t4G3Kxc7iGk4ZDZEhl5jVfO11ijCEAnoQY9RCN9lQqo5J6KBz4/pub?embedded=true")
             .build();
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getAppMessage(EULA_SELECT_ACTION), MANAGERS), eulaDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.App.EULA_SELECT_ACTION, MANAGERS), eulaDto);
     }
 
     public ResponseEntity<?> putEULA(String token, EEULAStatus action) throws ParseException {
         User user = userRepository.findById(jwtUtils.getUserIdFromStringToken(token))
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
         if(user.getRole().equals(ROLE_USER) && user.getAcceptedEULA() != null)
-            return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(getInfoMessage(EULA_ALREADY_ACCEPTED), EVERY_USER));
+            return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER));
 
         if(user.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN) && user.getAcceptedEULAManager() != null)
-            return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(getInfoMessage(EULA_ALREADY_ACCEPTED), MANAGERS));
+            return Constructor.buildResponseMessage(HttpStatus.CONFLICT, String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS));
 
         final String userRole = user.getAcceptedEULA() == null ? EVERY_USER : MANAGERS ;
 
@@ -97,11 +86,11 @@ public class EulaServiceImpl implements EulaService {
                     user.setAcceptedEULAManager(LocalDateTime.now());
 
                 userRepository.save(user);
-                return Constructor.buildResponseMessage(HttpStatus.OK, String.format(getInfoMessage(EULA_ACCEPTED), userRole));
+                return Constructor.buildResponseMessage(HttpStatus.OK, String.format(Messages.Info.EULA_ACCEPTED, userRole));
             }
 
             case PENDING -> {
-                return Constructor.buildResponseMessage(HttpStatus.OK, String.format(getInfoMessage(EULA_PENDING), userRole));
+                return Constructor.buildResponseMessage(HttpStatus.OK, String.format(Messages.Info.EULA_PENDING, userRole));
             }
 
             case REJECT -> {
@@ -109,19 +98,19 @@ public class EulaServiceImpl implements EulaService {
                 tokenRepository.deleteAllTokensFromUser(user.getId());
                 if(user.getAcceptedEULA() == null) {
                     // if standard user doesn't accept EULA, delete
-                    rejectionMessage = getInfoMessage(EULA_DELETE_USER);
+                    rejectionMessage = Messages.Info.EULA_DELETE_USER;
                     userRepository.delete(user);
                 } else {
                     // if manager/admin doesn't accept EULA, downgrade to standard user
-                    rejectionMessage = getInfoMessage(EULA_DOWNGRADE_USER);
+                    rejectionMessage = Messages.Info.EULA_DOWNGRADE_USER;
                     user.setRole(ROLE_USER);
                     userRepository.save(user);
                 }
 
-                return Constructor.buildResponseMessage(HttpStatus.OK, String.format(getInfoMessage(EULA_REJECTED), userRole, rejectionMessage));
+                return Constructor.buildResponseMessage(HttpStatus.OK, String.format(Messages.Info.EULA_REJECTED, userRole, rejectionMessage));
             }
         }
 
-        return Constructor.buildResponseMessage(HttpStatus.BAD_REQUEST, getErrorMessage(EULA_ACTION_INVALID));
+        return Constructor.buildResponseMessage(HttpStatus.BAD_REQUEST, Messages.Error.EULA_ACTION_INVALID);
     }
 }

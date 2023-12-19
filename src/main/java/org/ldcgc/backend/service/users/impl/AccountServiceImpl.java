@@ -16,6 +16,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,19 +39,6 @@ import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
-import static org.ldcgc.backend.util.retrieving.Message.AppMessage.EULA_ENDPOINT;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_MANAGER_NOT_ACCEPTED;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_STANDARD_NOT_ACCEPTED;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.JWT_NOT_FOR_RECOVERY;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_PASSWORD_DOESNT_MATCH;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.LOGOUT_SUCCESSFUL;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.RECOVERY_TOKEN_VALID;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREDENTIALS_UPDATED;
-import static org.ldcgc.backend.util.retrieving.Message.getAppMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -65,10 +53,10 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<?> login(UserDto user) throws ParseException, JOSEException {
 
         User userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(user.getPassword(), userEntity.getPassword()))
-            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(USER_PASSWORD_DOESNT_MATCH));
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.USER_PASSWORD_DOESNT_MATCH);
 
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(userEntity.getRole().name());
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -90,12 +78,12 @@ public class AccountServiceImpl implements AccountService {
 
             // get eula details (standard user)
             if (userEntity.getAcceptedEULA() == null)
-                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, getErrorMessage(EULA_STANDARD_NOT_ACCEPTED), getAppMessage(EULA_ENDPOINT), headers);
+                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
             // get eula details (manager)
             if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
                 && userEntity.getAcceptedEULAManager() == null)
-                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, getErrorMessage(EULA_MANAGER_NOT_ACCEPTED), getAppMessage(EULA_ENDPOINT), headers);
+                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
         }
 
         return Constructor.buildResponseObjectHeader(HttpStatus.OK, UserMapper.MAPPER.toDTO(userEntity), headers);
@@ -107,12 +95,12 @@ public class AccountServiceImpl implements AccountService {
 
         SecurityContextHolder.clearContext();
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(LOGOUT_SUCCESSFUL));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.LOGOUT_SUCCESSFUL);
     }
 
     public ResponseEntity<?> recoverCredentials(UserCredentialsDto userCredentials) throws ParseException, JOSEException {
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
         SignedJWT jwt = jwtUtils.generateNewRecoveryToken(user);
 
@@ -124,11 +112,11 @@ public class AccountServiceImpl implements AccountService {
 
         // check exists
         Token tokenEntity = tokenRepository.findByJwtID(jwt.getHeader().getKeyID()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(RECOVERY_TOKEN_NOT_VALID_NOT_FOUND)));
+            new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND));
 
         // check is recovery token
         if (!tokenEntity.isRecoveryToken())
-            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(JWT_NOT_FOR_RECOVERY));
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.JWT_NOT_FOR_RECOVERY);
 
         Integer userIdFromTokenEntity = tokenEntity.getUserId();
         Integer userIdFromTokenString = jwtUtils.getUserIdFromJwtToken(jwt);
@@ -137,9 +125,9 @@ public class AccountServiceImpl implements AccountService {
 
         // check user exists
         userRepository.findById(userIdFromTokenEntity).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(RECOVERY_TOKEN_VALID));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.RECOVERY_TOKEN_VALID);
     }
 
     public ResponseEntity<?> newCredentials(UserCredentialsDto userCredentials) throws ParseException {
@@ -147,12 +135,12 @@ public class AccountServiceImpl implements AccountService {
 
         // get uset details
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
         user.setPassword(passwordEncoder.encode(userCredentials.getPassword()));
         userRepository.saveAndFlush(user);
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_CREDENTIALS_UPDATED));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_CREDENTIALS_UPDATED);
     }
 
 }

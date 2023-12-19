@@ -16,6 +16,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +45,6 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedCreatingUserDto;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_DELETED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_UPDATED;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -143,7 +139,7 @@ class UserControllerImplTest {
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
         UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_USER);
-        Response.DTO responseDTO = Response.DTO.builder().message(getInfoMessage(USER_UPDATED)).data(mockedUser).build();
+        Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
         given(userService.updateMyUser(Mockito.anyString(), Mockito.any())).will(
@@ -164,12 +160,12 @@ class UserControllerImplTest {
         log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
 
         given(userService.deleteMyUser(Mockito.anyString()))
-            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(USER_DELETED)));
+            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().string(getInfoMessage(USER_DELETED)))
+            .andExpect(content().string(Messages.Info.USER_DELETED))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
@@ -182,7 +178,7 @@ class UserControllerImplTest {
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
         UserDto mockedUser = getRandomMockedCreatingUserDto(ERole.ROLE_ADMIN);
-        Response.DTO responseDTO = Response.DTO.builder().message(getInfoMessage(USER_CREATED)).data(mockedUser).build();
+        Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
         given(userService.createUser(Mockito.any()))
@@ -222,7 +218,7 @@ class UserControllerImplTest {
 
         var users = getListOfMockedUsers(5);
 
-        final String message = String.format(getInfoMessage(USER_LISTED), 5);
+        final String message = String.format(Messages.Info.USER_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(users).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
@@ -249,7 +245,7 @@ class UserControllerImplTest {
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
         UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
-        Response.DTO responseDTO = Response.DTO.builder().message(getInfoMessage(USER_UPDATED)).data(mockedUser).build();
+        Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
         given(userService.updateUser(Mockito.anyInt(), Mockito.any())).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
@@ -269,12 +265,12 @@ class UserControllerImplTest {
         log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
 
         given(userService.deleteUser(Mockito.anyInt()))
-            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(USER_DELETED)));
+            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().string(getInfoMessage(USER_DELETED)))
+            .andExpect(content().string(Messages.Info.USER_DELETED))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 

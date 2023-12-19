@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,9 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.Objects;
 import java.util.Optional;
-
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.RUNTIME_EXCEPTION;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Slf4j
 @ControllerAdvice
@@ -44,7 +42,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .message(ex.getMessage())
                 .build();
 
-        log.error(String.format("%s :: %d :: RequestException: %s", ex, apiError.getHttpStatus().value(), getErrorMessage(RUNTIME_EXCEPTION)));
+        log.error(String.format("%s :: %d :: RequestException: %s", ex, apiError.getHttpStatus().value(), Messages.Error.RUNTIME_EXCEPTION));
 
         return Constructor.buildResponseObjectHeader(
             HttpStatus.valueOf(apiError.getHttpStatus().value()), apiError, new HttpHeaders());

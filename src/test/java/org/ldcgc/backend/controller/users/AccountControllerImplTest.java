@@ -18,6 +18,7 @@ import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.creation.Email;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +45,6 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.CREDENTIALS_EMAIL_SENT;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.LOGOUT_SUCCESSFUL;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.RECOVERY_TOKEN_VALID;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREDENTIALS_UPDATED;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -147,12 +143,12 @@ class AccountControllerImplTest {
         given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
 
         given(accountService.logout(Mockito.any())).willAnswer(
-            invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(LOGOUT_SUCCESSFUL)));
+            invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.LOGOUT_SUCCESSFUL));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().string(getInfoMessage(LOGOUT_SUCCESSFUL)))
+            .andExpect(content().string(Messages.Info.LOGOUT_SUCCESSFUL))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
@@ -173,16 +169,16 @@ class AccountControllerImplTest {
         given(sender.createMimeMessage()).willReturn(mimeMessage);
 
         given(email.sendRecoveringCredentials(mockedUser.getEmail(), JWT)).willAnswer(
-            invocation -> ResponseEntity.status(HttpStatus.CREATED).body(getInfoMessage(CREDENTIALS_EMAIL_SENT)));
+            invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
 
         given(accountService.recoverCredentials(credentialsDto)).willAnswer(
-            invocation -> ResponseEntity.status(HttpStatus.CREATED).body(getInfoMessage(CREDENTIALS_EMAIL_SENT)));
+            invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
 
         mockMvc.perform(postRequest(request)
                 .content(mapper.writeValueAsString(credentialsDto)))
             .andDo(print())
             .andExpect(status().isCreated())
-            .andExpect(content().string(getInfoMessage(CREDENTIALS_EMAIL_SENT)))
+            .andExpect(content().string(Messages.Info.CREDENTIALS_EMAIL_SENT))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
 
     }
@@ -194,13 +190,13 @@ class AccountControllerImplTest {
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
         given(accountService.validateToken(JWT)).willAnswer(
-            invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(RECOVERY_TOKEN_VALID)));
+            invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.RECOVERY_TOKEN_VALID));
 
         mockMvc.perform(getRequest(request)
                 .param("recovery-token", JWT))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().string(getInfoMessage(RECOVERY_TOKEN_VALID)))
+            .andExpect(content().string(Messages.Info.RECOVERY_TOKEN_VALID))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
@@ -215,13 +211,13 @@ class AccountControllerImplTest {
             .build();
 
         given(accountService.newCredentials(credentialsDto)).willAnswer(
-            invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(USER_CREDENTIALS_UPDATED)));
+            invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_CREDENTIALS_UPDATED));
 
         mockMvc.perform(postRequest(request)
                 .content(mapper.writeValueAsString(credentialsDto)))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().string(getInfoMessage(USER_CREDENTIALS_UPDATED)))
+            .andExpect(content().string(Messages.Info.USER_CREDENTIALS_UPDATED))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 

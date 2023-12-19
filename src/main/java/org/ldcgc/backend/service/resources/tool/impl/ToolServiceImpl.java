@@ -11,6 +11,7 @@ import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.ExcelUtils;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOOL_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_CREATED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_DELETED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_LISTED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_UPDATED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.TOOL_UPLOADED;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
-
 @Component
 @RequiredArgsConstructor
 public class ToolServiceImpl implements ToolService {
@@ -41,7 +33,7 @@ public class ToolServiceImpl implements ToolService {
 
     public ResponseEntity<?> getTool(Integer toolId) {
         Tool tool = toolRepository.findById(toolId).orElseThrow(() ->
-                new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
+                new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_NOT_FOUND, toolId)));
         return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
     }
 
@@ -51,22 +43,22 @@ public class ToolServiceImpl implements ToolService {
 
         ToolDto toolDto = ToolMapper.MAPPER.toDto(entityTool);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(TOOL_CREATED), toolDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_CREATED, toolDto);
     }
 
     @Override
     public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
         toolRepository.save(ToolMapper.MAPPER.toMo(toolDto));
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(TOOL_UPDATED), toolDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_UPDATED, toolDto);
     }
 
     @Override
     public ResponseEntity<?> deleteTool(Integer toolId) {
         Tool tool = toolRepository.findById(toolId)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(TOOL_NOT_FOUND), toolId)));
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_NOT_FOUND, toolId)));
         toolRepository.delete(tool);
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(TOOL_DELETED));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.TOOL_DELETED);
     }
 
     @Override
@@ -76,7 +68,7 @@ public class ToolServiceImpl implements ToolService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(getInfoMessage(TOOL_LISTED), page.getTotalElements()),
+            String.format(Messages.Info.TOOL_LISTED, page.getTotalElements()),
             page);
     }
 
@@ -90,7 +82,7 @@ public class ToolServiceImpl implements ToolService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(getInfoMessage(TOOL_UPLOADED), toolsToSave.size()),
+            String.format(Messages.Info.TOOL_UPLOADED, toolsToSave.size()),
             toolsToSave);
     }
 }

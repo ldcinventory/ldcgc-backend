@@ -13,6 +13,7 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,17 +23,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.List;
-
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_ALREADY_EXIST;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_ID_ALREADY_TAKEN;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.VOLUNTEER_TOKEN_NOT_EXIST;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_CREATED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_DELETED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.VOLUNTEER_UPDATED;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -46,7 +36,7 @@ public class VolunteerServiceImpl implements VolunteerService {
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
 
         if(volunteerRepository.findByBuilderAssistantId(volunteer.getBuilderAssistantId()).isPresent())
-            throw new RequestException(HttpStatus.CONFLICT, String.format(getErrorMessage(VOLUNTEER_ALREADY_EXIST), volunteer.getBuilderAssistantId()));
+            throw new RequestException(HttpStatus.CONFLICT, String.format(Messages.Error.VOLUNTEER_ALREADY_EXIST, volunteer.getBuilderAssistantId()));
 
         Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
 
@@ -55,7 +45,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         volunteerEntity = volunteerRepository.save(volunteerEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, getInfoMessage(VOLUNTEER_CREATED), VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
@@ -71,7 +61,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(getInfoMessage(USER_LISTED), pageUsers.getTotalElements()),
+            String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
     }
 
@@ -79,7 +69,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         Integer userId = jwtUtils.getUserIdFromStringToken(token);
         Volunteer volunteer = userRepository.findById(userId).map(User::getVolunteer).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_TOKEN_NOT_EXIST)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST));
 
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
     }
@@ -87,7 +77,7 @@ public class VolunteerServiceImpl implements VolunteerService {
     public ResponseEntity<?> getVolunteer(String volunteerId) {
 
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
@@ -95,10 +85,10 @@ public class VolunteerServiceImpl implements VolunteerService {
     public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
 
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         if(volunteerEntity.getBuilderAssistantId().equals(volunteer.getBuilderAssistantId()))
-            throw new RequestException(HttpStatus.CONFLICT, getErrorMessage(VOLUNTEER_ID_ALREADY_TAKEN));
+            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
 
         VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
 
@@ -107,16 +97,16 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         volunteerRepository.save(volunteerEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(VOLUNTEER_UPDATED), VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {
         Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(VOLUNTEER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         volunteerRepository.delete(volunteer);
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(VOLUNTEER_DELETED));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
     }
 
 }

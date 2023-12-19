@@ -3,6 +3,7 @@ package org.ldcgc.backend.util.creation;
 import org.ldcgc.backend.exception.ApiError;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.util.conversion.Convert;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,9 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.ENDPOINT_NOT_IMPLEMENTED;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Component
 public class Constructor {
@@ -43,9 +41,9 @@ public class Constructor {
                 .status(HttpStatus.NOT_IMPLEMENTED.value())
                 .endpoint(MDC.get("requestURI"))
                 .timestamp(Convert.nowToTimeStampString())
-                .message(getErrorMessage(ENDPOINT_NOT_IMPLEMENTED))
+                .message(Messages.Error.ENDPOINT_NOT_IMPLEMENTED)
                 .build();
-        return buildResponseMessageObject(HttpStatus.NOT_IMPLEMENTED, getErrorMessage(ENDPOINT_NOT_IMPLEMENTED), apiError);
+        return buildResponseMessageObject(HttpStatus.NOT_IMPLEMENTED, Messages.Error.ENDPOINT_NOT_IMPLEMENTED, apiError);
     }
 
     public static ResponseEntity<?> buildResponseMessage(HttpStatus httpStatus, String message) {

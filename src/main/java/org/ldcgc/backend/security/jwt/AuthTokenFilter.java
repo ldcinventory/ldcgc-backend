@@ -13,6 +13,7 @@ import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,10 +30,6 @@ import java.time.LocalDateTime;
 import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_MANAGER_NOT_ACCEPTED;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.EULA_STANDARD_NOT_ACCEPTED;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_VALID;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 import static org.ldcgc.backend.validator.Endpoint.isTokenEndpoint;
 import static org.ldcgc.backend.validator.Endpoint.notExemptedEndpoint;
 
@@ -66,7 +63,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         try {
             if(!jwtUtils.verifyJwt(decodedJWT, null))
-                throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(TOKEN_NOT_VALID));
+                throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_VALID);
 
             String userEmail = jwtUtils.getEmailFromJwtToken(decodedJWT);
 
@@ -78,13 +75,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 // get eula details (standard user)
                 if (userDetails.getAcceptedEULA() == null)
-                    throw new RequestException(HttpStatus.FORBIDDEN, getErrorMessage(EULA_STANDARD_NOT_ACCEPTED));
+                    throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED);
 
                 // get eula details (manager)
                 if((userDetails.getAuthorities().contains(new SimpleGrantedAuthority(ROLE_MANAGER.name())) ||
                     userDetails.getAuthorities().contains(new SimpleGrantedAuthority(ROLE_ADMIN.name())))
                     && userDetails.getAcceptedEULAManager() == null)
-                    throw new RequestException(HttpStatus.FORBIDDEN, getErrorMessage(EULA_MANAGER_NOT_ACCEPTED));
+                    throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED);
             }
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
@@ -97,7 +94,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 tokenRepository.deleteExpiredTokens();
 
         } catch (ParseException | JOSEException | IllegalArgumentException | NullPointerException e) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(TOKEN_NOT_VALID));
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_VALID);
         }
 
         request.setAttribute("Authorization", jwt);
