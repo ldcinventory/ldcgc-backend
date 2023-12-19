@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUser;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 public class TestRequestFactory {
 
@@ -21,13 +22,15 @@ public class TestRequestFactory {
             return requestBuilder
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8);
+                .characterEncoding(StandardCharsets.UTF_8)
+                .with(user("user").roles("USER"));
 
         return requestBuilder
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .requestAttr("Authorization", generateNewStringToken(getRandomMockedUser(tokenUserRole)));
+            .requestAttr("Authorization", generateNewStringToken(getRandomMockedUser(tokenUserRole)))
+            .with(user(tokenUserRole.getRoleName().toLowerCase()).roles(tokenUserRole.getRoleName()));
     }
 
     public static MockHttpServletRequestBuilder getRequest(String url, ERole tokenUserRole) {

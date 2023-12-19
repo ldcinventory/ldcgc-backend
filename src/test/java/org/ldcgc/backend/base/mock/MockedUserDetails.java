@@ -164,6 +164,31 @@ public class MockedUserDetails {
             .build();
     }
 
+    public static UserDto getRandomMockedCreatingUserDto(ERole role) {
+        UserDto userDto = getMockedUser();
+        userDto.toBuilder().password(getRandomPassword()).build();
+
+        return userDto;
+    }
+
+    public static UserDto getRandomMockedUpdatingUserDto(ERole role) {
+        Integer id = new Random().ints(1, 0, 500000).iterator().nextInt();
+
+        return getMockedUser().toBuilder()
+            .id(id)
+            .email(getRandomElementFromList(emails))
+            .password(getRandomPassword())
+            .role(role)
+            .responsibility(CategoryDto.builder()
+                .id(0)
+                .name("Coordinador GC")
+                .category(CategoryDto.builder().id(0).name("Responsabilidades").build())
+                .build())
+            .group(GroupDto.builder().id(0).build())
+            .volunteer(VolunteerDto.builder().id(0).build())
+            .build();
+    }
+
     public static UserDto getRandomMockedUserDtoLogin() {
         UserDto userDto = getRandomMockedUserDto();
         return UserDto.builder()

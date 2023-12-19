@@ -27,7 +27,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockServletContext;
@@ -155,7 +154,6 @@ class AccountControllerImplTest {
             .andExpect(status().isOk())
             .andExpect(content().string(getInfoMessage(LOGOUT_SUCCESSFUL)))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
-
     }
 
     @Test
@@ -181,7 +179,6 @@ class AccountControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(getInfoMessage(CREDENTIALS_EMAIL_SENT)));
 
         mockMvc.perform(postRequest(request)
-                .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(credentialsDto)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -221,13 +218,11 @@ class AccountControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(USER_CREDENTIALS_UPDATED)));
 
         mockMvc.perform(postRequest(request)
-                .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(credentialsDto)))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(getInfoMessage(USER_CREDENTIALS_UPDATED)))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
-
     }
 
 }
