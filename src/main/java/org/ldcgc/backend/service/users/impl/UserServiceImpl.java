@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
         UserMapper.MAPPER.update(user, userEntity);
         userRepository.save(userEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMapper.MAPPER.toDTO(userEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, getInfoMessage(USER_UPDATED), UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
