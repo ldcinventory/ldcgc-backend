@@ -19,7 +19,6 @@ import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.creation.Email;
 import org.ldcgc.backend.validator.UserValidation;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -121,7 +120,7 @@ class AccountControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
 
-        given(accountService.login(ArgumentMatchers.any())).willAnswer(
+        given(accountService.login(Mockito.any())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser));
 
         mockMvc.perform(postRequest(request)
@@ -148,7 +147,7 @@ class AccountControllerImplTest {
 
         given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
 
-        given(accountService.logout(ArgumentMatchers.any())).willAnswer(
+        given(accountService.logout(Mockito.any())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(getInfoMessage(LOGOUT_SUCCESSFUL)));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_USER))
