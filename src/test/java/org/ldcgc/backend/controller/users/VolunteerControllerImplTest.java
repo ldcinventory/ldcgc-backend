@@ -72,11 +72,9 @@ public class VolunteerControllerImplTest {
     @Autowired private ObjectMapper mapper;
 
     private final String requestRoot = "/volunteers";
-    private final String JWT = "jwt";
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
-    private UserDto mockedUserLogin;
     private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
@@ -102,7 +100,6 @@ public class VolunteerControllerImplTest {
             .build();
 
         mockedUser = getRandomMockedUserDto();
-        mockedUserLogin = getRandomMockedUserDtoLogin();
 
         setAuthenticationForRequest();
 
@@ -156,7 +153,7 @@ public class VolunteerControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.VOLUNTEER_CREATED).data(mockedVolunteer).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(volunteerService.createVolunteer(Mockito.any()))
+        given(volunteerService.createVolunteer(Mockito.any(VolunteerDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
@@ -203,7 +200,7 @@ public class VolunteerControllerImplTest {
         UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
-        given(volunteerService.updateVolunteer(Mockito.anyString(), Mockito.any())).will(
+        given(volunteerService.updateVolunteer(Mockito.anyString(), Mockito.any(VolunteerDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")

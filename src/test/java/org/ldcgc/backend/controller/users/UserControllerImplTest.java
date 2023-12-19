@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 @WebMvcTest(controllers = UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class UserControllerImplTest {
+public class UserControllerImplTest {
 
     // controller
     @Autowired private UserController userController;
@@ -78,8 +78,6 @@ class UserControllerImplTest {
     @Autowired private ObjectMapper mapper;
 
     private final String requestRoot = "/users";
-    private final String JWT = "jwt";
-
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
@@ -121,7 +119,7 @@ class UserControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        given(userService.getMyUser(Mockito.any())).willAnswer(
+        given(userService.getMyUser(Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
         );
 
@@ -142,7 +140,7 @@ class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(userService.updateMyUser(Mockito.anyString(), Mockito.any())).will(
+        given(userService.updateMyUser(Mockito.anyString(), Mockito.any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_USER)
@@ -181,7 +179,7 @@ class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(userService.createUser(Mockito.any()))
+        given(userService.createUser(Mockito.any(UserDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
@@ -245,7 +243,7 @@ class UserControllerImplTest {
         UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
-        given(userService.updateUser(Mockito.anyInt(), Mockito.any())).will(
+        given(userService.updateUser(Mockito.anyInt(), Mockito.any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")

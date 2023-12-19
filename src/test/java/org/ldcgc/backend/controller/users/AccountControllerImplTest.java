@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 @WebMvcTest(controllers = AccountController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class AccountControllerImplTest {
+public class AccountControllerImplTest {
     // controller
     @Autowired private AccountController accountController;
     // services
@@ -115,7 +115,7 @@ class AccountControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
 
-        given(accountService.login(Mockito.any())).willAnswer(
+        given(accountService.login(Mockito.any(UserDto.class))).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser));
 
         mockMvc.perform(postRequest(request)
@@ -142,7 +142,7 @@ class AccountControllerImplTest {
 
         given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
 
-        given(accountService.logout(Mockito.any())).willAnswer(
+        given(accountService.logout(Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.LOGOUT_SUCCESSFUL));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_USER))
