@@ -194,7 +194,7 @@ class UserControllerImplTest {
 
     @Test
     public void getUser() throws Exception {
-        final String request = requestRoot + "/0";
+        final String request = requestRoot + "/{userId}";
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
@@ -202,8 +202,7 @@ class UserControllerImplTest {
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER)
-                .param("userId", "0"))
+        mockMvc.perform(getRequest(request, ERole.ROLE_USER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedUser)))
@@ -223,8 +222,7 @@ class UserControllerImplTest {
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
         given(userService.listUsers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull()))
-            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
-        );
+            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
         mockMvc.perform(getRequest(request, ERole.ROLE_USER)
                 .param("pageIndex", "0")
@@ -240,7 +238,7 @@ class UserControllerImplTest {
 
     @Test
     public void updateUser() throws Exception {
-        final String request = requestRoot + "/0";
+        final String request = requestRoot + "/{userId}";
 
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
@@ -250,7 +248,7 @@ class UserControllerImplTest {
         given(userService.updateUser(Mockito.anyInt(), Mockito.any())).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")
                 .content(mapper.writeValueAsString(mockedUser)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -260,14 +258,14 @@ class UserControllerImplTest {
 
     @Test
     public void deleteUser() throws Exception {
-        final String request = requestRoot + "/0";
+        final String request = requestRoot + "/{userId}";
 
         log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
 
         given(userService.deleteUser(Mockito.anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(deleteRequest(request, ERole.ROLE_USER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.USER_DELETED))
