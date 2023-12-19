@@ -76,7 +76,7 @@ public interface UserController {
             })
     )
     @PutMapping("/me")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> updateMyUser(
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
