@@ -11,6 +11,7 @@ import org.ldcgc.backend.service.users.EulaService;
 import org.ldcgc.backend.util.common.EEULAStatus;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,9 @@ public class EulaServiceImpl implements EulaService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final JwtUtils jwtUtils;
+
+    @Value("${eula-standard}") private String EULA_STANDARD;
+    @Value("${eula-managers}") private String EULA_MANAGERS;
 
     private final String EVERY_USER = "every user";
     public final String MANAGERS = "managers and admins";
@@ -51,7 +55,7 @@ public class EulaServiceImpl implements EulaService {
     private ResponseEntity<?> getEULAStandard() {
         EulaDto eulaDto = EulaDto.builder()
             .actionsAvailable(List.of(EEULAStatus.ACCEPT, EEULAStatus.PENDING, EEULAStatus.REJECT))
-            .url("https://docs.google.com/document/d/e/2PACX-1vTMAT1BQXKqh0zNooCJPFCWHYP7lXUGXdVemuGbZt9DgkZIoVoBwLPnx7DBzjwyJ0LxCpNfRKUA3nfl/pub?embedded=true")
+            .url(EULA_STANDARD)
             .build();
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER), eulaDto);
@@ -60,7 +64,7 @@ public class EulaServiceImpl implements EulaService {
     private ResponseEntity<?> getEULAManager() {
         EulaDto eulaDto = EulaDto.builder()
             .actionsAvailable(List.of(EEULAStatus.ACCEPT, EEULAStatus.PENDING, EEULAStatus.REJECT))
-            .url("https://docs.google.com/document/d/e/2PACX-1vSXbZBtWjquXaJr9Spx7_LD9KNWg7t4G3Kxc7iGk4ZDZEhl5jVfO11ijCEAnoQY9RCN9lQqo5J6KBz4/pub?embedded=true")
+            .url(EULA_MANAGERS)
             .build();
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.App.EULA_SELECT_ACTION, MANAGERS), eulaDto);
