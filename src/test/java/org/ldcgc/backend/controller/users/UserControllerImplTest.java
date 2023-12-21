@@ -43,7 +43,6 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getListOfMockedUsers;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedCreatingUserDto;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -175,7 +174,7 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
-        UserDto mockedUser = getRandomMockedCreatingUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = getRandomMockedUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 

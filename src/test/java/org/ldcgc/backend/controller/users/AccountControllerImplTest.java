@@ -115,7 +115,7 @@ public class AccountControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
 
-        given(accountService.login(Mockito.any(UserDto.class))).willAnswer(
+        given(accountService.login(Mockito.any(UserCredentialsDto.class))).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser));
 
         mockMvc.perform(postRequest(request)

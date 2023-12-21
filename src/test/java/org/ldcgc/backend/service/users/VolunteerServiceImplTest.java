@@ -3,16 +3,14 @@ package org.ldcgc.backend.service.users;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import uk.co.jemos.podam.api.PodamFactory;
+import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.nio.charset.StandardCharsets;
-
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
 
 @Slf4j
 @SpringBootTest
@@ -21,8 +19,8 @@ class VolunteerServiceImplTest {
     @MockBean VolunteerService volunteerService;
 
     private MockMvc mockMvc;
-    private UserDto mockedUser;
-    private UserDto mockedUserLogin;
+    private final PodamFactory factory = new PodamFactoryImpl();
+
 
     @BeforeEach
     public void init() {
@@ -32,10 +30,6 @@ class VolunteerServiceImplTest {
             .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
             .setHandlerExceptionResolvers()
             .build();
-
-        mockedUser = getRandomMockedUserDto();
-        mockedUserLogin = getRandomMockedUserDtoLogin();
-
     }
 
     //create vounteer

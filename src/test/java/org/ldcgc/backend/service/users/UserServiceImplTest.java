@@ -11,9 +11,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
-
 @Slf4j
 @SpringBootTest
 class UserServiceImplTest {
@@ -32,9 +29,6 @@ class UserServiceImplTest {
             .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
             .setHandlerExceptionResolvers()
             .build();
-
-        mockedUser = getRandomMockedUserDto();
-        mockedUserLogin = getRandomMockedUserDtoLogin();
 
     }
 
