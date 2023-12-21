@@ -18,7 +18,7 @@ public class Response implements Serializable {
 
     @Value @Builder @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTOWithLocation {
-        String status;
+        String message;
         String location;
     }
 

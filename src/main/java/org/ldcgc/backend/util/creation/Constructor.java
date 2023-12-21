@@ -24,7 +24,7 @@ public class Constructor {
     }
 
     private static Response.DTOWithLocation buildResponseMessageLocation(String message, String location) {
-        return Response.DTOWithLocation.builder().status(message).location(location).build();
+        return Response.DTOWithLocation.builder().message(message).location(location).build();
     }
 
     private static Response.DTO buildResponseMessageObject(String message, Object object) {
