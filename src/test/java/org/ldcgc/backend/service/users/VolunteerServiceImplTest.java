@@ -21,7 +21,6 @@ class VolunteerServiceImplTest {
     private MockMvc mockMvc;
     private final PodamFactory factory = new PodamFactoryImpl();
 
-
     @BeforeEach
     public void init() {
 

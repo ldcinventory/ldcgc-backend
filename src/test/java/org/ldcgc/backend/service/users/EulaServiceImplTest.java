@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
+import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,7 +50,7 @@ class EulaServiceImplTest {
     @BeforeEach
     public void init() {
         eulaService = new EulaServiceImpl(userRepository, tokenRepository, jwtUtils);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDtoLogin()));
+        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto()));
     }
 
     // mocked users

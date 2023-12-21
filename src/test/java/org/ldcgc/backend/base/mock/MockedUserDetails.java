@@ -14,6 +14,7 @@ import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.springframework.boot.test.context.TestConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +97,7 @@ public class MockedUserDetails {
         return getMockedUser().toBuilder()
             .id(id)
             .email(getRandomElementFromList(EMAILS))
+            .role(getRandomRole())
             .volunteer(volunteerFromMocked.toBuilder()
                 .name(getRandomElementFromList(NAMES))
                 .lastName(String.format("%s %s",
@@ -181,6 +183,11 @@ public class MockedUserDetails {
 
     private static String getRandomPassword() {
         return getRandomPassword(8);
+    }
+
+    private static ERole getRandomRole() {
+        List<ERole> roles = Arrays.asList(ERole.values());
+        return roles.get(new Random().nextInt(roles.size()));
     }
 
 }
