@@ -25,7 +25,7 @@ public class MockedToken {
 
     private static final String ISSUER_URL = "https://gc8inventory.es";
 
-    private static SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
+    public static SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
         // Generate a key pair with Ed25519 curve
         OctetKeyPair jwk = new OctetKeyPairGenerator(Curve.Ed25519)
             .keyUse(KeyUse.SIGNATURE)
