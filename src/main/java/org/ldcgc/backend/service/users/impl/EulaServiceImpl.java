@@ -36,7 +36,7 @@ public class EulaServiceImpl implements EulaService {
     @Value("${eula-managers}") private String EULA_MANAGERS;
 
     private final String EVERY_USER = "every user";
-    public final String MANAGERS = "managers and admins";
+    private final String MANAGERS = "managers and admins";
 
     public ResponseEntity<?> getEULA(String token) throws ParseException {
         User user = userRepository.findById(jwtUtils.getUserIdFromStringToken(token))

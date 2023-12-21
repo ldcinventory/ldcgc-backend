@@ -111,7 +111,8 @@ class ToolServiceImplTest {
     }
 
     //TODO: Fix test and add excel tests, get all pageable tests
- /*   @Test
+    /*
+    @Test
     void getAllToolsShouldReturnList() {
         List<Tool> tools = factory.manufacturePojo(ArrayList.class, Tool.class);
 
@@ -124,6 +125,7 @@ class ToolServiceImplTest {
         assertTrue(Objects.nonNull(response));
         assertEquals("java.util.ImmutableCollections$ListN", ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass().getName());
         assertEquals(ToolDto.class, ((Page<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).get().findFirst().getClass());
-    }*/
+    }
+    */
 
 }
