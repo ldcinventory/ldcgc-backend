@@ -18,21 +18,21 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>21</maven.compiler.release>
 		<maven-compiler.version>3.11.0</maven-compiler.version>
 		<spring-boot.version>3.2.0</spring-boot.version>
 		<guava.version>32.1.3-jre</guava.version>
 		<snake-yaml.version>2.2</snake-yaml.version>
-		<apache-poi.version>5.2.2</apache-poi.version>
-		<nimbus.version>9.37.1</nimbus.version>
-		<tink.version>1.11.0</tink.version>
-		<openapi.version>2.2.0</openapi.version>
-		<javamail.version>8.3.1</javamail.version>
+		<apache-poi.version>5.2.5</apache-poi.version>
+		<nimbus.version>9.37.2</nimbus.version>
+		<tink.version>1.12.0</tink.version>
+		<openapi.version>2.3.0</openapi.version>
+		<javamail.version>8.3.3</javamail.version>
 		<lombok.version>1.18.30</lombok.version>
-		<mapstruc.version>1.5.5.Final</mapstruc.version>
-		<lombok-mapstruc.version>0.2.0</lombok-mapstruc.version>
-		<junit-jupiter.version>5.10.1</junit-jupiter.version>
+		<mapstruct.version>1.5.5.Final</mapstruct.version>
+		<lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
 		<bouncy.castle.version>1.77</bouncy.castle.version>
+		<logback.version>1.4.14</logback.version>
 	</properties>
 
 	<dependencies>
@@ -92,7 +92,6 @@
 			<version>${bouncy.castle.version}</version>
 		</dependency>
 
-
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -103,7 +102,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok-mapstruct-binding</artifactId>
-			<version>${lombok-mapstruc.version}</version>
+			<version>${lombok-mapstruct.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -111,7 +110,7 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${mapstruc.version}</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
 
 		<!-- Mail -->
@@ -138,6 +137,23 @@
 			<version>${openapi.version}</version>
 		</dependency>
 
+		<!-- Logging -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+
 		<!-- Other -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -159,7 +175,6 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${apache-poi.version}</version>
 		</dependency>
-
 
 		<!-- Test -->
 		<dependency>
@@ -217,12 +232,12 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok-mapstruct-binding</artifactId>
-							<version>${lombok-mapstruc.version}</version>
+							<version>${lombok-mapstruct.version}</version>
 						</path>
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
-							<version>${mapstruc.version}</version>
+							<version>${mapstruct.version}</version>
 						</path>
 						<path>
 							<groupId>org.springframework.boot</groupId>

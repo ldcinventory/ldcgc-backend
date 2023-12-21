@@ -1,26 +1,29 @@
 package org.ldcgc.backend.validator;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 
-@RequiredArgsConstructor
+@Component
 public class UserValidation implements ConstraintValidator<UserFromTokenInDb, String> {
 
-    private final UserRepository userRepository;
-    private final JwtUtils jwtUtils;
+    public static final UserValidation instance = new UserValidation();
 
-    private static UserValidation INSTANCE;
+    @Autowired private UserRepository userRepository;
+    @Autowired private JwtUtils jwtUtils;
 
-    @PostConstruct
-    public void init() {
-        UserValidation.INSTANCE = this;
+    @Bean
+    public static UserValidation bean(final UserRepository userRepository, final JwtUtils jwtUtils) {
+        instance.userRepository = userRepository;
+        instance.jwtUtils = jwtUtils;
+        return instance;
     }
 
     public void initialize(UserFromTokenInDb constraintAnnotation) {
@@ -35,8 +38,8 @@ public class UserValidation implements ConstraintValidator<UserFromTokenInDb, St
         }
     }
 
-    public static boolean userFromTokenExistsInDB(String token) throws ParseException {
-        Integer tokenUserId = INSTANCE.jwtUtils.getUserIdFromStringToken(token);
-        return INSTANCE.userRepository.existsById(tokenUserId);
+    public boolean userFromTokenExistsInDB(String token) throws ParseException {
+        Integer tokenUserId = instance.jwtUtils.getUserIdFromStringToken(token);
+        return instance.userRepository.existsById(tokenUserId);
     }
 }

@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.tool.impl;
+package org.ldcgc.backend.service.resources.tool;
 
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.db.model.resources.Tool;
@@ -8,7 +8,7 @@ import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.impl.ToolServiceImpl;
-import org.ldcgc.backend.util.retrieving.Message;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,7 +94,7 @@ class ToolServiceImplTest {
         verify(repository, times(1)).delete(tool);
 
         assertTrue(Objects.nonNull(response));
-        assertEquals(getInfoMessage(Message.InfoMessage.TOOL_DELETED), ((Response.DTO) Objects.requireNonNull(response.getBody())).getMessage());
+        assertEquals(Messages.Info.TOOL_DELETED, ((Response.DTO) Objects.requireNonNull(response.getBody())).getMessage());
     }
 
     @Test()
@@ -112,7 +111,8 @@ class ToolServiceImplTest {
     }
 
     //TODO: Fix test and add excel tests, get all pageable tests
- /*   @Test
+    /*
+    @Test
     void getAllToolsShouldReturnList() {
         List<Tool> tools = factory.manufacturePojo(ArrayList.class, Tool.class);
 
@@ -125,6 +125,7 @@ class ToolServiceImplTest {
         assertTrue(Objects.nonNull(response));
         assertEquals("java.util.ImmutableCollections$ListN", ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass().getName());
         assertEquals(ToolDto.class, ((Page<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).get().findFirst().getClass());
-    }*/
+    }
+    */
 
 }

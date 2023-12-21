@@ -11,6 +11,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,18 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.util.List;
-
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_ALREADY_EXIST;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.USER_NOT_FOUND_TOKEN;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_CREATED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_DELETED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_LISTED;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.USER_UPDATED;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -43,40 +33,50 @@ public class UserServiceImpl implements UserService {
         String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
 
         Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
-            -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND_TOKEN)));
+            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
 
         return getUser(userId);
     }
 
-    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException {
-        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+    public ResponseEntity<?> updateMyUser(String token, UserDto user) {
+        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
 
-        return updateUser(userId, user);
+        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
+            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
+
+        User userEntity = getUserFromUserId(userId);
+
+        if(!userEntity.getRole().equals(user.getRole()))
+            throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PERMISSION_ROLE);
+
+        return updateUser(userEntity, user);
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
+    public ResponseEntity<?> deleteMyUser(String token) {
+        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
 
-        Integer userId = jwtUtils.getUserIdFromStringToken(token);
+        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
+            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
 
         userRepository.deleteById(userId);
         tokenRepository.deleteAllTokensFromUser(userId);
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_DELETED);
     }
 
     public ResponseEntity<?> createUser(UserDto user) {
         if(userRepository.findByEmail(user.getEmail()).isPresent())
-            throw new RequestException(HttpStatus.CONFLICT, getErrorMessage(USER_ALREADY_EXIST));
+            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.USER_ALREADY_EXIST);
 
         User userEntity = UserMapper.MAPPER.toEntity(user);
         userEntity = userRepository.save(userEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, getInfoMessage(USER_CREATED), UserMapper.MAPPER.toDTO(userEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.USER_CREATED, UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
         return Constructor.buildResponseObject(HttpStatus.OK, UserMapper.MAPPER.toDTO(user));
     }
@@ -93,28 +93,37 @@ public class UserServiceImpl implements UserService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(getInfoMessage(USER_LISTED), pageUsers.getTotalElements()),
+            String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(UserMapper.MAPPER::toDTO).toList());
 
     }
 
     public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
-        User userEntity = userRepository.findById(userId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND)));
+        return updateUser(getUserFromUserId(userId), user);
+    }
+
+    private ResponseEntity<?> updateUser(User userEntity, UserDto user) {
+        if(userEntity.getEmail().equals(user.getEmail()))
+            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.USER_ALREADY_EXIST);
 
         UserMapper.MAPPER.update(user, userEntity);
         userRepository.save(userEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, getInfoMessage(USER_UPDATED), UserMapper.MAPPER.toDTO(userEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.USER_UPDATED, UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
         if (!userRepository.existsById(userId))
-            throw new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(USER_NOT_FOUND));
+            throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND);
 
         userRepository.deleteById(userId);
 
-        return Constructor.buildResponseMessage(HttpStatus.OK, getInfoMessage(USER_DELETED));
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_DELETED);
+    }
+
+    private User getUserFromUserId(Integer userId) {
+        return userRepository.findById(userId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
     }
 
 }

@@ -7,6 +7,8 @@ import org.ldcgc.backend.service.users.VolunteerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequiredArgsConstructor
 public class VolunteerControllerImpl implements VolunteerController {
@@ -17,8 +19,12 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.createVolunteer(volunteer);
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer sizeIndex, String filterString, String barcode) {
-        return volunteerService.listVolunteers(pageIndex, sizeIndex, filterString, barcode);
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
+        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId);
+    }
+
+    public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
+        return volunteerService.getMyVolunteer(token);
     }
 
     public ResponseEntity<?> getVolunteer(String volunteerId) {
