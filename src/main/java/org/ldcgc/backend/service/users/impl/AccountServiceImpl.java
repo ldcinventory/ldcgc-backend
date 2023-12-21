@@ -11,7 +11,6 @@ import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
-import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
@@ -50,17 +49,17 @@ public class AccountServiceImpl implements AccountService {
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<?> login(UserDto user) throws ParseException, JOSEException {
+    public ResponseEntity<?> login(UserCredentialsDto userCredentials) throws ParseException, JOSEException {
 
-        User userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow(() ->
+        User userEntity = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
-        if (!passwordEncoder.matches(user.getPassword(), userEntity.getPassword()))
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.USER_PASSWORD_DOESNT_MATCH);
+        if (!passwordEncoder.matches(userCredentials.getPassword(), userEntity.getPassword()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.USER_PASSWORD_DONT_MATCH);
 
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(userEntity.getRole().name());
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-            userEntity.getEmail(), user.getPassword(), Collections.singletonList(grantedAuthority));
+            userEntity.getEmail(), userCredentials.getPassword(), Collections.singletonList(grantedAuthority));
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -91,6 +90,7 @@ public class AccountServiceImpl implements AccountService {
 
     public ResponseEntity<?> logout(String token) throws ParseException {
         Integer userId = jwtUtils.getUserIdFromJwtToken(jwtUtils.getDecodedJwt(token));
+
         tokenRepository.deleteAllTokensFromUser(userId);
 
         SecurityContextHolder.clearContext();
