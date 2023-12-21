@@ -16,7 +16,6 @@ services:
       - "5434:5432"
     networks:
       - api_db_network
-      - api_smtp_network
     volumes:
       - postgresql:/var/lib/postgresql/data
     healthcheck:

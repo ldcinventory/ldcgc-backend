@@ -4,12 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.compare.EnumMethods;
-import org.ldcgc.backend.util.retrieving.Message;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Getter
 @RequiredArgsConstructor
@@ -29,14 +27,14 @@ public enum EStatus implements EnumMethods {
         return Arrays.stream(EStatus.values())
                 .filter(status -> status.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() ->new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.STATUS_NOT_FOUND)));
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.STATUS_NOT_FOUND));
     }
 
     public static EStatus getStatusByName(String name){
         return Arrays.stream(EStatus.values())
                 .filter(status -> status.toString().equals(name))
                 .findFirst()
-                .orElseThrow(() ->new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(Message.ErrorMessage.STATUS_NOT_FOUND)));
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.STATUS_NOT_FOUND));
     }
 
 }

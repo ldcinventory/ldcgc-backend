@@ -7,12 +7,9 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.service.category.CategoryService;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CATEGORY_PARENT_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CATEGORY_SON_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getCategoryParent(CategoryParentEnum parent) {
         return repository.findByName(parent.getBbddName())
                 .map(CategoryMapper.MAPPER::toDto)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(CATEGORY_PARENT_NOT_FOUND).formatted(parent.getName(), parent.getBbddName())));
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND.formatted(parent.getName(), parent.getBbddName())));
     }
 
     @Override
@@ -32,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .filter(category -> category.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                        getErrorMessage(CATEGORY_SON_NOT_FOUND)
+                        Messages.Error.CATEGORY_SON_NOT_FOUND
                                 .formatted(parent.getName(), name, parent.getName(), parent.getCategories().stream().map(CategoryDto::getName).toList().toString())));
     }
 }
