@@ -149,7 +149,7 @@ public class MockedUserDetails {
     }
 
     public static List<UserDto> getListOfMockedUsers(Integer listSize) {
-        return Stream.generate(() -> getRandomMockedUserDto()).limit(listSize).toList();
+        return Stream.generate(MockedUserDetails::getRandomMockedUserDto).limit(listSize).toList();
     }
 
     private static String getRandomElementFromList(List<String> list) {
