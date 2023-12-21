@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
+import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -31,17 +33,17 @@ public interface ToolController {
 
     @Operation(summary = "Get any tool by providing its id.")
     @ApiResponse(
-            responseCode = "200",
-            description = "OK",
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation =  ToolDto.class))
     )
     @ApiResponse(
-            responseCode = "404",
-            description = "Not found",
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json",
                     examples = {
-                            @ExampleObject(name = "Tool not found", value = "Tool with id 1 not found")
+                            @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND)
                     })
     )
     @GetMapping("/{toolId}")
@@ -50,8 +52,8 @@ public interface ToolController {
 
     @Operation(summary = "Create a new tool.")
     @ApiResponse(
-            responseCode = "200",
-            description = "OK",
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ToolDto.class))
     )
@@ -69,8 +71,8 @@ public interface ToolController {
 
     @Operation(summary = "Update a tool. If the tool is not found, it gets inserted instead.")
     @ApiResponse(
-            responseCode = "200",
-            description = "OK",
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ToolDto.class))
     )
@@ -80,8 +82,8 @@ public interface ToolController {
 
     @Operation(summary = "Delete an existing tool.")
     @ApiResponse(
-            responseCode = "200",
-            description = "OK",
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
                     examples = {
                             @ExampleObject(name = "Tool deleted", value = "Tool deleted.")
@@ -89,8 +91,8 @@ public interface ToolController {
             )
     )
     @ApiResponse(
-            responseCode = "404",
-            description = "Not found",
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json",
                     examples = {
                             @ExampleObject(name = "Tool not found", value = "Tool with id 1 not found")
@@ -102,8 +104,8 @@ public interface ToolController {
 
     @Operation(summary = "Get all tools, paginated and sorted. You can also include 4 filters: brand, model, description and status")
     @ApiResponse(
-            responseCode = "200",
-            description = "OK",
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = ToolDto.class))
             )
@@ -111,16 +113,15 @@ public interface ToolController {
     @GetMapping()
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
-
     @ApiResponse(
-            responseCode = "200",
-            description = "OK",
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)))
     )
     @ApiResponse(
-            responseCode = "404",
-            description = "Not found",
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json",
                     examples = {
                             @ExampleObject(name = "Brand not found", value = "Brand Hammer not found. Please, enter a valid Brand."),
