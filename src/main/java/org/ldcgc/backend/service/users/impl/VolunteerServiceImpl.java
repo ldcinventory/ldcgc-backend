@@ -29,9 +29,9 @@ import java.util.List;
 @Transactional
 public class VolunteerServiceImpl implements VolunteerService {
 
-    private final JwtUtils jwtUtils;
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
 
     public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
 
