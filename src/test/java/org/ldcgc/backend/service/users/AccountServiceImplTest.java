@@ -63,10 +63,8 @@ class AccountServiceImplTest {
     @Mock private UserRepository userRepository;
     @Mock private TokenRepository tokenRepository;
     // email
-    @Autowired
-    private TemplateEngine templateEngine;
-    @MockBean
-    private JavaMailSender sender;
+    @Autowired private TemplateEngine templateEngine;
+    @MockBean private JavaMailSender sender;
 
     private final PasswordEncoder passwordEncoder = defaultsForSpringSecurity_v5_8();
     private final PodamFactory factory = new PodamFactoryImpl();
