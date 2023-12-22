@@ -73,6 +73,7 @@ public class Messages {
             USER_NOT_FOUND = "User not found",
             USER_NOT_FOUND_TOKEN = "User id or user from token not found, or token is not valid",
             USER_PERMISSION_ROLE = "User doesn't have the permission to change its own role, even if it's admin",
+            USER_PERMISSION_OTHER = "User doesn't have the permission to change other users",
             USER_PASSWORD_DONT_MATCH = "Password provided for this email doesn't match our records",
 
             EULA_ACTION_INVALID = "EULA action is not valid",
