@@ -2,7 +2,7 @@ package org.ldcgc.backend.util.retrieving;
 
 public class Messages {
 
-    public class Info {
+    public static class Info {
 
         public static final String
 
@@ -41,7 +41,7 @@ public class Messages {
 
     }
 
-    public class App {
+    public static class App {
 
         public static final String
 
@@ -60,7 +60,7 @@ public class Messages {
 
     }
 
-    public class Error {
+    public static class Error {
 
         public static final String
             TOKEN_NOT_PARSEABLE = "This token is not parseable",
