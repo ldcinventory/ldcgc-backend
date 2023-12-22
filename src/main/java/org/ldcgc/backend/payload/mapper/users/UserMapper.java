@@ -18,10 +18,12 @@ public interface UserMapper {
 
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(target = "group.location.locations", ignore = true)
     User toEntity(UserDto userRequest);
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
+    @Mapping(target = "volunteer.absences", ignore = true)
     UserDto toDTO(User user);
 
     UserCredentialsDto toCredentialsDTO(User user);
