@@ -45,4 +45,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgresql: {}
+  postgresql:
+    name: ldcgc-db-vol
+
