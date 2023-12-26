@@ -31,6 +31,7 @@ import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.validator.Endpoint.isTokenEndpoint;
+import static org.ldcgc.backend.validator.Endpoint.nonTokenEndpoint;
 import static org.ldcgc.backend.validator.Endpoint.notExemptedEndpoint;
 
 @Component
@@ -51,7 +52,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         final boolean authIsNotPresent = StringUtils.isBlank(jwtHeaderPayload) && StringUtils.isBlank(jwtSignature);
 
-        if (authIsNotPresent) {
+        if (authIsNotPresent || nonTokenEndpoint(request.getMethod(), request.getRequestURI())) {
             response.setHeader("Expires", LocalDateTime.now().plusSeconds(jwtExpirationSeconds).toString());
             filterChain.doFilter(request, response);
             return;
