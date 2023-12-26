@@ -31,6 +31,7 @@ import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.validator.Endpoint.isTokenEndpoint;
+import static org.ldcgc.backend.validator.Endpoint.nonTokenEndpoint;
 import static org.ldcgc.backend.validator.Endpoint.notExemptedEndpoint;
 
 @Component
