@@ -51,7 +51,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         final boolean authIsNotPresent = StringUtils.isBlank(jwtHeaderPayload) && StringUtils.isBlank(jwtSignature);
 
-        if (authIsNotPresent) {
+        if (authIsNotPresent || nonTokenEndpoint(request.getMethod(), request.getRequestURI())) {
             response.setHeader("Expires", LocalDateTime.now().plusSeconds(jwtExpirationSeconds).toString());
             filterChain.doFilter(request, response);
             return;
