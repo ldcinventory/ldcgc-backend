@@ -214,6 +214,7 @@ public class InitializationData {
                 .name(vFieldList.get(2))
                 .lastName(vFieldList.get(3))
                 .isActive(Boolean.parseBoolean(vFieldList.get(4)))
+                .group(_8g)
                 .build()));
 
             // CONSUMABLES + TOOLS
