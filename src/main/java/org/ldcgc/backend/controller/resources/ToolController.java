@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/tools")
@@ -63,16 +64,40 @@ public interface ToolController {
                             @ExampleObject(name = "Tool already exists", value = Messages.Error.TOOL_BARCODE_ALREADY_EXISTS)
                     })
     )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_400,
+            description = SwaggerConfig.HTTP_REASON_400,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool id shouldn't be present", value = Messages.Error.TOOL_ID_SHOULDNT_BE_PRESENT)
+                    })
+    )
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
-    @Operation(summary = "Update a tool. If the tool is not found, it gets inserted instead.")
+    @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown.")
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ToolDto.class))
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool doesn't exist", value = Messages.Error.TOOL_NOT_FOUND)
+                    })
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_400,
+            description = SwaggerConfig.HTTP_REASON_400,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool barcode already exists", value = Messages.Error.TOOL_BARCODE_ALREADY_EXISTS)
+                    })
     )
     @PutMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
@@ -100,7 +125,7 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
-    @Operation(summary = "Get all tools, paginated and sorted. You can also include 4 filters: brand, model, description and status")
+    @Operation(summary = "Get all tools, paginated and sorted. You can also include 4 filters: brand, model, description and status. Valid status: Disponible, No disponible, En mantenimiento, Dañado, Nueva, En desuso")
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -108,9 +133,23 @@ public interface ToolController {
                     array = @ArraySchema(schema = @Schema(implementation = ToolDto.class))
             )
     )
-    @GetMapping()
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Status not found", value = Messages.Error.STATUS_NOT_FOUND)
+                    })
+    )
+    @GetMapping
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> getAllTools(@RequestParam Integer pageIndex, @RequestParam Integer size, @RequestParam String filterString);
+    ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+                                  @RequestParam(required = false, defaultValue = "25") Integer size,
+                                  @RequestParam(required = false, defaultValue = "name") String sortField,
+                                  @RequestParam(required = false, defaultValue = "") String brand,
+                                  @RequestParam(required = false, defaultValue = "") String model,
+                                  @RequestParam(required = false, defaultValue = "") String description,
+                                  @RequestParam(required = false) String status);
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
