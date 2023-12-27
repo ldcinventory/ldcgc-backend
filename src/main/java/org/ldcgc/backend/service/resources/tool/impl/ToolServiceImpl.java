@@ -43,7 +43,7 @@ public class ToolServiceImpl implements ToolService {
     public ResponseEntity<?> createTool(ToolDto tool) {
         Optional<Tool> repeatedTool = toolRepository.findFirstByBarcode(tool.getBarcode());
         if(repeatedTool.isPresent())
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(getErrorMessage(TOOL_ALREADY_EXISTS), tool.getBarcode()));
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, tool.getBarcode()));
 
         Tool entityTool = toolRepository.save(ToolMapper.MAPPER.toMo(tool));
 
@@ -54,7 +54,15 @@ public class ToolServiceImpl implements ToolService {
 
     @Override
     public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
-        //TODO: case when the tool is not present but the barcode is. Should we throw an error?
+        Optional<Tool> toolById = toolRepository.findById(toolId);
+        if(toolById.isEmpty())
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_NOT_FOUND, toolId));
+
+        Optional<Tool> toolByBarcode = toolRepository.findFirstByBarcode(toolDto.getBarcode());
+        if(toolByBarcode.isPresent() && !toolByBarcode.get().getId().equals(toolId))
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, toolDto.getBarcode()));
+
+        //TODO: reemplazar toMO por Update
         toolRepository.save(ToolMapper.MAPPER.toMo(toolDto));
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_UPDATED, toolDto);
     }

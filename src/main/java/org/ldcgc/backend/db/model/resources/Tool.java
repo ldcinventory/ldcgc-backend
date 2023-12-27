@@ -10,11 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.checkerframework.common.aliasing.qual.Unique;
 import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -40,6 +42,7 @@ public class Tool {
 
     // TODO validation to not allow null nor duplications once a barcode is registered
     //  (i.e. after batch a tool could have a null barcode)
+    @Column(unique = true)
     private String barcode;
 
     @ManyToOne
