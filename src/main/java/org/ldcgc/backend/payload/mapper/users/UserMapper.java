@@ -18,6 +18,7 @@ public interface UserMapper {
 
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
     User toEntity(UserDto userRequest);
 
