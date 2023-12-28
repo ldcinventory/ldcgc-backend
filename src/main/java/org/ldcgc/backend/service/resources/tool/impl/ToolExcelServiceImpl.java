@@ -58,6 +58,8 @@ public class ToolExcelServiceImpl implements ToolExcelService {
                 .build();
     }
 
+    //TODO: ver si este método se puede hacer con MapStruct
+
     private ToolDto convertExcelTool(ToolExcelMasterDto master, ToolExcelDto toolExcel) {
         Integer id = getIdByBarcode(toolExcel, master.tools);
         CategoryDto brand = categoryService.findCategorySonInParentByName(toolExcel.getBrand(), master.brandParent);

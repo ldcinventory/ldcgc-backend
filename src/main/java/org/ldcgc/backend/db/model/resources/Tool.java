@@ -40,6 +40,7 @@ public class Tool {
 
     // TODO validation to not allow null nor duplications once a barcode is registered
     //  (i.e. after batch a tool could have a null barcode)
+    @Column(unique = true)
     private String barcode;
 
     @ManyToOne

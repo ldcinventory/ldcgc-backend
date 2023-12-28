@@ -45,7 +45,6 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedCreatingUserDto;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;

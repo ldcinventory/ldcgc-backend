@@ -11,6 +11,6 @@ public interface ToolService {
     ResponseEntity<?> createTool(ToolDto tool);
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
-    ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String filterString);
+    ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status);
     ResponseEntity<?> uploadToolsExcel(MultipartFile file);
 }
