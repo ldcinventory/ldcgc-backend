@@ -33,7 +33,7 @@ public class ExcelUtils {
 
     private static ToolExcelDto parseRowToTool(Row row) {
         return ToolExcelDto.builder()
-                .barcode(String.valueOf(row.getCell(0).getNumericCellValue()))
+                .barcode(row.getCell(0).getStringCellValue())
                 .name(row.getCell(1).getStringCellValue())
                 .brand(row.getCell(2).getStringCellValue())
                 .model(row.getCell(3).getStringCellValue())
@@ -42,7 +42,7 @@ public class ExcelUtils {
                 .urlImages(row.getCell(6).getStringCellValue())
                 .status(row.getCell(7).getStringCellValue())
                 .location(row.getCell(8).getStringCellValue())
-                .maintenancePeriod((int) row.getCell(9).getNumericCellValue())
+                .maintenancePeriod((int)row.getCell(9).getNumericCellValue())
                 .maintenanceTime(row.getCell(10).getStringCellValue())
                 .lastMaintenance(row.getCell(11).getLocalDateTimeCellValue())
                 .group(row.getCell(12).getStringCellValue())

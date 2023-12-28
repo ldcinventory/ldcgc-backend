@@ -44,7 +44,7 @@ public class ToolServiceImpl implements ToolService {
 
         Optional<Tool> repeatedTool = toolRepository.findFirstByBarcode(tool.getBarcode());
         if(repeatedTool.isPresent())
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_ID_SHOULDNT_BE_PRESENT, tool.getBarcode()));
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, tool.getBarcode()));
 
         Tool entityTool = toolRepository.save(ToolMapper.MAPPER.toMo(tool));
 
