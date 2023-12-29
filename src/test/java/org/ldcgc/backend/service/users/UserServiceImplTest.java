@@ -32,6 +32,8 @@ class UserServiceImplTest {
 
     }
 
+    private final UserDto notFoundUser = UserDto.builder().build();
+
     // get my user
     @Test
     public void whenGetMyUser_returnUserNotFound() {
@@ -46,11 +48,6 @@ class UserServiceImplTest {
     // update my user
     @Test
     public void whenUpdateMy_returnUserUserNotFound() {
-
-    }
-
-    @Test
-    public void whenUpdateMyUser_returnEmailAlreadyTaken() {
 
     }
 
@@ -105,12 +102,42 @@ class UserServiceImplTest {
 
     // update user
     @Test
-    public void whenUpdateUser_returnUserNotFound() {
+    public void whenUpdateUser_validateUserAlreadyExists() {
 
     }
 
     @Test
-    public void whenUpdateUser_returnEmailAlreadyTaken() {
+    public void whenUpdateUser_validateChangeSelfRole() {
+
+    }
+
+    @Test
+    public void whenUpdateUser_validateManagerCreatingAdmin() {
+
+    }
+
+    @Test
+    public void whenUpdateUser_validateManagerElevatingToAdmin() {
+
+    }
+
+    @Test
+    public void whenUpdateUserWithVolunteer_returnVolunteerNotFound() {
+
+    }
+
+    @Test
+    public void whenUpdateUserWithVolunteer_returnVolunteerAssigned() {
+
+    }
+
+    @Test
+    public void whenUpdateUserWithResponsibility_returnCategoryNotFound() {
+
+    }
+
+    @Test
+    public void whenUpdateUserWithGroup_returnGroupNotFound() {
 
     }
 
