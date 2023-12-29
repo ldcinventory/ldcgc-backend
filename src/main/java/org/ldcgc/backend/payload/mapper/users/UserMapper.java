@@ -29,6 +29,7 @@ public interface UserMapper {
 
     UserCredentialsDto toCredentialsDTO(User user);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(source = "password", target = "password", qualifiedByName = "mapPasswordToEncryptedPassword")
     void update(UserDto userFrom, @MappingTarget User userTo);
 
