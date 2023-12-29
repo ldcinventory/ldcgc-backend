@@ -66,6 +66,12 @@ public class Constructor {
         return ResponseEntity.status(httpStatus).headers(headers).body(buildResponseData(object));
     }
 
+    public static ResponseEntity<?> buildResponseMessageObjectHeader(HttpStatus httpStatus, String message, Object object, HttpHeaders headers) {
+        return ResponseEntity.status(httpStatus).headers(headers).body(buildResponseMessageObject(message, object));
+    }
+
+    // exceptions
+
     public static ResponseEntity<Object> buildExceptionResponseObject(HttpStatus httpStatus, Object object) {
         return ResponseEntity.status(httpStatus).body(buildResponseData(object));
     }
@@ -77,5 +83,4 @@ public class Constructor {
     public static ResponseEntity<Object> buildExceptionResponseMessageObject(HttpStatus httpStatus, String message, Object object) {
         return ResponseEntity.status(httpStatus).body(buildResponseMessageObject(message, object));
     }
-
 }
