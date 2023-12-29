@@ -44,7 +44,7 @@ public class Volunteer {
     // also, this id will be their barcode
     private String builderAssistantId;
 
-    private boolean isActive;
+    private Boolean isActive;
 
     @OneToOne(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
