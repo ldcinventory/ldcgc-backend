@@ -75,6 +75,7 @@ public class Messages {
             USER_PERMISSION_ROLE = "User doesn't have the permission to change its own role, even if it's admin",
             USER_PERMISSION_OTHER = "User doesn't have the permission to change other users",
             USER_PASSWORD_DONT_MATCH = "Password provided for this email doesn't match our records",
+            USER_VOLUNTEER_ALREADY_ASSIGNED = "This volunteer is already assigned to another user",
 
             EULA_ACTION_INVALID = "EULA action is not valid",
             EULA_STANDARD_NOT_ACCEPTED = "EULA for users not accepted yet",
@@ -98,6 +99,7 @@ public class Messages {
             GROUP_NOT_FOUND = "Group with id %s not found.",
 
             CATEGORY_PARENT_NOT_FOUND = "%s with id %s not found.",
+            CATEGORY_NOT_FOUND = "This category couldn't be found",
 
             LOCATION_NOT_FOUND_EXCEL = "Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s",
             GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
