@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -343,60 +344,93 @@ public class InitializationData {
                         .build());
                 });
 
-            // USERS
+            // USERS (examples)
 
-            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', false);
+            Category responsibilityCat = Category.builder()
+                .name("Responsabilidades")
+                .locked(true)
+                .build();
 
+            List<Category> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario").map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
+
+            responsibilityCat.setCategories(responsibilities);
+
+            categoryRepository.saveAndFlush(responsibilityCat);
+
+            List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSIBILITIES.getBbddName()).map(Category::getCategories)
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
+                    .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
+
+            userRepository.save(User.builder()
+                .email("admin@admin")
+                .password(passwordEncoder.encode("admin"))
+                .group(_8g)
+                .role(ERole.ROLE_ADMIN)
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Coordinador")).findFirst()
+                    .orElse(null))
+                .build());
+
+            userRepository.save(User.builder()
+                .email("manager@manager")
+                .password(passwordEncoder.encode("manager"))
+                .group(_8g)
+                .role(ERole.ROLE_MANAGER)
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
+                    .orElse(null))
+                .build());
+
+            userRepository.save(User.builder()
+                .email("user@user")
+                .password(passwordEncoder.encode("user"))
+                .group(_8g)
+                .role(ERole.ROLE_USER)
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                    .orElse(null))
+                .build());
+
+            userRepository.save(User.builder()
+                .email("volunteer@volunteer")
+                .password(passwordEncoder.encode("volunteer"))
+                .group(_8g)
+                .role(ERole.ROLE_USER)
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                    .orElse(null))
+                .volunteer(volunteerRepository.findTopByIdNotNull().orElse(null))
+                .build());
+
+            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
             if(users != null) {
-                Category responsibilityCat = Category.builder()
-                    .name("Responsabilidades")
-                    .locked(true)
-                    .build();
+                users.forEach(userFields -> {
+                    User user = User.builder()
+                        .email(userFields.get(4))
+                        .password(passwordEncoder.encode(userFields.get(3)))
+                        .role(Integer.valueOf(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
+                            Integer.valueOf(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
+                                ERole.ROLE_USER)
+                        .responsibility(responsibilitiesEntities.stream()
+                            .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                            .orElse(null))
+                        .acceptedEULA(LocalDateTime.now())
+                        .acceptedEULAManager(Integer.valueOf(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
+                        .build();
+                    Volunteer volunteer = null;
+                    if(!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
+                        var volunteerList = volunteerRepository.findAllByNameAndLastName(userFields.get(1), userFields.get(2));
+                        if (!volunteerList.isEmpty())
+                            volunteer = volunteerList.get(0);
+                        user.setVolunteer(volunteer);
+                    }
 
-                List<Category> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario").map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
-
-                responsibilityCat.setCategories(responsibilities);
-
-                categoryRepository.saveAndFlush(responsibilityCat);
-
-                List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSABILITIES.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
-
-                userRepository.save(User.builder()
-                    .email("admin@admin")
-                    .password(passwordEncoder.encode("admin"))
-                    .group(_8g)
-                    .role(ERole.ROLE_ADMIN)
-                    .responsibility(responsibilitiesEntities.stream()
-                        .filter(r -> r.getName().equals("Coordinador")).findFirst()
-                        .orElse(null))
-                    .build());
-
-                userRepository.save(User.builder()
-                    .email("manager@manager")
-                    .password(passwordEncoder.encode("manager"))
-                    .group(_8g)
-                    .role(ERole.ROLE_MANAGER)
-                    .responsibility(responsibilitiesEntities.stream()
-                        .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
-                        .orElse(null))
-                    .build());
-
-                userRepository.save(User.builder()
-                    .email("user@user")
-                    .password(passwordEncoder.encode("user"))
-                    .group(_8g)
-                    .role(ERole.ROLE_USER)
-                    .responsibility(responsibilitiesEntities.stream()
-                        .filter(r -> r.getName().equals("Voluntario")).findFirst()
-                        .orElse(null))
-                    .build());
+                    userRepository.saveAndFlush(user);
+                });
             }
 
         };
 
     }
-
 
 }
