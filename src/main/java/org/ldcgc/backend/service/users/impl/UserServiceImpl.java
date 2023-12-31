@@ -125,11 +125,11 @@ public class UserServiceImpl implements UserService {
     private ResponseEntity<?> updateUser(User userFromToken, User userEntity, UserDto userDto) throws ParseException, JOSEException {
         validateUpdatingParameters(userFromToken, userEntity, userDto);
 
-        // build password encoded
+        // build with password encoded
         UserMapper.MAPPER.update(userDto, userEntity);
 
         // volunteer (also checks if it's the same to avoid updating the volunteer)
-        if(Optional.of(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent() &&
+        if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent() &&
             (userEntity.getVolunteer() == null || !userDto.getVolunteer().getId().equals(userEntity.getVolunteer().getId()))) {
             Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElse(null);
             if(volunteer == null)
@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // responsibility (also checks if it's the same to avoid updating the responsibility)
-        if(Optional.of(userDto.getResponsibility()).map(CategoryDto::getId).isPresent() &&
+        if(Optional.ofNullable(userDto.getResponsibility()).map(CategoryDto::getId).isPresent() &&
             !userDto.getResponsibility().getId().equals(userEntity.getResponsibility().getId())) {
             Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElse(null);
             if(category == null)
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // group (also checks if it's the same to avoid updating the group)
-        if(Optional.of(userDto.getGroup()).map(GroupDto::getId).isPresent() &&
+        if(Optional.ofNullable(userDto.getGroup()).map(GroupDto::getId).isPresent() &&
             !Objects.equals(userEntity.getGroup().getId(), userDto.getGroup().getId())) {
             Group group = groupRepository.findById(userDto.getGroup().getId()).orElse(null);
             if(group == null)
