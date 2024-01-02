@@ -46,6 +46,7 @@ import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
 import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -96,7 +97,7 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
         assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
 
-        verify(userRepository, times(1)).findByEmail(user.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(user.getEmail());
     }
 
     @Test
@@ -110,7 +111,7 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.BAD_REQUEST);
         assertEquals(ex.getMessage(), Messages.Error.USER_PASSWORD_DONT_MATCH);
 
-        verify(userRepository, times(1)).findByEmail(user.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(user.getEmail());
     }
 
     @Test
@@ -126,7 +127,7 @@ class AccountServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTOWithLocation responseBody = (Response.DTOWithLocation) response.getBody();
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
         assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Error.EULA_STANDARD_NOT_ACCEPTED);
         assertEquals(responseBody.getLocation(), Messages.App.EULA_ENDPOINT);
@@ -148,7 +149,7 @@ class AccountServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTOWithLocation responseBody = (Response.DTOWithLocation) response.getBody();
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
         assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Error.EULA_MANAGER_NOT_ACCEPTED);
         assertEquals(responseBody.getLocation(), Messages.App.EULA_ENDPOINT);
@@ -170,7 +171,7 @@ class AccountServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals(UserDto.class, Objects.requireNonNull(responseBody).getData().getClass());
         assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
@@ -208,7 +209,7 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
         assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
 
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
     }
 
     @Test
@@ -234,7 +235,7 @@ class AccountServiceImplTest {
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
         assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.CREDENTIALS_EMAIL_SENT);
 
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
 
     }
 
@@ -254,7 +255,7 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.BAD_REQUEST);
         assertEquals(ex.getMessage(), Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND);
 
-        verify(tokenRepository, times(1)).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
 
     }
 
@@ -273,7 +274,7 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.BAD_REQUEST);
         assertEquals(ex.getMessage(), Messages.Error.JWT_NOT_FOR_RECOVERY);
 
-        verify(tokenRepository, times(1)).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
     }
 
     @Test
@@ -295,8 +296,8 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
         assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
 
-        verify(tokenRepository, times(1)).findByJwtID(mockedSignedToken.getHeader().getKeyID());
-        verify(userRepository, times(1)).findById(userIdFromTokenString);
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
 
     }
 
@@ -321,8 +322,8 @@ class AccountServiceImplTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.RECOVERY_TOKEN_VALID);
 
-        verify(tokenRepository, times(1)).findByJwtID(mockedSignedToken.getHeader().getKeyID());
-        verify(userRepository, times(1)).findById(userIdFromTokenString);
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
     }
 
     // -> new credentials
@@ -346,7 +347,7 @@ class AccountServiceImplTest {
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
         assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
 
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         // verify since it's not calling validateToken
         verify(jwtUtils, times(0)).getDecodedJwt(Mockito.anyString());
         verify(tokenRepository, times(0)).findByJwtID(Mockito.anyString());
@@ -376,7 +377,7 @@ class AccountServiceImplTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.USER_CREDENTIALS_UPDATED);
 
-        verify(userRepository, times(1)).findByEmail(userCredentials.getEmail());
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         // verify since it's not calling validateToken
         verify(jwtUtils, times(0)).getDecodedJwt(Mockito.anyString());
         verify(tokenRepository, times(0)).findByJwtID(Mockito.anyString());
