@@ -104,6 +104,7 @@ public class MockedUserDetails {
                     getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
                 .builderAssistantId(randomBuilderAssistantId)
                 .availability(availabilityFromMocked.toBuilder()
+                    .volunteerId(availabilityFromMocked.getVolunteerId())
                     .availabilityDays(getRandomAvailabilityForMocked())
                     .build())
                 .build())
