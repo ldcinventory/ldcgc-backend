@@ -15,13 +15,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.model.location.Location;
 
+import java.io.Serializable;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "groups")
-public class Group {
+public class Group implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

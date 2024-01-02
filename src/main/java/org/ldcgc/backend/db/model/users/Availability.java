@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.util.common.EWeekday;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Data
@@ -27,7 +28,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "availabilities")
-public class Availability {
+public class Availability implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

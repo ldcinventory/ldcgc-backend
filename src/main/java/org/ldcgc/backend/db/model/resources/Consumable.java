@@ -17,6 +17,7 @@ import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -25,7 +26,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "consumables")
-public class Consumable {
+public class Consumable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
