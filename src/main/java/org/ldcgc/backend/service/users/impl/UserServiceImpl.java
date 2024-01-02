@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.users.impl;
 
 import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -34,7 +35,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -75,10 +75,7 @@ public class UserServiceImpl implements UserService {
         Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
             -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
 
-        userRepository.deleteById(userId);
-        tokenRepository.deleteAllTokensFromUser(userId);
-
-        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_DELETED);
+        return deleteUser(userId);
     }
 
     public ResponseEntity<?> createUser(String token, UserDto user) {
@@ -125,12 +122,21 @@ public class UserServiceImpl implements UserService {
     private ResponseEntity<?> updateUser(User userFromToken, User userEntity, UserDto userDto) throws ParseException, JOSEException {
         validateUpdatingParameters(userFromToken, userEntity, userDto);
 
-        // build with password encoded
+        // origin objects
+        final Volunteer originVolunteer = SerializationUtils.clone(userEntity.getVolunteer());
+        final Category originResponsibility = SerializationUtils.clone(userEntity.getResponsibility());
+        final Group originGroup = SerializationUtils.clone(userEntity.getGroup());
+
+        // map the whole User with password encoded
         UserMapper.MAPPER.update(userDto, userEntity);
 
-        // volunteer (also checks if it's the same to avoid updating the volunteer)
+        // volunteers
+        // check if dto comes with volunteer
         if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent() &&
-            (userEntity.getVolunteer() == null || !userDto.getVolunteer().getId().equals(userEntity.getVolunteer().getId()))) {
+            // check if origin (entity) is null and dto is not
+            (originVolunteer == null ||
+                // check origin (entity) and dto are not the same
+                !originVolunteer.getId().equals(userDto.getVolunteer().getId()))) {
             Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElse(null);
             if(volunteer == null)
                 throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND);
@@ -140,18 +146,26 @@ public class UserServiceImpl implements UserService {
             userEntity.setVolunteer(volunteer);
         }
 
-        // responsibility (also checks if it's the same to avoid updating the responsibility)
+        // responsibility
+        // check if dto comes with responsibility
         if(Optional.ofNullable(userDto.getResponsibility()).map(CategoryDto::getId).isPresent() &&
-            !userDto.getResponsibility().getId().equals(userEntity.getResponsibility().getId())) {
+            // check if origin (entity) is null and dto is not
+            (originResponsibility == null ||
+                // check origin (entity) and dto are not the same
+                !originResponsibility.getId().equals(userDto.getResponsibility().getId()))) {
             Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElse(null);
             if(category == null)
                 throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId()));
             userEntity.setResponsibility(category);
         }
 
-        // group (also checks if it's the same to avoid updating the group)
+        // group
+        // check if dto comes with group
         if(Optional.ofNullable(userDto.getGroup()).map(GroupDto::getId).isPresent() &&
-            !Objects.equals(userEntity.getGroup().getId(), userDto.getGroup().getId())) {
+            // check if origin (entity) is null and dto is not
+            (originGroup == null ||
+                // check origin (entity) and dto are not the same
+                !originGroup.getId().equals(userDto.getGroup().getId()))) {
             Group group = groupRepository.findById(userDto.getGroup().getId()).orElse(null);
             if(group == null)
                 throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, userDto.getGroup().getId()));
@@ -174,6 +188,7 @@ public class UserServiceImpl implements UserService {
             throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND);
 
         userRepository.deleteById(userId);
+        tokenRepository.deleteAllTokensFromUser(userId);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_DELETED);
     }
