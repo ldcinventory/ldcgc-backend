@@ -2,7 +2,6 @@ package org.ldcgc.backend.service.users.impl;
 
 import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -123,9 +122,9 @@ public class UserServiceImpl implements UserService {
         validateUpdatingParameters(userFromToken, userEntity, userDto);
 
         // origin objects
-        final Volunteer originVolunteer = SerializationUtils.clone(userEntity.getVolunteer());
-        final Category originResponsibility = SerializationUtils.clone(userEntity.getResponsibility());
-        final Group originGroup = SerializationUtils.clone(userEntity.getGroup());
+        final Integer originVolunteerId = Optional.ofNullable(userEntity.getVolunteer()).map(Volunteer::getId).orElse(null);
+        final Integer originResponsibilityId = Optional.ofNullable(userEntity.getResponsibility()).map(Category::getId).orElse(null);
+        final Integer originGroupId = Optional.ofNullable(userEntity.getGroup()).map(Group::getId).orElse(null);
 
         // map the whole User with password encoded
         UserMapper.MAPPER.update(userDto, userEntity);
@@ -134,9 +133,9 @@ public class UserServiceImpl implements UserService {
         // check if dto comes with volunteer
         if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
-            (originVolunteer == null ||
+            (originVolunteerId == null ||
                 // check origin (entity) and dto are not the same
-                !originVolunteer.getId().equals(userDto.getVolunteer().getId()))) {
+                !originVolunteerId.equals(userDto.getVolunteer().getId()))) {
             Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElse(null);
             if(volunteer == null)
                 throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND);
@@ -150,9 +149,9 @@ public class UserServiceImpl implements UserService {
         // check if dto comes with responsibility
         if(Optional.ofNullable(userDto.getResponsibility()).map(CategoryDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
-            (originResponsibility == null ||
+            (originResponsibilityId == null ||
                 // check origin (entity) and dto are not the same
-                !originResponsibility.getId().equals(userDto.getResponsibility().getId()))) {
+                !originResponsibilityId.equals(userDto.getResponsibility().getId()))) {
             Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElse(null);
             if(category == null)
                 throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId()));
@@ -163,9 +162,9 @@ public class UserServiceImpl implements UserService {
         // check if dto comes with group
         if(Optional.ofNullable(userDto.getGroup()).map(GroupDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
-            (originGroup == null ||
+            (originGroupId == null ||
                 // check origin (entity) and dto are not the same
-                !originGroup.getId().equals(userDto.getGroup().getId()))) {
+                !originGroupId.equals(userDto.getGroup().getId()))) {
             Group group = groupRepository.findById(userDto.getGroup().getId()).orElse(null);
             if(group == null)
                 throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, userDto.getGroup().getId()));
