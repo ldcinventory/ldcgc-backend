@@ -78,10 +78,8 @@ class UserServiceImplTest {
     private SignedJWT mockedSignedJWT;
 
     @BeforeEach
-    public void init() throws ParseException, JOSEException {
+    public void init() {
         userService = new UserServiceImpl(userRepository, volunteerRepository, categoryRepository, groupRepository, tokenRepository, accountService, jwtUtils);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
-        mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
 
     }
     private final UserDto NOT_FOUND_USER = UserDto.builder().id(-1).build();
@@ -225,6 +223,14 @@ class UserServiceImplTest {
     }
 
     private void configureToken() {
+        try {
+            mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+            mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+        } catch (ParseException | JOSEException e) {
+            log.error("Error generating mockedSignedJWT");
+            throw new RuntimeException(e.getMessage());
+        }
+
         doReturn(signedJWT).when(jwtUtils).getDecodedJwt(mockedToken);
         doReturn(jwsHeader).when(signedJWT).getHeader();
         doReturn(mockedSignedJWT.getHeader().getKeyID()).when(jwsHeader).getKeyID();
@@ -752,6 +758,8 @@ class UserServiceImplTest {
 
         // group
         doReturn(Optional.of(group)).when(groupRepository).findById(userDtoUpdating.getGroup().getId());
+
+        mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
 
         HttpHeaders headers = new HttpHeaders();
         final String headerPayLoad = String.format("%s.%s", mockedSignedJWT.getParsedParts()[0], mockedSignedJWT.getParsedParts()[1]);
