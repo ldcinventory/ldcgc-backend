@@ -1,6 +1,7 @@
 package org.ldcgc.backend.base.mock;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.checkerframework.common.value.qual.MinLen;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
@@ -32,7 +33,7 @@ import static org.ldcgc.backend.util.common.EWeekday.WEDNESDAY;
 
 @TestConfiguration
 @RequiredArgsConstructor
-public class MockedUserDetails {
+public class MockedUserVolunteer {
 
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!·$%&/()=|@#?¿´‚ºª'¡`+´ç-.,<>;:_¨Ç^*[]{}";
 
@@ -79,7 +80,7 @@ public class MockedUserDetails {
                 .lastName("Sandemetrio Bonachera")
                 .availability(AvailabilityDto.builder()
                     .volunteerId(0)
-                    .availabilityDays(List.of(MONDAY, TUESDAY, WEDNESDAY, FRIDAY, SUNDAY, HOLIDAY))
+                    .availabilityDays(Set.of(MONDAY, TUESDAY, WEDNESDAY, FRIDAY, SUNDAY, HOLIDAY))
                     .build())
                 .builderAssistantId("233578")
                 .isActive(true)
@@ -88,26 +89,20 @@ public class MockedUserDetails {
     }
 
     public static UserDto getRandomMockedUserDto() {
-        VolunteerDto volunteerFromMocked = getMockedUser().getVolunteer();
-        AvailabilityDto availabilityFromMocked = getMockedUser().getVolunteer().getAvailability();
-        Integer id = new Random().ints(1, 0, 500000).iterator().nextInt();
-        String randomBuilderAssistantId = String.valueOf(new Random()
-            .ints(1, 1000, 500000).iterator().nextInt());
-
         return getMockedUser().toBuilder()
-            .id(id)
+            .id(getRandomId())
             .email(getRandomElementFromList(EMAILS))
             .role(getRandomRole())
-            .volunteer(volunteerFromMocked.toBuilder()
-                .name(getRandomElementFromList(NAMES))
-                .lastName(String.format("%s %s",
-                    getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
-                .builderAssistantId(randomBuilderAssistantId)
-                .availability(availabilityFromMocked.toBuilder()
-                    .volunteerId(availabilityFromMocked.getVolunteerId())
-                    .availabilityDays(getRandomAvailabilityForMocked())
-                    .build())
-                .build())
+            .volunteer(getRandomVolunteer())
+            .build();
+    }
+
+    public static UserDto getRandomMockedUserDtoWithoutVolunteer() {
+        return getMockedUser().toBuilder()
+            .id(getRandomId())
+            .email(getRandomElementFromList(EMAILS))
+            .role(getRandomRole())
+            .volunteer(null)
             .build();
     }
 
@@ -129,7 +124,7 @@ public class MockedUserDetails {
                 .category(CategoryDto.builder().id(0).name("Responsabilidades").build())
                 .build())
             .group(GroupDto.builder().id(0).build())
-            .volunteer(VolunteerDto.builder().id(0).build())
+            .volunteer(getEmptyVolunteer())
             .build();
     }
 
@@ -150,14 +145,14 @@ public class MockedUserDetails {
     }
 
     public static List<UserDto> getListOfMockedUsers(Integer listSize) {
-        return Stream.generate(MockedUserDetails::getRandomMockedUserDto).limit(listSize).toList();
+        return Stream.generate(MockedUserVolunteer::getRandomMockedUserDto).limit(listSize).toList();
     }
 
     private static String getRandomElementFromList(List<String> list) {
         return list.get(new Random().ints(1, 0, list.size() - 1).iterator().nextInt());
     }
 
-    private static List<EWeekday> getRandomAvailabilityForMocked() {
+    private static Set<EWeekday> getRandomAvailabilityForMocked() {
         // a set to not allow duplicates
         Set<EWeekday> weekdays = new HashSet<>();
 
@@ -170,7 +165,7 @@ public class MockedUserDetails {
             weekdays.add(EWeekday.values()[day]);
         });
 
-        return weekdays.stream().toList();
+        return weekdays;
     }
 
     private static String getRandomPassword(@MinLen(8) int length) {
@@ -189,6 +184,42 @@ public class MockedUserDetails {
     private static ERole getRandomRole() {
         List<ERole> roles = Arrays.asList(ERole.values());
         return roles.get(new Random().nextInt(roles.size()));
+    }
+
+    public static VolunteerDto getEmptyVolunteer() {
+        return VolunteerDto.builder().id(0).build();
+    }
+
+    public static VolunteerDto getRandomVolunteer() {
+        Integer randomId = getRandomId();
+
+        return VolunteerDto.builder()
+            .id(randomId)
+            .name(getRandomElementFromList(NAMES))
+            .lastName(String.format("%s %s",
+                getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
+            .builderAssistantId(getRandomBuilderAssistantId())
+            .availability(AvailabilityDto.builder()
+                .volunteerId(randomId)
+                .availabilityDays(getRandomAvailabilityForMocked())
+                .build())
+            .build();
+    }
+
+    public static VolunteerDto getRandomVolunteerWithoutAvailability() {
+        return getRandomVolunteer().toBuilder().availability(null).build();
+    }
+
+    private static Integer getRandomId() {
+        return new Random().ints(1, 0, 500000).iterator().nextInt();
+    }
+
+    public static String getRandomBuilderAssistantId() {
+        return RandomStringUtils.randomAlphanumeric(8).toUpperCase();
+    }
+
+    public static List<VolunteerDto> getListOfMockedVolunteers(Integer listSize) {
+        return Stream.generate(MockedUserVolunteer::getRandomVolunteer).limit(listSize).toList();
     }
 
 }
