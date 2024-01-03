@@ -92,6 +92,8 @@ public class Messages {
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
 
             TOOL_NOT_FOUND = "Tool with id %s not found",
+            TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode (%s) in the database. Please make sure that the barcode is unique",
+            TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
 
             STATUS_NOT_FOUND = "Status not found",
 
