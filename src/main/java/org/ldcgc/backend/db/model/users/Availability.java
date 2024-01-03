@@ -20,7 +20,7 @@ import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.util.common.EWeekday;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.HashSet;
 
 @Data
 @Builder(toBuilder = true)
@@ -36,10 +36,10 @@ public class Availability implements Serializable {
     private Integer id;
 
     // this converter gets the natural string from DB, which is formatted as an array ['L','M','X',...]
-    // and instantiate it in backend as a List of EWeekday enum
+    // and instantiate it in backend as a Set of EWeekday enum
     @Convert(converter = AvailabilityConverter.class)
     @Column(columnDefinition = "text")
-    private Set<EWeekday> availabilityDays;
+    private HashSet<EWeekday> availabilityDays;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

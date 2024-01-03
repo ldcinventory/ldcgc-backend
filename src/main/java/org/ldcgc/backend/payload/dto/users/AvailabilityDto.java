@@ -5,15 +5,15 @@ import lombok.Builder;
 import lombok.Value;
 import org.ldcgc.backend.util.common.EWeekday;
 
-import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AvailabilityDto implements Serializable {
+public class AvailabilityDto {
 
     Integer volunteerId;
-    List<EWeekday> availabilityDays;
+    Set<EWeekday> availabilityDays;
 
 }
