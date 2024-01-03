@@ -199,9 +199,10 @@ public class UserServiceImpl implements UserService {
 
     private void validateUpdatingParameters(User userFromToken, User userEntity, UserDto userDto) {
         // check if the email to update is owned by other user
-        User checkUser = userRepository.findByEmail(userDto.getEmail()).orElse(null);
-        if(checkUser != null && !checkUser.getId().equals(userEntity.getId()))
-            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.USER_ALREADY_EXIST);
+        userRepository.findByEmail(userDto.getEmail()).ifPresent(checkUser -> {
+            if(!checkUser.getId().equals(userEntity.getId()))
+                throw new RequestException(HttpStatus.CONFLICT, Messages.Error.USER_ALREADY_EXIST);
+        });
 
         // when updating self user and change self role
         // -> do not allow to change role
