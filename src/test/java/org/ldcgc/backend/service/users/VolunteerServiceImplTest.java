@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
@@ -92,6 +93,7 @@ class VolunteerServiceImplTest {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(USER_WITH_VOLUNTEER.getVolunteer());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getData());
         assertEquals(volunteerDto, responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(any());
@@ -125,6 +127,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getData());
         assertEquals(volunteerDto, responseBody.getData());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
@@ -159,6 +162,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_CREATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
 
@@ -178,6 +182,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_CREATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
 
@@ -198,6 +203,7 @@ class VolunteerServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertNotNull(responseBody.getData());
         assertEquals(responseBody.getData(), volunteerExpected);
 
         verify(userRepository, atMostOnce()).findById(any());
@@ -217,6 +223,7 @@ class VolunteerServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
         assertEquals(volunteers, responseBody.getData());
 
@@ -237,6 +244,7 @@ class VolunteerServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
         assertEquals(volunteers, responseBody.getData());
 
@@ -275,7 +283,7 @@ class VolunteerServiceImplTest {
         assertEquals(HttpStatus.CONFLICT, ex.getHttpStatus());
         assertEquals(Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN, ex.getMessage());
 
-        verify(volunteerRepository, times(2)).findByBuilderAssistantId(any());
+        verify(volunteerRepository, times(1)).findByBuilderAssistantId(any());
     }
 
     @Test
@@ -291,10 +299,11 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_UPDATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
 
-        verify(volunteerRepository, times(2)).findByBuilderAssistantId(any());
+        verify(volunteerRepository, times(1)).findByBuilderAssistantId(any());
         verify(volunteerRepository, atMostOnce()).save(any());
 
     }
@@ -314,6 +323,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_UPDATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
 
@@ -344,6 +354,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_DELETED, responseBody.getMessage());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());

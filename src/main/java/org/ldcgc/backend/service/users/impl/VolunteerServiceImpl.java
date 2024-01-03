@@ -87,14 +87,10 @@ public class VolunteerServiceImpl implements VolunteerService {
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
-        // check builderAssistantId from payload not exists (new BA for this volunteer)
+        // check builderAssistantId from payload doesn't exist (new BA for this volunteer)
         // or is the same as in the volunteer (new details for this volunteer)
-        if(volunteerDto.getBuilderAssistantId() != null && !builderAssistantId.equals(volunteerDto.getBuilderAssistantId())) {
-            volunteerRepository.findByBuilderAssistantId(volunteerDto.getBuilderAssistantId()).ifPresent(checkVolunteer -> {
-                if(!checkVolunteer.getBuilderAssistantId().equals(volunteerDto.getBuilderAssistantId()))
-                    throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
-                });
-        }
+        if(volunteerDto.getBuilderAssistantId() != null && !volunteerEntity.getId().equals(volunteerDto.getId()))
+            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
 
         VolunteerMapper.MAPPER.update(volunteerEntity, volunteerDto);
 
