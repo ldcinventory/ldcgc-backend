@@ -42,9 +42,9 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
     }
 
-    public ResponseEntity<?> getVolunteer(String volunteerId) {
+    public ResponseEntity<?> getVolunteer(String builderAssistantId) {
 
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
@@ -82,12 +82,12 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteerDto) {
+    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteerDto) {
 
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
-        // check volunteerId from payload not exists (new BA for this volunteer)
+        // check builderAssistantId from payload not exists (new BA for this volunteer)
         // or is the same as in the volunteer (new details for this volunteer)
         if(volunteerDto.getBuilderAssistantId() != null) {
             Volunteer checkBAIdVolunteerDto = volunteerRepository.findByBuilderAssistantId(volunteerDto.getBuilderAssistantId()).orElse(null);
@@ -106,8 +106,8 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
-    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
+        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         volunteerRepository.delete(volunteer);

@@ -19,8 +19,8 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.getMyVolunteer(token);
     }
 
-    public ResponseEntity<?> getVolunteer(String volunteerId) {
-        return volunteerService.getVolunteer(volunteerId);
+    public ResponseEntity<?> getVolunteer(String builderAssistantId) {
+        return volunteerService.getVolunteer(builderAssistantId);
     }
 
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
@@ -31,11 +31,11 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.createVolunteer(volunteerDto);
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto vovolunteerDto) {
-        return volunteerService.updateVolunteer(volunteerId, vovolunteerDto);
+    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto vovolunteerDto) {
+        return volunteerService.updateVolunteer(builderAssistantId, vovolunteerDto);
     }
 
-    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        return volunteerService.deleteVolunteer(volunteerId);
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
+        return volunteerService.deleteVolunteer(builderAssistantId);
     }
 }

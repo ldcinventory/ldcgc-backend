@@ -11,14 +11,14 @@ public interface VolunteerService {
 
     ResponseEntity<?> getMyVolunteer(String token) throws ParseException;
 
-    ResponseEntity<?> getVolunteer(String volunteerId);
+    ResponseEntity<?> getVolunteer(String builderAssistantId);
 
     ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId);
 
     ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto);
 
-    ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer);
+    ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteer);
 
-    ResponseEntity<?> deleteVolunteer(String volunteerId);
+    ResponseEntity<?> deleteVolunteer(String builderAssistantId);
 
 }
