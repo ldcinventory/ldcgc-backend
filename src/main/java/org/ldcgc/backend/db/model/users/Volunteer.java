@@ -21,7 +21,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.model.group.Group;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -31,7 +30,7 @@ import java.util.List;
 @Entity
 @Transactional
 @Table(name = "volunteers")
-public class Volunteer implements Serializable {
+public class Volunteer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

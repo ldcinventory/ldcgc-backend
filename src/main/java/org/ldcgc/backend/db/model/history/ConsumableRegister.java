@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.users.Volunteer;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,7 +24,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "consumable-register")
-public class ConsumableRegister implements Serializable {
+public class ConsumableRegister {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

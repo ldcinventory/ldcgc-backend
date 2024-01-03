@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class Response implements Serializable {
+public class Response {
 
     @Value @Builder(toBuilder = true) @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTO {

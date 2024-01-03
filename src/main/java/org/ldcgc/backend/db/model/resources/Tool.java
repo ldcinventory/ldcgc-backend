@@ -22,7 +22,6 @@ import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.util.common.EStatus;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -32,7 +31,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "tools")
-public class Tool implements Serializable {
+public class Tool {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

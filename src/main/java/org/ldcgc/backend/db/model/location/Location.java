@@ -16,7 +16,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "locations")
-public class Location implements Serializable {
+public class Location {
 
     public Location(String name, Integer level) {
         this.name = name;

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.ldcgc.backend.util.common.EWeekday;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Value

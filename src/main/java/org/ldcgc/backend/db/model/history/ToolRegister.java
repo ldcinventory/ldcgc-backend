@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,7 +24,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "tool-register")
-public class ToolRegister implements Serializable {
+public class ToolRegister {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

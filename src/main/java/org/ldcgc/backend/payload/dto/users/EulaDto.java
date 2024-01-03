@@ -5,13 +5,12 @@ import lombok.Builder;
 import lombok.Value;
 import org.ldcgc.backend.util.common.EEULAStatus;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EulaDto implements Serializable {
+public class EulaDto {
 
     String url;
     List<EEULAStatus> actionsAvailable;

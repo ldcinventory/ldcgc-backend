@@ -13,7 +13,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -22,7 +21,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "absences")
-public class Absence implements Serializable {
+public class Absence {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

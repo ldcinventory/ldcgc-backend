@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.util.common.EWeekday;
 
-import java.io.Serializable;
 import java.util.HashSet;
 
 @Data
@@ -28,7 +27,7 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "availabilities")
-public class Availability implements Serializable {
+public class Availability {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

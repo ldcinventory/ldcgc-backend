@@ -19,7 +19,6 @@ import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.util.common.EStatus;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -28,7 +27,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "maintenance")
-public class Maintenance implements Serializable {
+public class Maintenance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
