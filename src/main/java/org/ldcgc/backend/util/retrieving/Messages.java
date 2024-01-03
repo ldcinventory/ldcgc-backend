@@ -35,7 +35,13 @@ public class Messages {
             TOOL_LISTED = "Found %s tool/s",
             TOOL_UPDATED = "Tool details updated",
             TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
-            TOOL_DELETED = "Tool deleted"
+            TOOL_DELETED = "Tool deleted",
+
+            AVAILABILITY_UPDATED = "Availability updated",
+            AVAILABILITY_DELETED = "Availability deleted",
+
+            ABSENCE_UPDATED = "Availability updated",
+            ABSENCE_DELETED = "Availability deleted"
 
             ;
 
