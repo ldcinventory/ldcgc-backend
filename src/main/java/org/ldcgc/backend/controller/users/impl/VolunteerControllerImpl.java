@@ -15,14 +15,6 @@ public class VolunteerControllerImpl implements VolunteerController {
 
     private final VolunteerService volunteerService;
 
-    public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
-        return volunteerService.createVolunteer(volunteer);
-    }
-
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
-        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId);
-    }
-
     public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
         return volunteerService.getMyVolunteer(token);
     }
@@ -31,8 +23,16 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.getVolunteer(volunteerId);
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
-        return volunteerService.updateVolunteer(volunteerId, volunteer);
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
+        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId);
+    }
+
+    public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {
+        return volunteerService.createVolunteer(volunteerDto);
+    }
+
+    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto vovolunteerDto) {
+        return volunteerService.updateVolunteer(volunteerId, vovolunteerDto);
     }
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {

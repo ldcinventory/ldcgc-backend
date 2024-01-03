@@ -9,13 +9,13 @@ import java.text.ParseException;
 @Service
 public interface VolunteerService {
 
-    ResponseEntity<?> createVolunteer(VolunteerDto volunteer);
-
-    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId);
-
     ResponseEntity<?> getMyVolunteer(String token) throws ParseException;
 
     ResponseEntity<?> getVolunteer(String volunteerId);
+
+    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId);
+
+    ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto);
 
     ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer);
 

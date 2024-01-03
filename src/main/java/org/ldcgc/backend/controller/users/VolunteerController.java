@@ -77,6 +77,28 @@ public interface VolunteerController {
         @Parameter(description = "Volunteer Builder Assistant Id")
             @PathVariable String volunteerId);
 
+    @Operation(summary = "List volunteers")
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = VolunteerDto.class)),
+            examples = {
+                @ExampleObject(name = "Volunteers found", value = Messages.Info.USER_LISTED, description = "%s will be replaced by the number of volunteers found")
+            })
+    )
+    @GetMapping
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> listVolunteers(
+        @Parameter(description = "Page index")
+        @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+        @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Filter to search user name OR last name")
+        @RequestParam(required = false) String filterString,
+        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
+        @RequestParam(required = false) String volunteerId);
+
     @Operation(summary = "Create a volunteer")
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
@@ -99,30 +121,7 @@ public interface VolunteerController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createVolunteer(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
-            @RequestBody VolunteerDto volunteer);
-
-    @Operation(summary = "List volunteers")
-    @ApiResponse(
-        responseCode = SwaggerConfig.HTTP_200,
-        description = SwaggerConfig.HTTP_REASON_200,
-        content = @Content(mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = VolunteerDto.class)),
-            examples = {
-                @ExampleObject(name = "Volunteers found", value = Messages.Info.USER_LISTED, description = "%s will be replaced by the number of volunteers found")
-            })
-    )
-    @GetMapping
-    @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> listVolunteers(
-        @Parameter(description = "Page index")
-            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @Parameter(description = "Size of every page (default = 25)")
-            @RequestParam(required = false, defaultValue = "25") Integer size,
-        @Parameter(description = "Filter to search user name OR last name")
-            @RequestParam(required = false) String filterString,
-        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
-            @RequestParam(required = false) String volunteerId);
-
+            @RequestBody VolunteerDto volunteerDto);
 
     @Operation(summary = "Update any volunteer")
     @ApiResponse(
@@ -156,7 +155,7 @@ public interface VolunteerController {
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
             @PathVariable String volunteerId,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
-            @RequestBody VolunteerDto volunteer);
+            @RequestBody VolunteerDto volunteerDto);
 
     @Operation(summary = "Delete any volunteer")
     @ApiResponse(

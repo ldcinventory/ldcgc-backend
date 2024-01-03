@@ -50,21 +50,6 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
-    public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
-
-        if(volunteerRepository.findByBuilderAssistantId(volunteer.getBuilderAssistantId()).isPresent())
-            throw new RequestException(HttpStatus.CONFLICT, String.format(Messages.Error.VOLUNTEER_ALREADY_EXIST, volunteer.getBuilderAssistantId()));
-
-        Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
-
-        if(volunteer.getAvailability() != null)
-            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
-
-        volunteerEntity = volunteerRepository.save(volunteerEntity);
-
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
-    }
-
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
 
         if (builderAssistantId != null) return getVolunteer(builderAssistantId);
@@ -78,24 +63,45 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
+            String.format(Messages.Info.VOLUNTEER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
+    public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {
+
+        if(volunteerRepository.findByBuilderAssistantId(volunteerDto.getBuilderAssistantId()).isPresent())
+            throw new RequestException(HttpStatus.CONFLICT, String.format(Messages.Error.VOLUNTEER_ALREADY_EXIST, volunteerDto.getBuilderAssistantId()));
+
+        Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteerDto);
+
+        if(volunteerDto.getAvailability() != null)
+            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
+
+        volunteerEntity = volunteerRepository.save(volunteerEntity);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+    }
+
+    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteerDto) {
 
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
-        if(volunteerEntity.getBuilderAssistantId().equals(volunteer.getBuilderAssistantId()))
-            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
+        // check volunteerId from payload not exists (new BA for this volunteer)
+        // or is the same as in the volunteer (new details for this volunteer)
+        if(volunteerDto.getBuilderAssistantId() != null) {
+            Volunteer checkBAIdVolunteerDto = volunteerRepository.findByBuilderAssistantId(volunteerDto.getBuilderAssistantId()).orElse(null);
 
-        VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
+            if (checkBAIdVolunteerDto != null && !volunteerEntity.getBuilderAssistantId().equals(volunteerDto.getBuilderAssistantId()))
+                throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
+        }
 
-        if(volunteer.getAvailability() != null)
+        VolunteerMapper.MAPPER.update(volunteerEntity, volunteerDto);
+
+        if(volunteerDto.getAvailability() != null)
             volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
 
-        volunteerRepository.save(volunteerEntity);
+        volunteerEntity = volunteerRepository.save(volunteerEntity);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
