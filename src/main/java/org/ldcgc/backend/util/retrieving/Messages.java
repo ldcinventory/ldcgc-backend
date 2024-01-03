@@ -2,7 +2,7 @@ package org.ldcgc.backend.util.retrieving;
 
 public class Messages {
 
-    public class Info {
+    public static class Info {
 
         public static final String
 
@@ -41,13 +41,15 @@ public class Messages {
             AVAILABILITY_DELETED = "Availability deleted",
 
             ABSENCE_UPDATED = "Availability updated",
-            ABSENCE_DELETED = "Availability deleted"
+            ABSENCE_DELETED = "Availability deleted",
+
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from file"
 
             ;
 
     }
 
-    public class App {
+    public static class App {
 
         public static final String
 
@@ -66,7 +68,7 @@ public class Messages {
 
     }
 
-    public class Error {
+    public static class Error {
 
         public static final String
             TOKEN_NOT_PARSEABLE = "This token is not parseable",
@@ -110,7 +112,13 @@ public class Messages {
             GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
             CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
             RUNTIME_EXCEPTION = "Error processing data, check your request",
-            ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet"
+            ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
+
+            CSV_NAME_ERROR = "The name provided has some invalid characters",
+            CSV_LAST_NAME_ERROR = "The last name provided has some invalid characters",
+            CSV_BA_IDENTIFIER_ERROR = "The builder assistant ID is not valid",
+            CSV_VOLUNTEER_DUPLICATED = "The user with email %s is duplicated in the shift",
+            CSV_PROCESS_ERROR = "Validation error when trying to process CSV with delimiter"
 
             ;
 

@@ -12,6 +12,7 @@ import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 
@@ -39,13 +42,13 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = VolunteerDto.class))
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer from token not exist", value = Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST),
             })
@@ -60,13 +63,13 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = VolunteerDto.class))
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
             })
@@ -81,7 +84,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = VolunteerDto.class),
             examples = {
                 @ExampleObject(name = "Volunteer created", value = Messages.Info.VOLUNTEER_CREATED)
@@ -90,7 +93,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_409,
         description = SwaggerConfig.HTTP_REASON_409,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer already exists" , value = Messages.Error.VOLUNTEER_ALREADY_EXIST, description = "%s will be replaced with a builder assistant id"),
             })
@@ -105,7 +108,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             array = @ArraySchema(schema = @Schema(implementation = VolunteerDto.class)),
             examples = {
                 @ExampleObject(name = "Volunteers found", value = Messages.Info.USER_LISTED, description = "%s will be replaced by the number of volunteers found")
@@ -128,7 +131,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             schema = @Schema(implementation = VolunteerDto.class),
             examples = {
                 @ExampleObject(name = "Volunteer updated", value = Messages.Info.VOLUNTEER_UPDATED)
@@ -137,7 +140,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
             })
@@ -145,7 +148,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_409,
         description = SwaggerConfig.HTTP_REASON_409,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer from token not exist", value = Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN),
             })
@@ -162,7 +165,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer deleted", value = Messages.Info.VOLUNTEER_DELETED)
             })
@@ -170,7 +173,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
-        content = @Content(mediaType = "application/json",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             examples = {
                 @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
             })
@@ -180,5 +183,38 @@ public interface VolunteerController {
     ResponseEntity<?> deleteVolunteer(
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
             @PathVariable String volunteerId);
+
+    @Operation(
+        summary = "Upload volunteers from CSV",
+        description = "Defines a POST operation to create volunteers from CSV",
+        operationId = "uploadVolunteers"
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_204,
+        description = SwaggerConfig.HTTP_REASON_204,
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            examples = {@ExampleObject(name = "Volunteers created from file", value = Messages.Info.CSV_VOLUNTEERS_CREATED)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            examples = {
+                @ExampleObject(name = "Validation name error", value = Messages.Error.CSV_NAME_ERROR),
+                @ExampleObject(name = "Validation last name error", value = Messages.Error.CSV_LAST_NAME_ERROR),
+                @ExampleObject(name = "Validation BA Identifier error", value = Messages.Error.CSV_BA_IDENTIFIER_ERROR),
+                @ExampleObject(name = "Validation user duplicate error", value = Messages.Error.CSV_VOLUNTEER_DUPLICATED),
+                @ExampleObject(name = "Validation error CSV", value = Messages.Error.CSV_PROCESS_ERROR)
+            })
+    )
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> uploadVolunteers(
+        @Parameter(description = "The group id in which all the volunteers will be included", required = true)
+            @RequestParam Integer groupId,
+        @Parameter(description = "The file with all the volunteers", required = true)
+            @RequestPart MultipartFile document);
+
 
 }

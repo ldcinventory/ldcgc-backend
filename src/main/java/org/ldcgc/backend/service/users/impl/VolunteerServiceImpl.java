@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.List;
@@ -107,6 +108,10 @@ public class VolunteerServiceImpl implements VolunteerService {
         volunteerRepository.delete(volunteer);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
+    }
+
+    public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {
+        return Constructor.generic501();
     }
 
 }

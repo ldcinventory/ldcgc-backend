@@ -6,6 +6,7 @@ import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 
@@ -37,5 +38,9 @@ public class VolunteerControllerImpl implements VolunteerController {
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {
         return volunteerService.deleteVolunteer(volunteerId);
+    }
+
+    public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {
+        return volunteerService.uploadVolunteers(groupId, document);
     }
 }
