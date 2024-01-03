@@ -10,7 +10,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.impl.ToolServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
-import org.ldcgc.backend.util.common.ExcelUtils;
+import org.ldcgc.backend.service.excel.impl.ToolExcelServiceImpl;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -237,8 +237,8 @@ class ToolServiceImplTest {
         MultipartFile file = MultipartFileFactory.getFileFromTools(toolsExcel);
 
         doReturn(tools).when(toolExcelService).convertExcelToTools(toolsExcel);
-        MockedStatic<ExcelUtils> excelUtils = mockStatic(ExcelUtils.class);
-        excelUtils.when(() -> ExcelUtils.excelToTools(file)).thenReturn(toolsExcel);
+        MockedStatic<ToolExcelServiceImpl> excelUtils = mockStatic(ToolExcelServiceImpl.class);
+        excelUtils.when(() -> ToolExcelServiceImpl.excelToTools(file)).thenReturn(toolsExcel);
 
         doReturn(tools).when(toolExcelService).convertExcelToTools(toolsExcel);
         doReturn(toolEntities).when(toolRepository).saveAll(any());

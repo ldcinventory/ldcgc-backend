@@ -23,13 +23,4 @@ public class GroupServiceImpl implements GroupsService {
                 .map(GroupMapper.MAPPER::toDto)
                 .toList();
     }
-
-    @Override
-    public GroupDto findGroupInListByName(String groupName, List<GroupDto> groups) {
-        return groups.stream()
-                .filter(group -> group.getName().equalsIgnoreCase(groupName))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.GROUP_NOT_FOUND
-                        .formatted(groupName, groups.stream().map(GroupDto::getName).toList().toString())));
-    }
 }

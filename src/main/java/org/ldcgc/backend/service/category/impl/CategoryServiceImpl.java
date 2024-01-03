@@ -22,14 +22,4 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(CategoryMapper.MAPPER::toDto)
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND.formatted(parent.getName(), parent.getBbddName())));
     }
-
-    @Override
-    public CategoryDto findCategorySonInParentByName(String name, CategoryDto parent) {
-        return parent.getCategories().stream()
-                .filter(category -> category.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                        Messages.Error.CATEGORY_SON_NOT_FOUND
-                                .formatted(parent.getName(), name, parent.getName(), parent.getCategories().stream().map(CategoryDto::getName).toList().toString())));
-    }
 }

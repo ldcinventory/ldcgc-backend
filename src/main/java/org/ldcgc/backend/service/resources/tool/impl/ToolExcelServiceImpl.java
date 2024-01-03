@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
+import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.dto.excel.ToolExcelDto;
@@ -15,6 +16,7 @@ import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -62,11 +64,11 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
     private ToolDto convertExcelTool(ToolExcelMasterDto master, ToolExcelDto toolExcel) {
         Integer id = getIdByBarcode(toolExcel, master.tools);
-        CategoryDto brand = categoryService.findCategorySonInParentByName(toolExcel.getBrand(), master.brandParent);
-        CategoryDto category = categoryService.findCategorySonInParentByName(toolExcel.getCategory(), master.categoryParent);
-        GroupDto group = groupsService.findGroupInListByName(toolExcel.getGroup(), master.groups);
-        LocationDto location = locationService.findLocationInListByName(toolExcel.getLocation(), master.locations);
-        CategoryDto maintenanceTime = categoryService.findCategorySonInParentByName(toolExcel.getMaintenanceTime(), master.maintenanceTimeParent);
+        CategoryDto brand = master.brandParent.findCategorySonByName(toolExcel.getBrand());
+        CategoryDto category = master.categoryParent.findCategorySonByName(toolExcel.getCategory());
+        GroupDto group = GroupsService.findGroupInListByName(toolExcel.getGroup(), master.groups);
+        LocationDto location = LocationService.findLocationInListByName(toolExcel.getLocation(), master.locations);
+        CategoryDto maintenanceTime = master.maintenanceTimeParent.findCategorySonByName(toolExcel.getMaintenanceTime());
 
         return ToolDto.builder()
                 .id(id)

@@ -18,7 +18,6 @@ public class ToolExcelDto {
     String urlImages;
     String status;
     String location;
-    @PodamIntValue(minValue = 1, maxValue = 5)
     Integer maintenancePeriod;
     String maintenanceTime;
     LocalDateTime lastMaintenance;

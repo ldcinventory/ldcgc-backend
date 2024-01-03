@@ -36,5 +36,4 @@ public enum EStatus implements EnumMethods {
                 .findFirst()
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, name)));
     }
-
 }

@@ -95,14 +95,17 @@ public class Messages {
             STATUS_NOT_FOUND = "Status %s not found",
 
             LOCATION_NOT_FOUND = "Location with id %s not found.",
+            LOCATION_NOT_FOUND_EXCEL = "Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s",
 
             GROUP_NOT_FOUND = "Group with id %s not found.",
+            GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
 
             CATEGORY_PARENT_NOT_FOUND = "%s with id %s not found.",
 
-            LOCATION_NOT_FOUND_EXCEL = "Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s",
-            GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
             CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
+
+            TIME_UNIT_NOT_FOUND = "Time unit %s not found",
+
             RUNTIME_EXCEPTION = "Error processing data, check your request",
             ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet"
 
