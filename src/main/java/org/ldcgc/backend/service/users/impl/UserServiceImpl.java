@@ -136,12 +136,14 @@ public class UserServiceImpl implements UserService {
             (originVolunteerId == null ||
                 // check origin (entity) and dto are not the same
                 !originVolunteerId.equals(userDto.getVolunteer().getId()))) {
-            Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElse(null);
-            if(volunteer == null)
-                throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND);
-            User checkUserVolunteer = userRepository.findByVolunteer_Id(userDto.getVolunteer().getId()).orElse(null);
-            if(checkUserVolunteer != null && !checkUserVolunteer.getId().equals(userEntity.getId()))
-                throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_VOLUNTEER_ALREADY_ASSIGNED);
+            Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElseThrow(
+                () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+            // check this builder assistant id is not assigned to another volunteer
+            userRepository.findByVolunteer_Id(userDto.getVolunteer().getId()).ifPresent(checkUser -> {
+                if(!checkUser.getId().equals(userEntity.getId()))
+                    throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_VOLUNTEER_ALREADY_ASSIGNED);
+            });
+
             userEntity.setVolunteer(volunteer);
         }
 
@@ -152,9 +154,8 @@ public class UserServiceImpl implements UserService {
             (originResponsibilityId == null ||
                 // check origin (entity) and dto are not the same
                 !originResponsibilityId.equals(userDto.getResponsibility().getId()))) {
-            Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElse(null);
-            if(category == null)
-                throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId()));
+            Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElseThrow(
+                () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId())));
             userEntity.setResponsibility(category);
         }
 
@@ -165,9 +166,8 @@ public class UserServiceImpl implements UserService {
             (originGroupId == null ||
                 // check origin (entity) and dto are not the same
                 !originGroupId.equals(userDto.getGroup().getId()))) {
-            Group group = groupRepository.findById(userDto.getGroup().getId()).orElse(null);
-            if(group == null)
-                throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, userDto.getGroup().getId()));
+            Group group = groupRepository.findById(userDto.getGroup().getId()).orElseThrow(
+                () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, userDto.getGroup().getId())));
             userEntity.setGroup(group);
         }
 
