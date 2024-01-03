@@ -6,7 +6,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.base.mock.MockedUserDetails;
+import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atMostOnce;
@@ -95,8 +95,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.getMyUser(mockedToken));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND_TOKEN);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND_TOKEN, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
 
@@ -116,8 +116,8 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getData(), userExpected);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(userExpected, responseBody.getData());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).findById(any());
@@ -132,8 +132,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateMyUser(mockedToken, NOT_FOUND_USER));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND_TOKEN);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND_TOKEN, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
 
@@ -168,14 +168,14 @@ class UserServiceImplTest {
         Response.DTO responseData = (Response.DTO) responseBody.getData();
         assertTrue(Objects.nonNull(responseData));
 
-        assertEquals(response.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(responseBody.getMessage(), Messages.Info.USER_UPDATED);
-        assertEquals(response.getHeaders().size(), 2);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(Messages.Info.USER_UPDATED, responseBody.getMessage());
+        assertEquals(2, response.getHeaders().size());
         assertTrue(response.getHeaders().containsKey("x-header-payload-token"));
-        assertEquals(response.getHeaders().get("x-header-payload-token").getFirst(), headerPayLoad);
+        assertEquals(headerPayLoad, response.getHeaders().get("x-header-payload-token").getFirst());
         assertTrue(response.getHeaders().containsKey("x-signature-token"), signature);
-        assertEquals(response.getHeaders().get("x-signature-token").getFirst(), signature);
-        assertEquals(responseData.getData(), user);
+        assertEquals(signature, response.getHeaders().get("x-signature-token").getFirst());
+        assertEquals(user, responseData.getData());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).findById(any());
@@ -192,8 +192,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.deleteMyUser(mockedToken));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND_TOKEN);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND_TOKEN, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
 
@@ -212,8 +212,8 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), Messages.Info.USER_DELETED);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Messages.Info.USER_DELETED, responseBody.getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).existsById(any());
@@ -249,8 +249,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.createUser(mockedToken, user));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.CONFLICT);
-        assertEquals(ex.getMessage(), Messages.Error.USER_ALREADY_EXIST);
+        assertEquals(HttpStatus.CONFLICT, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_ALREADY_EXIST, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(any());
 
@@ -269,9 +269,9 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(responseBody.getMessage(), Messages.Info.USER_CREATED);
-        assertEquals(responseBody.getData(), userExpected);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(Messages.Info.USER_CREATED, responseBody.getMessage());
+        assertEquals(userExpected, responseBody.getData());
 
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(userRepository, atMostOnce()).save(any());
@@ -286,8 +286,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.getUser(user.getId()));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -304,15 +304,15 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getData(), userExpected);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(userExpected, responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
 
     // list users
     @Test
-    public void whenListUsers_returnOneUser() {
+    public void whenListUsersFilteredByUserId_returnOneUser() {
         final UserDto user = MANAGER_USER;
         final UserDto userExpected = MANAGER_USER.toBuilder().password(null).build();
         final User userEntity = UserMapper.MAPPER.toEntity(user);
@@ -323,15 +323,15 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getData(), userExpected);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(userExpected, responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
 
     @Test
     public void whenListUsersUnfiltered_returnMultipleUsers() {
-        final List<UserDto> users = MockedUserDetails.getListOfMockedUsers(5);
+        final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
         final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
         final List<UserDto> usersExpected = users.stream().map(u -> u.toBuilder().password(null).build()).toList();
 
@@ -343,16 +343,16 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.USER_LISTED, 5));
-        assertEquals(responseBody.getData(), usersExpected);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
+        assertEquals(usersExpected, responseBody.getData());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
 
     @Test
     public void whenListUsersFiltered_returnMultipleUsers() {
-        final List<UserDto> users = MockedUserDetails.getListOfMockedUsers(5);
+        final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
         final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
         final List<UserDto> usersExpected = users.stream().map(u -> u.toBuilder().password(null).build()).toList();
 
@@ -364,9 +364,9 @@ class UserServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.USER_LISTED, 5));
-        assertEquals(responseBody.getData(), usersExpected);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
+        assertEquals(usersExpected, responseBody.getData());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -384,8 +384,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -406,8 +406,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
     }
@@ -431,8 +431,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.CONFLICT);
-        assertEquals(ex.getMessage(), Messages.Error.USER_ALREADY_EXIST);
+        assertEquals(HttpStatus.CONFLICT, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_ALREADY_EXIST, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -457,8 +457,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.FORBIDDEN);
-        assertEquals(ex.getMessage(), Messages.Error.USER_PERMISSION_ROLE);
+        assertEquals(HttpStatus.FORBIDDEN, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_PERMISSION_ROLE, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -483,8 +483,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.FORBIDDEN);
-        assertEquals(ex.getMessage(), Messages.Error.USER_PERMISSION_OTHER);
+        assertEquals(HttpStatus.FORBIDDEN, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_PERMISSION_OTHER, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -510,8 +510,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.FORBIDDEN);
-        assertEquals(ex.getMessage(), Messages.Error.USER_PERMISSION_ROLE_OTHER);
+        assertEquals(HttpStatus.FORBIDDEN, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_PERMISSION_ROLE_OTHER, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -538,8 +538,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.VOLUNTEER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.VOLUNTEER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -572,8 +572,8 @@ class UserServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.FORBIDDEN);
-        assertEquals(ex.getMessage(), Messages.Error.USER_VOLUNTEER_ALREADY_ASSIGNED);
+        assertEquals(HttpStatus.FORBIDDEN, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_VOLUNTEER_ALREADY_ASSIGNED, ex.getMessage());
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());

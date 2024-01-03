@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
@@ -94,8 +94,8 @@ class AccountServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findByEmail(user.getEmail());
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.login(userCredentials));
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(user.getEmail());
     }
@@ -108,8 +108,8 @@ class AccountServiceImplTest {
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.login(userCredentials));
-        assertEquals(ex.getHttpStatus(), HttpStatus.BAD_REQUEST);
-        assertEquals(ex.getMessage(), Messages.Error.USER_PASSWORD_DONT_MATCH);
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_PASSWORD_DONT_MATCH, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(user.getEmail());
     }
@@ -128,9 +128,9 @@ class AccountServiceImplTest {
 
         Response.DTOWithLocation responseBody = (Response.DTOWithLocation) response.getBody();
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
-        assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
-        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Error.EULA_STANDARD_NOT_ACCEPTED);
-        assertEquals(responseBody.getLocation(), Messages.App.EULA_ENDPOINT);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Objects.requireNonNull(responseBody).getMessage());
+        assertEquals(Messages.App.EULA_ENDPOINT, responseBody.getLocation());
         assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
         assertTrue(Objects.nonNull(response.getHeaders().get("x-signature-token")));
 
@@ -150,9 +150,9 @@ class AccountServiceImplTest {
 
         Response.DTOWithLocation responseBody = (Response.DTOWithLocation) response.getBody();
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
-        assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
-        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Error.EULA_MANAGER_NOT_ACCEPTED);
-        assertEquals(responseBody.getLocation(), Messages.App.EULA_ENDPOINT);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Objects.requireNonNull(responseBody).getMessage());
+        assertEquals(Messages.App.EULA_ENDPOINT, responseBody.getLocation());
         assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
         assertTrue(Objects.nonNull(response.getHeaders().get("x-signature-token")));
 
@@ -172,8 +172,8 @@ class AccountServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(UserDto.class, Objects.requireNonNull(responseBody).getData().getClass());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Objects.requireNonNull(responseBody).getData().getClass(), UserDto.class);
         assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
         assertTrue(Objects.nonNull(response.getHeaders().get("x-signature-token")));
     }
@@ -191,8 +191,8 @@ class AccountServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.LOGOUT_SUCCESSFUL);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Messages.Info.LOGOUT_SUCCESSFUL, Objects.requireNonNull(responseBody).getMessage());
         assertTrue(Objects.isNull(response.getHeaders().get("x-header-payload-token")));
         assertTrue(Objects.isNull(response.getHeaders().get("x-signature-token")));
 
@@ -206,8 +206,8 @@ class AccountServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findByEmail(userCredentials.getEmail());
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.recoverCredentials(userCredentials));
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
     }
@@ -232,8 +232,8 @@ class AccountServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.CREDENTIALS_EMAIL_SENT);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(Messages.Info.CREDENTIALS_EMAIL_SENT, Objects.requireNonNull(responseBody).getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
 
@@ -252,8 +252,8 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
         assertTrue(Objects.nonNull(ex));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.BAD_REQUEST);
-        assertEquals(ex.getMessage(), Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND);
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
+        assertEquals(Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
 
@@ -271,8 +271,8 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
         assertTrue(Objects.nonNull(ex));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.BAD_REQUEST);
-        assertEquals(ex.getMessage(), Messages.Error.JWT_NOT_FOR_RECOVERY);
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
+        assertEquals(Messages.Error.JWT_NOT_FOR_RECOVERY, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
     }
@@ -293,8 +293,8 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
         assertTrue(Objects.nonNull(ex));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
         verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
@@ -319,8 +319,8 @@ class AccountServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.RECOVERY_TOKEN_VALID);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Messages.Info.RECOVERY_TOKEN_VALID, Objects.requireNonNull(responseBody).getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
         verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
@@ -344,8 +344,8 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.newCredentials(userCredentials));
         assertTrue(Objects.nonNull(ex));
 
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), Messages.Error.USER_NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         // verify since it's not calling validateToken
@@ -374,8 +374,8 @@ class AccountServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.USER_CREDENTIALS_UPDATED);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Messages.Info.USER_CREDENTIALS_UPDATED, Objects.requireNonNull(responseBody).getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         // verify since it's not calling validateToken
