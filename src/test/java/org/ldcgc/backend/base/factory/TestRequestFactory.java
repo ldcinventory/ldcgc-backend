@@ -7,7 +7,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.nio.charset.StandardCharsets;
 
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUser;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUser;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

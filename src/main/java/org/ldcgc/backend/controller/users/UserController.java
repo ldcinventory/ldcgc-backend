@@ -1,5 +1,6 @@
 package org.ldcgc.backend.controller.users;
 
+import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -83,7 +84,7 @@ public interface UserController {
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
-            @RequestBody UserDto user) throws ParseException;
+            @RequestBody UserDto user) throws ParseException, JOSEException;
 
     @Operation(summary = "Delete my user")
     @ApiResponse(
@@ -130,6 +131,8 @@ public interface UserController {
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createUser(
+        @Parameter(description = "Valid JWT of the user to get details", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
             @RequestBody UserDto user);
 
@@ -193,10 +196,12 @@ public interface UserController {
     @PutMapping("/{userId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateUser(
+        @Parameter(description = "Valid JWT of the user to get details", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "User id", required = true)
             @PathVariable Integer userId,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
-            @RequestBody UserDto user);
+            @RequestBody UserDto user) throws ParseException, JOSEException;
 
     @Operation(summary = "Delete any user (admin)")
     @ApiResponse(

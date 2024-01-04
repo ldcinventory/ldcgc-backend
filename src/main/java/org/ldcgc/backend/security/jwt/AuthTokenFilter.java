@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
+import static org.ldcgc.backend.validator.Endpoint.isNotReplaceTokenEndpoint;
 import static org.ldcgc.backend.validator.Endpoint.isTokenEndpoint;
 import static org.ldcgc.backend.validator.Endpoint.nonTokenEndpoint;
 import static org.ldcgc.backend.validator.Endpoint.notExemptedEndpoint;
@@ -100,7 +101,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         request.setAttribute("Authorization", jwt);
 
-        if (isTokenEndpoint(request.getMethod(), request.getRequestURI())) {
+        if (isTokenEndpoint(request.getMethod(), request.getRequestURI()) &&
+            isNotReplaceTokenEndpoint(request.getMethod(), request.getRequestURI())) {
             response.setHeader("x-header-payload-token", jwtHeaderPayload);
             response.setHeader("x-signature-token", jwtSignature);
             try {
