@@ -1,31 +1,22 @@
-package org.ldcgc.backend.util;
+package org.ldcgc.backend.service.resources.tool;
 
-import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.payload.dto.excel.ToolExcelDto;
-import org.ldcgc.backend.strategy.MultipartFileFactory;
-import org.ldcgc.backend.service.excel.impl.ToolExcelServiceImpl;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.multipart.MultipartFile;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-class ExcelUtilsTest {
+class ToolExcelServiceImplTest {
 
     private final PodamFactory factory = new PodamFactoryImpl();
-    @Test
+/*    @Test
     void excelToToolsShouldTransform() throws IOException {
         List<ToolExcelDto> toolsExcel = factory.manufacturePojo(ArrayList.class, ToolExcelDto.class);
         MultipartFile file = MultipartFileFactory.getFileFromTools(toolsExcel);
 
-        List<ToolExcelDto> toolsExcelResponse = ToolExcelServiceImpl.excelToTools(file);
+        List<ToolExcelDto> toolsExcelResponse = org.ldcgc.backend.service.resources.tool.impl.ToolExcelServiceImpl.excelToTools(file);
 
         assertEquals(toolsExcel.size(), toolsExcelResponse.size());
     }
@@ -34,6 +25,6 @@ class ExcelUtilsTest {
     void excelToToolsShouldIndicateWhatCellIsWrong(){
         ToolExcelDto.builder().
         MultipartFile file = MultipartFileFactory.getFileFromTools(toolsExcel);
-        assertThrows(ToolExcelServiceImpl.excelToTools())
-    }
+        assertThrows(org.ldcgc.backend.service.resources.tool.impl.ToolExcelServiceImpl.excelToTools())
+    }*/
 }

@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.excel.ToolExcelDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EStatus;
-import org.ldcgc.backend.service.excel.impl.ToolExcelServiceImpl;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
@@ -93,9 +91,7 @@ public class ToolServiceImpl implements ToolService {
 
     @Override
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
-        List<ToolExcelDto> toolsExcel = ToolExcelServiceImpl.excelToTools(file);
-
-        List<ToolDto> toolsToSave = toolExcelService.convertExcelToTools(toolsExcel);
+        List<ToolDto> toolsToSave = toolExcelService.excelToTools(file);
 
         toolRepository.saveAll(toolsToSave.stream().map(ToolMapper.MAPPER::toMo).toList());
 

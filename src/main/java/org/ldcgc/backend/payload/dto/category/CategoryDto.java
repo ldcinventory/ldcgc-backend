@@ -28,13 +28,4 @@ public class CategoryDto implements Serializable {
     @JsonInclude(NON_EMPTY)
     @Singular("category")
     List<CategoryDto> categories;
-
-    public CategoryDto findCategorySonByName(String sonName){
-        return categories.stream()
-                .filter(category -> category.getName().equalsIgnoreCase(sonName))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                        Messages.Error.CATEGORY_SON_NOT_FOUND
-                                .formatted(name, sonName, name, categories.stream().map(CategoryDto::getName).toList().toString())));
-    }
 }
