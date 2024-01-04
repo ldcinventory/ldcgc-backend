@@ -82,6 +82,7 @@ public class Messages {
             USER_NOT_FOUND_TOKEN = "User id or user from token not found, or token is not valid",
             USER_PERMISSION_ROLE = "User doesn't have the permission to change its own role, even if it's admin",
             USER_PASSWORD_DOESNT_MATCH = "Password provided for this email doesn't match our records",
+            USER_DOESNT_HAVE_VOLUNTEER = "This user doesn't have any volunteer associated",
 
             EULA_ACTION_INVALID = "EULA action is not valid",
             EULA_STANDARD_NOT_ACCEPTED = "EULA for users not accepted yet",
@@ -113,6 +114,8 @@ public class Messages {
             CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
             RUNTIME_EXCEPTION = "Error processing data, check your request",
             ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
+
+            AVAILABILITY_NOT_FOUND = "Availability for this volunteer wasn't found",
 
             CSV_NAME_ERROR = "The name provided has some invalid characters",
             CSV_LAST_NAME_ERROR = "The last name provided has some invalid characters",

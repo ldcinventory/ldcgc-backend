@@ -4,6 +4,8 @@ import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+
 @Service
 public interface AvailabilityService {
 
