@@ -122,9 +122,9 @@ public class UserServiceImpl implements UserService {
         validateUpdatingParameters(userFromToken, userEntity, userDto);
 
         // origin objects
-        final Integer originVolunteerId = Optional.ofNullable(userEntity.getVolunteer()).map(Volunteer::getId).orElse(null);
-        final Integer originResponsibilityId = Optional.ofNullable(userEntity.getResponsibility()).map(Category::getId).orElse(null);
-        final Integer originGroupId = Optional.ofNullable(userEntity.getGroup()).map(Group::getId).orElse(null);
+        final Optional<Integer> originVolunteerId = Optional.ofNullable(userEntity.getVolunteer()).map(Volunteer::getId);
+        final Optional<Integer> originResponsibilityId = Optional.ofNullable(userEntity.getResponsibility()).map(Category::getId);
+        final Optional<Integer> originGroupId = Optional.ofNullable(userEntity.getGroup()).map(Group::getId);
 
         // map the whole User with password encoded
         UserMapper.MAPPER.update(userDto, userEntity);
@@ -133,9 +133,9 @@ public class UserServiceImpl implements UserService {
         // check if dto comes with volunteer
         if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
-            (originVolunteerId == null ||
+            (originVolunteerId.isEmpty() ||
                 // check origin (entity) and dto are not the same
-                !originVolunteerId.equals(userDto.getVolunteer().getId()))) {
+                !originVolunteerId.get().equals(userDto.getVolunteer().getId()))) {
             Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
             // check this builder assistant id is not assigned to another volunteer
@@ -151,9 +151,9 @@ public class UserServiceImpl implements UserService {
         // check if dto comes with responsibility
         if(Optional.ofNullable(userDto.getResponsibility()).map(CategoryDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
-            (originResponsibilityId == null ||
+            (originResponsibilityId.isEmpty() ||
                 // check origin (entity) and dto are not the same
-                !originResponsibilityId.equals(userDto.getResponsibility().getId()))) {
+                !originResponsibilityId.get().equals(userDto.getResponsibility().getId()))) {
             Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId())));
             userEntity.setResponsibility(category);
@@ -163,9 +163,9 @@ public class UserServiceImpl implements UserService {
         // check if dto comes with group
         if(Optional.ofNullable(userDto.getGroup()).map(GroupDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
-            (originGroupId == null ||
+            (originGroupId.isEmpty() ||
                 // check origin (entity) and dto are not the same
-                !originGroupId.equals(userDto.getGroup().getId()))) {
+                !originGroupId.get().equals(userDto.getGroup().getId()))) {
             Group group = groupRepository.findById(userDto.getGroup().getId()).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, userDto.getGroup().getId())));
             userEntity.setGroup(group);
