@@ -30,7 +30,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
-@RequestMapping("/absences")
+@RequestMapping("/volunteers/absences")
 public interface AbsenceController {
 
     // my user
@@ -219,7 +219,7 @@ public interface AbsenceController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @PostMapping
+    @PostMapping("/{volunteerId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createAbsence(
         @Parameter(description = "VolunteerId for creating an absence")

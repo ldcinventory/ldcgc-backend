@@ -28,7 +28,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
-@RequestMapping("/availability")
+@RequestMapping("/volunteers/availability")
 public interface AvailabilityController {
 
     // my user
