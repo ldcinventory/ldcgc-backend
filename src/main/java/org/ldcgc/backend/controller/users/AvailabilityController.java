@@ -119,7 +119,7 @@ public interface AvailabilityController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getAvailability(
         @Parameter(description = "Builder Assistant Id to get details")
-            @PathVariable Integer builderAssistantId);
+            @PathVariable String builderAssistantId);
 
     @Operation(summary = "Update user availability")
     @ApiResponse(
@@ -140,7 +140,7 @@ public interface AvailabilityController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateAvailability(
         @Parameter(description = "Builder Assistant Id to update details")
-            @PathVariable Integer builderAssistantId,
+            @PathVariable String builderAssistantId,
         @Parameter(description = "Availability details for this user to update")
             @RequestBody AvailabilityDto availabilityDto);
 
@@ -165,6 +165,6 @@ public interface AvailabilityController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> clearAvailability(
         @Parameter(description = "Builder Assistant Id to delete details")
-            @PathVariable Integer builderAssistantId);
+            @PathVariable String builderAssistantId);
 
 }

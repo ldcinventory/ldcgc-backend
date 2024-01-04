@@ -31,14 +31,15 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     }
 
     public ResponseEntity<?> getAvailability(Integer builderAssistantId) {
+    public ResponseEntity<?> getAvailability(String builderAssistantId) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> updateAvailability(Integer builderAssistantId, AvailabilityDto availabilityDto) {
+    public ResponseEntity<?> updateAvailability(String builderAssistantId, AvailabilityDto availabilityDto) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> clearAvailability(Integer builderAssistantId) {
+    public ResponseEntity<?> clearAvailability(String builderAssistantId) {
         return Constructor.generic501();
     }
 }
