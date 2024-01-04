@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.db.model.users.Availability;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,7 +50,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         Volunteer volunteer = userRepository.findById(userId).map(User::getVolunteer).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST));
 
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer));
     }
 
     public ResponseEntity<?> getVolunteer(String volunteerId) {
@@ -60,7 +58,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
@@ -70,12 +68,9 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
 
-        if(volunteer.getAvailability() != null)
-            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
-
         volunteerEntity = volunteerRepository.save(volunteerEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
@@ -92,7 +87,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
             String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
-            userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
+            userList.stream().map(VolunteerMapper.MAPPER::toDto).toList());
     }
 
     public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
@@ -105,12 +100,9 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
 
-        if(volunteer.getAvailability() != null)
-            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
-
         volunteerRepository.save(volunteerEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
     public ResponseEntity<?> deleteVolunteer(String volunteerId) {
@@ -133,7 +125,7 @@ public class VolunteerServiceImpl implements VolunteerService {
                 if(volunteerRepository.findByBuilderAssistantId(vData.get(0)).isPresent())
                     return;
                 // vData[4] Monday - vData[10] Sunday, vData[11] Holiday
-                Availability availability = getAvailabilityFromCSVData(List.of(vData.get(4),vData.get(5),vData.get(6),vData.get(7),vData.get(8),vData.get(9),vData.get(10),vData.get(11)));
+                Set<EWeekday> availability = getAvailabilityFromCSVData(List.of(vData.get(4),vData.get(5),vData.get(6),vData.get(7),vData.get(8),vData.get(9),vData.get(10),vData.get(11)));
                 Volunteer volunteer = Volunteer.builder()
                     .builderAssistantId(vData.get(0))
                     .name(vData.get(1))
@@ -142,8 +134,6 @@ public class VolunteerServiceImpl implements VolunteerService {
                     .availability(availability)
                     .group(group)
                     .build();
-                // link entities
-                availability.setVolunteer(volunteer);
 
                 volunteerRepository.saveAndFlush(volunteer);
                 volunteers.getAndIncrement();
@@ -155,12 +145,13 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessage(HttpStatus.CREATED, String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, volunteers));
     }
 
-    private Availability getAvailabilityFromCSVData(List<String> availabilityDays) {
+    private Set<EWeekday> getAvailabilityFromCSVData(List<String> availabilityDays) {
         Set<EWeekday> availabilityDaysSet = new LinkedHashSet<>();
         for(int i = 0; i < availabilityDays.size(); i++)
             if(StringUtils.isNotBlank(availabilityDays.get(i)))
                 availabilityDaysSet.add(EWeekday.values()[i]);
-        return Availability.builder().availabilityDays(availabilityDaysSet).build();
+
+        return availabilityDaysSet;
     }
 
 }

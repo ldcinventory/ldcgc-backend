@@ -2,12 +2,13 @@ package org.ldcgc.backend.controller.users;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
-import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
+import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
@@ -36,7 +38,7 @@ public interface AvailabilityController {
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = AvailabilityDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = EWeekday.class)))
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
@@ -57,7 +59,7 @@ public interface AvailabilityController {
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = AvailabilityDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = EWeekday.class)))
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
@@ -73,7 +75,7 @@ public interface AvailabilityController {
         @Parameter(description = "Valid JWT of the user to update availability", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "Availability details", required = true)
-            @RequestParam AvailabilityDto availabilityDto);
+            @RequestBody List<EWeekday> availability);
 
     @Operation(summary = "Clear own user availability")
     @ApiResponse(
@@ -105,7 +107,7 @@ public interface AvailabilityController {
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = AvailabilityDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = EWeekday.class)))
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
@@ -126,7 +128,7 @@ public interface AvailabilityController {
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = AvailabilityDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = EWeekday.class)))
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
@@ -142,7 +144,7 @@ public interface AvailabilityController {
         @Parameter(description = "Builder Assistant Id to update details")
             @PathVariable String builderAssistantId,
         @Parameter(description = "Availability details for this user to update")
-            @RequestBody AvailabilityDto availabilityDto);
+            @RequestBody List<EWeekday> availability);
 
     @Operation(summary = "Clear own user availability")
     @ApiResponse(

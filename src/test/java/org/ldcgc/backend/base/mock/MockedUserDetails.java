@@ -6,7 +6,6 @@ import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
-import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
@@ -22,12 +21,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 import static org.ldcgc.backend.util.common.EWeekday.FRIDAY;
@@ -116,10 +116,7 @@ public class MockedUserDetails {
                 .id(0)
                 .name("Axel")
                 .lastName("Sandemetrio Bonachera")
-                .availability(AvailabilityDto.builder()
-                    .volunteerId(0)
-                    .availabilityDays(List.of(MONDAY, TUESDAY, WEDNESDAY, FRIDAY, SUNDAY, HOLIDAY))
-                    .build())
+                .availability(List.of(MONDAY, TUESDAY, WEDNESDAY, FRIDAY, SUNDAY, HOLIDAY))
                 .builderAssistantId("233578")
                 .isActive(true)
                 .build())
@@ -146,7 +143,6 @@ public class MockedUserDetails {
 
     public static UserDto getRandomMockedUserDto() {
         VolunteerDto volunteerFromMocked = getMockedUser().getVolunteer();
-        AvailabilityDto availabilityFromMocked = getMockedUser().getVolunteer().getAvailability();
         Integer id = new Random().ints(1, 0, 500000).iterator().nextInt();
 
         return getMockedUser().toBuilder()
@@ -157,9 +153,7 @@ public class MockedUserDetails {
                 .lastName(String.format("%s %s",
                     getRandomElementFromList(lastNames), getRandomElementFromList(lastNames)))
                 .builderAssistantId(getRandomBuilderAssistantId())
-                .availability(availabilityFromMocked.toBuilder()
-                    .availabilityDays(getRandomAvailabilityForMocked())
-                    .build())
+                .availability(getRandomAvailabilityForMocked())
                 .build())
             .build();
     }
@@ -215,18 +209,19 @@ public class MockedUserDetails {
 
     private static List<EWeekday> getRandomAvailabilityForMocked() {
         // a set to not allow duplicates
-        Set<EWeekday> weekdays = new HashSet<>();
+        List<EWeekday> weekdays = new ArrayList<>();
 
         // number of days to add
         int availabilityDays = new Random().ints(1, 0, 7).iterator().nextInt();
 
-        IntStream.range(0, availabilityDays).forEach(x -> {
-            // random day number to get from enum array
-            int day = new Random().ints(1, 0, 7).iterator().nextInt();
-            weekdays.add(EWeekday.values()[day]);
-        });
+        // list of numbers
+        SortedSet<Integer> days = new TreeSet<>();
+        IntStream.range(0, availabilityDays).forEach(x -> days.add(new Random().ints(1, 0, 7).iterator().nextInt()));
 
-        return weekdays.stream().toList();
+        // list of days (ordered)
+        days.forEach(i -> weekdays.add(EWeekday.values()[i]));
+
+        return weekdays;
     }
 
     private static String getRandomPassword(@MinLen(8) int length) {

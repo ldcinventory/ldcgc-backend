@@ -8,7 +8,6 @@ import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
-import org.ldcgc.backend.db.model.users.Availability;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
@@ -23,6 +22,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,9 +36,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
@@ -214,18 +220,13 @@ public class InitializationData {
                 if(volunteerRepository.findByBuilderAssistantId(vFieldList.get(1)).isPresent())
                     return;
 
-                Availability availability = Availability.builder().build();
-
                 Volunteer volunteer = Volunteer.builder()
                     .builderAssistantId(vFieldList.get(1))
                     .name(vFieldList.get(2))
                     .lastName(vFieldList.get(3))
                     .isActive(Boolean.parseBoolean(vFieldList.get(4)))
-                    .availability(availability)
+                    .availability(getRandomAvailabilityForMocked())
                     .build();
-
-                // link entities
-                availability.setVolunteer(volunteer);
 
                 volunteerRepository.save(volunteer);
             });
@@ -395,9 +396,36 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
+            userRepository.save(User.builder()
+                .email("volunteer@volunteer")
+                .password(passwordEncoder.encode("volunteer"))
+                .group(_8g)
+                .role(ERole.ROLE_USER)
+                .volunteer(volunteerRepository.findById(10).orElse(null))
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                    .orElse(null))
+                .build());
+
         };
 
     }
 
+    private static Set<EWeekday> getRandomAvailabilityForMocked() {
+        // a set to not allow duplicates
+        Set<EWeekday> weekdays = new LinkedHashSet<>();
+
+        // number of days to add
+        int availabilityDays = new Random().ints(1, 0, 7).iterator().nextInt();
+
+        // list of numbers
+        SortedSet<Integer> days = new TreeSet<>();
+        IntStream.range(0, availabilityDays).forEach(x -> days.add(new Random().ints(1, 0, 7).iterator().nextInt()));
+
+        // list of days (ordered)
+        days.forEach(i -> weekdays.add(EWeekday.values()[i]));
+
+        return weekdays;
+    }
 
 }

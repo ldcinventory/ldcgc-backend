@@ -2,10 +2,12 @@ package org.ldcgc.backend.controller.users.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.AvailabilityController;
-import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.ldcgc.backend.service.users.AvailabilityService;
+import org.ldcgc.backend.util.common.EWeekday;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +19,8 @@ public class AvailabilityControllerImpl implements AvailabilityController {
         return availabilityService.getMyAvailability(token);
     }
 
-    public ResponseEntity<?> updateMyAvailability(String token, AvailabilityDto availabilityDto) {
-        return availabilityService.updateMyAvailability(token, availabilityDto);
+    public ResponseEntity<?> updateMyAvailability(String token, List<EWeekday> availability) {
+        return availabilityService.updateMyAvailability(token, availability);
     }
 
     public ResponseEntity<?> clearMyAvailability(String token) {
@@ -29,8 +31,8 @@ public class AvailabilityControllerImpl implements AvailabilityController {
         return availabilityService.getAvailability(builderAssistantId);
     }
 
-    public ResponseEntity<?> updateAvailability(String builderAssistantId, AvailabilityDto availabilityDto) {
-        return availabilityService.updateAvailability(builderAssistantId, availabilityDto);
+    public ResponseEntity<?> updateAvailability(String builderAssistantId, List<EWeekday> availability) {
+        return availabilityService.updateAvailability(builderAssistantId, availability);
     }
 
     public ResponseEntity<?> clearAvailability(String builderAssistantId) {

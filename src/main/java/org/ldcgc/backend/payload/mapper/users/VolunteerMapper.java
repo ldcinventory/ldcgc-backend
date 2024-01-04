@@ -10,14 +10,14 @@ import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(nullValuePropertyMappingStrategy = IGNORE, nullValueCheckStrategy = ALWAYS,
-    uses = { AvailabilityMapper.class, AbsenceMapper.class })
+    uses = { AbsenceMapper.class })
 public interface VolunteerMapper {
 
     VolunteerMapper MAPPER = Mappers.getMapper(VolunteerMapper.class);
 
     Volunteer toEntity(VolunteerDto volunteerRequest);
 
-    VolunteerDto toDTO(Volunteer volunteer);
+    VolunteerDto toDto(Volunteer volunteer);
 
     void update(@MappingTarget Volunteer volunteer, VolunteerDto volunteerDto);
 

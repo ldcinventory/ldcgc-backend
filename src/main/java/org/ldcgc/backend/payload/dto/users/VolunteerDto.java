@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.util.common.EWeekday;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,7 +20,7 @@ public class VolunteerDto implements Serializable {
     // also, this id will be their barcode
     String builderAssistantId;
     boolean isActive;
-    AvailabilityDto availability;
+    List<EWeekday> availability;
     List<AbsenceDto> absences;
     GroupDto groupDto;
 
