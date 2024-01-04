@@ -43,7 +43,7 @@ public class Messages {
             ABSENCE_UPDATED = "Availability updated",
             ABSENCE_DELETED = "Availability deleted",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from file"
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers."
 
             ;
 

@@ -216,5 +216,4 @@ public interface VolunteerController {
         @Parameter(description = "The file with all the volunteers", required = true)
             @RequestPart MultipartFile document);
 
-
 }
