@@ -8,6 +8,7 @@ import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
+import org.ldcgc.backend.db.model.users.Availability;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
@@ -213,12 +214,20 @@ public class InitializationData {
                 if(volunteerRepository.findByBuilderAssistantId(vFieldList.get(1)).isPresent())
                     return;
 
-                volunteerRepository.save(Volunteer.builder()
+                Availability availability = Availability.builder().build();
+
+                Volunteer volunteer = Volunteer.builder()
                     .builderAssistantId(vFieldList.get(1))
                     .name(vFieldList.get(2))
                     .lastName(vFieldList.get(3))
                     .isActive(Boolean.parseBoolean(vFieldList.get(4)))
-                    .build());
+                    .availability(availability)
+                    .build();
+
+                // link entities
+                availability.setVolunteer(volunteer);
+
+                volunteerRepository.save(volunteer);
             });
 
             // CONSUMABLES + TOOLS
