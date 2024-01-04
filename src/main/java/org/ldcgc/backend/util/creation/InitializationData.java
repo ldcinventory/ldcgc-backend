@@ -209,12 +209,17 @@ public class InitializationData {
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
             List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
-            volunteers.parallelStream().forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
-                .builderAssistantId(vFieldList.get(1))
-                .name(vFieldList.get(2))
-                .lastName(vFieldList.get(3))
-                .isActive(Boolean.parseBoolean(vFieldList.get(4)))
-                .build()));
+            volunteers.forEach(vFieldList -> {
+                if(volunteerRepository.findByBuilderAssistantId(vFieldList.get(1)).isPresent())
+                    return;
+
+                volunteerRepository.save(Volunteer.builder()
+                    .builderAssistantId(vFieldList.get(1))
+                    .name(vFieldList.get(2))
+                    .lastName(vFieldList.get(3))
+                    .isActive(Boolean.parseBoolean(vFieldList.get(4)))
+                    .build());
+            });
 
             // CONSUMABLES + TOOLS
 
@@ -260,11 +265,11 @@ public class InitializationData {
             //    new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-            tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
-                .barcode(tFieldList.get(0))
+            tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
+                .barcode(toolRepository.existsByBarcode(tFieldList.get(0)) ? null : tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
-                            ? brandsMap.get("<empty>")
-                            : brandsMap.get(tFieldList.get(1)))
+                    ? brandsMap.get("<empty>")
+                    : brandsMap.get(tFieldList.get(1)))
                 .model(tFieldList.get(2))
                 .name(tFieldList.get(3))
                 .description(tFieldList.get(4))
