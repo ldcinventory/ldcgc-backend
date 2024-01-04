@@ -115,11 +115,11 @@ public interface AvailabilityController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @GetMapping("/{volunteerId}")
+    @GetMapping("/{builderAssistantId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getAvailability(
-        @Parameter(description = "VolunteerId to get details")
-            @PathVariable Integer volunteerId);
+        @Parameter(description = "Builder Assistant Id to get details")
+            @PathVariable Integer builderAssistantId);
 
     @Operation(summary = "Update user availability")
     @ApiResponse(
@@ -136,11 +136,11 @@ public interface AvailabilityController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @PutMapping("/{volunteerId}")
+    @PutMapping("/{builderAssistantId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateAvailability(
-        @Parameter(description = "VolunteerId to update details")
-            @PathVariable Integer volunteerId,
+        @Parameter(description = "Builder Assistant Id to update details")
+            @PathVariable Integer builderAssistantId,
         @Parameter(description = "Availability details for this user to update")
             @RequestBody AvailabilityDto availabilityDto);
 
@@ -161,10 +161,10 @@ public interface AvailabilityController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @DeleteMapping("/{volunteerId}")
+    @DeleteMapping("/{builderAssistantId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> clearAvailability(
-        @Parameter(description = "VolunteerId to delete details")
-            @PathVariable Integer volunteerId);
+        @Parameter(description = "Builder Assistant Id to delete details")
+            @PathVariable Integer builderAssistantId);
 
 }

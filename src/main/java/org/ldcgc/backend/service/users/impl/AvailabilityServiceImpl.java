@@ -30,15 +30,15 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> getAvailability(Integer volunteerId) {
+    public ResponseEntity<?> getAvailability(Integer builderAssistantId) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> updateAvailability(Integer volunteerId, AvailabilityDto availabilityDto) {
+    public ResponseEntity<?> updateAvailability(Integer builderAssistantId, AvailabilityDto availabilityDto) {
         return Constructor.generic501();
     }
 
-    public ResponseEntity<?> clearAvailability(Integer volunteerId) {
+    public ResponseEntity<?> clearAvailability(Integer builderAssistantId) {
         return Constructor.generic501();
     }
 }

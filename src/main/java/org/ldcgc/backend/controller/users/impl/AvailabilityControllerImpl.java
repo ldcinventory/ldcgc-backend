@@ -25,15 +25,15 @@ public class AvailabilityControllerImpl implements AvailabilityController {
         return availabilityService.clearMyAvailability(token);
     }
 
-    public ResponseEntity<?> getAvailability(Integer volunteerId) {
-        return availabilityService.getAvailability(volunteerId);
+    public ResponseEntity<?> getAvailability(Integer builderAssistantId) {
+        return availabilityService.getAvailability(builderAssistantId);
     }
 
-    public ResponseEntity<?> updateAvailability(Integer volunteerId, AvailabilityDto availabilityDto) {
-        return availabilityService.updateAvailability(volunteerId, availabilityDto);
+    public ResponseEntity<?> updateAvailability(Integer builderAssistantId, AvailabilityDto availabilityDto) {
+        return availabilityService.updateAvailability(builderAssistantId, availabilityDto);
     }
 
-    public ResponseEntity<?> clearAvailability(Integer volunteerId) {
-        return availabilityService.clearAvailability(volunteerId);
+    public ResponseEntity<?> clearAvailability(Integer builderAssistantId) {
+        return availabilityService.clearAvailability(builderAssistantId);
     }
 }

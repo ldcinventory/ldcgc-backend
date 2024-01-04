@@ -13,8 +13,8 @@ public interface AvailabilityService {
     ResponseEntity<?> clearMyAvailability(String token);
 
     // managed
-    ResponseEntity<?> getAvailability(Integer volunteerId);
-    ResponseEntity<?> updateAvailability(Integer volunteerId, AvailabilityDto availabilityDto);
-    ResponseEntity<?> clearAvailability(Integer volunteerId);
+    ResponseEntity<?> getAvailability(Integer builderAssistantId);
+    ResponseEntity<?> updateAvailability(Integer builderAssistantId, AvailabilityDto availabilityDto);
+    ResponseEntity<?> clearAvailability(Integer builderAssistantId);
 
 }
