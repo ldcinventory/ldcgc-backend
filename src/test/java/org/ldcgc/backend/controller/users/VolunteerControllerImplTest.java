@@ -6,7 +6,7 @@ import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
-import org.ldcgc.backend.base.mock.MockedUserDetails;
+import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
@@ -42,9 +42,8 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getListOfMockedUsers;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedCreatingUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -148,7 +147,7 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
 
-        VolunteerDto mockedVolunteer = getRandomMockedCreatingUserDto(ERole.ROLE_ADMIN).getVolunteer();
+        VolunteerDto mockedVolunteer = MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_ADMIN).getVolunteer();
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.VOLUNTEER_CREATED).data(mockedVolunteer).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
@@ -196,7 +195,7 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
-        UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
         given(volunteerService.updateVolunteer(Mockito.anyString(), Mockito.any(VolunteerDto.class))).will(

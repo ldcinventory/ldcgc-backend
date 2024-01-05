@@ -6,7 +6,6 @@ import lombok.Value;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.retrieving.Messages;
 
-import java.io.Serializable;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
@@ -15,7 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Value
 @Builder
 @JsonInclude(NON_NULL)
-public class LocationDto implements Serializable {
+public class LocationDto {
 
     Integer id;
     String name;

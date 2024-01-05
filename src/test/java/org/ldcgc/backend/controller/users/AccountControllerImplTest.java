@@ -43,8 +43,8 @@ import java.nio.charset.StandardCharsets;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDtoLogin;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -115,7 +115,7 @@ public class AccountControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
 
-        given(accountService.login(Mockito.any(UserDto.class))).willAnswer(
+        given(accountService.login(Mockito.any(UserCredentialsDto.class))).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser));
 
         mockMvc.perform(postRequest(request)

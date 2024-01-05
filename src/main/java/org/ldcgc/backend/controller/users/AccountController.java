@@ -42,7 +42,7 @@ public interface AccountController {
         description = SwaggerConfig.HTTP_REASON_400,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Password doesn't match", value = Messages.Error.USER_PASSWORD_DOESNT_MATCH)
+                @ExampleObject(name = "Password doesn't match", value = Messages.Error.USER_PASSWORD_DONT_MATCH)
             })
     )
     @ApiResponse(
@@ -56,7 +56,7 @@ public interface AccountController {
     @PostMapping("/login")
     ResponseEntity<?> login(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
-            @RequestBody UserDto user) throws ParseException, JOSEException;
+            @RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
     @Operation(summary = "Perform a logout for a user")
     @ApiResponse(

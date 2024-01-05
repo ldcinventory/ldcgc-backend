@@ -10,7 +10,6 @@ import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.ETimeUnit;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -18,7 +17,7 @@ import java.util.Objects;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ToolDto implements Serializable {
+public class ToolDto {
     Integer id;
     String barcode;
     CategoryDto category;

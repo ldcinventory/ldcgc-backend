@@ -8,15 +8,24 @@ exempted:
   PATCH:
   DELETE:
 
-#endpoints that don't need/nor return token in headers
+#endpoints which doesn't need token in headers
 nonToken:
   GET:
     - "/api/alive"
     - "/api/accounts/validate"
   POST:
-    - "/api/accounts/logout"
     - "/api/accounts/recover"
     - "/api/accounts/new-credentials"
   PUT:
+  PATCH:
+  DELETE:
+
+#replace token endpoints to return a new token when calling these endpoints
+replaceToken:
+  GET:
+  POST:
+  PUT:
+    - "/api/users/me"
+    - "/api/users/{userId}"
   PATCH:
   DELETE:

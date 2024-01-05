@@ -29,9 +29,9 @@ import java.util.List;
 @Transactional
 public class VolunteerServiceImpl implements VolunteerService {
 
-    private final JwtUtils jwtUtils;
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
 
     public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
 
@@ -42,27 +42,12 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteer));
     }
 
-    public ResponseEntity<?> getVolunteer(String volunteerId) {
+    public ResponseEntity<?> getVolunteer(String builderAssistantId) {
 
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
-    }
-
-    public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
-
-        if(volunteerRepository.findByBuilderAssistantId(volunteer.getBuilderAssistantId()).isPresent())
-            throw new RequestException(HttpStatus.CONFLICT, String.format(Messages.Error.VOLUNTEER_ALREADY_EXIST, volunteer.getBuilderAssistantId()));
-
-        Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
-
-        if(volunteer.getAvailability() != null)
-            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
-
-        volunteerEntity = volunteerRepository.save(volunteerEntity);
-
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
@@ -78,30 +63,47 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
+            String.format(Messages.Info.VOLUNTEER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
+    public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {
 
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+        if(volunteerRepository.findByBuilderAssistantId(volunteerDto.getBuilderAssistantId()).isPresent())
+            throw new RequestException(HttpStatus.CONFLICT, String.format(Messages.Error.VOLUNTEER_ALREADY_EXIST, volunteerDto.getBuilderAssistantId()));
 
-        if(volunteerEntity.getBuilderAssistantId().equals(volunteer.getBuilderAssistantId()))
-            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
+        Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteerDto);
 
-        VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
-
-        if(volunteer.getAvailability() != null)
+        if(volunteerDto.getAvailability() != null)
             volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
 
-        volunteerRepository.save(volunteerEntity);
+        volunteerEntity = volunteerRepository.save(volunteerEntity);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
+    }
+
+    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteerDto) {
+
+        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+
+        // check builderAssistantId from payload doesn't exist (new BA for this volunteer)
+        // or is the same as in the volunteer (new details for this volunteer)
+        if(volunteerDto.getBuilderAssistantId() != null && !volunteerEntity.getId().equals(volunteerDto.getId()))
+            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
+
+        VolunteerMapper.MAPPER.update(volunteerEntity, volunteerDto);
+
+        if(volunteerDto.getAvailability() != null)
+            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
+
+        volunteerEntity = volunteerRepository.save(volunteerEntity);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
-    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
+        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         volunteerRepository.delete(volunteer);
