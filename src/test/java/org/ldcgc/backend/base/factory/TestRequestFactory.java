@@ -9,11 +9,7 @@ import java.nio.charset.StandardCharsets;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUser;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 public class TestRequestFactory {
 

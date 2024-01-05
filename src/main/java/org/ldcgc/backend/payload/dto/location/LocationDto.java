@@ -3,8 +3,6 @@ package org.ldcgc.backend.payload.dto.location;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.util.retrieving.Messages;
 
 import java.util.List;
 

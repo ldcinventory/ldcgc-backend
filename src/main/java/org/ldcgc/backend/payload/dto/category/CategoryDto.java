@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.ldcgc.backend.db.model.category.Category;
-import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.util.retrieving.Messages;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
