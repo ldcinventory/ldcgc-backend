@@ -72,7 +72,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
     private ToolDto parseRowToTool(Row row, ToolExcelMasterDto master) {
         String barcode = getStringCellValue(row, EExcelPositions.BARCODE.getColumnNumber());
-        Integer id = master.tools.get(barcode).getId();
+        Integer id = Optional.ofNullable(master.tools.get(barcode)).map(ToolDto::getId).orElse(null);
 
         String brandName = getStringCellValue(row, EExcelPositions.BRAND.getColumnNumber());
         CategoryDto brand = Optional.ofNullable(master.brands.get(brandName))
