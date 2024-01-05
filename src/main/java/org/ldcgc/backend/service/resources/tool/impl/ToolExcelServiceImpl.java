@@ -140,8 +140,8 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
 
-        if (!cellType.equals(CellType.STRING))
-            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
+        if (!cellType.equals(CellType.NUMERIC))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.NUMERIC.toString()));
 
         return cell.getLocalDateTimeCellValue();
     }
