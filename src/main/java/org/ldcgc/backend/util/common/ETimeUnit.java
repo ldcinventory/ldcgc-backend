@@ -29,7 +29,7 @@ public enum ETimeUnit implements EnumMethods {
 
     public static ETimeUnit getTimeUnitByName(String name){
         return Arrays.stream(ETimeUnit.values())
-                .filter(status -> status.toString().equals(name))
+                .filter(timeUnit -> timeUnit.getDesc().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TIME_UNIT_NOT_FOUND, name)));
     }

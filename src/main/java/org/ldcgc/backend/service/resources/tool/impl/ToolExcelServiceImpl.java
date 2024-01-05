@@ -1,11 +1,8 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
@@ -19,17 +16,16 @@ import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
+import org.ldcgc.backend.util.common.EExcelPositions;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,20 +46,20 @@ public class ToolExcelServiceImpl implements ToolExcelService {
             Sheet sheet = workbook.getSheetAt(0);
             ToolExcelMasterDto master = ToolExcelMasterDto.builder()
                     .tools(toolRepository.findAll().stream().map(ToolMapper.MAPPER::toDto)
-                            .collect(Collectors.toMap(ToolDto::getBarcode, Function.identity(), (existing, replacement) -> existing)))
-                    .brands(categoryService.getCategoryParent(CategoryParentEnum.BRANDS).getCategories()
-                            .stream().collect(Collectors.toMap(CategoryDto::getName, Function.identity(), (existing, replacement) -> existing)))
+                            .collect(Collectors.toMap(ToolDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                    .brands(categoryService.getCategoryParent(CategoryParentEnum.BRANDS).getCategories().stream()
+                            .collect(Collectors.toMap(CategoryDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                     .categories(categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES).getCategories()
-                            .stream().collect(Collectors.toMap(CategoryDto::getName, Function.identity(), (existing, replacement) -> existing)))
+                            .stream().collect(Collectors.toMap(CategoryDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                     .locations(locationService.getAllLocations()
-                            .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing)))
+                            .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                     .groups(groupsService.getAllGroups()
-                            .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing)))
+                            .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                     .build();
-            sheet.forEach(row -> {
-                if (row.getRowNum() != 0)
-                    tools.add(parseRowToTool(row, master));
-            });
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                tools.add(parseRowToTool(sheet.getRow(i), master));
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,41 +68,78 @@ public class ToolExcelServiceImpl implements ToolExcelService {
     }
 
     private ToolDto parseRowToTool(Row row, ToolExcelMasterDto master) {
-        String barcode = row.getCell(0).getStringCellValue();
+        String barcode = getStringCellValue(row, EExcelPositions.BARCODE.getColumnNumber());
         Integer id = master.tools.get(barcode).getId();
 
-        String brandName = row.getCell(2).getStringCellValue();
-        CategoryDto brand = Optional.of(master.brands.get(brandName))
-                .orElseThrow(() -> new RequestException( Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.brands.values().stream().map(CategoryDto::getName).toList().toString())));
-        String categoryName = row.getCell(4).getStringCellValue();
-        CategoryDto category = Optional.of(master.categories.get(categoryName))
-                .orElseThrow(() -> new RequestException( Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.categories.values().stream().map(CategoryDto::getName).toList().toString())));
-        EStatus status = EStatus.getStatusByName(row.getCell(7).getStringCellValue());
-        String locationName = row.getCell(8).getStringCellValue();
-        LocationDto location = Optional.of(master.locations.get(locationName))
-                .orElseThrow(() -> new RequestException(String.format(Messages.Error.LOCATION_NOT_FOUND_EXCEL, locationName, master.locations.values().stream().map(LocationDto::getName).toList())));
-        ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(row.getCell(10).getStringCellValue());
-        String groupName = row.getCell(12).getStringCellValue();
-        GroupDto group = Optional.of(master.groups.get(groupName))
-                .orElseThrow(() -> new RequestException(String.format(Messages.Error.GROUP_NOT_FOUND_EXCEL, groupName, master.groups.values().stream().map(GroupDto::getName).toList())));
+        String brandName = getStringCellValue(row, EExcelPositions.BRAND.getColumnNumber());
+        CategoryDto brand = Optional.ofNullable(master.brands.get(brandName))
+                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(brandName, row.getRowNum(), EExcelPositions.BRAND.getColumnNumber(), Messages.Error.CATEGORY_SON_NOT_FOUND
+                        .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.brands.values().stream().map(CategoryDto::getName).toList().toString()))));
+        String categoryName = getStringCellValue(row, EExcelPositions.CATEGORY.getColumnNumber());
+        CategoryDto category = Optional.ofNullable(master.categories.get(categoryName))
+                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(categoryName, row.getRowNum(), EExcelPositions.CATEGORY.getColumnNumber(),
+                        Messages.Error.CATEGORY_SON_NOT_FOUND
+                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.categories.values().stream().map(CategoryDto::getName).toList().toString()))));
+        EStatus status = EStatus.getStatusByName(getStringCellValue(row, EExcelPositions.STATUS.getColumnNumber()));
+        String locationName = row.getCell(EExcelPositions.LOCATION.getColumnNumber()).getStringCellValue();
+        LocationDto location = Optional.ofNullable(master.locations.get(locationName))
+                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EExcelPositions.LOCATION.getColumnNumber(),
+                        Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.locations.values().stream().map(LocationDto::getName).toList()))));
+        ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(getStringCellValue(row, EExcelPositions.MAINTENANCE_TIME.getColumnNumber()));
+        String groupName = getStringCellValue(row, EExcelPositions.GROUP.getColumnNumber());
+        GroupDto group = Optional.ofNullable(master.groups.get(groupName))
+                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EExcelPositions.GROUP.getColumnNumber(),
+                        Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.groups.values().stream().map(GroupDto::getName).toList()))));
 
         return ToolDto.builder()
                 .id(id)
                 .barcode(barcode)
-                .name(row.getCell(1).getStringCellValue())
+                .name(getStringCellValue(row, EExcelPositions.NAME.getColumnNumber()))
                 .brand(brand)
-                .model(row.getCell(3).getStringCellValue())
+                .model(getStringCellValue(row, EExcelPositions.MODEL.getColumnNumber()))
                 .category(category)
-                .description(row.getCell(5).getStringCellValue())
-                .urlImages(row.getCell(6).getStringCellValue())
+                .description(getStringCellValue(row, EExcelPositions.DESCRIPTION.getColumnNumber()))
+                .urlImages(getStringCellValue(row, EExcelPositions.URL_IMAGES.getColumnNumber()))
                 .status(status)
                 .location(location)
-                .maintenancePeriod((int) row.getCell(9).getNumericCellValue())
+                .maintenancePeriod(getIntegerCellValue(row, EExcelPositions.MAINTENANCE_PERIOD.getColumnNumber()))
                 .maintenanceTime(maintenanceTime)
-                .lastMaintenance(row.getCell(11).getLocalDateTimeCellValue())
+                .lastMaintenance(getDateCellValue(row, EExcelPositions.LAST_MAINTENANCE.getColumnNumber()))
                 .group(group)
                 .build();
+    }
+
+    private String generateExcelErrorMessage(String value, Integer row, Integer column, String message) {
+        return Messages.Error.EXCEL_VALUE_INCORRECT.formatted(value, row, column).concat("\n").concat(message);
+    }
+
+    private static String getStringCellValue(Row row, Integer columnNumber) {
+        Cell cell = row.getCell(columnNumber);
+        CellType cellType = cell.getCellType();
+
+        if (!cellType.equals(CellType.STRING))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
+
+        return cell.getStringCellValue();
+    }
+
+    private static Integer getIntegerCellValue(Row row, Integer columnNumber) {
+        Cell cell = row.getCell(columnNumber);
+        CellType cellType = cell.getCellType();
+
+        if (!cellType.equals(CellType.NUMERIC))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
+
+        return (int) cell.getNumericCellValue();
+    }
+
+    private static LocalDateTime getDateCellValue(Row row, Integer columnNumber) {
+        Cell cell = row.getCell(columnNumber);
+        CellType cellType = cell.getCellType();
+
+        if (!cellType.equals(CellType.STRING))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
+
+        return cell.getLocalDateTimeCellValue();
     }
 }

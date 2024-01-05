@@ -227,28 +227,22 @@ class ToolServiceImplTest {
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));
     }
-/*
     @Test
     void uploadToolsExcelShouldReturnList() throws IOException {
-        List<ToolExcelDto> toolsExcel = factory.manufacturePojo(ArrayList.class, ToolExcelDto.class);
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
         List<Tool> toolEntities = factory.manufacturePojo(ArrayList.class, Tool.class);
-        MultipartFile file = MultipartFileFactory.getFileFromTools(toolsExcel);
+        MultipartFile file = MultipartFileFactory.getFileFromTools(tools);
 
-        doReturn(tools).when(toolExcelService).convertExcelToTools(toolsExcel);
-        MockedStatic<ToolExcelServiceImpl> excelUtils = mockStatic(ToolExcelServiceImpl.class);
-        excelUtils.when(() -> ToolExcelServiceImpl.excelToTools(file)).thenReturn(toolsExcel);
-
-        doReturn(tools).when(toolExcelService).convertExcelToTools(toolsExcel);
+        doReturn(tools).when(toolExcelService).excelToTools(file);
         doReturn(toolEntities).when(toolRepository).saveAll(any());
 
         ResponseEntity<?> response = service.uploadToolsExcel(file);
 
-        verify(toolExcelService, times(1)).convertExcelToTools(any());
+        verify(toolExcelService, times(1)).excelToTools(any());
         verify(toolRepository, times(1)).saveAll(any());
 
         assertTrue(Objects.nonNull(response));
         Response.DTO responseBody = ((Response.DTO) response.getBody());
         assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
-    }*/
+    }
 }

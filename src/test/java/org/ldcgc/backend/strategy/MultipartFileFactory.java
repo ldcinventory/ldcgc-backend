@@ -5,6 +5,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.util.common.EExcelPositions;
+import org.ldcgc.backend.util.common.EStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import uk.co.jemos.podam.exceptions.PodamMockeryException;
@@ -14,39 +17,102 @@ import java.util.List;
 
 public class MultipartFileFactory {
 
-    public static MultipartFile getFileFromTools(List<ToolExcelDto> toolsExcel) throws IOException {
+    public static MultipartFile getFileFromTools(List<ToolDto> toolsExcel) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Hoja1");
             sheet.createRow(0);
             for (int i = 0; i < toolsExcel.size(); i++) {
                 Row row = sheet.createRow(i + 1);
-                // CABECERAS DEL EXCEL
-                // "Código de barras",
-                row.createCell(0).setCellValue(toolsExcel.get(i).getBarcode());
-                // "Nombre",
-                row.createCell(1).setCellValue(toolsExcel.get(i).getName());
-                // "Marca",
-                row.createCell(2).setCellValue(toolsExcel.get(i).getBrand());
-                // "Modelo",
-                row.createCell(3).setCellValue(toolsExcel.get(i).getModel());
-                // "Categoría",
-                row.createCell(4).setCellValue(toolsExcel.get(i).getCategory());
-                // "Descripción",
-                row.createCell(5).setCellValue(toolsExcel.get(i).getDescription());
-                // "Url Imágenes",
-                row.createCell(6).setCellValue(toolsExcel.get(i).getUrlImages());
-                // "Estado",
-                row.createCell(7).setCellValue(toolsExcel.get(i).getStatus());
-                // "Localización",
-                row.createCell(8).setCellValue(toolsExcel.get(i).getLocation());
-                // "Período de mantenimiento (numérico)",
-                row.createCell(9).setCellValue(toolsExcel.get(i).getMaintenancePeriod());
-                // "Unidad periodo de mantenimiento",
-                row.createCell(10).setCellValue(toolsExcel.get(i).getMaintenanceTime());
-                // "Fecha último mantenimiento",
-                row.createCell(11).setCellValue(toolsExcel.get(i).getLastMaintenance());
-                // "Grupo"
-                row.createCell(12).setCellValue(toolsExcel.get(i).getGroup());
+                ToolDto tool = toolsExcel.get(i);
+                row.createCell(EExcelPositions.BARCODE.getColumnNumber()).setCellValue(tool.getBarcode());
+                row.createCell(EExcelPositions.NAME.getColumnNumber()).setCellValue(tool.getName());
+                row.createCell(EExcelPositions.BRAND.getColumnNumber()).setCellValue(tool.getBrand().getName());
+                row.createCell(EExcelPositions.MODEL.getColumnNumber()).setCellValue(tool.getModel());
+                row.createCell(EExcelPositions.CATEGORY.getColumnNumber()).setCellValue(tool.getCategory().getName());
+                row.createCell(EExcelPositions.DESCRIPTION.getColumnNumber()).setCellValue(tool.getDescription());
+                row.createCell(EExcelPositions.URL_IMAGES.getColumnNumber()).setCellValue(tool.getUrlImages());
+                row.createCell(EExcelPositions.STATUS.getColumnNumber()).setCellValue(tool.getStatus().getDesc());
+                row.createCell(EExcelPositions.LOCATION.getColumnNumber()).setCellValue(tool.getLocation().getName());
+                row.createCell(EExcelPositions.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(tool.getMaintenancePeriod());
+                row.createCell(EExcelPositions.MAINTENANCE_TIME.getColumnNumber()).setCellValue(tool.getMaintenanceTime().getDesc());
+                row.createCell(EExcelPositions.LAST_MAINTENANCE.getColumnNumber()).setCellValue(tool.getLastMaintenance());
+                row.createCell(EExcelPositions.GROUP.getColumnNumber()).setCellValue(tool.getGroup().getName());
+
+            }
+
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                workbook.write(bos);
+                byte[] bytes = bos.toByteArray();
+
+                return new MockMultipartFile(
+                    "excel.xlsx",
+                    "excel.xlsx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    bytes
+                );
+            } catch (Exception e) {
+                throw new PodamMockeryException("Error creating MultipartFile", e);
+            }
+        }
+    }
+    public static MultipartFile getFileFromToolsIncorrectBarcodeType(List<ToolDto> toolsExcel) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Hoja1");
+            sheet.createRow(0);
+            for (int i = 0; i < toolsExcel.size(); i++) {
+                Row row = sheet.createRow(i + 1);
+                ToolDto tool = toolsExcel.get(i);
+                row.createCell(EExcelPositions.BARCODE.getColumnNumber()).setCellValue(123456789.0);
+                row.createCell(EExcelPositions.NAME.getColumnNumber()).setCellValue(tool.getName());
+                row.createCell(EExcelPositions.BRAND.getColumnNumber()).setCellValue(tool.getBrand().getName());
+                row.createCell(EExcelPositions.MODEL.getColumnNumber()).setCellValue(tool.getModel());
+                row.createCell(EExcelPositions.CATEGORY.getColumnNumber()).setCellValue(tool.getCategory().getName());
+                row.createCell(EExcelPositions.DESCRIPTION.getColumnNumber()).setCellValue(tool.getDescription());
+                row.createCell(EExcelPositions.URL_IMAGES.getColumnNumber()).setCellValue(tool.getUrlImages());
+                row.createCell(EExcelPositions.STATUS.getColumnNumber()).setCellValue(tool.getStatus().getDesc());
+                row.createCell(EExcelPositions.LOCATION.getColumnNumber()).setCellValue(tool.getLocation().getName());
+                row.createCell(EExcelPositions.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(tool.getMaintenancePeriod());
+                row.createCell(EExcelPositions.MAINTENANCE_TIME.getColumnNumber()).setCellValue(tool.getMaintenanceTime().getDesc());
+                row.createCell(EExcelPositions.LAST_MAINTENANCE.getColumnNumber()).setCellValue(tool.getLastMaintenance());
+                row.createCell(EExcelPositions.GROUP.getColumnNumber()).setCellValue(tool.getGroup().getName());
+
+            }
+
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                workbook.write(bos);
+                byte[] bytes = bos.toByteArray();
+
+                return new MockMultipartFile(
+                    "excel.xlsx",
+                    "excel.xlsx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    bytes
+                );
+            } catch (Exception e) {
+                throw new PodamMockeryException("Error creating MultipartFile", e);
+            }
+        }
+    }
+    public static MultipartFile getFileFromToolsIncorrectBrandType(List<ToolDto> toolsExcel) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Hoja1");
+            sheet.createRow(0);
+            for (int i = 0; i < toolsExcel.size(); i++) {
+                Row row = sheet.createRow(i + 1);
+                ToolDto tool = toolsExcel.get(i);
+                row.createCell(EExcelPositions.BARCODE.getColumnNumber()).setCellValue(tool.getBarcode());
+                row.createCell(EExcelPositions.NAME.getColumnNumber()).setCellValue(tool.getName());
+                row.createCell(EExcelPositions.BRAND.getColumnNumber()).setCellValue("made up brand");
+                row.createCell(EExcelPositions.MODEL.getColumnNumber()).setCellValue(tool.getModel());
+                row.createCell(EExcelPositions.CATEGORY.getColumnNumber()).setCellValue(tool.getCategory().getName());
+                row.createCell(EExcelPositions.DESCRIPTION.getColumnNumber()).setCellValue(tool.getDescription());
+                row.createCell(EExcelPositions.URL_IMAGES.getColumnNumber()).setCellValue(tool.getUrlImages());
+                row.createCell(EExcelPositions.STATUS.getColumnNumber()).setCellValue(tool.getStatus().getDesc());
+                row.createCell(EExcelPositions.LOCATION.getColumnNumber()).setCellValue(tool.getLocation().getName());
+                row.createCell(EExcelPositions.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(tool.getMaintenancePeriod());
+                row.createCell(EExcelPositions.MAINTENANCE_TIME.getColumnNumber()).setCellValue(tool.getMaintenanceTime().getDesc());
+                row.createCell(EExcelPositions.LAST_MAINTENANCE.getColumnNumber()).setCellValue(tool.getLastMaintenance());
+                row.createCell(EExcelPositions.GROUP.getColumnNumber()).setCellValue(tool.getGroup().getName());
 
             }
 

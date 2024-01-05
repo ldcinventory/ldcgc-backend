@@ -107,7 +107,10 @@ public class Messages {
             TIME_UNIT_NOT_FOUND = "Time unit %s not found",
 
             RUNTIME_EXCEPTION = "Error processing data, check your request",
-            ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet"
+            ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
+
+            EXCEL_VALUE_INCORRECT = "The value %s is incorrect on excel row %s, column %s",
+            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s"
 
             ;
 
