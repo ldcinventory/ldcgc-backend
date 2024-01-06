@@ -8,6 +8,7 @@ import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
+import org.ldcgc.backend.db.model.users.Absence;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
@@ -22,6 +23,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,10 +36,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
@@ -218,8 +232,9 @@ public class InitializationData {
                     .name(vFieldList.get(2))
                     .lastName(vFieldList.get(3))
                     .isActive(Boolean.parseBoolean(vFieldList.get(4)))
-                    .availability(getRandomAvailabilityForMocked())
+                    .availability(getRandomAvailability())
                     .build();
+                volunteer.setAbsences(getRandomAbsences(volunteer));
 
                 volunteerRepository.save(volunteer);
             });
@@ -342,8 +357,6 @@ public class InitializationData {
 
             // USERS
 
-            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', false);
-
             Category responsibilityCat = Category.builder()
                 .name("Responsabilidades")
                 .locked(true)
@@ -355,7 +368,7 @@ public class InitializationData {
 
             categoryRepository.saveAndFlush(responsibilityCat);
 
-            List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSABILITIES.getBbddName()).map(Category::getCategories)
+            List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSIBILITIES.getBbddName()).map(Category::getCategories)
                     .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
                             .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
@@ -393,8 +406,8 @@ public class InitializationData {
                 .email("volunteer@volunteer")
                 .password(passwordEncoder.encode("volunteer"))
                 .group(_8g)
-                .role(ERole.ROLE_USER)
-                .volunteer(volunteerRepository.findTopByIdNotNull().orElse(null))
+                .role(ERole.ROLE_MANAGER)
+                .volunteer(volunteerRepository.findById(10).orElse(null))
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Voluntario")).findFirst()
                     .orElse(null))
@@ -431,7 +444,7 @@ public class InitializationData {
 
     }
 
-    private static Set<EWeekday> getRandomAvailabilityForMocked() {
+    private static Set<EWeekday> getRandomAvailability() {
         // a set to not allow duplicates
         Set<EWeekday> weekdays = new LinkedHashSet<>();
 
@@ -446,6 +459,29 @@ public class InitializationData {
         days.forEach(i -> weekdays.add(EWeekday.values()[i]));
 
         return weekdays;
+    }
+
+    private static List<Absence> getRandomAbsences(Volunteer volunteer) {
+        // number of absences to add
+        int numAbsences = new Random().ints(1, 0, 7).iterator().nextInt();
+
+        // list of absences and ranges of days different days of absences
+        List<Absence> absences = new ArrayList<>();
+        IntStream.range(0, numAbsences).forEach(x -> {
+            int rangeOfDays = new Random().ints(1, 0, 7).iterator().nextInt();
+            LocalDate randomDate = LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(0, 366));
+            Absence absence = Absence.builder()
+                .dateFrom(randomDate)
+                .dateTo(randomDate.plusDays(rangeOfDays))
+                .volunteer(volunteer)
+                .build();
+            absences.add(absence);
+
+        });
+
+        Collections.sort(absences, Comparator.comparing(Absence::getDateFrom));
+
+        return absences;
     }
 
 }

@@ -27,32 +27,32 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.createMyAbsence(token, absenceDto);
     }
 
-    public ResponseEntity<?> updateMyAbsence(String token, AbsenceDto absenceDto) {
-        return absenceService.updateMyAbsence(token, absenceDto);
+    public ResponseEntity<?> updateMyAbsence(String token, Integer absenceId, AbsenceDto absenceDto) {
+        return absenceService.updateMyAbsence(token, absenceId, absenceDto);
     }
 
-    public ResponseEntity<?> clearMyAbsence(String token, Integer absenceId) {
-        return absenceService.clearMyAbsence(token, absenceId);
+    public ResponseEntity<?> deleteMyAbsence(String token, Integer absenceId) {
+        return absenceService.deleteMyAbsence(token, absenceId);
     }
 
     public ResponseEntity<?> getAbsence(Integer volunteerId) {
         return absenceService.getAbsence(volunteerId);
     }
 
-    public ResponseEntity<?> listAbsences(String token, LocalDate dateFrom, LocalDate dateTo, Integer[] volunteerIds) {
-        return absenceService.listAbsences(token, dateFrom, dateTo, volunteerIds);
+    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds) {
+        return absenceService.listAbsences(dateFrom, dateTo, builderAssistantIds);
     }
 
-    public ResponseEntity<?> createAbsence(Integer volunteerId, AbsenceDto absenceDto) {
-        return absenceService.createAbsence(volunteerId, absenceDto);
+    public ResponseEntity<?> createAbsence(String builderAssistantId, AbsenceDto absenceDto) {
+        return absenceService.createAbsence(builderAssistantId, absenceDto);
     }
 
-    public ResponseEntity<?> updateAbsence(Integer volunteerId, AbsenceDto absenceDto) {
-        return absenceService.updateAbsence(volunteerId, absenceDto);
+    public ResponseEntity<?> updateAbsence(Integer absenceId, AbsenceDto absenceDto) {
+        return absenceService.updateAbsence(absenceId, absenceDto);
     }
 
-    public ResponseEntity<?> deleteAbsence(Integer volunteerId, Integer absenceId) {
-        return absenceService.deleteAbsence(volunteerId, absenceId);
+    public ResponseEntity<?> deleteAbsence(Integer absenceId) {
+        return absenceService.deleteAbsence(absenceId);
     }
 
 }

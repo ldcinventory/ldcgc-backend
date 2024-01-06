@@ -14,10 +14,10 @@ public interface AbsenceMapper {
 
     AbsenceMapper MAPPER = Mappers.getMapper(AbsenceMapper.class);
 
-    Absence toEntity(AbsenceDto availabilityDto);
+    Absence toEntity(AbsenceDto absenceDto);
 
-    AbsenceDto toDto(Absence availability);
+    AbsenceDto toDto(Absence absence);
 
-    void update(@MappingTarget Absence availability, AbsenceDto availabilityDto);
+    void update(@MappingTarget Absence absence, AbsenceDto absenceDto);
 
 }

@@ -4,12 +4,14 @@ import org.ldcgc.backend.db.model.users.Volunteer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
+public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, CrudRepository<Volunteer, Integer>, JpaSpecificationExecutor<Volunteer> {
 
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
 
@@ -26,7 +28,5 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
                AND LOWER(v.lastName) LIKE LOWER(CONCAT('%', :lastName,'%'))
             """)
     List<Volunteer> findAllByNameAndLastName(String name, String lastName);
-
-    Optional<Volunteer> findTopByIdNotNull();
 
 }

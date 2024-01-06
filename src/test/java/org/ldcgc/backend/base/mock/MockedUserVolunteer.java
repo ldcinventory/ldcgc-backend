@@ -1,12 +1,12 @@
 package org.ldcgc.backend.base.mock;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.checkerframework.common.value.qual.MinLen;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
-import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
@@ -41,7 +41,7 @@ import static org.ldcgc.backend.util.common.EWeekday.WEDNESDAY;
 
 @TestConfiguration
 @RequiredArgsConstructor
-public class MockedUserDetails {
+public class MockedUserVolunteer {
 
     private final PasswordEncoder passwordEncoder;
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!·$%&/()=|@#?¿´‚ºª'¡`+´ç-.,<>;:_¨Ç^*[]{}";
@@ -76,13 +76,13 @@ public class MockedUserDetails {
         return new InMemoryUserDetailsManager(Arrays.asList(finalAdmin, finalManager, finalUser));
     }
 
-    private static final List<String> names = List.of(
+    private static final List<String> NAMES = List.of(
         "Adriel","Agni","Anmon","Areu","Axel","Baco","Bernal","Brais","Caín","Catriel","Ciro","Dante","Drac","Éber","Elián","Elm","Elon","Enzo","Eros","Esaú","Farid","Flavio","Hans","Inder","Ion","Jaguar","Jou","Keanu","Liam","Lolo","Milos","Mirt","Mon","Nadir","Nahuel","Naim","Neón","Nil","Quiles","Remo","Roso","Silveri","Tadeo","Tahiel","Tarik","Telmo","Truman","Uriel","Vice","Zac"
     );
-    private static final List<String> lastNames = List.of(
+    private static final List<String> LAST_NAMES = List.of(
         "Zuzunaga","Sorní","Garza","Sandemetrio","Urriaga","Bonachera","Vital","Pregonas","Sazón","Sorda","Enamorado","Cacharro","Víbora","Cama","Pieldelobo","Piesplanos","Tenedor","Delfín","Pechoabierto","Alcoholado","Verdugo","Llagaria","Cidoncha","Anacleto","Parraverde","Nuero","Nomdedeu","Piernavieja","Perfume","Ariztimuño","Arrubal","Barato","Viejobueno","Cayado","Callado","Cazador","Caimanes","Sin","Zas","Rajado","Chinchurreta","Cosío","Fermonsel","Gandul","Piernabierta","Guarnido","Física","Sacamoco","Lúcido","Triunfo","Hergueta","Bru","Raga","Cuñat","Pruñonosa","Lujan","Fajardo","Coscojuela","Funes","Mantilla","Gallur","Melgar","Longán","Ibars","Cedeño"
     );
-    private static final List<String> emails = List.of(
+    private static final List<String> EMAILS = List.of(
         "marcofpn@mail.com","marcelinobassett@mail.com","lauraquirogavalpa1985@mail.com","joselyn-monsalve@lycos.es","karandare@ymail.com","franciscpalma@ymail.com","maleelizondo@mail.com","mcanelos@vtr.net","mefi sto-scum@mail.com","mariamorfin@mail.com","luzgarciaguzman@ymail.com","atihnfa@yajoo.com","cristina_ush@mail.com","ruthkochenschub@mail.com","aliciaecheveste@mail.com","marion2008@yajoo.com","edifornasin@mail.com","edopenaval@ymail.com","gerardo_sauri@mail.com","grace0304@ymail.com","sundesertroses@ymail.com","luisbelloh@mail.com","maella_32@mail.com","josem.yac@ymail.com","cijacuarel@yajoo.es","inesaolima@mail.com","miguelcolman@mail.com","caratag@ymail.com","marilyn_m3@mail.com","martinamariafh@yajoo.com","mariceleiriz@ymail.com","enriquefaundez@ymail.com","mariamarquesmargarida@ymail.com","fonsykidss@yajoo.com","centro.epifania@ymail.com","delmyrecinosg@mail.com","jorgeetoro@mail.com","jafsdoc@yajoo.com","luchito.venegas@ymail.com","hildahormazabal@mail.com","miriamsian@mail.com","jacob_1770@mail.com","lpaz131@ymail.com","mifcat@mail.com","marlagonzale@mail.com","mnnatsop_sede@yajoo.es","mdlopez24@mail.com","despinozapatel@mail.com","info@wfmh.com","monikaniederle@mail.com","erica_lanas@yajoo.es","marisolantigua@mail.com","adr1054@ymail.com","cosecodeni@yajoo.es","amaliabr@mail.com","peliptiu@ymail.com","geovaldona@ymail.com","jmerin.reig@ymail.com","charomendiola@mail.com","despujoljv@mail.com","julio_valle_iscar@mail.com","mnnatsop_sede@yajoo.es","lola_40@mail.com","irmandrea53@mail.com","alejuarez_316@mail.com","maritzadelepiani@mail.com","mreyesherrera@ymail.com","ivovega@yajoo.com","ivan.salinasbarrios@ymail.com","ioannys_15@mail.com","jorgeenriqueescobar@latinmail.com","marvinrabanales@mail.com","rfsepulveda@ymail.com","karinajjm@ymail.com","blanri@mail.com"
     );
     private static final List<String> responsibilities = List.of("Coordinador GC", "Auxiliar GC", "Maestro de obra", "Oficial de primera", "Oficial de segunda", "Oficial de tercera", "Voluntario");
@@ -138,26 +138,29 @@ public class MockedUserDetails {
             .build();
     }
 
-    public static String getRandomBuilderAssistantId() {
-        return String.valueOf(new Random()
-            .ints(1, 1000, 500000).iterator().nextInt());
-    }
-
     public static UserDto getRandomMockedUserDto() {
         VolunteerDto volunteerFromMocked = getMockedUser().getVolunteer();
         Integer id = new Random().ints(1, 0, 500000).iterator().nextInt();
 
         return getMockedUser().toBuilder()
             .id(id)
-            .email(getRandomElementFromList(emails))
+            .email(getRandomElementFromList(EMAILS))
             .volunteer(volunteerFromMocked.toBuilder()
-                .name(getRandomElementFromList(names))
+                .name(getRandomElementFromList(NAMES))
                 .lastName(String.format("%s %s",
-                    getRandomElementFromList(lastNames), getRandomElementFromList(lastNames)))
+                    getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
                 .builderAssistantId(getRandomBuilderAssistantId())
                 .availability(getRandomAvailabilityForMocked())
                 .build())
             .build();
+    }
+
+    public static UserDto getRandomMockedUserDto(ERole eRole) {
+        return getRandomMockedUserDto().toBuilder().role(eRole).build();
+    }
+
+    public static UserDto getRandomMockedUserDtoWithoutVolunteer() {
+        return getRandomMockedUserDto().toBuilder().volunteer(null).build();
     }
 
     public static UserDto getRandomMockedCreatingUserDto(ERole role) {
@@ -172,7 +175,7 @@ public class MockedUserDetails {
 
         return getMockedUser().toBuilder()
             .id(id)
-            .email(getRandomElementFromList(emails))
+            .email(getRandomElementFromList(EMAILS))
             .password(getRandomPassword())
             .role(role)
             .responsibility(CategoryDto.builder()
@@ -257,10 +260,7 @@ public class MockedUserDetails {
             .lastName(String.format("%s %s",
                 getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
             .builderAssistantId(getRandomBuilderAssistantId())
-            .availability(AvailabilityDto.builder()
-                .volunteerId(randomId)
-                .availabilityDays(getRandomAvailabilityForMocked())
-                .build())
+            .availability(getRandomAvailabilityForMocked())
             .build();
     }
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -51,10 +52,11 @@ class VolunteerServiceImplTest {
     @Mock VolunteerRepository volunteerRepository;
     @Mock UserRepository userRepository;
     @Mock JwtUtils jwtUtils;
+    @Mock GroupRepository groupRepository;
 
     @BeforeEach
     public void init() {
-        volunteerService = new VolunteerServiceImpl(volunteerRepository, userRepository, jwtUtils);
+        volunteerService = new VolunteerServiceImpl(jwtUtils, volunteerRepository, userRepository, groupRepository);
     }
 
     private final User USER_WITHOUT_VOLUNTEER = UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDtoWithoutVolunteer());
@@ -90,7 +92,7 @@ class VolunteerServiceImplTest {
         ResponseEntity<?> response = volunteerService.getMyVolunteer(mockedToken);
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(USER_WITH_VOLUNTEER.getVolunteer());
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(USER_WITH_VOLUNTEER.getVolunteer());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
@@ -118,7 +120,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenGetVolunteer_returnVolunteer() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         String builderAssistantId = VOLUNTEER.getBuilderAssistantId();
 
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
@@ -137,7 +139,7 @@ class VolunteerServiceImplTest {
     //create vounteer
     @Test
     public void whenCreateVolunteer_returnVolunteerAlreadyExists() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
@@ -152,7 +154,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenCreateVolunteerWithoutAvailability_returnVolunteerCreated() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER_NOT_AVAILABLE);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER_NOT_AVAILABLE);
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
@@ -172,7 +174,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenCreateVolunteerWithAvailability_returnVolunteerCreated() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
@@ -194,7 +196,7 @@ class VolunteerServiceImplTest {
     @Test
     public void whenListVolunteerFilteredByBuilderAssistantId_returnOneVolunteer() {
         final String builderAssistantId = VOLUNTEER.getBuilderAssistantId();
-        final VolunteerDto volunteerExpected = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        final VolunteerDto volunteerExpected = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
 
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
@@ -255,7 +257,7 @@ class VolunteerServiceImplTest {
     @Test
     public void whenUpdateVolunteer_returnVolunteerNotFound() {
         String volunteerId = VOLUNTEER.getBuilderAssistantId();
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
@@ -270,7 +272,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenUpdateVolunteer_returnVolunteerBuilderAssistanIdTaken() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
 
         String volunteerId_2 = VOLUNTEER.getBuilderAssistantId() + "0";
         final Volunteer VOLUNTEER_2 = VolunteerMapper.MAPPER.toEntity(volunteerDto).toBuilder().builderAssistantId(volunteerId_2).build();
@@ -288,7 +290,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenUpdateVolunteerWithoutAvailability_returnVolunteerUpdated() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER_NOT_AVAILABLE);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER_NOT_AVAILABLE);
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
         doReturn(Optional.of(VOLUNTEER_NOT_AVAILABLE)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
@@ -311,7 +313,7 @@ class VolunteerServiceImplTest {
     @Test
     public void whenUpdateVolunteerWithAvailability_returnVolunteerUpdated() {
         // original volunteer
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDTO(VOLUNTEER);
+        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         // volunteer new details
         String builderAssistantId = VOLUNTEER_2.getBuilderAssistantId();
 
@@ -358,7 +360,7 @@ class VolunteerServiceImplTest {
         assertEquals(Messages.Info.VOLUNTEER_DELETED, responseBody.getMessage());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
-        verify(volunteerRepository, atMostOnce()).delete(any());
+        verify(volunteerRepository, atMostOnce()).delete(any(Volunteer.class));
     }
 
 }

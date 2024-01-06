@@ -38,8 +38,10 @@ public class Messages {
             TOOL_DELETED = "Tool deleted",
 
             AVAILABILITY_UPDATED = "Availability updated",
-            AVAILABILITY_DELETED = "Availability deleted",
+            AVAILABILITY_DELETED = "Availability cleared",
 
+            ABSENCES_FOUND = "%s absences found",
+            ABSENCE_CREATED = "Absence created",
             ABSENCE_UPDATED = "Availability updated",
             ABSENCE_DELETED = "Availability deleted",
 
@@ -119,7 +121,8 @@ public class Messages {
             RUNTIME_EXCEPTION = "Error processing data, check your request",
             ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
 
-            AVAILABILITY_NOT_FOUND = "Availability for this volunteer wasn't found",
+            ABSENCE_VOLUNTEER_NOT_FOUND = "This absence was not found for this volunteer",
+            ABSENCE_NOT_FOUND = "Absence not found",
 
             CSV_NAME_ERROR = "The name provided has some invalid characters",
             CSV_LAST_NAME_ERROR = "The last name provided has some invalid characters",

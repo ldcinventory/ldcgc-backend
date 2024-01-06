@@ -70,7 +70,10 @@ public interface AbsenceController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.USER_NOT_FOUND),
+                @ExampleObject(name = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, value = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER),
+                @ExampleObject(name = Messages.Error.ABSENCE_NOT_FOUND, value = Messages.Error.ABSENCE_NOT_FOUND)
+
             })
     )
     @GetMapping("/me")
@@ -79,9 +82,9 @@ public interface AbsenceController {
         @Parameter(description = "Valid JWT of the user to get absence", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "Date 'from' to filter absences")
-            @RequestParam LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
-            @RequestParam LocalDate dateTo);
+            @RequestParam(required = false) LocalDate dateTo);
 
     @Operation(summary = "Create own user absence")
     @ApiResponse(
@@ -95,7 +98,8 @@ public interface AbsenceController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND),
+                @ExampleObject(name = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, value = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER)
             })
     )
     @PostMapping("/me")
@@ -118,18 +122,21 @@ public interface AbsenceController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND),
+                @ExampleObject(name = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, value = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER)
             })
     )
-    @PutMapping("/me")
+    @PutMapping("/me/{absenceId}")
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> updateMyAbsence(
         @Parameter(description = "Valid JWT of the user to update absence", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
+        @Parameter(description = "AbsenceId to update")
+            @PathVariable Integer absenceId,
         @Parameter(description = "Absence details", required = true)
             @RequestParam AbsenceDto absenceDto);
 
-    @Operation(summary = "Clear own user absence")
+    @Operation(summary = "Delete own user absence")
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -143,12 +150,14 @@ public interface AbsenceController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.USER_NOT_FOUND),
+                @ExampleObject(name = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, value = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER),
+                @ExampleObject(name = Messages.Error.ABSENCE_NOT_FOUND, value = Messages.Error.ABSENCE_NOT_FOUND)
             })
     )
     @DeleteMapping("/me/{absenceId}")
     @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> clearMyAbsence(
+    ResponseEntity<?> deleteMyAbsence(
         @Parameter(description = "Valid JWT of the user to clear absence", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "AbsenceId to delete")
@@ -168,16 +177,18 @@ public interface AbsenceController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.USER_NOT_FOUND),
+                @ExampleObject(name = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, value = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER),
+                @ExampleObject(name = Messages.Error.ABSENCE_NOT_FOUND, value = Messages.Error.ABSENCE_NOT_FOUND)
             })
     )
-    @GetMapping("/{volunteerId}")
+    @GetMapping("/{absenceId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getAbsence(
-        @Parameter(description = "VolunteerId to get details")
-            @PathVariable Integer volunteerId);
+        @Parameter(description = "AbsenceId to get details")
+            @PathVariable Integer absenceId);
 
-    @Operation(summary = "Get own user absences")
+    @Operation(summary = "List any user absences")
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -189,20 +200,19 @@ public interface AbsenceController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.USER_NOT_FOUND),
+                @ExampleObject(name = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, value = Messages.Error.USER_DOESNT_HAVE_VOLUNTEER)
             })
     )
     @GetMapping
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> listAbsences(
-        @Parameter(description = "Valid JWT of the user to get absence", required = true)
-            @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "Date 'from' to filter absences")
-            @RequestParam LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
-            @RequestParam LocalDate dateTo,
-        @Parameter(description = "Volunteer Ids (array of one or more ids)")
-            @RequestParam Integer[] volunteerIds);
+            @RequestParam(required = false) LocalDate dateTo,
+        @Parameter(description = "Builder Assistant Ids (array of one or more ids)")
+            @RequestParam(required = false) String[] builderAssistantIds);
 
     @Operation(summary = "Create user absence")
     @ApiResponse(
@@ -219,11 +229,11 @@ public interface AbsenceController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @PostMapping("/{volunteerId}")
+    @PostMapping("/{absenceId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createAbsence(
-        @Parameter(description = "VolunteerId for creating an absence")
-            @PathVariable Integer volunteerId,
+        @Parameter(description = "Builder Assistant Id to create absence")
+            @PathVariable String builderAssistantId,
         @Parameter(description = "Absence details for this user to create")
             @RequestBody AbsenceDto absenceDto);
 
@@ -242,15 +252,15 @@ public interface AbsenceController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @PutMapping("/{volunteerId}")
+    @PutMapping("/{absenceId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateAbsence(
-        @Parameter(description = "VolunteerId to update details")
-            @PathVariable Integer volunteerId,
+        @Parameter(description = "Absence Id to update absence")
+            @PathVariable Integer absenceId,
         @Parameter(description = "Absence details for this user to update")
             @RequestBody AbsenceDto absenceDto);
 
-    @Operation(summary = "Clear own user absence")
+    @Operation(summary = "Delete user absence")
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -267,11 +277,9 @@ public interface AbsenceController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @DeleteMapping("/{volunteerId}/{absenceId}")
+    @DeleteMapping("/{absenceId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> deleteAbsence(
-        @Parameter(description = "VolunteerId to delete from")
-            @PathVariable Integer volunteerId,
         @Parameter(description = "AbsenceId to delete")
             @PathVariable Integer absenceId);
 
