@@ -41,7 +41,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.ldcgc.backend.util.conversion.Convert.*;
+import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
+import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
+import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
 
 @Configuration
 @RequiredArgsConstructor

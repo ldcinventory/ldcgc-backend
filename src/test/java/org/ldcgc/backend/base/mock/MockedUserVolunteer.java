@@ -15,11 +15,21 @@ import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.springframework.boot.test.context.TestConfiguration;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.ldcgc.backend.util.common.EWeekday.*;
+import static org.ldcgc.backend.util.common.EWeekday.FRIDAY;
+import static org.ldcgc.backend.util.common.EWeekday.HOLIDAY;
+import static org.ldcgc.backend.util.common.EWeekday.MONDAY;
+import static org.ldcgc.backend.util.common.EWeekday.SUNDAY;
+import static org.ldcgc.backend.util.common.EWeekday.TUESDAY;
+import static org.ldcgc.backend.util.common.EWeekday.WEDNESDAY;
 
 @TestConfiguration
 @RequiredArgsConstructor

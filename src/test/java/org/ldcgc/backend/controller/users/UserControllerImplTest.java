@@ -38,7 +38,10 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import static org.ldcgc.backend.base.Constants.apiRoot;
-import static org.ldcgc.backend.base.factory.TestRequestFactory.*;
+import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
+import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
+import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
+import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
