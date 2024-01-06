@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,7 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
+@Transactional
 @Table(name = "volunteers")
 public class Volunteer {
 
@@ -44,7 +46,7 @@ public class Volunteer {
     // also, this id will be their barcode
     private String builderAssistantId;
 
-    private boolean isActive;
+    private Boolean isActive;
 
     // this converter gets the natural string from DB, which is formatted as an array ['L','M','X',...]
     // and instantiate it in backend as a List of EWeekday enum

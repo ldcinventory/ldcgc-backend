@@ -22,7 +22,6 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
-import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,15 +35,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
@@ -401,11 +394,38 @@ public class InitializationData {
                 .password(passwordEncoder.encode("volunteer"))
                 .group(_8g)
                 .role(ERole.ROLE_USER)
-                .volunteer(volunteerRepository.findById(10).orElse(null))
+                .volunteer(volunteerRepository.findTopByIdNotNull().orElse(null))
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Voluntario")).findFirst()
                     .orElse(null))
                 .build());
+
+            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
+            if(users != null) {
+                users.forEach(userFields -> {
+                    User user = User.builder()
+                        .email(userFields.get(4))
+                        .password(passwordEncoder.encode(userFields.get(3)))
+                        .role(Integer.valueOf(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
+                            Integer.valueOf(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
+                                ERole.ROLE_USER)
+                        .responsibility(responsibilitiesEntities.stream()
+                            .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                            .orElse(null))
+                        .acceptedEULA(LocalDateTime.now())
+                        .acceptedEULAManager(Integer.valueOf(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
+                        .build();
+                    Volunteer volunteer = null;
+                    if(!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
+                        var volunteerList = volunteerRepository.findAllByNameAndLastName(userFields.get(1), userFields.get(2));
+                        if (!volunteerList.isEmpty())
+                            volunteer = volunteerList.get(0);
+                        user.setVolunteer(volunteer);
+                    }
+
+                    userRepository.saveAndFlush(user);
+                });
+            }
 
         };
 

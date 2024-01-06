@@ -46,8 +46,7 @@ public class JwtUtils {
     @Value("${jwtExpirationMs}")
     private int jwtExpirationSeconds;
 
-    @Setter
-    private Boolean isRecoveryToken = false;
+    @Setter private Boolean isRecoveryToken = false;
 
     private final TokenRepository tokenRepository;
 

@@ -4,7 +4,6 @@ import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.AccountController;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
-import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.service.users.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +16,8 @@ public class AccountControllerImpl implements AccountController {
 
     private final AccountService accountService;
 
-    public ResponseEntity<?> login(UserDto user) throws ParseException, JOSEException {
-        return accountService.login(user);
+    public ResponseEntity<?> login(UserCredentialsDto userCredentials) throws ParseException, JOSEException {
+        return accountService.login(userCredentials);
     }
 
     public ResponseEntity<?> logout(String token) throws ParseException {

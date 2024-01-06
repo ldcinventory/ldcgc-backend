@@ -42,7 +42,6 @@ public class VolunteerServiceImpl implements VolunteerService {
     private final JwtUtils jwtUtils;
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
-    private final GroupRepository groupRepository;
 
     public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
 
@@ -68,9 +67,12 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
 
+        if(volunteer.getAvailability() != null)
+            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
+
         volunteerEntity = volunteerRepository.save(volunteerEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDTO(volunteerEntity));
     }
 
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
@@ -87,7 +89,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
             String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
-            userList.stream().map(VolunteerMapper.MAPPER::toDto).toList());
+            userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
     }
 
     public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
@@ -99,6 +101,9 @@ public class VolunteerServiceImpl implements VolunteerService {
             throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
 
         VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
+
+        if(volunteer.getAvailability() != null)
+            volunteerEntity.getAvailability().setVolunteer(volunteerEntity);
 
         volunteerRepository.save(volunteerEntity);
 

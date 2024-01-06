@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum CategoryParentEnum {
 
     MANUFACTURERS("Fabricantes", "Manufacturer"),
-    RESPONSABILITIES("Responsabilidades", "Responsability"),
+    RESPONSIBILITIES("Responsabilidades", "Responsibility"),
     RESOURCES("Recursos", "Resource"),
     BRANDS("Marcas", "Brand"),
     CATEGORIES("Categorías", "Category"),

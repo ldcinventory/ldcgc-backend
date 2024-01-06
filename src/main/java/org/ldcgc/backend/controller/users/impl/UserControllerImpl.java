@@ -1,5 +1,6 @@
 package org.ldcgc.backend.controller.users.impl;
 
+import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.UserController;
 import org.ldcgc.backend.payload.dto.users.UserDto;
@@ -19,16 +20,16 @@ public class UserControllerImpl implements UserController {
         return userService.getMyUser(token);
     }
 
-    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException {
+    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException, JOSEException {
         return userService.updateMyUser(token, user);
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
+    public ResponseEntity<?> deleteMyUser(String token) {
         return userService.deleteMyUser(token);
     }
 
-    public ResponseEntity<?> createUser(UserDto user) {
-        return userService.createUser(user);
+    public ResponseEntity<?> createUser(String token, UserDto user) {
+        return userService.createUser(token, user);
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
@@ -39,8 +40,8 @@ public class UserControllerImpl implements UserController {
         return userService.listUsers(pageIndex, size, filterString, userId);
     }
 
-    public ResponseEntity<?> updateUser(Integer userId, UserDto user) {
-        return userService.updateUser(userId, user);
+    public ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException {
+        return userService.updateUser(token, userId, user);
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {

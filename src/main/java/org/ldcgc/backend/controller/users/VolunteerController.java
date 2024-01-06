@@ -84,7 +84,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
-        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+        content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = VolunteerDto.class),
             examples = {
                 @ExampleObject(name = "Volunteer created", value = Messages.Info.VOLUNTEER_CREATED)
@@ -93,7 +93,7 @@ public interface VolunteerController {
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_409,
         description = SwaggerConfig.HTTP_REASON_409,
-        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+        content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Volunteer already exists" , value = Messages.Error.VOLUNTEER_ALREADY_EXIST, description = "%s will be replaced with a builder assistant id"),
             })

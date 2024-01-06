@@ -31,7 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,7 +51,7 @@ class EulaServiceImplTest {
     @BeforeEach
     public void init() {
         eulaService = new EulaServiceImpl(userRepository, tokenRepository, jwtUtils);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDtoLogin()));
+        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto()));
     }
 
     // mocked users
@@ -77,10 +78,10 @@ class EulaServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findById(user.getId());
 
         RequestException ex = assertThrows(RequestException.class, () -> eulaService.getEULA(mockedToken));
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
-        verify(userRepository, times(1)).findById(USER_NOT_FOUND.getId());
+        verify(userRepository, atMostOnce()).findById(USER_NOT_FOUND.getId());
 
         log.error("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", ex.getHttpStatus()));
@@ -107,10 +108,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
         assertTrue(StringUtils.isNotBlank(((EulaDto) Objects.requireNonNull(responseBody).getData()).getUrl()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -137,7 +138,7 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
         assertTrue(StringUtils.isNotBlank(((EulaDto) Objects.requireNonNull(responseBody).getData()).getUrl()));
 
         log.info("### RESULTS ###");
@@ -166,8 +167,8 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(StringUtils.isNotBlank(((EulaDto) Objects.requireNonNull(responseBody).getData()).getUrl()));
 
         log.info("### RESULTS ###");
@@ -192,10 +193,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER));
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -219,10 +220,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS));
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", "response.getStatusCode()"));
@@ -245,10 +246,10 @@ class EulaServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findById(user.getId());
 
         RequestException ex = assertThrows(RequestException.class, () -> eulaService.putEULA(mockedToken, EEULAStatus.ACCEPT));
-        assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
 
-        verify(userRepository, times(1)).findById(user.getId());
+        verify(userRepository, atMostOnce()).findById(user.getId());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", ex.getHttpStatus()));
@@ -272,10 +273,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER));
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -299,10 +300,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS));
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -326,11 +327,11 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
-        verify(userRepository, times(1)).save(userStandard);
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).save(userStandard);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -349,10 +350,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -376,11 +377,11 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
-        verify(userRepository, times(1)).save(userManager);
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).save(userManager);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_ACCEPTED, MANAGERS));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_ACCEPTED, MANAGERS), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -404,10 +405,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_PENDING, EVERY_USER));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_PENDING, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -431,10 +432,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager1.getId());
+        verify(userRepository, atMostOnce()).findById(userManager1.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_PENDING, EVERY_USER));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_PENDING, EVERY_USER), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -454,10 +455,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager2.getId());
+        verify(userRepository, atMostOnce()).findById(userManager2.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_PENDING, MANAGERS));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_PENDING, MANAGERS), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -482,12 +483,12 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
-        verify(userRepository, times(1)).delete(userStandard);
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).delete(userStandard);
         verify(userRepository, times(0)).save(userStandard);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -506,12 +507,12 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
-        verify(userRepository, times(1)).delete(userManager);
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).delete(userManager);
         verify(userRepository, times(0)).save(userManager);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -537,12 +538,12 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userManager.getId());
+        verify(userRepository, atMostOnce()).findById(userManager.getId());
         verify(userRepository, times(0)).delete(userManager);
-        verify(userRepository, times(1)).save(userManager);
+        verify(userRepository, atMostOnce()).save(userManager);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), String.format(Messages.Info.EULA_REJECTED, MANAGERS, rejectionMessage));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.EULA_REJECTED, MANAGERS, rejectionMessage), responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
@@ -565,10 +566,10 @@ class EulaServiceImplTest {
         assertTrue(Objects.nonNull(response));
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        verify(userRepository, times(1)).findById(userStandard.getId());
+        verify(userRepository, atMostOnce()).findById(userStandard.getId());
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
-        assertEquals(responseBody.getMessage(), Messages.Error.EULA_ACTION_INVALID);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(Messages.Error.EULA_ACTION_INVALID, responseBody.getMessage());
 
         log.info("### RESULTS ###");
         log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));

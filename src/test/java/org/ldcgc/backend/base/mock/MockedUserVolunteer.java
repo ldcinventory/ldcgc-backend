@@ -6,6 +6,7 @@ import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.ldcgc.backend.payload.dto.users.AvailabilityDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
@@ -29,6 +30,7 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.common.EWeekday.FRIDAY;
 import static org.ldcgc.backend.util.common.EWeekday.HOLIDAY;
@@ -235,6 +237,47 @@ public class MockedUserDetails {
 
     private static String getRandomPassword() {
         return getRandomPassword(8);
+    }
+
+    private static ERole getRandomRole() {
+        List<ERole> roles = Arrays.asList(ERole.values());
+        return roles.get(new Random().nextInt(roles.size()));
+    }
+
+    public static VolunteerDto getEmptyVolunteer() {
+        return VolunteerDto.builder().id(0).build();
+    }
+
+    public static VolunteerDto getRandomVolunteer() {
+        Integer randomId = getRandomId();
+
+        return VolunteerDto.builder()
+            .id(randomId)
+            .name(getRandomElementFromList(NAMES))
+            .lastName(String.format("%s %s",
+                getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
+            .builderAssistantId(getRandomBuilderAssistantId())
+            .availability(AvailabilityDto.builder()
+                .volunteerId(randomId)
+                .availabilityDays(getRandomAvailabilityForMocked())
+                .build())
+            .build();
+    }
+
+    public static VolunteerDto getRandomVolunteerWithoutAvailability() {
+        return getRandomVolunteer().toBuilder().availability(null).build();
+    }
+
+    private static Integer getRandomId() {
+        return new Random().ints(1, 0, 500000).iterator().nextInt();
+    }
+
+    public static String getRandomBuilderAssistantId() {
+        return RandomStringUtils.randomAlphanumeric(8).toUpperCase();
+    }
+
+    public static List<VolunteerDto> getListOfMockedVolunteers(Integer listSize) {
+        return Stream.generate(MockedUserVolunteer::getRandomVolunteer).limit(listSize).toList();
     }
 
 }

@@ -6,7 +6,7 @@ import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
-import org.ldcgc.backend.base.mock.MockedUserDetails;
+import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
@@ -42,9 +42,8 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getListOfMockedUsers;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedCreatingUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
+import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -81,7 +80,6 @@ public class UserControllerImplTest {
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
-    private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
     public void init() throws ParseException {
@@ -93,8 +91,7 @@ public class UserControllerImplTest {
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setApplicationContext(context);
-        constrainValidationFactory = new TestConstrainValidationFactory(context);
-        validatorFactoryBean.setConstraintValidatorFactory(constrainValidationFactory);
+        validatorFactoryBean.setConstraintValidatorFactory(new TestConstrainValidationFactory(context));
         validatorFactoryBean.setProviderClass(HibernateValidator.class);
         validatorFactoryBean.afterPropertiesSet();
 
@@ -136,7 +133,7 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
-        UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_USER);
+        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_USER);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
@@ -175,11 +172,11 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
-        UserDto mockedUser = getRandomMockedCreatingUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = getRandomMockedUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(userService.createUser(Mockito.any(UserDto.class)))
+        given(userService.createUser(Mockito.anyString(), Mockito.any(UserDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
@@ -240,10 +237,10 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
 
-        UserDto mockedUser = MockedUserDetails.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
-        given(userService.updateUser(Mockito.anyInt(), Mockito.any(UserDto.class))).will(
+        given(userService.updateUser(Mockito.anyString(), Mockito.anyInt(), Mockito.any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")

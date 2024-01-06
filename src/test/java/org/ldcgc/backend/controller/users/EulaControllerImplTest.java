@@ -9,7 +9,6 @@ import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
 import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
-import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.EulaService;
@@ -38,8 +37,6 @@ import java.text.ParseException;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDto;
-import static org.ldcgc.backend.base.mock.MockedUserDetails.getRandomMockedUserDtoLogin;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -68,8 +65,6 @@ public class EulaControllerImplTest {
     private final String requestRoot = "/eula";
 
     private MockMvc mockMvc;
-    private UserDto mockedUser;
-    private UserDto mockedUserLogin;
     private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
@@ -93,9 +88,6 @@ public class EulaControllerImplTest {
             .setValidator(validatorFactoryBean)
             .setHandlerExceptionResolvers()
             .build();
-
-        mockedUser = getRandomMockedUserDto();
-        mockedUserLogin = getRandomMockedUserDtoLogin();
 
         setAuthenticationForRequest();
     }
