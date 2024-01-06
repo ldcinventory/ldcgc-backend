@@ -85,19 +85,21 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
+            String.format(Messages.Info.VOLUNTEER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDto).toList());
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
+    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteerDto) {
 
         Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
-        if(volunteerEntity.getBuilderAssistantId().equals(volunteer.getBuilderAssistantId()))
+        boolean builderAssistantExists = volunteerRepository.existsByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
+
+        if(builderAssistantExists && !volunteerEntity.getBuilderAssistantId().equals(volunteerDto.getBuilderAssistantId()))
             throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN);
 
-        VolunteerMapper.MAPPER.update(volunteerEntity, volunteer);
+        VolunteerMapper.MAPPER.update(volunteerEntity, volunteerDto);
 
         volunteerRepository.save(volunteerEntity);
 

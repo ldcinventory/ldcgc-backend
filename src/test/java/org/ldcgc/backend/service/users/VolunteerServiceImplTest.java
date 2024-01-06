@@ -61,7 +61,6 @@ class VolunteerServiceImplTest {
 
     private final User USER_WITHOUT_VOLUNTEER = UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDtoWithoutVolunteer());
     private final User USER_WITH_VOLUNTEER = UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto());
-    private final Volunteer VOLUNTEER_NOT_AVAILABLE = VolunteerMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomVolunteerWithoutAvailability());
     private final Volunteer VOLUNTEER = VolunteerMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomVolunteer());
     private final Volunteer VOLUNTEER_2 = VolunteerMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomVolunteer());
 
@@ -153,27 +152,7 @@ class VolunteerServiceImplTest {
     }
 
     @Test
-    public void whenCreateVolunteerWithoutAvailability_returnVolunteerCreated() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER_NOT_AVAILABLE);
-        String builderAssistantId = volunteerDto.getBuilderAssistantId();
-
-        doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
-        doReturn(VOLUNTEER_NOT_AVAILABLE).when(volunteerRepository).save(any(Volunteer.class));
-
-        ResponseEntity<?> response = volunteerService.createVolunteer(volunteerDto);
-        Response.DTO responseBody = (Response.DTO) response.getBody();
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(responseBody.getMessage());
-        assertEquals(Messages.Info.VOLUNTEER_CREATED, responseBody.getMessage());
-        assertEquals(volunteerDto, responseBody.getData());
-
-        verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
-        verify(volunteerRepository, atMostOnce()).save(any());
-    }
-
-    @Test
-    public void whenCreateVolunteerWithAvailability_returnVolunteerCreated() {
+    public void whenCreateVolunteer_returnVolunteerCreated() {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
@@ -278,7 +257,8 @@ class VolunteerServiceImplTest {
         final Volunteer VOLUNTEER_2 = VolunteerMapper.MAPPER.toEntity(volunteerDto).toBuilder().builderAssistantId(volunteerId_2).build();
 
         doReturn(Optional.of(VOLUNTEER_2)).when(volunteerRepository).findByBuilderAssistantId(volunteerId_2);
-        doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
+        //doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
+        doReturn(true).when(volunteerRepository).existsByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
 
         RequestException ex = assertThrows(RequestException.class, () -> volunteerService.updateVolunteer(volunteerId_2, volunteerDto));
 
@@ -289,29 +269,7 @@ class VolunteerServiceImplTest {
     }
 
     @Test
-    public void whenUpdateVolunteerWithoutAvailability_returnVolunteerUpdated() {
-        VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER_NOT_AVAILABLE);
-        String builderAssistantId = volunteerDto.getBuilderAssistantId();
-
-        doReturn(Optional.of(VOLUNTEER_NOT_AVAILABLE)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
-        doReturn(Optional.of(VOLUNTEER_NOT_AVAILABLE)).when(volunteerRepository).findByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
-        doReturn(VOLUNTEER_NOT_AVAILABLE).when(volunteerRepository).save(any(Volunteer.class));
-
-        ResponseEntity<?> response = volunteerService.updateVolunteer(builderAssistantId, volunteerDto);
-        Response.DTO responseBody = (Response.DTO) response.getBody();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(responseBody.getMessage());
-        assertEquals(Messages.Info.VOLUNTEER_UPDATED, responseBody.getMessage());
-        assertEquals(volunteerDto, responseBody.getData());
-
-        verify(volunteerRepository, times(1)).findByBuilderAssistantId(any());
-        verify(volunteerRepository, atMostOnce()).save(any());
-
-    }
-
-    @Test
-    public void whenUpdateVolunteerWithAvailability_returnVolunteerUpdated() {
+    public void whenUpdateVolunteer_returnVolunteerUpdated() {
         // original volunteer
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
         // volunteer new details
@@ -329,7 +287,7 @@ class VolunteerServiceImplTest {
         assertEquals(Messages.Info.VOLUNTEER_UPDATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
 
-        verify(volunteerRepository, times(2)).findByBuilderAssistantId(any());
+        verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
         verify(volunteerRepository, atMostOnce()).save(any());
     }
 

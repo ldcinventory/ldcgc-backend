@@ -29,4 +29,6 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
             """)
     List<Volunteer> findAllByNameAndLastName(String name, String lastName);
 
+    boolean existsByBuilderAssistantId(String builderAssistantId);
+
 }

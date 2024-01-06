@@ -19,7 +19,7 @@ public class VolunteerDto implements Serializable {
     String lastName;
     // also, this id will be their barcode
     String builderAssistantId;
-    boolean isActive;
+    Boolean isActive;
     List<EWeekday> availability;
     List<AbsenceDto> absences;
     GroupDto groupDto;
