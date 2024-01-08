@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.resources.tool;
 
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -20,19 +21,22 @@ import org.ldcgc.backend.util.common.EExcelPositions;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.internal.matchers.Any;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ToolExcelServiceImplTest {
@@ -363,5 +367,16 @@ class ToolExcelServiceImplTest {
 
         assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, EExcelPositions.LAST_MAINTENANCE.getColumnNumber(), CellType.NUMERIC.toString()),
                 requestException.getMessage());
+    }
+
+    @Test
+    void whenIOException_shouldThrowRequestException() throws IOException {
+        MultipartFile mockExcel = mock(MultipartFile.class);
+
+        doThrow(new IOException()).when(mockExcel).getInputStream();
+
+        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(mockExcel));
+
+        assertEquals(Messages.Error.EXCEL_PARSE_ERROR, requestException.getMessage());
     }
 }
