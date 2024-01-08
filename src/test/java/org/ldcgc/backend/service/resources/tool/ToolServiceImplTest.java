@@ -222,7 +222,7 @@ class ToolServiceImplTest {
     void uploadToolsExcelShouldReturnList() throws IOException {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
         List<Tool> toolEntities = factory.manufacturePojo(ArrayList.class, Tool.class);
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools);
+        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, null);
 
         doReturn(tools).when(toolExcelService).excelToTools(file);
         doReturn(toolEntities).when(toolRepository).saveAll(any());

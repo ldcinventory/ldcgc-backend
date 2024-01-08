@@ -12,11 +12,4 @@ import java.util.List;
 public interface LocationService {
     List<LocationDto> getAllLocations();
 
-    static LocationDto findLocationInListByName(String locationName, List<LocationDto> locations){
-        return locations.stream()
-                .filter(location -> location.getName().equalsIgnoreCase(locationName))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.LOCATION_NOT_FOUND
-                        .formatted(locationName, locations.stream().map(LocationDto::getName).toList().toString())));
-    }
 }

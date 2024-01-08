@@ -116,7 +116,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         return Messages.Error.EXCEL_VALUE_INCORRECT.formatted(value, row, column).concat("\n").concat(message);
     }
 
-    private static String getStringCellValue(Row row, Integer columnNumber) {
+    private String getStringCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
 
@@ -126,17 +126,17 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         return cell.getStringCellValue();
     }
 
-    private static Integer getIntegerCellValue(Row row, Integer columnNumber) {
+    private Integer getIntegerCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
 
         if (!cellType.equals(CellType.NUMERIC))
-            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.NUMERIC.toString()));
 
         return (int) cell.getNumericCellValue();
     }
 
-    private static LocalDateTime getDateCellValue(Row row, Integer columnNumber) {
+    private LocalDateTime getDateCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
 
