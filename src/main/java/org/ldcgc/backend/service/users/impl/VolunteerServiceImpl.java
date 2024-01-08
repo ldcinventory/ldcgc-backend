@@ -65,6 +65,7 @@ public class VolunteerServiceImpl implements VolunteerService {
             HttpStatus.OK,
             String.format(Messages.Info.VOLUNTEER_LISTED, pageUsers.getTotalElements()),
             userList.stream().map(VolunteerMapper.MAPPER::toDTO).toList());
+
     }
 
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {

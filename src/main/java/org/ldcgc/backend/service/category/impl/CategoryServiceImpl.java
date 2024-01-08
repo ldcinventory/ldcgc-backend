@@ -16,6 +16,12 @@ import org.springframework.stereotype.Component;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository repository;
+
+    @Override
+    public Integer getCategoryIdByName(String categoryName) {
+        return repository.findCategoryIdByName(categoryName);
+    }
+
     @Override
     public CategoryDto getCategoryParent(CategoryParentEnum parent) {
         return repository.findByName(parent.getBbddName())
