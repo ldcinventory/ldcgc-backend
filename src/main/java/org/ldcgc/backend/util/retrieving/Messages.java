@@ -55,18 +55,16 @@ public class Messages {
 
         public static final String
 
-            EULA_SELECT_ACTION = "EULA for %s: Please select an action to do",
-            EULA_ENDPOINT = "/api/eula",
+        EULA_SELECT_ACTION = "EULA for %s: Please select an action to do",
+        EULA_ENDPOINT = "/api/eula",
 
-            CREDENTIALS_EMAIL_TEMPLATE = "credentialsTemplate.html",
-            CREDENTIALS_RECOVERY_SUBJECT = "GC8Inventory : [Recuperación de credenciales] 🙃",
+        CREDENTIALS_EMAIL_TEMPLATE = "credentialsTemplate.html",
+        CREDENTIALS_RECOVERY_SUBJECT = "GC8Inventory : [Recuperación de credenciales] 🙃",
 
-            EMAIL_IMAGE_PARAMETER = "image",
-            EMAIL_IMAGE_PNG = "image/png",
+        EMAIL_IMAGE_PARAMETER = "image",
+        EMAIL_IMAGE_PNG = "image/png",
 
-            COPYRIGHT = "© gc8inventory %d"
-
-            ;
+        COPYRIGHT = "© gc8inventory %d";
 
     }
 
@@ -106,18 +104,20 @@ public class Messages {
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode (%s) in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
 
-            STATUS_NOT_FOUND = "Status not found",
+            STATUS_NOT_FOUND = "Status %s not found",
 
             LOCATION_NOT_FOUND = "Location with id %s not found.",
+            LOCATION_NOT_FOUND_EXCEL = "Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s",
 
             GROUP_NOT_FOUND = "Group with id %s not found.",
+            GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
 
             CATEGORY_PARENT_NOT_FOUND = "%s with id %s not found.",
+            CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
             CATEGORY_NOT_FOUND = "This category (%s) couldn't be found",
 
-            LOCATION_NOT_FOUND_EXCEL = "Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s",
-            GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
-            CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
+            TIME_UNIT_NOT_FOUND = "Time unit %s not found",
+
             RUNTIME_EXCEPTION = "Error processing data, check your request",
             ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
 
@@ -128,9 +128,11 @@ public class Messages {
             CSV_LAST_NAME_ERROR = "The last name provided has some invalid characters",
             CSV_BA_IDENTIFIER_ERROR = "The builder assistant ID is not valid",
             CSV_VOLUNTEER_DUPLICATED = "The user with email %s is duplicated in the shift",
-            CSV_PROCESS_ERROR = "Validation error when trying to process CSV with delimiter"
+            CSV_PROCESS_ERROR = "Validation error when trying to process CSV with delimiter",
 
-            ;
+            EXCEL_VALUE_INCORRECT = "The value %s is incorrect on excel row %s, column %s",
+            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
+            EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.";
 
     }
 

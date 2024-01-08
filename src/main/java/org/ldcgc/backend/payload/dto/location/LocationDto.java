@@ -22,5 +22,4 @@ public class LocationDto {
     LocationDto parent;
     @JsonInclude(NON_EMPTY)
     List<LocationDto> locations;
-
 }
