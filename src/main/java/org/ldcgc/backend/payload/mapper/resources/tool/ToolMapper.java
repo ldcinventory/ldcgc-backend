@@ -18,7 +18,6 @@ public interface ToolMapper {
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);
 
     ToolDto toDto(Tool tool);
-
     Tool toMo(ToolDto toolDto);
     List<Tool> toMo(List<ToolDto> tools);
     void update(ToolDto from, @MappingTarget Tool to);

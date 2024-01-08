@@ -6,14 +6,13 @@ import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 
-import java.util.List;
+import java.util.Map;
 
 @Builder
 public class ToolExcelMasterDto {
-    public List<ToolDto> tools;
-    public CategoryDto brandParent;
-    public CategoryDto maintenanceTimeParent;
-    public CategoryDto categoryParent;
-    public List<LocationDto> locations;
-    public List<GroupDto> groups;
+    public Map<String, ToolDto> tools;
+    public Map<String, CategoryDto> brands;
+    public Map<String, CategoryDto> categories;
+    public Map<String, LocationDto> locations;
+    public Map<String, GroupDto> groups;
 }

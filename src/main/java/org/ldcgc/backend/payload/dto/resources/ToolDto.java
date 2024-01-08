@@ -8,6 +8,7 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.ETimeUnit;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +26,7 @@ public class ToolDto {
     String description;
     String urlImages;
     Integer maintenancePeriod;
-    CategoryDto maintenanceTime;
+    ETimeUnit maintenanceTime;
     LocalDateTime lastMaintenance;
     EStatus status;
     LocationDto location;

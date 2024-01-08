@@ -27,14 +27,13 @@ public enum EStatus implements EnumMethods {
         return Arrays.stream(EStatus.values())
                 .filter(status -> status.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.STATUS_NOT_FOUND));
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, id)));
     }
 
     public static EStatus getStatusByName(String name){
         return Arrays.stream(EStatus.values())
-                .filter(status -> status.toString().equals(name))
+                .filter(status -> status.getDesc().equals(name))
                 .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.STATUS_NOT_FOUND));
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, name)));
     }
-
 }
