@@ -12,6 +12,7 @@ public interface CategoryService {
 
     CategoryDto getCategoryParent(CategoryParentEnum parent);
 
+
     CategoryDto findCategorySonInParentByName(String name, CategoryDto parent);
 
 }

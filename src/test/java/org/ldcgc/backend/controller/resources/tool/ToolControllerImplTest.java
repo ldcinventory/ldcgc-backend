@@ -13,9 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -96,20 +99,31 @@ class ToolControllerImplTest {
         assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
     }
 
-
-    //TODO: Fix test and add excel tests, get all pageable tests
-/*
     @Test
-    void getAllShouldReturnToolPage() {
+    void getAllShouldCallService() {
+        controller.getAllTools(0, 25, "name", "", "", "", null);
+
+        verify(service, times(1)).getAllTools(0, 25, "name", "", "", "", null);
+    }
+
+    @Test
+    void uploadToolsExcelShouldCallService(){
+        MultipartFile file = factory.manufacturePojo(MultipartFile.class);
+        controller.uploadToolsExcel(file);
+        verify(service, times(1)).uploadToolsExcel(file);
+    }
+
+    @Test
+    void getAllShouldReturnToolList() {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(service).getAllTools(0, 0, "");
-        ResponseEntity<?> response = controller.getAllTools(0, 0, "");
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(service).getAllTools(0, 0, "name", "", "", "", null);
+        ResponseEntity<?> response = controller.getAllTools(0, 0, "name", "", "", "", null);
 
-        verify(service, times(1)).getAllTools(0, 0, "");
+        verify(service, times(1)).getAllTools(0, 0, "name", "", "", "", null);
         assertEquals(ArrayList.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
-        assertEquals(ToolDto.class, ((Page<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).get().findFirst().getClass());
+        assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).getFirst().getClass());
     }
-*/
+
 
 }

@@ -16,11 +16,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StatusConverter;
+import org.ldcgc.backend.db.mapper.TimeUnitConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.ETimeUnit;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,6 +42,7 @@ public class Tool {
 
     // TODO validation to not allow null nor duplications once a barcode is registered
     //  (i.e. after batch a tool could have a null barcode)
+    @Column(unique = true)
     private String barcode;
 
     @ManyToOne
@@ -66,9 +69,9 @@ public class Tool {
 
     private Integer maintenancePeriod;
 
-    @ManyToOne
-    @JoinColumn(name = "maintenanceTime_id", referencedColumnName = "id")
-    private Category maintenanceTime;
+    @Convert(converter = TimeUnitConverter.class)
+    @Column(columnDefinition = "int")
+    private ETimeUnit maintenanceTime;
 
     private LocalDateTime lastMaintenance;
 

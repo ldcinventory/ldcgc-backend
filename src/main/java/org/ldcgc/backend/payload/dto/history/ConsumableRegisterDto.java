@@ -6,13 +6,12 @@ import lombok.Value;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Value
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConsumableRegisterDto implements Serializable {
+public class ConsumableRegisterDto {
 
     Integer id;
     LocalDateTime inRegistration;

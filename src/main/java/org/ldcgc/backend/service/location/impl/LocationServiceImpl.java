@@ -6,9 +6,10 @@ import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.service.location.LocationService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.ldcgc.backend.exception.RequestException;
+
+
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.LOCATION_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
@@ -28,12 +29,4 @@ public class LocationServiceImpl implements LocationService {
                 .toList();
     }
 
-    @Override
-    public LocationDto findLocationInListByName(String locationName, List<LocationDto> locations) {
-        return locations.stream()
-                .filter(location -> location.getName().equalsIgnoreCase(locationName))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, getErrorMessage(LOCATION_NOT_FOUND)
-                        .formatted(locationName, locations.stream().map(LocationDto::getName).toList().toString())));
-    }
 }

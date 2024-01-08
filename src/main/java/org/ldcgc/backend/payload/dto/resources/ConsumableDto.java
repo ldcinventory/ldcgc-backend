@@ -9,12 +9,10 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 
-import java.io.Serializable;
-
 @Value
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConsumableDto implements Serializable {
+public class ConsumableDto {
 
     Integer id;
     String barcode;

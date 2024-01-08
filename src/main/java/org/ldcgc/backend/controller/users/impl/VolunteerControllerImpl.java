@@ -7,29 +7,35 @@ import org.ldcgc.backend.service.users.VolunteerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequiredArgsConstructor
 public class VolunteerControllerImpl implements VolunteerController {
 
     private final VolunteerService volunteerService;
 
-    public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
-        return volunteerService.createVolunteer(volunteer);
+    public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
+        return volunteerService.getMyVolunteer(token);
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer sizeIndex, String filterString, String barcode) {
-        return volunteerService.listVolunteers(pageIndex, sizeIndex, filterString, barcode);
+    public ResponseEntity<?> getVolunteer(String builderAssistantId) {
+        return volunteerService.getVolunteer(builderAssistantId);
     }
 
-    public ResponseEntity<?> getVolunteer(String volunteerId) {
-        return volunteerService.getVolunteer(volunteerId);
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
+        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId);
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteer) {
-        return volunteerService.updateVolunteer(volunteerId, volunteer);
+    public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {
+        return volunteerService.createVolunteer(volunteerDto);
     }
 
-    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        return volunteerService.deleteVolunteer(volunteerId);
+    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto vovolunteerDto) {
+        return volunteerService.updateVolunteer(builderAssistantId, vovolunteerDto);
+    }
+
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
+        return volunteerService.deleteVolunteer(builderAssistantId);
     }
 }

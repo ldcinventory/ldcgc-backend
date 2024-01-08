@@ -24,6 +24,7 @@ import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.ApiError;
 import org.ldcgc.backend.exception.ApiSubError;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -37,9 +38,6 @@ import java.util.UUID;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
 import static org.ldcgc.backend.util.process.Process.runInBackground;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.TOKEN_NOT_PARSEABLE;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -48,8 +46,7 @@ public class JwtUtils {
     @Value("${jwtExpirationMs}")
     private int jwtExpirationSeconds;
 
-    @Setter
-    private Boolean isRecoveryToken = false;
+    @Setter private Boolean isRecoveryToken = false;
 
     private final TokenRepository tokenRepository;
 
@@ -159,7 +156,7 @@ public class JwtUtils {
                     .message(e.getLocalizedMessage())
                     .build())
                 .build();
-            throw new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(TOKEN_NOT_PARSEABLE), apiError);
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_PARSEABLE, apiError);
         }
     }
 
@@ -179,7 +176,7 @@ public class JwtUtils {
             .map(Base64::from)
             .map(Base64::decode)
             .map(String::new)
-            .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, getErrorMessage(TOKEN_NOT_FOUND)));
+            .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND));
 
         // header must have algorithm("alg") and "kid"
         Preconditions.checkNotNull(jwsHeader.getAlgorithm());

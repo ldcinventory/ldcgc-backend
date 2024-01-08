@@ -7,12 +7,10 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.util.common.ERole;
 
-import java.io.Serializable;
-
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto implements Serializable {
+public class UserDto {
 
     Integer id;
     String email;

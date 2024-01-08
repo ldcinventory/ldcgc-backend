@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 
-import java.io.Serializable;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
@@ -13,7 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Value
 @Builder
 @JsonInclude(NON_NULL)
-public class LocationDto implements Serializable {
+public class LocationDto {
 
     Integer id;
     String name;
@@ -23,5 +22,4 @@ public class LocationDto implements Serializable {
     LocationDto parent;
     @JsonInclude(NON_EMPTY)
     List<LocationDto> locations;
-
 }

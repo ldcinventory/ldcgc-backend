@@ -6,11 +6,10 @@ import lombok.Builder;
 import lombok.Value;
 import org.springframework.data.domain.Page;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Response implements Serializable {
+public class Response {
 
     @Value @Builder(toBuilder = true) @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTO {
@@ -21,7 +20,7 @@ public class Response implements Serializable {
 
     @Value @Builder @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class DTOWithLocation {
-        String status;
+        String message;
         String location;
     }
 

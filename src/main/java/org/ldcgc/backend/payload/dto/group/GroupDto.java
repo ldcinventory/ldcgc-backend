@@ -6,13 +6,11 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 
-import java.io.Serializable;
-
 @Value
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GroupDto implements Serializable {
+public class GroupDto {
 
     Integer id;
     String name;
