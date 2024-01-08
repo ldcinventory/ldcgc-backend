@@ -68,7 +68,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RequestException(Messages.Error.EXCEL_PARSE_ERROR);
         }
 
         return tools;
