@@ -1,7 +1,11 @@
 package org.ldcgc.backend.exception;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Singular;
 
 import java.util.List;
 
