@@ -42,8 +42,8 @@ public class Messages {
 
             ABSENCES_FOUND = "%s absences found",
             ABSENCE_CREATED = "Absence created",
-            ABSENCE_UPDATED = "Availability updated",
-            ABSENCE_DELETED = "Availability deleted",
+            ABSENCE_UPDATED = "Absence updated",
+            ABSENCE_DELETED = "Absence deleted",
 
             CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers."
 
@@ -96,6 +96,7 @@ public class Messages {
             EMAIL_CREDENTIALS_SENDING_ERROR = "There was an error sending email to: {}. The error was {}",
 
             VOLUNTEER_ALREADY_EXIST = "There's a volunteer with this builder assistant id: %s",
+            VOLUNTEER_NOT_INFORMED = "Volunter is not informed in the payload",
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
@@ -122,6 +123,7 @@ public class Messages {
             ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
 
             ABSENCE_VOLUNTEER_NOT_FOUND = "This absence was not found for this volunteer",
+            ABSENCE_VOLUNTEER_LINKED_NOT_FOUND = "This absence is to a volunteer that is not found",
             ABSENCE_NOT_FOUND = "Absence not found",
 
             CSV_NAME_ERROR = "The name provided has some invalid characters",

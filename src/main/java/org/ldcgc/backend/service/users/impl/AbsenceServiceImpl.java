@@ -28,7 +28,10 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -118,10 +121,10 @@ public class AbsenceServiceImpl implements AbsenceService {
             List<Predicate> predicates = new ArrayList<>();
 
             if(dateFrom != null)
-                predicates.add(cb.and(cb.greaterThanOrEqualTo(absence.get("dateFrom"), dateFrom)));
+                predicates.add(cb.greaterThanOrEqualTo(absence.get("dateFrom"), dateFrom));
 
             if(dateTo != null)
-                predicates.add(cb.and(cb.lessThanOrEqualTo(absence.get("dateTo"), dateFrom)));
+                predicates.add(cb.lessThanOrEqualTo(absence.get("dateTo"), dateTo));
 
             if (builderAssistantIds != null && builderAssistantIds.length > 0) {
                 Join<Volunteer, Absence> volunteerAbsenceJoin = absence.join("volunteer", JoinType.LEFT);
@@ -132,18 +135,27 @@ public class AbsenceServiceImpl implements AbsenceService {
             if (predicates.isEmpty())
                 return null;
 
-            return cb.and(predicates.toArray(new Predicate[0]));
+            query.orderBy(cb.asc(absence.get("dateFrom")));
 
+            return cb.and(predicates.toArray(new Predicate[0]));
 
         });
 
-        List<AbsenceDto> absencesDto = absences.stream().map(AbsenceMapper.MAPPER::toDto).toList();
+        List<AbsenceDto> absencesDtoList = absences.stream().map(AbsenceMapper.MAPPER::toDto).toList();
+        Map<String, List<AbsenceDto>> absencesDtoMap = absencesDtoList.stream().collect(Collectors.groupingBy(
+            absenceDto -> absenceDto.getBuilderAssistantId(),
+            Collectors.mapping(Function.identity(), Collectors.toList())
+        ));
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), absencesDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.Info.ABSENCES_FOUND, absencesDtoList.size()), absencesDtoMap);
     }
 
-    public ResponseEntity<?> createAbsence(String builderAssistantId, AbsenceDto absenceDto) {
-        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(
+    public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {
+
+        if(absenceDto.getBuilderAssistantId() == null)
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.VOLUNTEER_NOT_INFORMED);
+
+        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(absenceDto.getBuilderAssistantId()).orElseThrow(
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         return createAbsence(volunteer, absenceDto);
@@ -174,7 +186,15 @@ public class AbsenceServiceImpl implements AbsenceService {
         Absence absence = absenceRepository.findById(absenceId).orElseThrow(
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.ABSENCE_NOT_FOUND));
 
-        absenceRepository.delete(absence);
+        Volunteer volunteer = volunteerRepository.findById(absence.getVolunteer().getId()).orElseThrow(
+            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.ABSENCE_VOLUNTEER_LINKED_NOT_FOUND)
+        );
+
+        //detach from volunteer absences
+        volunteer.getAbsences().remove(absence);
+        volunteerRepository.save(volunteer);
+
+        absenceRepository.deleteById(absenceId);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.ABSENCE_DELETED);
     }

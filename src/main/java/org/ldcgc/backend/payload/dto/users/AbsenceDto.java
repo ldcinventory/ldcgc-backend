@@ -7,13 +7,13 @@ import lombok.Value;
 import java.time.LocalDate;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AbsenceDto {
 
     Integer id;
     LocalDate dateFrom;
     LocalDate dateTo;
-    Integer volunteerId;
+    String builderAssistantId;
 
 }

@@ -3,6 +3,7 @@ package org.ldcgc.backend.payload.mapper.users;
 import org.ldcgc.backend.db.model.users.Absence;
 import org.ldcgc.backend.payload.dto.users.AbsenceDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
@@ -16,6 +17,7 @@ public interface AbsenceMapper {
 
     Absence toEntity(AbsenceDto absenceDto);
 
+    @Mapping(target = "builderAssistantId", source = "volunteer.builderAssistantId")
     AbsenceDto toDto(Absence absence);
 
     void update(@MappingTarget Absence absence, AbsenceDto absenceDto);

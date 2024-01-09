@@ -19,7 +19,7 @@ public interface AbsenceService {
     // managed
     ResponseEntity<?> getAbsence(Integer absenceId);
     ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds);
-    ResponseEntity<?> createAbsence(String builderAssistantId, AbsenceDto absenceDto);
+    ResponseEntity<?> createAbsence(AbsenceDto absenceDto);
     ResponseEntity<?> updateAbsence(Integer absenceId, AbsenceDto absenceDto);
     ResponseEntity<?> deleteAbsence(Integer absenceId);
 

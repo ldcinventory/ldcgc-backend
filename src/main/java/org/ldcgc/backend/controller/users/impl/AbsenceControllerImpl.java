@@ -43,8 +43,8 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.listAbsences(dateFrom, dateTo, builderAssistantIds);
     }
 
-    public ResponseEntity<?> createAbsence(String builderAssistantId, AbsenceDto absenceDto) {
-        return absenceService.createAbsence(builderAssistantId, absenceDto);
+    public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {
+        return absenceService.createAbsence(absenceDto);
     }
 
     public ResponseEntity<?> updateAbsence(Integer absenceId, AbsenceDto absenceDto) {

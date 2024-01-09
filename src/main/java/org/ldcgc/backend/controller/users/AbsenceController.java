@@ -110,7 +110,7 @@ public interface AbsenceController {
         @Parameter(description = "Valid JWT of the user for creating an absence", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @Parameter(description = "Absence details", required = true)
-            @RequestParam AbsenceDto absenceDto);
+            @RequestBody AbsenceDto absenceDto);
 
     @Operation(summary = "Update own user absence")
     @ApiResponse(
@@ -136,7 +136,7 @@ public interface AbsenceController {
         @Parameter(description = "AbsenceId to update")
             @PathVariable Integer absenceId,
         @Parameter(description = "Absence details", required = true)
-            @RequestParam AbsenceDto absenceDto);
+            @RequestBody AbsenceDto absenceDto);
 
     @Operation(summary = "Delete own user absence")
     @ApiResponse(
@@ -231,11 +231,9 @@ public interface AbsenceController {
                 @ExampleObject(name = Messages.Error.USER_NOT_FOUND, value = Messages.Error.VOLUNTEER_NOT_FOUND)
             })
     )
-    @PostMapping("/{absenceId}")
+    @PostMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createAbsence(
-        @Parameter(description = "Builder Assistant Id to create absence")
-            @PathVariable String builderAssistantId,
         @Parameter(description = "Absence details for this user to create")
             @RequestBody AbsenceDto absenceDto);
 

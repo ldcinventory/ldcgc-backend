@@ -54,7 +54,7 @@ public class Volunteer {
     @Column(columnDefinition = "text")
     private Set<EWeekday> availability;
 
-    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Absence> absences;
 
     @ManyToOne
