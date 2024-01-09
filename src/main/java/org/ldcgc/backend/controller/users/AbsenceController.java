@@ -31,7 +31,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
-@RequestMapping("/volunteers/absences")
+@RequestMapping("/absences")
 @Tag(name = "Absences", description = "Absences methods for volunteers with CRUD functions")
 public interface AbsenceController {
 

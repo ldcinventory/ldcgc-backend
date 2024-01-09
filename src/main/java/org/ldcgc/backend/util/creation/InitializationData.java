@@ -23,6 +23,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -301,7 +302,7 @@ public class InitializationData {
                 //.urlImages()
                 //.lastMaintenance()
                 //.maintenancePeriod()
-                //.maintenanceTime()
+                .maintenanceTime(getRandomTimeUnit())
                 .build()));
 
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
@@ -482,6 +483,11 @@ public class InitializationData {
         Collections.sort(absences, Comparator.comparing(Absence::getDateFrom));
 
         return absences;
+    }
+
+    private ETimeUnit getRandomTimeUnit() {
+        int index = new Random().ints(1, 0, ETimeUnit.values().length).iterator().nextInt();
+        return ETimeUnit.values()[index];
     }
 
 }
