@@ -1,10 +1,9 @@
 package org.ldcgc.backend.service.users.impl;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.model.users.Absence;
@@ -124,24 +123,23 @@ public class AbsenceServiceImpl implements AbsenceService {
             if(dateTo != null)
                 predicates.add(cb.and(cb.lessThanOrEqualTo(absence.get("dateTo"), dateFrom)));
 
-            if(builderAssistantIds != null)
-                predicates.add(filterByBuilderAssistantIds(absence, cb, builderAssistantIds));
+            if (builderAssistantIds != null && builderAssistantIds.length > 0) {
+                Join<Volunteer, Absence> volunteerAbsenceJoin = absence.join("volunteer", JoinType.LEFT);
+                Expression<String> builderAssistantIdExpression = volunteerAbsenceJoin.get("builderAssistantId");
+                predicates.add(builderAssistantIdExpression.in(builderAssistantIds));
+            }
+
+            if (predicates.isEmpty())
+                return null;
 
             return cb.and(predicates.toArray(new Predicate[0]));
+
 
         });
 
         List<AbsenceDto> absencesDto = absences.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), absencesDto);
-    }
-
-    private Predicate filterByBuilderAssistantIds(Root<?> absence, CriteriaBuilder cb, String[] builderAssistantIds) {
-        Join<Volunteer, Absence> volunteerAbsence = absence.join("volunteer", JoinType.LEFT);
-        String baIDs = String.format("'%s'", String.join(",", builderAssistantIds));
-        //return cb.and(cb.in(Arrays.stream(builderAssistantIds).toList()));
-        return null;
-
     }
 
     public ResponseEntity<?> createAbsence(String builderAssistantId, AbsenceDto absenceDto) {
