@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -29,6 +30,7 @@ import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/volunteers/availability")
+@Tag(name = "Availability", description = "Availability methods with CRUD functions")
 public interface AvailabilityController {
 
     // my user

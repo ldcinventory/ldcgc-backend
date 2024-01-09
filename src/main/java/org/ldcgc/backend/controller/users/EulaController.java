@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.util.common.EEULAStatus;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -21,6 +22,7 @@ import java.text.ParseException;
 
 @Controller
 @RequestMapping("/eula")
+@Tag(name = "EULA", description = "EULA methods with read and update functions")
 public interface EulaController {
 
     @Operation(
