@@ -30,11 +30,6 @@ public class Response {
         Map<String, Object> data;
     }
 
-    @Value @Builder(toBuilder = true) @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class DTOWhithPagination {
-        String status;
-        List<String> details;
-        Map<String, Object> data;
-    }
+
 
 }
