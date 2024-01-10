@@ -52,8 +52,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, @NotNull HttpHeaders headers, HttpStatusCode status, @NotNull WebRequest request) {
         ApiError apiError = ApiError.builder()
             .status(status.value())
-            .endpoint(ex.getAllValidationResults().getFirst().getMethodParameter().getMethod().getName())
-            .clazz(ex.getAllValidationResults().getFirst().getMethodParameter().getDeclaringClass().getName())
+            .endpoint(ex.getAllValidationResults().get(0).getMethodParameter().getMethod().getName())
+            .clazz(ex.getAllValidationResults().get(0).getMethodParameter().getDeclaringClass().getName())
             .method(((ServletWebRequest) request).getRequest().getAttribute("org.springframework.web.util.ServletRequestPathUtils.PATH").toString())
             .build();
         return Constructor.buildExceptionResponseMessageObject(

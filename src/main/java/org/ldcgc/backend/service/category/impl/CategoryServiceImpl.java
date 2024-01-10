@@ -16,10 +16,21 @@ import org.springframework.stereotype.Component;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository repository;
+
+    @Override
+    public Integer getCategoryIdByName(String categoryName) {
+        return repository.findCategoryIdByName(categoryName);
+    }
+
     @Override
     public CategoryDto getCategoryParent(CategoryParentEnum parent) {
         return repository.findByName(parent.getBbddName())
                 .map(CategoryMapper.MAPPER::toDto)
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND.formatted(parent.getName(), parent.getBbddName())));
+    }
+
+    @Override
+    public CategoryDto findCategorySonInParentByName(String name, CategoryDto parent) {
+        return null;
     }
 }

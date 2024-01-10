@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class Constructor {
@@ -82,5 +83,11 @@ public class Constructor {
 
     public static ResponseEntity<Object> buildExceptionResponseMessageObject(HttpStatus httpStatus, String message, Object object) {
         return ResponseEntity.status(httpStatus).body(buildResponseMessageObject(message, object));
+    }
+    public static ResponseEntity<?> buildResponseMessagePageable(HttpStatus httpStatus, String message, Map<String, Object> pages) {
+        return ResponseEntity.status(httpStatus).body( buildResponseMessagePageable(message, pages));
+    }
+    private static Response.DTOWhithPagination buildResponseMessagePageable(String message, Map<String, Object> pages) {
+        return Response.DTOWhithPagination.builder().status(message).data(pages).build();
     }
 }

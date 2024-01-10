@@ -1,10 +1,13 @@
 package org.ldcgc.backend.controller.resources;
 
+import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
@@ -35,4 +38,27 @@ public interface ConsumableController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> testAccessWithAdminCredentials();
 
+    @GetMapping("/{consumableId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> createConsumable(@RequestBody ConsumableDto consumable);
+
+    @PutMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> updateConsumable(@RequestBody ConsumableDto consumable);
+
+    @GetMapping
+    //@PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+                                      @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
+                                      @RequestParam(required = false) String filterString);
+
+    @DeleteMapping("/{consumableId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
+    @PostMapping("/uploadExcel")
+    ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file);
 }

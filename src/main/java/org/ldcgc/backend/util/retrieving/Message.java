@@ -33,7 +33,9 @@ public class Message implements EnumMethods {
         TOOL_LISTED("Found %s tool/s"),
         TOOL_UPDATED("Tool details updated"),
         TOOL_UPLOADED("Tools uploaded from Excel file successfully. Imported %s tools"),
-        TOOL_DELETED("Tool deleted")
+        TOOL_DELETED("Tool deleted"),
+
+        CONSUMABLE_LISTED("Found %s consumable/s")
 
         ;
 
@@ -96,7 +98,10 @@ public class Message implements EnumMethods {
         GROUP_NOT_FOUND_EXCEL("Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s"),
         CATEGORY_SON_NOT_FOUND("%s %s not found. Please, use a valid one or add it. Valid %ss: %s"),
         RUNTIME_EXCEPTION("Error processing data, check your request"),
-        ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet");
+        ENDPOINT_NOT_IMPLEMENTED("This endpoint is not implemented yet"),
+
+        CONSUMABLE_NOT_FOUND("Consumable with id %s not found"),
+        ;
 
         private final String message;
 
