@@ -6,12 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, CrudRepository<Volunteer, Integer>, JpaSpecificationExecutor<Volunteer> {
+public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, JpaSpecificationExecutor<Volunteer> {
 
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
 

@@ -6,13 +6,12 @@ import lombok.Value;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.util.common.EWeekday;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class VolunteerDto implements Serializable {
+public class VolunteerDto {
 
     Integer id;
     String name;
