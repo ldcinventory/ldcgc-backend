@@ -223,7 +223,7 @@ public class InitializationData {
 
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
-            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
+            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', true);
             volunteers.forEach(vFieldList -> {
                 if(volunteerRepository.findByBuilderAssistantId(vFieldList.get(1)).isPresent())
                     return;
