@@ -29,7 +29,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
-@RequestMapping("/volunteers/availability")
+@RequestMapping("/availability")
 @Tag(name = "Availability", description = "Availability methods with CRUD functions")
 public interface AvailabilityController {
 

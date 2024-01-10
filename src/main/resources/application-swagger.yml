@@ -69,8 +69,8 @@ springdoc:
         - /volunteers/**
       display-name: Users+Volunteers
     - group: availabilities
-      paths-to-match: /availabilities/**
-      display-name: Availabilities
+      paths-to-match: /availability/**
+      display-name: Availability
     - group: absences
       paths-to-match: /absences/**
       display-name: Absences

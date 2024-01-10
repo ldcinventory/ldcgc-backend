@@ -2,6 +2,7 @@ package org.ldcgc.backend.controller.users;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -77,7 +78,7 @@ public interface VolunteerController {
     @GetMapping("/{volunteerId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getVolunteer(
-        @Parameter(description = "Volunteer Builder Assistant Id")
+        @Parameter(description = "Volunteer Builder Assistant Id", in = ParameterIn.PATH, name = "volunteerId", schema = @Schema(type = "string"))
             @PathVariable String volunteerId);
 
     @Operation(summary = "Create a volunteer")
