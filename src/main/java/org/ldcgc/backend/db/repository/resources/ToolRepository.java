@@ -13,6 +13,8 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     Optional<Tool> findFirstByBarcode(String barcode);
 
+    boolean existsByBarcode(String barcode);
+
     List<Tool> findByBarcodeIn(List<String> barcodes);
 
     @Query("""

@@ -8,6 +8,7 @@ import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
+import org.ldcgc.backend.db.model.users.Absence;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
@@ -22,6 +23,8 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,11 +37,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
@@ -167,17 +181,16 @@ public class InitializationData {
 
             List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',', false);
 
-            if(chests != null)
-                chests.forEach(c -> {
-                    Location entityFromMap = locationMap.get(c.get(1));
-                    entityFromMap.getLocations().add(Location.builder()
-                        .name(c.get(0))
-                        .parent(entityFromMap)
-                        .description(c.get(0))
-                        .level(2)
-                        .build());
-                    locationRepository.save(entityFromMap);
-                });
+            chests.forEach(c -> {
+                Location entityFromMap = locationMap.get(c.get(1));
+                entityFromMap.getLocations().add(Location.builder()
+                    .name(c.get(0))
+                    .parent(entityFromMap)
+                    .description(c.get(0))
+                    .level(2)
+                    .build());
+                locationRepository.save(entityFromMap);
+            });
 
             // GROUP
 
@@ -210,16 +223,22 @@ public class InitializationData {
 
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
-            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
+            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', true);
+            volunteers.forEach(vFieldList -> {
+                if(volunteerRepository.findByBuilderAssistantId(vFieldList.get(1)).isPresent())
+                    return;
 
-            if(volunteers != null)
-                volunteers.parallelStream().forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
+                Volunteer volunteer = Volunteer.builder()
                     .builderAssistantId(vFieldList.get(1))
                     .name(vFieldList.get(2))
                     .lastName(vFieldList.get(3))
                     .isActive(Boolean.parseBoolean(vFieldList.get(4)))
-                    .group(_8g)
-                    .build()));
+                    .availability(getRandomAvailability())
+                    .build();
+                volunteer.setAbsences(getRandomAbsences(volunteer));
+
+                volunteerRepository.save(volunteer);
+            });
 
             // CONSUMABLES + TOOLS
 
@@ -265,28 +284,26 @@ public class InitializationData {
             //    new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-
-            if(tools != null)
-                tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
-                    .barcode(tFieldList.get(0))
-                    .brand(StringUtils.isBlank(tFieldList.get(1))
-                                ? brandsMap.get("<empty>")
-                                : brandsMap.get(tFieldList.get(1)))
-                    .model(tFieldList.get(2))
-                    .name(tFieldList.get(3))
-                    .description(tFieldList.get(4))
-                    //.location(null)
-                    .group(_8g)
-                    .category(resourceCategoriesMap.get(tFieldList.get(5)))
-                    .status(EStatus.NOT_AVAILABLE)
-                    .weight(convertToFloat(tFieldList.get(6)))
-                    .price(convertToFloat(tFieldList.get(7)))
-                    .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
-                    //.urlImages()
-                    //.lastMaintenance()
-                    //.maintenancePeriod()
-                    //.maintenanceTime()
-                    .build()));
+            tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
+                .barcode(toolRepository.existsByBarcode(tFieldList.get(0)) ? null : tFieldList.get(0))
+                .brand(StringUtils.isBlank(tFieldList.get(1))
+                    ? brandsMap.get("<empty>")
+                    : brandsMap.get(tFieldList.get(1)))
+                .model(tFieldList.get(2))
+                .name(tFieldList.get(3))
+                .description(tFieldList.get(4))
+                //.location(null)
+                .group(_8g)
+                .category(resourceCategoriesMap.get(tFieldList.get(5)))
+                .status(EStatus.NOT_AVAILABLE)
+                .weight(convertToFloat(tFieldList.get(6)))
+                .price(convertToFloat(tFieldList.get(7)))
+                .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
+                //.urlImages()
+                //.lastMaintenance()
+                //.maintenancePeriod()
+                .maintenanceTime(getRandomTimeUnit())
+                .build()));
 
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
             //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
@@ -296,30 +313,27 @@ public class InitializationData {
             //                  and cn.CategoryId = c.CategoryId;)
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-
-            if(consumables != null)
-                consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
-                    .barcode(cFieldList.get(0))
-                    .brand(brandsMap.get(cFieldList.get(1)))
-                    .model(cFieldList.get(2))
-                    .name(cFieldList.get(3))
-                    .description(cFieldList.get(4))
-                    //.location(null)
-                    .group(_8g)
-                    .category(resourceCategoriesMap.get(cFieldList.get(5)))
-                    .price(convertToFloat2Decimals(cFieldList.get(6)))
-                    .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
-                    .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
-                    //.stockType()
-                    .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
-                    //.urlImages()
-                    .build()));
+            consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
+                .barcode(cFieldList.get(0))
+                .brand(brandsMap.get(cFieldList.get(1)))
+                .model(cFieldList.get(2))
+                .name(cFieldList.get(3))
+                .description(cFieldList.get(4))
+                //.location(null)
+                .group(_8g)
+                .category(resourceCategoriesMap.get(cFieldList.get(5)))
+                .price(convertToFloat2Decimals(cFieldList.get(6)))
+                .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
+                .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
+                //.stockType()
+                .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
+                //.urlImages()
+                .build()));
 
             // CHEST REGISTRATION
 
             List<List<String>> chestRegister = Files.getContentFromCSV(chestRegisterCSV, ',', false);
 
-            // if(chestRegister != null)
             // MAINTENANCE ( select m.MaintenanceDate as outRegistration, m.AdditionalInformation as details,
             //                      m.UrlImage as urlImages, t.Barcode, v.BuilderAssistantId,
             //                      m.MaintenanceResult as outStatus, m.NextMaintenanceDate
@@ -328,23 +342,21 @@ public class InitializationData {
             //                 and m.VolunteerId = v.VolunteerId;
 
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
+            maintenance.parallelStream().forEach(mFieldList -> {
+                final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
+                final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
+                maintenanceRepository.save(Maintenance.builder()
+                    .outRegistration(stringToLocalDate(mFieldList.get(0).substring(0, 10), "yyyy-MM-dd"))
+                    .details(mFieldList.get(1))
+                    .urlImages(mFieldList.get(2))
+                    .tool(tool)
+                    .volunteer(volunteer)
+                    .inStatus(EStatus.AVAILABLE)
+                    .outStatus(EStatus.AVAILABLE)
+                    .build());
+            });
 
-            if(maintenance != null)
-                maintenance.parallelStream().forEach(mFieldList -> {
-                    final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
-                    final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
-                    maintenanceRepository.save(Maintenance.builder()
-                        .outRegistration(stringToLocalDate(mFieldList.get(0).substring(0, 10), "yyyy-MM-dd"))
-                        .details(mFieldList.get(1))
-                        .urlImages(mFieldList.get(2))
-                        .tool(tool)
-                        .volunteer(volunteer)
-                        .inStatus(EStatus.AVAILABLE)
-                        .outStatus(EStatus.AVAILABLE)
-                        .build());
-                });
-
-            // USERS (examples)
+            // USERS
 
             Category responsibilityCat = Category.builder()
                 .name("Responsabilidades")
@@ -358,8 +370,8 @@ public class InitializationData {
             categoryRepository.saveAndFlush(responsibilityCat);
 
             List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSIBILITIES.getBbddName()).map(Category::getCategories)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
-                    .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
+                            .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
             userRepository.save(User.builder()
                 .email("admin@admin")
@@ -395,11 +407,11 @@ public class InitializationData {
                 .email("volunteer@volunteer")
                 .password(passwordEncoder.encode("volunteer"))
                 .group(_8g)
-                .role(ERole.ROLE_USER)
+                .role(ERole.ROLE_MANAGER)
+                .volunteer(volunteerRepository.findById(10).orElse(null))
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Voluntario")).findFirst()
                     .orElse(null))
-                .volunteer(volunteerRepository.findTopByIdNotNull().orElse(null))
                 .build());
 
             List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
@@ -431,6 +443,51 @@ public class InitializationData {
 
         };
 
+    }
+
+    private static Set<EWeekday> getRandomAvailability() {
+        // a set to not allow duplicates
+        Set<EWeekday> weekdays = new LinkedHashSet<>();
+
+        // number of days to add
+        int availabilityDays = new Random().ints(1, 0, 7).iterator().nextInt();
+
+        // list of numbers
+        SortedSet<Integer> days = new TreeSet<>();
+        IntStream.range(0, availabilityDays).forEach(x -> days.add(new Random().ints(1, 0, 7).iterator().nextInt()));
+
+        // list of days (ordered)
+        days.forEach(i -> weekdays.add(EWeekday.values()[i]));
+
+        return weekdays;
+    }
+
+    private static List<Absence> getRandomAbsences(Volunteer volunteer) {
+        // number of absences to add
+        int numAbsences = new Random().ints(1, 0, 7).iterator().nextInt();
+
+        // list of absences and ranges of days different days of absences
+        List<Absence> absences = new ArrayList<>();
+        IntStream.range(0, numAbsences).forEach(x -> {
+            int rangeOfDays = new Random().ints(1, 0, 7).iterator().nextInt();
+            LocalDate randomDate = LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(0, 366));
+            Absence absence = Absence.builder()
+                .dateFrom(randomDate)
+                .dateTo(randomDate.plusDays(rangeOfDays))
+                .volunteer(volunteer)
+                .build();
+            absences.add(absence);
+
+        });
+
+        Collections.sort(absences, Comparator.comparing(Absence::getDateFrom));
+
+        return absences;
+    }
+
+    private ETimeUnit getRandomTimeUnit() {
+        int index = new Random().ints(1, 0, ETimeUnit.values().length).iterator().nextInt();
+        return ETimeUnit.values()[index];
     }
 
 }

@@ -2,6 +2,7 @@ package org.ldcgc.backend.db.model.users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -10,8 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -19,9 +18,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
@@ -46,11 +48,13 @@ public class Volunteer {
 
     private Boolean isActive;
 
-    @OneToOne(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private Availability availability;
+    // this converter gets the natural string from DB, which is formatted as an array ['L','M','X',...]
+    // and instantiate it in backend as a List of EWeekday enum
+    @Convert(converter = AvailabilityConverter.class)
+    @Column(columnDefinition = "text")
+    private Set<EWeekday> availability;
 
-    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Absence> absences;
 
     @ManyToOne

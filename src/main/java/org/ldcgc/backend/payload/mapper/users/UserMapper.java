@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.ldcgc.backend.util.creation.Generator.getEncryptedPassword;
 
-@Mapper(uses = { LocationMapper.class, CategoryMapper.class, VolunteerMapper.class, AvailabilityMapper.class })
+@Mapper(uses = { LocationMapper.class, CategoryMapper.class, VolunteerMapper.class })
 public interface UserMapper {
 
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
