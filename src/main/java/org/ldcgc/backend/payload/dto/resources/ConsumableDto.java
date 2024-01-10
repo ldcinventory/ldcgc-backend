@@ -7,6 +7,7 @@ import lombok.Value;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.location.LocationDto;
 
 @Value
 @Builder
@@ -25,7 +26,7 @@ public class ConsumableDto {
     Integer minStock;
     CategoryDto stockType;
     @JsonAlias("location")
-    Location locationLvl2;
+    LocationDto locationLvl2;
     GroupDto group;
 
 }

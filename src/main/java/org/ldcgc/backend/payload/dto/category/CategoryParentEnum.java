@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CategoryParentEnum {
-
     MANUFACTURERS("Fabricantes", "Manufacturer"),
     RESPONSIBILITIES("Responsabilidades", "Responsibility"),
     RESOURCES("Recursos", "Resource"),
