@@ -114,8 +114,6 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds) {
-        // absence (entity), query (sql), cb (criteriaBuilder)
-        //List<Volunteer> volunteers = volunteerRepository.findAll((Specification<Volunteer>) (absence, query, cb) -> {
         List<Absence> absences = absenceRepository.findAll((Specification<Absence>) (absence, query, cb) -> {
 
             List<Predicate> predicates = new ArrayList<>();
