@@ -34,6 +34,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
+import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
@@ -89,7 +90,7 @@ public class EulaControllerImplTest {
             .setHandlerExceptionResolvers()
             .build();
 
-        setAuthenticationForRequest();
+        setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
     }
 
     @Test
@@ -127,9 +128,4 @@ public class EulaControllerImplTest {
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
-    private void setAuthenticationForRequest() throws ParseException {
-        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
-        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
-        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
-    }
 }

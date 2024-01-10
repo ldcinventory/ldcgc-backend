@@ -38,6 +38,7 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Set;
 
+import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
@@ -97,15 +98,8 @@ public class AvailabilityControllerImplTest {
 
         mockedAvailability = MockedAbsencesAvailability.getRandomAvailability();
 
-        setAuthenticationForRequest();
+        setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 
-    }
-
-    // my user
-    private void setAuthenticationForRequest() throws ParseException {
-        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
-        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
-        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
     }
 
     // me

@@ -38,6 +38,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
@@ -100,18 +101,11 @@ public class AbsenceControllerImplTest {
         mockedAbsence = MockedAbsencesAvailability.getRandomAbsences(1).getFirst();
         mockedAbsences = MockedAbsencesAvailability.getRandomAbsences(5);
 
-        setAuthenticationForRequest();
+        setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 
     }
 
     // my user
-    private void setAuthenticationForRequest() throws ParseException {
-        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
-        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
-        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
-    }
-
-
     @Test
     public void getMyAbsence() throws Exception {
 

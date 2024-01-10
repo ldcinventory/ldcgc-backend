@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 class VolunteerServiceImplTest {
 
-    VolunteerService volunteerService;
+    private VolunteerService volunteerService;
 
     @Mock VolunteerRepository volunteerRepository;
     @Mock UserRepository userRepository;
@@ -135,7 +135,7 @@ class VolunteerServiceImplTest {
 
     }
 
-    //create vounteer
+    //create volunteer
     @Test
     public void whenCreateVolunteer_returnVolunteerAlreadyExists() {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
