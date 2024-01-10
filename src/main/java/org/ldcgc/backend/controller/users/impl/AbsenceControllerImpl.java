@@ -35,8 +35,8 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.deleteMyAbsence(token, absenceId);
     }
 
-    public ResponseEntity<?> getAbsence(Integer volunteerId) {
-        return absenceService.getAbsence(volunteerId);
+    public ResponseEntity<?> getAbsence(Integer absenceId) {
+        return absenceService.getAbsence(absenceId);
     }
 
     public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds) {

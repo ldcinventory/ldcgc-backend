@@ -75,11 +75,11 @@ public interface VolunteerController {
                 @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
             })
     )
-    @GetMapping("/{volunteerId}")
+    @GetMapping("/{builderAssistantId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getVolunteer(
-        @Parameter(description = "Volunteer Builder Assistant Id", in = ParameterIn.PATH, name = "volunteerId", schema = @Schema(type = "string"))
-            @PathVariable String volunteerId);
+        @Parameter(description = "Volunteer Builder Assistant Id", in = ParameterIn.PATH, name = "builderAssistantId", schema = @Schema(type = "string"))
+            @PathVariable String builderAssistantId);
 
     @Operation(summary = "Create a volunteer")
     @ApiResponse(
@@ -125,7 +125,7 @@ public interface VolunteerController {
         @Parameter(description = "Filter to search user name OR last name")
             @RequestParam(required = false) String filterString,
         @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
-            @RequestParam(required = false) String volunteerId);
+            @RequestParam(required = false) String builderAssistantId);
 
 
     @Operation(summary = "Update any volunteer")
@@ -154,11 +154,11 @@ public interface VolunteerController {
                 @ExampleObject(name = "Volunteer from token not exist", value = Messages.Error.VOLUNTEER_ID_ALREADY_TAKEN),
             })
     )
-    @PutMapping("/{volunteerId}")
+    @PutMapping("/{builderAssistantId}")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateVolunteer(
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
-            @PathVariable String volunteerId,
+            @PathVariable String builderAssistantId,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
             @RequestBody VolunteerDto volunteer);
 
@@ -179,11 +179,11 @@ public interface VolunteerController {
                 @ExampleObject(name = "Volunteer doesn't exist", value = Messages.Error.VOLUNTEER_NOT_FOUND),
             })
     )
-    @DeleteMapping("/{volunteerId}")
+    @DeleteMapping("/{builderAssistantId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteVolunteer(
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
-            @PathVariable String volunteerId);
+            @PathVariable String builderAssistantId);
 
     @Operation(
         summary = "Upload volunteers from CSV",
