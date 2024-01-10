@@ -34,25 +34,21 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     public ResponseEntity<?> getMyAvailability(String token) {
         Volunteer volunteer = getVolunteerFromToken(token);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+        return getAvailability(volunteer.getBuilderAssistantId());
 
     }
 
     public ResponseEntity<?> updateMyAvailability(String token, List<EWeekday> availability) {
         Volunteer volunteer = getVolunteerFromToken(token);
-        volunteer.setAvailability(new LinkedHashSet<>(availability));
-        volunteer = volunteerRepository.saveAndFlush(volunteer);
 
-        return Constructor.buildResponseObject(HttpStatus.CREATED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+        return updateAvailability(volunteer.getBuilderAssistantId(), availability);
 
     }
 
     public ResponseEntity<?> clearMyAvailability(String token) {
         Volunteer volunteer = getVolunteerFromToken(token);
-        volunteer.setAvailability(null);
-        volunteer = volunteerRepository.saveAndFlush(volunteer);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+        return clearAvailability(volunteer.getBuilderAssistantId());
 
     }
 
@@ -61,8 +57,13 @@ public class AvailabilityServiceImpl implements AvailabilityService {
             User user = userRepository.findById(jwtUtils.getUserIdFromStringToken(token)).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
-            return Optional.ofNullable(user.getVolunteer()).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_DOESNT_HAVE_VOLUNTEER));
+            if(Optional.ofNullable(user.getVolunteer()).isEmpty())
+                new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_DOESNT_HAVE_VOLUNTEER);
+
+            if(Optional.ofNullable(user.getVolunteer()).map(Volunteer::getBuilderAssistantId).isEmpty())
+                throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_WITHOUT_BA_ID);
+
+            return user.getVolunteer();
 
         } catch (ParseException ignore) { }
 
@@ -72,7 +73,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     public ResponseEntity<?> getAvailability(String builderAssistantId) {
         Volunteer volunteer = getAvailabilityFromBAId(builderAssistantId);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.AVAILABILITY_UPDATED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
 
     }
 
@@ -81,7 +82,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         volunteer.setAvailability(new LinkedHashSet<>(availability));
         volunteer = volunteerRepository.saveAndFlush(volunteer);
 
-        return Constructor.buildResponseObject(HttpStatus.CREATED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.AVAILABILITY_UPDATED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
     }
 
     public ResponseEntity<?> clearAvailability(String builderAssistantId) {
@@ -89,7 +90,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         volunteer.setAvailability(null);
         volunteer = volunteerRepository.saveAndFlush(volunteer);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.AVAILABILITY_CLEARED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
     }
 
     private Volunteer getAvailabilityFromBAId(String builderAssistantId) {

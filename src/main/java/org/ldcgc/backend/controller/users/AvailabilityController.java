@@ -85,7 +85,7 @@ public interface AvailabilityController {
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Info.AVAILABILITY_DELETED, value = Messages.Info.AVAILABILITY_DELETED)
+                @ExampleObject(name = Messages.Info.AVAILABILITY_CLEARED, value = Messages.Info.AVAILABILITY_CLEARED)
             })
     )
     @ApiResponse(
@@ -154,7 +154,7 @@ public interface AvailabilityController {
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = Messages.Info.AVAILABILITY_DELETED, value = Messages.Info.AVAILABILITY_DELETED)
+                @ExampleObject(name = Messages.Info.AVAILABILITY_CLEARED, value = Messages.Info.AVAILABILITY_CLEARED)
             })
     )
     @ApiResponse(

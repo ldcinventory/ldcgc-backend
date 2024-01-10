@@ -38,7 +38,7 @@ public class Messages {
             TOOL_DELETED = "Tool deleted",
 
             AVAILABILITY_UPDATED = "Availability updated",
-            AVAILABILITY_DELETED = "Availability cleared",
+            AVAILABILITY_CLEARED = "Availability cleared",
 
             ABSENCES_FOUND = "%s absences found",
             ABSENCE_CREATED = "Absence created",
@@ -100,6 +100,7 @@ public class Messages {
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
+            VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
 
             TOOL_NOT_FOUND = "Tool with id %s not found",
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode (%s) in the database. Please make sure that the barcode is unique",
