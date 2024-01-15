@@ -23,7 +23,7 @@ import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomBuilderAs
 @RequiredArgsConstructor
 public class MockedAbsencesAvailability {
 
-    public static Set<EWeekday> getRandomAvailability() {
+    public static Set<EWeekday> getRandomAvailabilitySet() {
         // a set to not allow duplicates
         Set<EWeekday> weekdays = new LinkedHashSet<>();
 
@@ -38,6 +38,10 @@ public class MockedAbsencesAvailability {
         days.forEach(i -> weekdays.add(EWeekday.values()[i]));
 
         return weekdays;
+    }
+
+    public static List<EWeekday> getRandomAvailabilityList() {
+        return getRandomAvailabilitySet().stream().toList();
     }
 
     public static List<AbsenceDto> getRandomAbsences(int numAbsences) {

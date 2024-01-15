@@ -96,7 +96,7 @@ public class AvailabilityControllerImplTest {
             .setHandlerExceptionResolvers()
             .build();
 
-        mockedAvailability = MockedAbsencesAvailability.getRandomAvailability();
+        mockedAvailability = MockedAbsencesAvailability.getRandomAvailabilitySet();
 
         setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 

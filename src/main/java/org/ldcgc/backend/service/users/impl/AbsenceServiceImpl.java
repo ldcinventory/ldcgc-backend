@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     public ResponseEntity<?> getMyAbsence(String token, Integer absenceId) {
         Volunteer volunteer = getVolunteerFromToken(token);
+        validateVolunteerHasAbsences(volunteer);
 
         Absence absence = volunteer.getAbsences().stream()
             .filter(ab -> ab.getId().equals(absenceId))
@@ -58,6 +60,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo) {
         Volunteer volunteer = getVolunteerFromToken(token);
+        validateVolunteerHasAbsences(volunteer);
 
         return listAbsences(dateFrom, dateTo, new String[]{volunteer.getBuilderAssistantId()});
     }
@@ -65,29 +68,36 @@ public class AbsenceServiceImpl implements AbsenceService {
     public ResponseEntity<?> createMyAbsence(String token, AbsenceDto absenceDto) {
         Volunteer volunteer = getVolunteerFromToken(token);
 
-        return createAbsence(volunteer, absenceDto);
+        return createAbsence(volunteer, AbsenceMapper.MAPPER.toEntity(absenceDto));
     }
 
     public ResponseEntity<?> updateMyAbsence(String token, Integer absenceId, AbsenceDto absenceDto) {
         Volunteer volunteer = getVolunteerFromToken(token);
+        validateVolunteerHasAbsences(volunteer);
 
-        volunteer.getAbsences().stream()
+        Absence absenceEntity = volunteer.getAbsences().stream()
             .filter(absence -> absence.getId().equals(absenceId))
             .findFirst()
             .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.ABSENCE_VOLUNTEER_NOT_FOUND));
 
-        return updateAbsence(absenceId, absenceDto);
+        return updateAbsence(absenceEntity, absenceDto);
     }
 
     public ResponseEntity<?> deleteMyAbsence(String token, Integer absenceId) {
         Volunteer volunteer = getVolunteerFromToken(token);
+        validateVolunteerHasAbsences(volunteer);
 
-        volunteer.getAbsences().stream()
-            .filter(absence -> absence.getId().equals(absenceId))
+        Absence absence = volunteer.getAbsences().stream()
+            .filter(ab -> ab.getId().equals(absenceId))
             .findFirst()
             .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.ABSENCE_VOLUNTEER_NOT_FOUND));
 
-        return deleteAbsence(absenceId);
+        return deleteAbsence(volunteer, absence);
+    }
+
+    private void validateVolunteerHasAbsences(Volunteer volunteer) {
+        if(CollectionUtils.isEmpty(volunteer.getAbsences()))
+            throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_ABSENCES_EMPTY);
     }
 
     private Volunteer getVolunteerFromToken(String token) {
@@ -149,35 +159,20 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {
-
         if(absenceDto.getBuilderAssistantId() == null)
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.VOLUNTEER_NOT_INFORMED);
 
         Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(absenceDto.getBuilderAssistantId()).orElseThrow(
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
-        return createAbsence(volunteer, absenceDto);
-    }
-
-    private ResponseEntity<?> createAbsence(Volunteer volunteer, AbsenceDto absenceDto) {
-        Absence absence = AbsenceMapper.MAPPER.toEntity(absenceDto);
-        absence.setVolunteer(volunteer);
-        volunteer.getAbsences().add(absence);
-
-        absence = absenceRepository.save(absence);
-
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.ABSENCE_CREATED, AbsenceMapper.MAPPER.toDto(absence));
+        return createAbsence(volunteer, AbsenceMapper.MAPPER.toEntity(absenceDto));
     }
 
     public ResponseEntity<?> updateAbsence(Integer absenceId, AbsenceDto absenceDto) {
-        Absence absence = absenceRepository.findById(absenceId).orElseThrow(
+        Absence absenceEntity = absenceRepository.findById(absenceId).orElseThrow(
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.ABSENCE_NOT_FOUND));
 
-        AbsenceMapper.MAPPER.update(absence, absenceDto);
-
-        absence = absenceRepository.saveAndFlush(absence);
-
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.ABSENCE_UPDATED, AbsenceMapper.MAPPER.toDto(absence));
+        return updateAbsence(absenceEntity, absenceDto);
     }
 
     public ResponseEntity<?> deleteAbsence(Integer absenceId) {
@@ -185,14 +180,38 @@ public class AbsenceServiceImpl implements AbsenceService {
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.ABSENCE_NOT_FOUND));
 
         Volunteer volunteer = volunteerRepository.findById(absence.getVolunteer().getId()).orElseThrow(
-            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.ABSENCE_VOLUNTEER_LINKED_NOT_FOUND)
+            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_FROM_ABSENCE_NOT_FOUND)
         );
 
+        return deleteAbsence(volunteer, absence);
+    }
+
+    private ResponseEntity<?> createAbsence(Volunteer volunteer, Absence absence) {
+
+        absence.setVolunteer(volunteer);
+        volunteer.getAbsences().add(absence);
+
+        absence = absenceRepository.saveAndFlush(absence);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.ABSENCE_CREATED, AbsenceMapper.MAPPER.toDto(absence));
+    }
+
+    private ResponseEntity<?> updateAbsence(Absence absenceEntity, AbsenceDto absenceDto) {
+
+        AbsenceMapper.MAPPER.update(absenceEntity, absenceDto);
+
+        absenceEntity = absenceRepository.saveAndFlush(absenceEntity);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.ABSENCE_UPDATED, AbsenceMapper.MAPPER.toDto(absenceEntity));
+
+    }
+
+    private ResponseEntity<?> deleteAbsence(Volunteer volunteer, Absence absence) {
         //detach from volunteer absences
         volunteer.getAbsences().remove(absence);
         volunteerRepository.save(volunteer);
 
-        absenceRepository.deleteById(absenceId);
+        absenceRepository.delete(absence);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.ABSENCE_DELETED);
     }

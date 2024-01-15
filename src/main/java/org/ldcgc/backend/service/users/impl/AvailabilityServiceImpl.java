@@ -33,23 +33,17 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     public ResponseEntity<?> getMyAvailability(String token) {
         Volunteer volunteer = getVolunteerFromToken(token);
-
-        return getAvailability(volunteer.getBuilderAssistantId());
-
+        return getAvailability(volunteer);
     }
 
     public ResponseEntity<?> updateMyAvailability(String token, List<EWeekday> availability) {
         Volunteer volunteer = getVolunteerFromToken(token);
-
-        return updateAvailability(volunteer.getBuilderAssistantId(), availability);
-
+        return updateAvailability(volunteer, availability);
     }
 
     public ResponseEntity<?> clearMyAvailability(String token) {
         Volunteer volunteer = getVolunteerFromToken(token);
-
-        return clearAvailability(volunteer.getBuilderAssistantId());
-
+        return clearAvailability(volunteer);
     }
 
     private Volunteer getVolunteerFromToken(String token) {
@@ -58,44 +52,51 @@ public class AvailabilityServiceImpl implements AvailabilityService {
                 () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
             if(Optional.ofNullable(user.getVolunteer()).isEmpty())
-                new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_DOESNT_HAVE_VOLUNTEER);
+                throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_DOESNT_HAVE_VOLUNTEER);
 
             if(Optional.ofNullable(user.getVolunteer()).map(Volunteer::getBuilderAssistantId).isEmpty())
                 throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_WITHOUT_BA_ID);
 
             return user.getVolunteer();
 
-        } catch (ParseException ignore) { }
-
-        return null;
+        } catch (ParseException ignore) {
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_PARSEABLE);
+        }
     }
 
     public ResponseEntity<?> getAvailability(String builderAssistantId) {
-        Volunteer volunteer = getAvailabilityFromBAId(builderAssistantId);
-
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.AVAILABILITY_UPDATED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
-
+        return getAvailability(getVolunteerFromBAId(builderAssistantId));
     }
 
     public ResponseEntity<?> updateAvailability(String builderAssistantId, List<EWeekday> availability) {
-        Volunteer volunteer = getAvailabilityFromBAId(builderAssistantId);
+        return updateAvailability(getVolunteerFromBAId(builderAssistantId), availability);
+    }
+
+    public ResponseEntity<?> clearAvailability(String builderAssistantId) {
+        return clearAvailability(getVolunteerFromBAId(builderAssistantId));
+    }
+
+    private Volunteer getVolunteerFromBAId(String builderAssistantId) {
+        return volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(
+            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+    }
+
+    private ResponseEntity<?> getAvailability(Volunteer volunteer) {
+        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
+    }
+
+    private ResponseEntity<?> updateAvailability(Volunteer volunteer, List<EWeekday> availability) {
         volunteer.setAvailability(new LinkedHashSet<>(availability));
         volunteer = volunteerRepository.saveAndFlush(volunteer);
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.AVAILABILITY_UPDATED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
     }
 
-    public ResponseEntity<?> clearAvailability(String builderAssistantId) {
-        Volunteer volunteer = getAvailabilityFromBAId(builderAssistantId);
+    private ResponseEntity<?> clearAvailability(Volunteer volunteer) {
         volunteer.setAvailability(null);
         volunteer = volunteerRepository.saveAndFlush(volunteer);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.AVAILABILITY_CLEARED, VolunteerMapper.MAPPER.toDto(volunteer).getAvailability());
-    }
-
-    private Volunteer getAvailabilityFromBAId(String builderAssistantId) {
-        return volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(
-            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
     }
 
 }

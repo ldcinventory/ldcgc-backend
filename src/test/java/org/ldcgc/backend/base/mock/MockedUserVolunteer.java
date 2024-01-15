@@ -7,6 +7,7 @@ import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.ldcgc.backend.payload.dto.users.AbsenceDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
@@ -22,13 +23,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -151,6 +155,7 @@ public class MockedUserVolunteer {
                     getRandomElementFromList(LAST_NAMES), getRandomElementFromList(LAST_NAMES)))
                 .builderAssistantId(getRandomBuilderAssistantId())
                 .availability(getRandomAvailabilityForMocked())
+                .absences(getRandomAbsences())
                 .build())
             .build();
     }
@@ -161,13 +166,6 @@ public class MockedUserVolunteer {
 
     public static UserDto getRandomMockedUserDtoWithoutVolunteer() {
         return getRandomMockedUserDto().toBuilder().volunteer(null).build();
-    }
-
-    public static UserDto getRandomMockedCreatingUserDto(ERole role) {
-        UserDto userDto = getMockedUser();
-        userDto.toBuilder().password(getRandomPassword()).build();
-
-        return userDto;
     }
 
     public static UserDto getRandomMockedUpdatingUserDto(ERole role) {
@@ -278,6 +276,30 @@ public class MockedUserVolunteer {
 
     public static List<VolunteerDto> getListOfMockedVolunteers(Integer listSize) {
         return Stream.generate(MockedUserVolunteer::getRandomVolunteer).limit(listSize).toList();
+    }
+
+    private static List<AbsenceDto> getRandomAbsences() {
+        // number of absences to add
+        int numAbsences = new Random().ints(1, 1, 7).iterator().nextInt();
+
+        // list of absences and ranges of days different days of absences
+        List<AbsenceDto> absences = new ArrayList<>();
+        IntStream.range(0, numAbsences).forEach(x -> {
+            int rangeOfDays = new Random().ints(1, 0, 7).iterator().nextInt();
+            LocalDate randomDate = LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(0, 366));
+            AbsenceDto absence = AbsenceDto.builder()
+                .id(new Random().ints(1, 0, 100_000).iterator().nextInt())
+                .dateFrom(randomDate)
+                .dateTo(randomDate.plusDays(rangeOfDays))
+                .builderAssistantId(getRandomBuilderAssistantId())
+                .build();
+            absences.add(absence);
+
+        });
+
+        Collections.sort(absences, Comparator.comparing(AbsenceDto::getDateFrom));
+
+        return absences;
     }
 
 }

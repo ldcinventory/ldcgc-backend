@@ -101,6 +101,7 @@ public class Messages {
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
+            VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
 
             TOOL_NOT_FOUND = "Tool with id %s not found",
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode (%s) in the database. Please make sure that the barcode is unique",
@@ -124,7 +125,7 @@ public class Messages {
             ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
 
             ABSENCE_VOLUNTEER_NOT_FOUND = "This absence was not found for this volunteer",
-            ABSENCE_VOLUNTEER_LINKED_NOT_FOUND = "This absence is to a volunteer that is not found",
+            VOLUNTEER_FROM_ABSENCE_NOT_FOUND = "The volunteer informed in the absence is not found (maybe not linked?)",
             ABSENCE_NOT_FOUND = "Absence not found",
 
             CSV_NAME_ERROR = "The name provided has some invalid characters",
