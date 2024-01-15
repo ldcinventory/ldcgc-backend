@@ -14,6 +14,7 @@ import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.AvailabilityService;
+import org.ldcgc.backend.service.users.impl.AvailabilityServiceImpl;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -64,7 +65,6 @@ public class AvailabilityControllerImplTest {
     // repositories
     @MockBean private TokenRepository tokenRepository;
     @MockBean private UserRepository userRepository;
-    @MockBean private AbsenceRepository absenceRepository;
     @MockBean private VolunteerRepository volunteerRepository;
 
     // other

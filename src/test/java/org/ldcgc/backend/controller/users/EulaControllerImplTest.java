@@ -66,7 +66,6 @@ public class EulaControllerImplTest {
     private final String requestRoot = "/eula";
 
     private MockMvc mockMvc;
-    private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
     public void init() throws ParseException {
@@ -78,7 +77,7 @@ public class EulaControllerImplTest {
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setApplicationContext(context);
-        constrainValidationFactory = new TestConstrainValidationFactory(context);
+        TestConstrainValidationFactory constrainValidationFactory = new TestConstrainValidationFactory(context);
         validatorFactoryBean.setConstraintValidatorFactory(constrainValidationFactory);
         validatorFactoryBean.setProviderClass(HibernateValidator.class);
         validatorFactoryBean.afterPropertiesSet();
