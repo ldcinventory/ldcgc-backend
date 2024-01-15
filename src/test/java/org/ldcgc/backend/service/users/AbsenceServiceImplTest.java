@@ -726,7 +726,7 @@ class AbsenceServiceImplTest {
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(bothLists).when(absenceRepository).findAll();
+        doReturn(bothLists).when(absenceRepository).findAll((Specification<Absence>) any());
 
         LocalDate dateFrom = absencesDto.getFirst().getDateFrom();
         LocalDate dateTo = absencesDto.getLast().getDateTo();
