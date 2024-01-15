@@ -118,7 +118,7 @@ public class VolunteerServiceImpl implements VolunteerService {
     public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {
         AtomicInteger volunteers = new AtomicInteger();
         Group group = groupRepository.findById(groupId).orElseThrow(
-            () -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.GROUP_NOT_FOUND));
+            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.GROUP_NOT_FOUND));
 
         List<List<String>> volunteersData = getContentFromCSV(document.getResource(), ',', true);
         volunteersData.forEach(vData -> {

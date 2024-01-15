@@ -14,9 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
-import static org.mapstruct.NullValuePropertyMappingStrategy.SET_TO_DEFAULT;
 
 @Mapper(nullValuePropertyMappingStrategy = IGNORE, uses = { AbsenceMapper.class })
 public interface VolunteerMapper {
