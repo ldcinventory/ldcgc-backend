@@ -333,7 +333,11 @@ class UserServiceImplTest {
     public void whenListUsersUnfiltered_returnMultipleUsers() {
         final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
         final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
-        final List<UserDto> usersExpected = users.stream().map(u -> u.toBuilder().password(null).build()).toList();
+        final List<UserDto> usersExpected = users.stream().map(u ->
+            u.toBuilder()
+                .password(null)
+                .volunteer(u.getVolunteer().toBuilder().absences(null).build())
+            .build()).toList();
 
         Page<User> userPage = new PageImpl<>(userEntities);
 
@@ -354,7 +358,11 @@ class UserServiceImplTest {
     public void whenListUsersFiltered_returnMultipleUsers() {
         final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
         final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
-        final List<UserDto> usersExpected = users.stream().map(u -> u.toBuilder().password(null).build()).toList();
+        final List<UserDto> usersExpected = users.stream().map(u ->
+            u.toBuilder()
+                .password(null)
+                .volunteer(u.getVolunteer().toBuilder().absences(null).build())
+            .build()).toList();
 
         Page<User> userPage = new PageImpl<>(userEntities);
 
