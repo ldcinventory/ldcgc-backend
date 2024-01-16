@@ -2,9 +2,12 @@ package org.ldcgc.backend.base.factory;
 
 import org.ldcgc.backend.util.common.ERole;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUser;
@@ -32,7 +35,7 @@ public class TestRequestFactory {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .requestAttr(AUTHORIZATION_HEADER, generateNewStringToken(getRandomMockedUser(tokenUserRole)))
+            .requestAttr(AUTHORIZATION_HEADER, Objects.requireNonNull(generateNewStringToken(getRandomMockedUser(tokenUserRole))))
             .with(user(tokenUserRole.getRoleName().toLowerCase()).roles(tokenUserRole.getRoleName()));
     }
 
@@ -44,7 +47,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder getRequest(String url, ERole tokenUserRole) {
-        return getRequest(url, tokenUserRole, null);
+        return getRequest(url, tokenUserRole, (Object[]) null);
     }
 
     public static MockHttpServletRequestBuilder getRequest(String url, Object... uriVariables) {
@@ -52,7 +55,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder getRequest(String url) {
-        return getRequest(url, null, null);
+        return getRequest(url, null, (Object[]) null);
     }
 
     // post
@@ -63,7 +66,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder postRequest(String url, ERole tokenUserRole) {
-        return postRequest(url, tokenUserRole, null);
+        return postRequest(url, tokenUserRole, (Object[]) null);
     }
 
     public static MockHttpServletRequestBuilder postRequest(String url, Object ...uriVariables) {
@@ -71,7 +74,23 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder postRequest(String url) {
-        return postRequest(url, null, null);
+        return postRequest(url, null, (Object[]) null);
+    }
+
+    public static MockHttpServletRequestBuilder postMultipartRequest(String url, MockMultipartFile file, ERole tokenUserRole) {
+
+        return MockMvcRequestBuilders.multipart(url)
+            .file(file)
+            .with(request -> {
+                request.setMethod("POST");
+                request.addUserRole(tokenUserRole.getRoleName().toLowerCase());
+                request.addUserRole(tokenUserRole.getRoleName());
+                return request;
+            })
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding(StandardCharsets.UTF_8);
+
     }
 
     // put
@@ -82,7 +101,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder putRequest(String url, ERole tokenUserRole) {
-        return putRequest(url, tokenUserRole, null);
+        return putRequest(url, tokenUserRole, (Object[]) null);
     }
 
     public static MockHttpServletRequestBuilder putRequest(String url, Object ...uriVariables) {
@@ -90,7 +109,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder putRequest(String url) {
-        return putRequest(url, null, null);
+        return putRequest(url, null, (Object[]) null);
     }
 
     // patch
@@ -101,7 +120,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder patchRequest(String url, ERole tokenUserRole) {
-        return patchRequest(url, tokenUserRole, null);
+        return patchRequest(url, tokenUserRole, (Object[]) null);
     }
 
     public static MockHttpServletRequestBuilder patchRequest(String url, Object ...uriVariables) {
@@ -109,7 +128,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder patchRequest(String url) {
-        return patchRequest(url, null, null);
+        return patchRequest(url, null, (Object[]) null);
     }
 
     // delete
@@ -120,7 +139,7 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder deleteRequest(String url, ERole tokenUserRole) {
-        return deleteRequest(url, tokenUserRole, null);
+        return deleteRequest(url, tokenUserRole, (Object[]) null);
     }
 
     public static MockHttpServletRequestBuilder deleteRequest(String url, Object ...uriVariables) {
@@ -128,6 +147,6 @@ public class TestRequestFactory {
     }
 
     public static MockHttpServletRequestBuilder deleteRequest(String url) {
-        return deleteRequest(url, null, null);
+        return deleteRequest(url, null, (Object[]) null);
     }
 }

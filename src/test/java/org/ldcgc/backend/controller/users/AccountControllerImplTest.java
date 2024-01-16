@@ -79,7 +79,6 @@ public class AccountControllerImplTest {
     private MockMvc mockMvc;
     private UserDto mockedUser;
     private UserDto mockedUserLogin;
-    private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
     public void init() {
@@ -91,7 +90,7 @@ public class AccountControllerImplTest {
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setApplicationContext(context);
-        constrainValidationFactory = new TestConstrainValidationFactory(context);
+        TestConstrainValidationFactory constrainValidationFactory = new TestConstrainValidationFactory(context);
         validatorFactoryBean.setConstraintValidatorFactory(constrainValidationFactory);
         validatorFactoryBean.setProviderClass(HibernateValidator.class);
         validatorFactoryBean.afterPropertiesSet();
@@ -168,7 +167,7 @@ public class AccountControllerImplTest {
         MimeMessage mimeMessage = mock(MimeMessage.class);
         given(sender.createMimeMessage()).willReturn(mimeMessage);
 
-        given(email.sendRecoveringCredentials(mockedUser.getEmail(), JWT)).willAnswer(
+        given(Email.sendRecoveringCredentials(mockedUser.getEmail(), JWT)).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
 
         given(accountService.recoverCredentials(credentialsDto)).willAnswer(

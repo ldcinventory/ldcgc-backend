@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
+import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
@@ -25,6 +26,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.List;
@@ -37,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
@@ -47,7 +51,7 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 class VolunteerServiceImplTest {
 
-    VolunteerService volunteerService;
+    private VolunteerService volunteerService;
 
     @Mock VolunteerRepository volunteerRepository;
     @Mock UserRepository userRepository;
@@ -135,7 +139,7 @@ class VolunteerServiceImplTest {
 
     }
 
-    //create vounteer
+    //create volunteer
     @Test
     public void whenCreateVolunteer_returnVolunteerAlreadyExists() {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(VOLUNTEER);
@@ -319,6 +323,41 @@ class VolunteerServiceImplTest {
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
         verify(volunteerRepository, atMostOnce()).delete(any(Volunteer.class));
+    }
+
+    @Test
+    public void whenUploadVolunteers_returnGroupNotFound() {
+        MockMultipartFile document = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());
+
+        doReturn(Optional.empty()).when(groupRepository).findById(8);
+
+        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.uploadVolunteers(8, document));
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
+        assertEquals(Messages.Error.GROUP_NOT_FOUND, ex.getMessage());
+
+        verify(groupRepository, atMostOnce()).findById(anyInt());
+    }
+
+    @Test
+    public void whenUploadVolunteers_returnCSVVolunteersCreated() {
+
+        MultipartFile document = new MockMultipartFile("document", "volunteers.csv", "text/csv", "builderAssistantId,name,lastName,active,mon,tue,wed,thu,fri,sat,sun,hol\n50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());
+
+        Group group = Group.builder().id(8).build();
+        doReturn(Optional.of(group)).when(groupRepository).findById(8);
+        doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(anyString());
+
+        ResponseEntity<?> response = volunteerService.uploadVolunteers(8, document);
+        Response.DTO responseBody = (Response.DTO) response.getBody();
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 1), responseBody.getMessage());
+
+        verify(groupRepository, atMostOnce()).findById(anyInt());
+        verify(volunteerRepository, atMostOnce()).saveAndFlush(any(Volunteer.class));
+
     }
 
 }
