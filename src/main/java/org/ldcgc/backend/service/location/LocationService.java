@@ -9,5 +9,5 @@ import java.util.List;
 public interface LocationService {
     List<LocationDto> getAllLocations();
 
-    LocationDto findLocationInListByName(String locationLvl2, List<LocationDto> locations);
+    LocationDto findLocationByName(String locationLvl2, List<LocationDto> locations);
 }

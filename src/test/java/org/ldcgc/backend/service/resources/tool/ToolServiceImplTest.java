@@ -240,6 +240,6 @@ class ToolServiceImplTest {
 
         assertTrue(Objects.nonNull(response));
         Response.DTO responseBody = ((Response.DTO) response.getBody());
-        assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
+        assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).get(0).getClass());
     }
 }

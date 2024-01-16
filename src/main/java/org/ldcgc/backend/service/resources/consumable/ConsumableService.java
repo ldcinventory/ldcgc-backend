@@ -18,5 +18,5 @@ public interface ConsumableService {
     ResponseEntity<?> deleteConsumable(Integer consumableId);
 
 
-    ResponseEntity<?> uploadExcel(MultipartFile file);
+    ResponseEntity<?> loadExcel(MultipartFile file);
 }

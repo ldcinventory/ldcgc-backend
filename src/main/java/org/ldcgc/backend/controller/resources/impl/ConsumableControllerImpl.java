@@ -49,8 +49,8 @@ public class ConsumableControllerImpl implements ConsumableController{
     }
 
     @Override
-    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String filterString) {
-        return consumableService.listConsumables(pageIndex, sizeIndex, filterString);
+    public ResponseEntity<?> listConsumables(Integer page, Integer size, String filter) {
+        return consumableService.listConsumables(page, size, filter);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ConsumableControllerImpl implements ConsumableController{
         return consumableService.deleteConsumable(consumableId);
     }
     @Override
-    public ResponseEntity<?> uploadExcel(MultipartFile file){
-        return consumableService.uploadExcel(file);
+    public ResponseEntity<?> loadExcel(MultipartFile file){
+        return consumableService.loadExcel(file);
     }
 }

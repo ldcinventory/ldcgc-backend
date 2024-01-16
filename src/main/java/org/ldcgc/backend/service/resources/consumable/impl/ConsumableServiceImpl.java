@@ -41,7 +41,7 @@ import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 @RequiredArgsConstructor
 public class ConsumableServiceImpl implements ConsumableService {
 
-    @Autowired
+    //@Autowired
     private final ConsumableRepository consumableRepository;
     private final CategoryService categoryService;
     private final LocationService locationService;
@@ -130,7 +130,7 @@ public class ConsumableServiceImpl implements ConsumableService {
     }
 
     @Override
-    public ResponseEntity<?> uploadExcel(MultipartFile file) {
+    public ResponseEntity<?> loadExcel(MultipartFile file) {
 
         List<ConsumableExcelDto> consumableExcel = ConsumableExcelProcess.excelProcess(file);
 
@@ -155,15 +155,15 @@ public class ConsumableServiceImpl implements ConsumableService {
                 .map(consumableExcel -> ConsumableDto.builder()
                         .id(getIdByBarcode(consumableExcel, consumable))
                         .barcode(consumableExcel.getBarcode())
-                        .category(categoryService.findCategorySonInParentByName(consumableExcel.getCategory(), categoryParent))
-                        .brand(categoryService.findCategorySonInParentByName(consumableExcel.getBrand(), brandParent))
+                        .category(categoryService.getCategoryByName(consumableExcel.getCategory(), categoryParent))
+                        .brand(categoryService.getCategoryByName(consumableExcel.getBrand(), brandParent))
                         .name(consumableExcel.getName())
                         .model(consumableExcel.getModel())
                         .description(consumableExcel.getDescription())
                         .urlImages(consumableExcel.getUrlImages())
                         .stock(consumableExcel.getStock())
-                        .stockType(categoryService.findCategorySonInParentByName(consumableExcel.getStockType(), stockTypeParent))
-                        .locationLvl2(locationService.findLocationInListByName(consumableExcel.getLocationLvl2(), locations))
+                        .stockType(categoryService.getCategoryByName(consumableExcel.getStockType(), stockTypeParent))
+                        .locationLvl2(locationService.findLocationByName(consumableExcel.getLocationLvl2(), locations))
                         .group(groupsService.findGroupInListByName(consumableExcel.getGroup(), groups))
                         .build()
                 ).toList();

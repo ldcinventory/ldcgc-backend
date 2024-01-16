@@ -122,7 +122,7 @@ class ToolControllerImplTest {
 
         verify(service, times(1)).getAllTools(0, 0, "name", "", "", "", null);
         assertEquals(ArrayList.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
-        assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).getFirst().getClass());
+        assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).stream().findFirst().getClass());
     }
 
 

@@ -52,13 +52,13 @@ public interface ConsumableController {
 
     @GetMapping
     //@PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
-    ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-                                      @RequestParam(required = false, defaultValue = "25") Integer sizeIndex,
-                                      @RequestParam(required = false) String filterString);
+    ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer page,
+                                      @RequestParam(required = false, defaultValue = "25") Integer size,
+                                      @RequestParam(required = false) String filter);
 
     @DeleteMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
-    @PostMapping("/uploadExcel")
-    ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file);
+    @PostMapping("/loadExcel")
+    ResponseEntity<?> loadExcel(@RequestParam("file") MultipartFile file);
 }
