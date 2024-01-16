@@ -70,7 +70,6 @@ public class ConsumableServiceImpl implements ConsumableService {
         Map<String, Object> response = new HashMap<>();
         Page<Consumable> consumablePaged;
         List<ConsumableDto> consumableDto = new ArrayList<>();
-        //System.out.println(pageIndex + " "+sizeIndex + " " + filterString);
 
         Pageable pageable = PageRequest.of(pageIndex, sizeIndex, Sort.by("id").descending());
 
