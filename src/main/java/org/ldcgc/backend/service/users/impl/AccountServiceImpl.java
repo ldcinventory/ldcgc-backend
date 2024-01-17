@@ -4,13 +4,15 @@ import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.users.TokenDto;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
+import org.ldcgc.backend.payload.mapper.users.TokenMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
@@ -32,9 +34,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Boolean.FALSE;
+import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
+import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
@@ -64,10 +69,11 @@ public class AccountServiceImpl implements AccountService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        SignedJWT jwt = jwtUtils.generateNewToken(userEntity);
-
         HttpHeaders headers = new HttpHeaders();
 
+        headers.add("x-refresh-token", jwtUtils.generateRefreshToken(userEntity).getParsedString());
+
+        SignedJWT jwt = jwtUtils.generateNewToken(userEntity);
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
 
@@ -91,6 +97,7 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<?> logout(String token) throws ParseException {
         Integer userId = jwtUtils.getUserIdFromJwtToken(jwtUtils.getDecodedJwt(token));
 
+        cleanLocalTokensFromUserId(userId, true);
         tokenRepository.deleteAllTokensFromUser(userId);
 
         SecurityContextHolder.clearContext();
@@ -111,14 +118,20 @@ public class AccountServiceImpl implements AccountService {
         SignedJWT jwt = jwtUtils.getDecodedJwt(token);
 
         // check exists
-        Token tokenEntity = tokenRepository.findByJwtID(jwt.getHeader().getKeyID()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND));
+        boolean isRefreshToken = ((Map) jwt.getJWTClaimsSet().getClaim("userClaims"))
+            .get("refresh-token").equals("true");
+        TokenDto tokenDto = getBySignedJwtFromLocal(jwt, isRefreshToken);
+
+
+        if(tokenDto == null)
+            tokenDto= TokenMapper.MAPPER.toDto(tokenRepository.findByJwtID(jwt.getHeader().getKeyID()).orElseThrow(() ->
+                new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND)));
 
         // check is recovery token
-        if (!tokenEntity.isRecoveryToken())
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.JWT_NOT_FOR_RECOVERY);
+        if (!tokenDto.isRecoveryToken() && !tokenDto.isRefreshToken())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.JWT_NOT_FOR_RECOVERY_REFRESH);
 
-        Integer userIdFromTokenEntity = tokenEntity.getUserId();
+        Integer userIdFromTokenEntity = tokenDto.getUserId();
         Integer userIdFromTokenString = jwtUtils.getUserIdFromJwtToken(jwt);
 
         Preconditions.checkArgument(userIdFromTokenEntity.equals(userIdFromTokenString));
@@ -139,8 +152,26 @@ public class AccountServiceImpl implements AccountService {
 
         user.setPassword(passwordEncoder.encode(userCredentials.getPassword()));
         userRepository.saveAndFlush(user);
+        tokenRepository.deleteRecoveryTokenForUserId(user.getId());
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_CREDENTIALS_UPDATED);
+    }
+
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws ParseException, JOSEException {
+        validateToken(refreshToken);
+
+        User user = userRepository.findById(jwtUtils.getUserIdFromStringToken(refreshToken)).orElseThrow(
+            () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN)
+        );
+
+        tokenRepository.deleteNonRefreshTokensFromUser(user.getId());
+
+        SignedJWT jwt = jwtUtils.generateNewToken(user);
+
+        response.setHeader("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
+        response.setHeader("x-signature-token", jwt.getParsedParts()[2].toString());
+
+        return Constructor.buildResponseMessage(HttpStatus.CREATED, Messages.Info.TOKEN_REFRESHED);
     }
 
 }

@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
@@ -129,7 +131,7 @@ public interface AccountController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Recovery token not valid", value = Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND),
-                @ExampleObject(name = "JWT not for recovery", value = Messages.Error.JWT_NOT_FOR_RECOVERY),
+                @ExampleObject(name = "JWT not for recovery", value = Messages.Error.JWT_NOT_FOR_RECOVERY_REFRESH),
             })
     )
     @ApiResponse(
@@ -166,5 +168,29 @@ public interface AccountController {
     ResponseEntity<?> newCredentials(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException;
+
+    @Operation(summary = "Set new credentials for the user")
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Tokens recreated", value = Messages.Info.TOKEN_REFRESHED)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Refresh token not valid", value = Messages.Error.REFRESH_TOKEN_NOT_VALID)
+            })
+    )
+    @PostMapping("/refresh-token")
+    @PreAuthorize(USER_LEVEL)
+    ResponseEntity<?> refreshToken(
+        HttpServletRequest request, HttpServletResponse response,
+        @Parameter(description = "Valid refresh JWT of the user to get new token", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String refreshToken) throws ParseException, JOSEException;
 
 }

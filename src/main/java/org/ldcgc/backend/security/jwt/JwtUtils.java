@@ -1,6 +1,7 @@
 package org.ldcgc.backend.security.jwt;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -18,21 +19,29 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.ApiError;
 import org.ldcgc.backend.exception.ApiSubError;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.users.TokenDto;
+import org.ldcgc.backend.payload.mapper.users.TokenMapper;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,14 +56,19 @@ public class JwtUtils {
     private int jwtExpirationSeconds;
 
     @Setter private Boolean isRecoveryToken = false;
+    @Setter private Boolean isRefreshToken = false;
 
     private final TokenRepository tokenRepository;
+    private static BidiMap<Integer, TokenDto> tokenLocalRepository = new DualHashBidiMap<>();
+    private static BidiMap<Integer, TokenDto> refreshTokenLocalRepository = new DualHashBidiMap<>();
 
     private static final Clock clock = Clock.systemUTC();
 
     private static final String ISSUER_URL = "https://gc8inventory.es";
 
     public SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
+        runInBackground(() -> tokenRepository.deleteAllExpiredTokensFromUser(user.getId()));
+
         // Generate a key pair with Ed25519 curve
         OctetKeyPair jwk = new OctetKeyPairGenerator(Curve.Ed25519)
             .keyUse(KeyUse.SIGNATURE)
@@ -66,14 +80,24 @@ public class JwtUtils {
         // Create the EdDSA signer
         JWSSigner signer = new Ed25519Signer(jwk);
 
-        Map<String, Object> claims = Map.of(
-            "email", user.getEmail(),
-            "role", user.getRole().getRoleName()
-        );
+        Map<String, String> claims = new HashMap<>()
+        {{
+            put("email", user.getEmail());
+            put("role", user.getRole().getRoleName());
+            if(isRefreshToken)
+                put("refresh-token", "true");
+            if(isRecoveryToken)
+                put("recovery-token", "true");
+        }};
 
         Date now = new Date();
         // expiration time is set by parameter (default: 24 hours -> 86400 seconds)
         Date expirationTime = new Date(now.toInstant().plusSeconds(jwtExpirationSeconds).toEpochMilli());
+
+        if(isRefreshToken) {
+            expirationTime = new Date(expirationTime.toInstant().plus(30, ChronoUnit.DAYS).toEpochMilli());
+            runInBackground(() -> tokenRepository.deleteAllTokensFromUser(user.getId()));
+        }
 
         // Prepare JWT with claims set
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -81,7 +105,7 @@ public class JwtUtils {
             .issuer(ISSUER_URL)
             .issueTime(now)
             .subject(user.getId().toString())
-            .claim("userClaims", claims)
+            .claim("userClaims", ImmutableMap.copyOf(claims))
             .expirationTime(expirationTime)
             .build();
 
@@ -109,15 +133,24 @@ public class JwtUtils {
             .issuedAt(convertDateToLocalDateTime(now))
             .expiresAt(convertDateToLocalDateTime(expirationTime))
             .isRecoveryToken(isRecoveryToken)
-            .refreshTokenId(null)
+            .isRefreshToken(isRefreshToken)
+            .refreshTokenId(isRefreshToken ? null : refreshTokenLocalRepository.get(user.getId()).getId())
+            .signedJWT(signedJWT)
             .build();
-        runInBackground(() -> tokenRepository.save(token));
+        token = tokenRepository.saveAndFlush(token);
+
+        // clean old tokens for this user
+        cleanLocalTokensFromUserId(user.getId(), isRefreshToken);
+
+        TokenDto tokenDto = TokenMapper.MAPPER.toDto(token);
+        if(!isRefreshToken)
+            tokenLocalRepository.put(user.getId(), tokenDto);
+        else
+            refreshTokenLocalRepository.put(user.getId(), tokenDto);
 
         // set again to false to future tokens since JwtUtils is a Component
         setIsRecoveryToken(false);
-
-        // clean old tokens for this user
-        runInBackground(() -> tokenRepository.deleteAllExpiredTokensFromUser(user.getId()));
+        setIsRefreshToken(false);
 
         Preconditions.checkArgument(signedJWT.verify(verifier));
         Preconditions.checkArgument(new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime()));
@@ -129,6 +162,11 @@ public class JwtUtils {
 
     public SignedJWT generateNewRecoveryToken(User user) throws ParseException, JOSEException {
         setIsRecoveryToken(true);
+        return generateNewToken(user);
+    }
+
+    public SignedJWT generateRefreshToken(User user) throws ParseException, JOSEException {
+        setIsRefreshToken(true);
         return generateNewToken(user);
     }
 
@@ -162,7 +200,10 @@ public class JwtUtils {
 
     public boolean verifyJwt(SignedJWT signedJwt, String expectedAudience) throws ParseException, JOSEException, IllegalArgumentException, NullPointerException {
 
-        Preconditions.checkArgument(tokenRepository.findByJwtID(signedJwt.getHeader().getKeyID()).isPresent());
+        int userId = getUserIdFromJwtToken(signedJwt);
+
+        if(tokenLocalRepository.get(userId) == null && refreshTokenLocalRepository.get(userId) == null)
+            Preconditions.checkArgument(tokenRepository.findByJwtID(signedJwt.getHeader().getKeyID()).isPresent());
 
         // parse signed token into header / claims
         JWSHeader jwsHeader = signedJwt.getHeader();
@@ -171,12 +212,22 @@ public class JwtUtils {
         String kid = jwsHeader.getKeyID();
         String alg = jwsHeader.getAlgorithm().getName();
 
-        String jwkString = tokenRepository.findByJwtID(kid)
-            .map(Token::getJwk)
-            .map(Base64::from)
-            .map(Base64::decode)
-            .map(String::new)
-            .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND));
+        TokenDto token;
+        if(!CollectionUtils.isEmpty(tokenLocalRepository) && tokenLocalRepository.get(userId).getSignedJWT().equals(signedJwt))
+            token = tokenLocalRepository.get(userId);
+        else if(!CollectionUtils.isEmpty(refreshTokenLocalRepository) && refreshTokenLocalRepository.get(userId).getSignedJWT().equals(signedJwt))
+            token = refreshTokenLocalRepository.get(userId);
+        else {
+            token = TokenMapper.MAPPER.toDto(tokenRepository.findByJwtID(kid).orElseThrow(
+                () -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND))).toBuilder()
+                .signedJWT(signedJwt).build();
+            if(token.isRefreshToken())
+                refreshTokenLocalRepository.put(token.getUserId(), token);
+            else
+                tokenLocalRepository.put(token.getUserId(), token);
+        }
+
+        String jwkString = new String(Base64.from(token.getJwk()).decode());
 
         // header must have algorithm("alg") and "kid"
         Preconditions.checkNotNull(jwsHeader.getAlgorithm());
@@ -207,8 +258,28 @@ public class JwtUtils {
         OctetKeyPair publicJWK = OctetKeyPair.parse(jwk.toJSONString()).toPublicJWK();
 
         Preconditions.checkNotNull(publicJWK);
+        Preconditions.checkArgument(!token.isExpired());
         JWSVerifier jwsVerifier = new Ed25519Verifier(publicJWK);
         return signedJwt.verify(jwsVerifier);
 
     }
+
+    public static void cleanLocalTokensFromUserId(@NotNull Integer userId, boolean cleanRecoveryToken) {
+        tokenLocalRepository.remove(userId);
+        if(cleanRecoveryToken)
+            refreshTokenLocalRepository.remove(userId);
+    }
+
+    public static TokenDto getBySignedJwtFromLocal(SignedJWT signedJWT, boolean isRecoveryToken) throws ParseException {
+        Integer userId = Integer.valueOf(signedJWT.getJWTClaimsSet().getSubject());
+
+        if(tokenLocalRepository.get(userId) != null && !isRecoveryToken)
+            return tokenLocalRepository.get(userId);
+
+        if(refreshTokenLocalRepository.get(userId) != null && isRecoveryToken)
+            return refreshTokenLocalRepository.get(userId);
+
+        return null;
+    }
+
 }

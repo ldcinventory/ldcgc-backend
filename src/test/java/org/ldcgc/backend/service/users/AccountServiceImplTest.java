@@ -272,7 +272,7 @@ class AccountServiceImplTest {
         assertTrue(Objects.nonNull(ex));
 
         assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
-        assertEquals(Messages.Error.JWT_NOT_FOR_RECOVERY, ex.getMessage());
+        assertEquals(Messages.Error.JWT_NOT_FOR_RECOVERY_REFRESH, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
     }
