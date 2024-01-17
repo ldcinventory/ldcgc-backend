@@ -7,6 +7,8 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.util.common.ERole;
 
+import java.time.LocalDateTime;
+
 @Value
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,5 +21,7 @@ public class UserDto {
     VolunteerDto volunteer;
     CategoryDto responsibility;
     GroupDto group;
+    LocalDateTime tokenExpires;
+    LocalDateTime refreshExpires;
 
 }

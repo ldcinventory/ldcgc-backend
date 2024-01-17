@@ -12,6 +12,7 @@ import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.TokenDto;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
+import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.mapper.users.TokenMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
@@ -42,6 +43,7 @@ import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId
 import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
+import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
 
 @Component
@@ -71,7 +73,8 @@ public class AccountServiceImpl implements AccountService {
 
         HttpHeaders headers = new HttpHeaders();
 
-        headers.add("x-refresh-token", jwtUtils.generateRefreshToken(userEntity).getParsedString());
+        SignedJWT refreshToken = jwtUtils.generateRefreshToken(userEntity);
+        headers.add("x-refresh-token", refreshToken.getParsedString());
 
         SignedJWT jwt = jwtUtils.generateNewToken(userEntity);
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
@@ -91,7 +94,12 @@ public class AccountServiceImpl implements AccountService {
                 return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
         }
 
-        return Constructor.buildResponseObjectHeader(HttpStatus.OK, UserMapper.MAPPER.toDTO(userEntity), headers);
+        UserDto userDto = UserMapper.MAPPER.toDTO(userEntity).toBuilder()
+            .tokenExpires(convertDateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
+            .refreshExpires(convertDateToLocalDateTime(refreshToken.getJWTClaimsSet().getExpirationTime()))
+            .build();
+
+        return Constructor.buildResponseObjectHeader(HttpStatus.OK, userDto, headers);
     }
 
     public ResponseEntity<?> logout(String token) throws ParseException {
