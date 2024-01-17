@@ -1,6 +1,7 @@
 package org.ldcgc.backend.base.mock;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -14,16 +15,20 @@ import com.nimbusds.jose.jwk.OctetKeyPair;
 import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.Setter;
 import org.ldcgc.backend.db.model.users.User;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class MockedToken {
 
     private static final String ISSUER_URL = "https://gc8inventory.es";
+    @Setter private static Boolean isRefreshToken = false;
+
 
     public static SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
         // Generate a key pair with Ed25519 curve
@@ -37,10 +42,13 @@ public class MockedToken {
         // Create the EdDSA signer
         JWSSigner signer = new Ed25519Signer(jwk);
 
-        Map<String, Object> claims = Map.of(
-            "email", user.getEmail(),
-            "role", user.getRole().getRoleName()
-        );
+        Map<String, String> claims = new HashMap<>()
+        {{
+            put("email", user.getEmail());
+            put("role", user.getRole().getRoleName());
+            if(isRefreshToken)
+                put("refresh-token", "true");
+        }};
 
         Date now = new Date();
         // expiration time is set by parameter (default: 24 hours -> 86400 seconds)
@@ -52,7 +60,7 @@ public class MockedToken {
             .issuer(ISSUER_URL)
             .issueTime(now)
             .subject(user.getId().toString())
-            .claim("userClaims", claims)
+            .claim("userClaims", ImmutableMap.copyOf(claims))
             .expirationTime(expirationTime)
             .build();
 
@@ -86,6 +94,11 @@ public class MockedToken {
         } catch (ParseException | JOSEException e) {
             return null;
         }
+    }
+
+    public static SignedJWT generateRefreshToken(User user) throws ParseException, JOSEException {
+        setIsRefreshToken(true);
+        return generateNewToken(user);
     }
 
 }

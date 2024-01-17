@@ -44,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateRefreshToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atMostOnce;
@@ -122,6 +123,7 @@ class AccountServiceImplTest {
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
         doReturn(generateNewToken(user)).when(jwtUtils).generateNewToken(user);
+        doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
         assertTrue(Objects.nonNull(response));
@@ -144,6 +146,7 @@ class AccountServiceImplTest {
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
         doReturn(generateNewToken(user)).when(jwtUtils).generateNewToken(user);
+        doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
         assertTrue(Objects.nonNull(response));
@@ -166,6 +169,7 @@ class AccountServiceImplTest {
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
         doReturn(generateNewToken(user)).when(jwtUtils).generateNewToken(user);
+        doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
         assertTrue(Objects.nonNull(response));

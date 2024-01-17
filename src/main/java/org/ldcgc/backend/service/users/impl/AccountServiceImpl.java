@@ -126,8 +126,7 @@ public class AccountServiceImpl implements AccountService {
         SignedJWT jwt = jwtUtils.getDecodedJwt(token);
 
         // check exists
-        boolean isRefreshToken = ((Map) jwt.getJWTClaimsSet().getClaim("userClaims"))
-            .get("refresh-token").equals("true");
+        boolean isRefreshToken = "true".equals(((Map) jwt.getJWTClaimsSet().getClaim("userClaims")).get("refresh-token"));
         TokenDto tokenDto = getBySignedJwtFromLocal(jwt, isRefreshToken);
 
 
