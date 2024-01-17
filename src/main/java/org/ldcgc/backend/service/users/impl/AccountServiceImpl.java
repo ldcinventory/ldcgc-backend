@@ -174,11 +174,16 @@ public class AccountServiceImpl implements AccountService {
         tokenRepository.deleteNonRefreshTokensFromUser(user.getId());
 
         SignedJWT jwt = jwtUtils.generateNewToken(user);
+        SignedJWT refreshJwt = jwtUtils.getDecodedJwt(refreshToken);
 
         response.setHeader("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         response.setHeader("x-signature-token", jwt.getParsedParts()[2].toString());
 
-        return Constructor.buildResponseMessage(HttpStatus.CREATED, Messages.Info.TOKEN_REFRESHED);
+        UserDto userDto = UserDto.builder()
+            .tokenExpires(convertDateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
+            .refreshExpires(convertDateToLocalDateTime(refreshJwt.getJWTClaimsSet().getExpirationTime())).build();
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.TOKEN_REFRESHED, userDto);
     }
 
 }
