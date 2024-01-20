@@ -1,5 +1,6 @@
 package org.ldcgc.backend.controller.resources.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.resources.ToolController;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;
@@ -9,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@RequiredArgsConstructor
 public class ToolControllerImpl implements ToolController {
 
-    @Autowired
-    private ToolService toolService;
+    private final ToolService toolService;
 
     public ResponseEntity<?> getTool(Integer toolId) { return toolService.getTool(toolId); }
 

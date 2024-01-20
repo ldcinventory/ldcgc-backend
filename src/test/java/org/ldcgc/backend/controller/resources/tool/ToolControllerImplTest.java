@@ -11,7 +11,9 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -30,11 +32,11 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 class ToolControllerImplTest {
 
-    @InjectMocks
-    private ToolController controller = new ToolControllerImpl();
+    @Autowired
+    private ToolController controller;
     private final PodamFactory factory = new PodamFactoryImpl();
     static ObjectMapper objectMapper = new ObjectMapper();
-    @Mock
+    @MockBean
     private ToolService service;
 
     @BeforeAll
