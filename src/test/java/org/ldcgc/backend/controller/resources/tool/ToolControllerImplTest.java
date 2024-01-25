@@ -1,58 +1,94 @@
 package org.ldcgc.backend.controller.resources.tool;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeAll;
+import org.hibernate.validator.HibernateValidator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
 import org.ldcgc.backend.controller.resources.ToolController;
-import org.ldcgc.backend.controller.resources.impl.ToolControllerImpl;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 class ToolControllerImplTest {
 
+    private final String requestRoot = "/resources/tools";
     @Autowired
     private ToolController controller;
+    @Autowired private ObjectMapper mapper;
     private final PodamFactory factory = new PodamFactoryImpl();
-    static ObjectMapper objectMapper = new ObjectMapper();
     @MockBean
     private ToolService service;
 
-    @BeforeAll
-    static void init() {
-        objectMapper.registerModule(new JavaTimeModule());
+    private MockMvc mockMvc;
+    @BeforeEach
+    void init() {
+        final GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
+        context.refresh();
+
+        LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
+        validatorFactoryBean.setApplicationContext(context);
+        validatorFactoryBean.setConstraintValidatorFactory(new TestConstrainValidationFactory(context));
+        validatorFactoryBean.setProviderClass(HibernateValidator.class);
+        validatorFactoryBean.afterPropertiesSet();
+
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
+                .setValidator(validatorFactoryBean)
+                .setHandlerExceptionResolvers()
+                .build();
     }
 
     @Test
-    void postShouldReturnResponseEntity() {
+    void postShouldReturnResponseEntity() throws Exception {
         ToolDto tool = ToolDto.builder().build();
+        Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.TOOL_CREATED).data(tool).build();
+        ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
+        mockMvc.perform(postRequest(requestRoot, ERole.ROLE_ADMIN)
+                    .content(mapper.writeValueAsString(tool)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().json(mapper.writeValueAsString(response)))
+                .andExpect(content().encoding(StandardCharsets.UTF_8));
+
+        /*
         doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
         ResponseEntity<?> response = controller.createTool(tool);
 
         verify(service, times(1)).createTool(tool);
-        assertTrue(Objects.nonNull(response));
+        assertTrue(Objects.nonNull(response));*/
     }
 
     @Test
