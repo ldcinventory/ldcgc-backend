@@ -1,20 +1,30 @@
 package org.ldcgc.backend.controller.resources.tool;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
+import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.controller.resources.ToolController;
+import org.ldcgc.backend.db.repository.users.TokenRepository;
+import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.security.jwt.JwtUtils;
+import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.validator.UserValidation;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockServletContext;
@@ -27,33 +37,53 @@ import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@Slf4j
+@WebMvcTest(controllers = ToolController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ToolControllerImplTest {
 
-    private final String requestRoot = "/resources/tools";
-    @Autowired
-    private ToolController controller;
+    // controller
+    @Autowired private ToolController toolController;
+
+    // service
+    @MockBean private ToolService toolService;
+
+    // authentication
+    @MockBean private JwtUtils jwtUtils;
+    @MockBean private UserRepository userRepository;
+    @MockBean private UserValidation userValidation;
+    @MockBean private UserDetailsServiceImpl userDetailsService;
+    @MockBean private TokenRepository tokenRepository;
+
+    // other
+    @MockBean private ContextConstants contextConstants;
     @Autowired private ObjectMapper mapper;
+
     private final PodamFactory factory = new PodamFactoryImpl();
-    @MockBean
-    private ToolService service;
+    private final String requestRoot = "/resources/tools";
 
     private MockMvc mockMvc;
+
     @BeforeEach
-    void init() {
+    void init() throws ParseException {
         final GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
+        final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) context).getBeanFactory();
+        beanFactory.registerSingleton(UserValidation.class.getCanonicalName(), UserValidation.bean(userRepository, jwtUtils));
         context.refresh();
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
@@ -68,6 +98,9 @@ class ToolControllerImplTest {
                 .setValidator(validatorFactoryBean)
                 .setHandlerExceptionResolvers()
                 .build();
+
+        setAuthenticationForRequest();
+
     }
 
     @Test
@@ -163,5 +196,10 @@ class ToolControllerImplTest {
         assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).getFirst().getClass());
     }
 
+    private void setAuthenticationForRequest() throws ParseException {
+        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
+        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
+        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
+    }
 
 }
