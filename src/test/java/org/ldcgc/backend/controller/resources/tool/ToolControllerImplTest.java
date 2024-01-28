@@ -63,7 +63,7 @@ class ToolControllerImplTest {
         validatorFactoryBean.afterPropertiesSet();
 
         mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
+                .standaloneSetup(toolController)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .setValidator(validatorFactoryBean)
                 .setHandlerExceptionResolvers()
@@ -95,8 +95,8 @@ class ToolControllerImplTest {
     void postShouldReturnSameToolDtoBody() {
         ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
-        ResponseEntity<?> response = controller.createTool(tool);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(toolService).createTool(tool);
+        ResponseEntity<?> response = toolController.createTool(tool);
 
         assertEquals(tool, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData());
     }
@@ -106,11 +106,11 @@ class ToolControllerImplTest {
         Integer toolId = factory.manufacturePojo(Integer.class);
         ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).getTool(toolId);
-        ResponseEntity<?> response = controller.getTool(toolId);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(toolService).getTool(toolId);
+        ResponseEntity<?> response = toolController.getTool(toolId);
 
         assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
-        verify(service, times(1)).getTool(toolId);
+        verify(toolService, times(1)).getTool(toolId);
     }
 
     @Test
@@ -118,10 +118,10 @@ class ToolControllerImplTest {
         Integer toolId = factory.manufacturePojo(Integer.class);
         ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).updateTool(toolId, tool);
-        ResponseEntity<?> response = controller.updateTool(toolId, tool);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(toolService).updateTool(toolId, tool);
+        ResponseEntity<?> response = toolController.updateTool(toolId, tool);
 
-        verify(service, times(1)).updateTool(toolId, tool);
+        verify(toolService, times(1)).updateTool(toolId, tool);
         assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
     }
 
@@ -130,35 +130,35 @@ class ToolControllerImplTest {
         Integer toolId = factory.manufacturePojo(Integer.class);
         ToolDto tool = factory.manufacturePojo(ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).deleteTool(toolId);
-        ResponseEntity<?> response = controller.deleteTool(toolId);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(toolService).deleteTool(toolId);
+        ResponseEntity<?> response = toolController.deleteTool(toolId);
 
-        verify(service, times(1)).deleteTool(toolId);
+        verify(toolService, times(1)).deleteTool(toolId);
         assertEquals(ToolDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
     }
 
     @Test
     void getAllShouldCallService() {
-        controller.getAllTools(0, 25, "name", "", "", "", null);
+        toolController.getAllTools(0, 25, "name", "", "", "", null);
 
-        verify(service, times(1)).getAllTools(0, 25, "name", "", "", "", null);
+        verify(toolService, times(1)).getAllTools(0, 25, "name", "", "", "", null);
     }
 
     @Test
     void uploadToolsExcelShouldCallService(){
         MultipartFile file = factory.manufacturePojo(MultipartFile.class);
-        controller.uploadToolsExcel(file);
-        verify(service, times(1)).uploadToolsExcel(file);
+        toolController.uploadToolsExcel(file);
+        verify(toolService, times(1)).uploadToolsExcel(file);
     }
 
     @Test
     void getAllShouldReturnToolList() {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(service).getAllTools(0, 0, "name", "", "", "", null);
-        ResponseEntity<?> response = controller.getAllTools(0, 0, "name", "", "", "", null);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(toolService).getAllTools(0, 0, "name", "", "", "", null);
+        ResponseEntity<?> response = toolController.getAllTools(0, 0, "name", "", "", "", null);
 
-        verify(service, times(1)).getAllTools(0, 0, "name", "", "", "", null);
+        verify(toolService, times(1)).getAllTools(0, 0, "name", "", "", "", null);
         assertEquals(ArrayList.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
         assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).getFirst().getClass());
     }
