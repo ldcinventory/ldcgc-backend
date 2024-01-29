@@ -1,5 +1,6 @@
 package org.ldcgc.backend.payload.dto.users;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
@@ -21,7 +22,9 @@ public class UserDto {
     VolunteerDto volunteer;
     CategoryDto responsibility;
     GroupDto group;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     LocalDateTime tokenExpires;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     LocalDateTime refreshExpires;
 
 }
