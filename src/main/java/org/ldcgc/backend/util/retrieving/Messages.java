@@ -76,6 +76,7 @@ public class Messages {
             TOKEN_NOT_PARSEABLE = "This token is not parseable",
             TOKEN_NOT_VALID = "This token is not valid",
             TOKEN_NOT_FOUND = "This token doesn't exist in DB",
+            TOKEN_EXPIRED = "This token is expired",
             JWT_NOT_FOR_RECOVERY_REFRESH = "This token is not for recover the account or refresh actual expired token. Sorry, mate!",
             RECOVERY_TOKEN_NOT_VALID_NOT_FOUND = "This recovery token is not valid or is not found",
             REFRESH_TOKEN_NOT_VALID = "This refresh token is not valid",
