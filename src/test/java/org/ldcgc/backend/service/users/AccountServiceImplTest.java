@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.ldcgc.backend.base.mock.MockedToken;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -28,6 +29,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.thymeleaf.TemplateEngine;
@@ -40,6 +43,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
@@ -126,15 +130,15 @@ class AccountServiceImplTest {
         doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTOWithLocation responseBody = (Response.DTOWithLocation) response.getBody();
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals(Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Objects.requireNonNull(responseBody).getMessage());
         assertEquals(Messages.App.EULA_ENDPOINT, responseBody.getLocation());
-        assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
-        assertTrue(Objects.nonNull(response.getHeaders().get("x-signature-token")));
+        assertNotNull(response.getHeaders().get("x-header-payload-token"));
+        assertNotNull(response.getHeaders().get("x-signature-token"));
 
     }
 
@@ -149,15 +153,15 @@ class AccountServiceImplTest {
         doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTOWithLocation responseBody = (Response.DTOWithLocation) response.getBody();
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals(Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Objects.requireNonNull(responseBody).getMessage());
         assertEquals(Messages.App.EULA_ENDPOINT, responseBody.getLocation());
-        assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
-        assertTrue(Objects.nonNull(response.getHeaders().get("x-signature-token")));
+        assertNotNull(response.getHeaders().get("x-header-payload-token"));
+        assertNotNull(response.getHeaders().get("x-signature-token"));
 
     }
 
@@ -172,14 +176,14 @@ class AccountServiceImplTest {
         doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(Objects.requireNonNull(responseBody).getData().getClass(), UserDto.class);
-        assertTrue(Objects.nonNull(response.getHeaders().get("x-header-payload-token")));
-        assertTrue(Objects.nonNull(response.getHeaders().get("x-signature-token")));
+        assertNotNull(response.getHeaders().get("x-header-payload-token"));
+        assertNotNull(response.getHeaders().get("x-signature-token"));
     }
 
     // -> logout
@@ -192,7 +196,7 @@ class AccountServiceImplTest {
         doReturn(1).when(jwtUtils).getUserIdFromJwtToken(mockedSignedToken);
 
         ResponseEntity<?> response = accountService.logout(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -233,7 +237,7 @@ class AccountServiceImplTest {
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
 
         ResponseEntity<?> response = accountService.recoverCredentials(userCredentials);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -254,10 +258,10 @@ class AccountServiceImplTest {
         doReturn(Optional.empty()).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
-        assertTrue(Objects.nonNull(ex));
+        assertNotNull(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
-        assertEquals(Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND, ex.getMessage());
+        assertEquals(Messages.Error.TOKEN_NOT_FOUND, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
 
@@ -268,12 +272,14 @@ class AccountServiceImplTest {
         SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(false);
+        mockedTokenEntity.setIssuedAt(LocalDateTime.now());
+        mockedTokenEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
         doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
-        assertTrue(Objects.nonNull(ex));
+        assertNotNull(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.JWT_NOT_FOR_RECOVERY_REFRESH, ex.getMessage());
@@ -282,10 +288,12 @@ class AccountServiceImplTest {
     }
 
     @Test
-    public void whenValidatingToken_returnUserNotFound() throws ParseException, JOSEException {
+    public void whenValidatingToken_returnUserNotFoundToken() throws ParseException, JOSEException {
         SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(true);
+        mockedTokenEntity.setIssuedAt(LocalDateTime.now());
+        mockedTokenEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
         doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
@@ -295,10 +303,36 @@ class AccountServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findById(userIdFromTokenString);
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
-        assertTrue(Objects.nonNull(ex));
+        assertNotNull(ex);
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
-        assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
+        assertEquals(Messages.Error.USER_NOT_FOUND_TOKEN, ex.getMessage());
+
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
+
+    }
+
+    @Test
+    public void whenValidatingToken_returnTokenExpired() throws ParseException, JOSEException {
+        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        Token mockedTokenEntity = factory.manufacturePojo(Token.class);
+        mockedTokenEntity.setRecoveryToken(true);
+        mockedTokenEntity.setIssuedAt(LocalDateTime.now().minusDays(1).minusMinutes(1));
+        mockedTokenEntity.setExpiresAt(LocalDateTime.now().minusMinutes(1));
+
+        doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
+        doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+
+        Integer userIdFromTokenString = mockedTokenEntity.getUserId();
+        doReturn(userIdFromTokenString).when(jwtUtils).getUserIdFromJwtToken(mockedSignedToken);
+        doReturn(Optional.empty()).when(userRepository).findById(userIdFromTokenString);
+
+        RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
+        assertNotNull(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
+        assertEquals(Messages.Error.TOKEN_EXPIRED, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
         verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
@@ -310,6 +344,8 @@ class AccountServiceImplTest {
         SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(true);
+        mockedTokenEntity.setIssuedAt(LocalDateTime.now());
+        mockedTokenEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
         doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
@@ -319,7 +355,7 @@ class AccountServiceImplTest {
         doReturn(Optional.of(USER_STANDARD)).when(userRepository).findById(userIdFromTokenString);
 
         ResponseEntity<?> response = accountService.validateToken(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
@@ -346,7 +382,7 @@ class AccountServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findByEmail(userCredentials.getEmail());
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.newCredentials(userCredentials));
-        assertTrue(Objects.nonNull(ex));
+        assertNotNull(ex);
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
@@ -374,7 +410,7 @@ class AccountServiceImplTest {
         doReturn(Optional.of(USER_STANDARD)).when(userRepository).findByEmail(userCredentials.getEmail());
 
         ResponseEntity<?> response = accountService.newCredentials(userCredentials);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
@@ -388,6 +424,46 @@ class AccountServiceImplTest {
         verify(jwtUtils, times(0)).getUserIdFromJwtToken(Mockito.any(SignedJWT.class));
         verify(userRepository, times(0)).findById(Mockito.anyInt());
 
+    }
+
+    @Test
+    public void whenRefreshingToken_returnRefreshToken() throws ParseException, JOSEException {
+        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        Token mockedTokenEntity = factory.manufacturePojo(Token.class);
+        mockedTokenEntity.setRefreshToken(true);
+        mockedTokenEntity.setIssuedAt(LocalDateTime.now());
+        mockedTokenEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
+
+        SignedJWT mockedRefreshToken = MockedToken.generateRefreshToken(USER_STANDARD);
+
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+
+        doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
+        doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+
+        Integer userIdFromTokenString = mockedTokenEntity.getUserId();
+        doReturn(userIdFromTokenString).when(jwtUtils).getUserIdFromJwtToken(mockedSignedToken);
+        doReturn(Optional.of(USER_STANDARD)).when(userRepository).findById(userIdFromTokenString);
+        doReturn(mockedSignedToken).when(jwtUtils).generateNewToken(USER_STANDARD);
+
+        ResponseEntity<?> response = accountService.refreshToken(httpRequest, httpResponse, mockedToken);
+        assertNotNull(response);
+
+        Response.DTO responseBody = (Response.DTO) response.getBody();
+        UserDto userDto = (UserDto) responseBody.getData();
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(Messages.Info.TOKEN_REFRESHED, Objects.requireNonNull(responseBody).getMessage());
+        assertNotNull(httpResponse.getHeader("x-header-payload-token"));
+        assertNotNull(httpResponse.getHeader("x-signature-token"));
+        assertNotNull(httpResponse.getHeader("x-refresh-token"));
+        assertNotNull(userDto);
+        assertNotNull(userDto.getTokenExpires());
+        assertNotNull(userDto.getRefreshExpires());
+
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
     }
 
     private String encodePassword(String password) {

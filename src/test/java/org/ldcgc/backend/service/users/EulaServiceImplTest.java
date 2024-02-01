@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
@@ -105,7 +106,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.getEULA(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
@@ -135,7 +136,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         response = eulaService.getEULA(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -164,7 +165,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         ResponseEntity<?> response = eulaService.getEULA(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -190,7 +191,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.getEULA(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
@@ -217,7 +218,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         ResponseEntity<?> response = eulaService.getEULA(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -270,7 +271,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.ACCEPT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
@@ -297,7 +298,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.ACCEPT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -324,7 +325,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.ACCEPT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
@@ -347,7 +348,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         response = eulaService.putEULA(mockedToken, EEULAStatus.ACCEPT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -374,7 +375,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.ACCEPT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -402,7 +403,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.PENDING);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
@@ -429,7 +430,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager1)).when(userRepository).findById(userManager1.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.PENDING);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager1.getId());
@@ -452,7 +453,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager2)).when(userRepository).findById(userManager2.getId());
 
         response = eulaService.putEULA(mockedToken, EEULAStatus.PENDING);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager2.getId());
@@ -480,7 +481,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.REJECT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
@@ -504,7 +505,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
 
         response = eulaService.putEULA(mockedToken, EEULAStatus.REJECT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -535,7 +536,7 @@ class EulaServiceImplTest {
         doReturn(userManager).when(userRepository).save(userManager);
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.REJECT);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
@@ -563,7 +564,7 @@ class EulaServiceImplTest {
         doReturn(Optional.of(userStandard)).when(userRepository).findById(userStandard.getId());
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.DELETE);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());

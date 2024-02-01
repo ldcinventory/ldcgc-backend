@@ -31,13 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -184,7 +182,7 @@ class VolunteerServiceImplTest {
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
         ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, builderAssistantId);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
@@ -204,7 +202,7 @@ class VolunteerServiceImplTest {
         doReturn(userPage).when(volunteerRepository).findAll(any(Pageable.class));
 
         ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, null, null);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -225,7 +223,7 @@ class VolunteerServiceImplTest {
         doReturn(userPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
 
         ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, "x", null);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
