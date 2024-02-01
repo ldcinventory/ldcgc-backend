@@ -18,6 +18,7 @@ import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.ldcgc.backend.util.common.ConsumableExcelProcess;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,43 +57,29 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     @Override
     public ResponseEntity<?> createConsumable(ConsumableDto consumable) {
-        Consumable consumableEntity = ConsumableMapper.MAPPER.toMo(consumable);
+        Optional<Consumable> repeatedConsumable = consumableRepository.findFirstByBarcode(consumable.getBarcode());
+        if(repeatedConsumable.isPresent()){
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumable.getBarcode()));
+        }
         try {
-            consumableRepository.saveAndFlush(consumableEntity);
-            return Constructor.buildResponseObject(HttpStatus.OK, consumableEntity);
+           Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumable));
+            return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
         } catch(Exception e){
-            return Constructor.buildResponseMessage(HttpStatus.NOT_MODIFIED, e.getMessage());
+            return Constructor.buildResponseMessage(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @Override
-    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String filterString) {
-        Map<String, Object> response = new HashMap<>();
-        Page<Consumable> consumablePaged;
-        List<ConsumableDto> consumableDto = new ArrayList<>();
+    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String sortField, String filterString) {
 
-        Pageable pageable = PageRequest.of(pageIndex, sizeIndex, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageIndex, sizeIndex, Sort.by(sortField));
 
         try{
-            if(filterString == null){
 
-                consumablePaged = consumableRepository.findAll(pageable);
+            Page<ConsumableDto> consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable)
+                        .map(ConsumableMapper.MAPPER::toDto);
 
-            } else {
-
-                consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable);
-
-            }
-
-            consumablePaged.forEach(consumable -> {
-                //System.out.println("Consumable: " + consumable.getName() + " - " +consumable.getDescription());
-                consumableDto.add(ConsumableMapper.MAPPER.toDto(consumable));
-            });
-            response.put("totalPages", consumablePaged.getTotalPages());
-            response.put("totalRecords", consumablePaged.getTotalElements());
-            response.put("consumables", consumableDto);
-
-            return Constructor.buildResponseMessagePageable(HttpStatus.OK, String.format(getInfoMessage(CONSUMABLE_LISTED), consumablePaged.getTotalElements()), response);
+            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(CONSUMABLE_LISTED), consumablePaged.getTotalElements()), consumablePaged);
 
         } catch (Exception e){
             System.out.println(e.getMessage());
@@ -102,10 +89,14 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     @Override
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto) {
-        Consumable consumableEntity = ConsumableMapper.MAPPER.toMo(consumableDto);
+
+        Optional<Consumable> repeatedConsumable = consumableRepository.findFirstByBarcode(consumableDto.getBarcode());
+        if(repeatedConsumable.isPresent()){
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
+        }
         try{
-            consumableRepository.saveAndFlush(consumableEntity);
-            return Constructor.buildResponseObject(HttpStatus.OK, consumableEntity);
+            consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumableDto));
+            return Constructor.buildResponseObject(HttpStatus.OK, consumableDto);
         } catch(Exception e){
             return Constructor.buildResponseMessage(HttpStatus.NOT_MODIFIED, e.getMessage());
         }
@@ -116,14 +107,12 @@ public class ConsumableServiceImpl implements ConsumableService {
         Optional<Consumable> consumable = consumableRepository.findById(consumableId);
         if(consumable.isEmpty()){
             return Constructor.buildResponseMessage(HttpStatus.OK, String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId));//String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId)
-        } else {
-            try{
-                consumableRepository.deleteById(consumableId);
-                return Constructor.buildResponseMessage(HttpStatus.OK, "Record deleted");
-            } catch(Exception e){
-                System.out.println(e.getMessage());
-                return Constructor.buildResponseMessage(HttpStatus.UNPROCESSABLE_ENTITY, "Error, record not deleted. ");
-            }
+        }
+        try{
+            consumableRepository.deleteById(consumableId);
+            return Constructor.buildResponseMessage(HttpStatus.OK, "Record deleted");
+        } catch(Exception e){
+            return Constructor.buildResponseMessage(HttpStatus.UNPROCESSABLE_ENTITY, "Error, record not deleted. ");
         }
 
     }
@@ -137,7 +126,10 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         consumableRepository.saveAll(consumableToSave.stream().map(ConsumableMapper.MAPPER::toMo).toList());
 
-        return null;
+        return Constructor.buildResponseMessageObject(
+                HttpStatus.OK,
+                String.format(Messages.Info.TOOL_UPLOADED, consumableToSave.size()),
+                consumableToSave);
     }
     private List<ConsumableDto> convertExcelToConsumable(List<ConsumableExcelDto> consumablesExcel){
         List<ConsumableDto> consumable = consumableRepository.findByBarcodeIn(consumablesExcel.stream().map(ConsumableExcelDto::getBarcode).toList())

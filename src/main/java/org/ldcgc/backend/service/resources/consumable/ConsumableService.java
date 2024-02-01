@@ -11,7 +11,7 @@ public interface ConsumableService {
 
     ResponseEntity<?> createConsumable(ConsumableDto consumable);
 
-    ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String filterString);
+    ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String sortField, String filterString);
 
     ResponseEntity<?> updateConsumable(ConsumableDto consumableDto);
 

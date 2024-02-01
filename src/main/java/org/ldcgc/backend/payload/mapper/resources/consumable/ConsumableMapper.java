@@ -18,10 +18,8 @@ public interface ConsumableMapper {
 
     ConsumableMapper MAPPER = Mappers.getMapper(ConsumableMapper.class);
 
-    //@Mapping(source = "status.name", target = "status")
     ConsumableDto toDto(Consumable consumable);
 
-    //@Mapping(target = "status", ignore = true)
     Consumable toMo(ConsumableDto consumableDto);
     List<Consumable> toMo(List<ConsumableDto> consumable);
 }

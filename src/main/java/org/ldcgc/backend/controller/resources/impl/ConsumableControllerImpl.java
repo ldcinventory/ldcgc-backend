@@ -25,16 +25,6 @@ public class ConsumableControllerImpl implements ConsumableController{
     @Autowired
     private CategoryService categoryService;
 
-    @Override
-    public ResponseEntity<?> testAccessWithCredentials() {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<?> testAccessWithAdminCredentials() {
-        return null;
-    }
-
     public ResponseEntity<?> getConsumable(Integer consumableId) {
         return consumableService.getConsumable(consumableId);
     }
@@ -49,8 +39,8 @@ public class ConsumableControllerImpl implements ConsumableController{
     }
 
     @Override
-    public ResponseEntity<?> listConsumables(Integer page, Integer size, String filter) {
-        return consumableService.listConsumables(page, size, filter);
+    public ResponseEntity<?> listConsumables(Integer page, Integer size, String sortField, String filter) {
+        return consumableService.listConsumables(page, size, sortField, filter);
     }
 
     @Override

@@ -107,6 +107,10 @@ public class Messages {
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode (%s) in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
 
+            CONSUMABLE_NOT_FOUND = "Consumable with id %s not found",
+            CONSUMABLE_BARCODE_ALREADY_EXISTS = "There is another consumable with the same barcode (%s) in the database. Please make sure that the barcode is unique",
+            CONSUMABLE_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the consumable id is null",
+
             STATUS_NOT_FOUND = "Status %s not found",
 
             LOCATION_NOT_FOUND = "Location with id %s not found.",

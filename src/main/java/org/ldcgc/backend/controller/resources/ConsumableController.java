@@ -30,14 +30,6 @@ public interface ConsumableController {
     //  Delete consumable DELETE
     //   |-> (/resources/consumables/{consumableId})
 
-    @GetMapping("/user")
-    @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> testAccessWithCredentials();
-
-    @GetMapping("/admin")
-    @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> testAccessWithAdminCredentials();
-
     @GetMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
@@ -54,7 +46,8 @@ public interface ConsumableController {
     //@PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer page,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
-                                      @RequestParam(required = false) String filter);
+                                      @RequestParam(required = false, defaultValue = "id") String sortField,
+                                      @RequestParam(required = false, defaultValue = "") String filter );
 
     @DeleteMapping("/{consumableId}")
     @PreAuthorize("hasAnyRole('ADMIN')")

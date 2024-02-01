@@ -39,9 +39,10 @@ class ConsumableServiceImplTest {
     void listConsumables() {
         int pageIndex = 0;
         int sizeIndex = 10;
+        String sortField = "";
         String filter = "";
-        controller.listConsumables(pageIndex, sizeIndex, filter);
-        verify(consumableService, times(1)).listConsumables(pageIndex, sizeIndex, filter);
+        controller.listConsumables(pageIndex, sizeIndex, sortField, filter);
+        verify(consumableService, times(1)).listConsumables(pageIndex, sizeIndex, sortField, filter);
     }
 
     @Test
