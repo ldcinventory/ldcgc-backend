@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_NON_LOGGED;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
@@ -34,7 +36,7 @@ import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 @Tag(name = "Accounts", description = "Account methods with CRUD functions")
 public interface AccountController {
 
-    @Operation(summary = "Perform a login for a user")
+    @Operation(summary = "Perform a login for a user", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -62,7 +64,7 @@ public interface AccountController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
-    @Operation(summary = "Perform a logout for a user")
+    @Operation(summary = "Perform a logout for a user", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -85,7 +87,7 @@ public interface AccountController {
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
-    @Operation(summary = "Send recovery credentials (an email with token in url)")
+    @Operation(summary = "Send recovery credentials (an email with token in url)", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -116,7 +118,7 @@ public interface AccountController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email)", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
-    @Operation(summary = "Validate recovery token from email")
+    @Operation(summary = "Validate recovery token from email", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -147,7 +149,7 @@ public interface AccountController {
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestParam(name = "recovery-token") String token) throws ParseException;
 
-    @Operation(summary = "Set new credentials for the user")
+    @Operation(summary = "Set new credentials for the user", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -169,7 +171,7 @@ public interface AccountController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException;
 
-    @Operation(summary = "Set new credentials for the user")
+    @Operation(summary = "Set new credentials for the user", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
