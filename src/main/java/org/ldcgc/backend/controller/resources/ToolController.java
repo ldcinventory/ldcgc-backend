@@ -129,7 +129,6 @@ public interface ToolController {
     @Operation(summary = "Get all tools, paginated and sorted.", description = """
         You can also include 4 filters:
         - brand
-        - brand
         - model
         - description
         - status
