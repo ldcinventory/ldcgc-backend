@@ -1,5 +1,6 @@
 package org.ldcgc.backend.db.repository.resources;
 
+import io.swagger.v3.core.filter.SpecFilter;
 import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
@@ -24,4 +25,6 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
     List<Consumable> findByBarcodeIn(List<String> barcodes);
 
     Optional<Consumable> findFirstByBarcode(String barcode);
+
+    List<Consumable> findAllByBarcode(String barcode);
 }

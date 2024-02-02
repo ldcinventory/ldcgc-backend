@@ -7,6 +7,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
@@ -19,7 +20,7 @@ public interface ConsumableMapper {
     ConsumableMapper MAPPER = Mappers.getMapper(ConsumableMapper.class);
 
     ConsumableDto toDto(Consumable consumable);
-
     Consumable toMo(ConsumableDto consumableDto);
     List<Consumable> toMo(List<ConsumableDto> consumable);
+    void update(ConsumableDto from, @MappingTarget ConsumableDto to);
 }

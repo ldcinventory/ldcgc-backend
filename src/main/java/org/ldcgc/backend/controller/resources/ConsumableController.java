@@ -25,20 +25,6 @@ import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 @RequestMapping("/resources/consumables")
 public interface ConsumableController {
 
-    // TODO
-    //  Create consumable POST
-    //   |-> (/resources/consumables)
-    //  Read all consumables (paginated/filtered) GET
-    //   |-> (/resources/consumables?page={pageIndex}&size={sizeIndex}&filter={filterString})
-    //  Read specific consumable GET
-    //   |-> (/resources/consumables/{consumableId})
-    //  Set barcode for consumable PATCH
-    //   |-> (/resources/consumables/{consumableId})
-    //  Update consumable details PUT
-    //   |-> (/resources/consumables/{consumableId})
-    //  Delete consumable DELETE
-    //   |-> (/resources/consumables/{consumableId})
-
     @Operation(summary = "Get any consumable by providing its id.")
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
@@ -130,7 +116,7 @@ public interface ConsumableController {
                     })
     )
     @GetMapping
-    //@PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer page,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
                                       @RequestParam(required = false, defaultValue = "id") String sortField,

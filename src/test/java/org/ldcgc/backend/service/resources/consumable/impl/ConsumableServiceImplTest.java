@@ -26,6 +26,8 @@ class ConsumableServiceImplTest {
     @InjectMocks private ConsumableController controller = new ConsumableControllerImpl();
     @Mock
     private ConsumableService consumableService;
+
+    //TODO: ACABAR LOS TESTS DEL SERVICIO CON COBERTURA DE 75% O MÁS
     @Test
     void getConsumable() {
 

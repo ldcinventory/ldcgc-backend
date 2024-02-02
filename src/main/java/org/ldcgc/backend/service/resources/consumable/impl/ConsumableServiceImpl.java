@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CONSUMABLE_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.CONSUMABLE_LISTED;
@@ -42,7 +43,6 @@ import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
 @RequiredArgsConstructor
 public class ConsumableServiceImpl implements ConsumableService {
 
-    //@Autowired
     private final ConsumableRepository consumableRepository;
     private final CategoryService categoryService;
     private final LocationService locationService;
@@ -50,71 +50,61 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     @Override
     public ResponseEntity<?> getConsumable(Integer consumableId) {
-        Consumable consumable = consumableRepository.findById(consumableId).orElseThrow(() ->
-                new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId)));
+        Consumable consumable = getOrElseThrow(consumableId);
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumable));
     }
 
     @Override
     public ResponseEntity<?> createConsumable(ConsumableDto consumable) {
-        Optional<Consumable> repeatedConsumable = consumableRepository.findFirstByBarcode(consumable.getBarcode());
-        if(repeatedConsumable.isPresent()){
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumable.getBarcode()));
-        }
-        try {
-           Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumable));
-            return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
-        } catch(Exception e){
-            return Constructor.buildResponseMessage(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+        if(Objects.nonNull(consumable.getId()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_ID_SHOULDNT_BE_PRESENT);
+
+        consumableRepository.findFirstByBarcode(consumable.getBarcode())
+                .ifPresent(repeated -> {
+                    throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumable.getBarcode()));
+                });
+
+        Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumable));
+        return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+
     }
 
     @Override
     public ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String sortField, String filterString) {
-
         Pageable pageable = PageRequest.of(pageIndex, sizeIndex, Sort.by(sortField));
 
-        try{
+        Page<ConsumableDto> consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable)
+                .map(ConsumableMapper.MAPPER::toDto);
 
-            Page<ConsumableDto> consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable)
-                        .map(ConsumableMapper.MAPPER::toDto);
-
-            return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(CONSUMABLE_LISTED), consumablePaged.getTotalElements()), consumablePaged);
-
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            return Constructor.buildResponseMessage(HttpStatus.UNPROCESSABLE_ENTITY, "Error");
-        }
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(CONSUMABLE_LISTED), consumablePaged.getTotalElements()), consumablePaged);
     }
 
     @Override
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto) {
+        ConsumableDto consumableToUpdate = ConsumableMapper.MAPPER.toDto(getOrElseThrow(consumableDto.getId()));
+        consumableRepository.findAllByBarcode(consumableDto.getBarcode()).stream()
+                .filter(repeated -> !repeated.getId().equals(consumableDto.getId()))
+                .findFirst()
+                .ifPresent(repeated -> {
+                    throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
+                });
+        ConsumableMapper.MAPPER.update(consumableDto, consumableToUpdate);
 
-        Optional<Consumable> repeatedConsumable = consumableRepository.findFirstByBarcode(consumableDto.getBarcode());
-        if(repeatedConsumable.isPresent()){
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
-        }
-        try{
-            consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumableDto));
-            return Constructor.buildResponseObject(HttpStatus.OK, consumableDto);
-        } catch(Exception e){
-            return Constructor.buildResponseMessage(HttpStatus.NOT_MODIFIED, e.getMessage());
-        }
+        consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumableToUpdate));
+        return Constructor.buildResponseObject(HttpStatus.OK, consumableDto);
     }
 
     @Override
     public ResponseEntity<?> deleteConsumable(Integer consumableId) {
-        Optional<Consumable> consumable = consumableRepository.findById(consumableId);
-        if(consumable.isEmpty()){
-            return Constructor.buildResponseMessage(HttpStatus.OK, String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId));//String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId)
-        }
-        try{
-            consumableRepository.deleteById(consumableId);
-            return Constructor.buildResponseMessage(HttpStatus.OK, "Record deleted");
-        } catch(Exception e){
-            return Constructor.buildResponseMessage(HttpStatus.UNPROCESSABLE_ENTITY, "Error, record not deleted. ");
-        }
+        Consumable consumable = getOrElseThrow(consumableId);
 
+        consumableRepository.deleteById(consumable.getId());
+        return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_DELETED);
+    }
+
+    private Consumable getOrElseThrow(Integer consumableId) {
+        return consumableRepository.findById(consumableId)
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId)));
     }
 
     @Override
@@ -131,7 +121,8 @@ public class ConsumableServiceImpl implements ConsumableService {
                 String.format(Messages.Info.TOOL_UPLOADED, consumableToSave.size()),
                 consumableToSave);
     }
-    private List<ConsumableDto> convertExcelToConsumable(List<ConsumableExcelDto> consumablesExcel){
+
+    private List<ConsumableDto> convertExcelToConsumable(List<ConsumableExcelDto> consumablesExcel) {
         List<ConsumableDto> consumable = consumableRepository.findByBarcodeIn(consumablesExcel.stream().map(ConsumableExcelDto::getBarcode).toList())
                 .stream()
                 .map(ConsumableMapper.MAPPER::toDto)
@@ -159,6 +150,7 @@ public class ConsumableServiceImpl implements ConsumableService {
                         .build()
                 ).toList();
     }
+
     @Nullable
     private Integer getIdByBarcode(ConsumableExcelDto consumableExcel, List<ConsumableDto> consumable) {
         return consumable.stream()
