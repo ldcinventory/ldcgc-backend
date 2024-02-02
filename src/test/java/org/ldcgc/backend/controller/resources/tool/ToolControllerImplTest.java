@@ -109,6 +109,8 @@ class ToolControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.TOOL_CREATED).data(tool).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
+        doReturn(response).when(toolService).createTool(tool);
+
         mockMvc.perform(postRequest(requestRoot, ERole.ROLE_ADMIN)
                     .content(mapper.writeValueAsString(tool)))
                 .andDo(print())
