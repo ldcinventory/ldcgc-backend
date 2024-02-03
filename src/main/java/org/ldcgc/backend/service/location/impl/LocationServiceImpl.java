@@ -15,18 +15,19 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
-    private final LocationRepository repository;
+
+    private final LocationRepository locationRepository;
 
     @Override
     public List<LocationDto> getAllLocations() {
-        return repository.findAll().stream()
+        return locationRepository.findAll().stream()
             .map(LocationMapper.MAPPER::toDto)
             .toList();
     }
 
     @Override
     public LocationDto findLocationByName(String locationName) {
-        return repository.getLocationByName(locationName)
+        return locationRepository.getLocationByName(locationName)
             .map(LocationMapper.MAPPER::toDto)
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.LOCATION_NOT_FOUND.formatted(locationName)));
 
