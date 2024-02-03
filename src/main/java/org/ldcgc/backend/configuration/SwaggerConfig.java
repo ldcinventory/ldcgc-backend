@@ -41,6 +41,12 @@ public class SwaggerConfig {
         HTTP_REASON_500 = "Internal Server Error",
         HTTP_REASON_501 = "Not Implemented";
 
+    // Swagger constants
+    public static final String SWAGGER_ROLE_OPERATION_ADMIN = "Roles addmited: <b>ADMIN</b>",
+        SWAGGER_ROLE_OPERATION_MANAGER = "Roles addmited: <b>ADMIN</b>, <b>MANAGER</b>",
+        SWAGGER_ROLE_OPERATION_USER = "Roles addmited: <b>ADMIN</b>, <b>MANAGER</b>, <b>STANDARD</b>",
+        SWAGGER_ROLE_OPERATION_NON_LOGGED = "Roles addmited: <b>Non-logged user</b>";
+
     @Bean
     public OpenAPI gc8InventoryAPI() {
         return new OpenAPI()

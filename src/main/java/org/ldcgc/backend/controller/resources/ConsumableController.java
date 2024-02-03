@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+
 @Controller
 @RequestMapping("/resources/consumables")
 public interface ConsumableController {
 
-    @Operation(summary = "Get any consumable by providing its id.")
+    @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -45,7 +47,7 @@ public interface ConsumableController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
 
-    @Operation(summary = "Create a new consumable.")
+    @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -72,7 +74,7 @@ public interface ConsumableController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> createConsumable(@RequestBody ConsumableDto consumable);
 
-    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.")
+    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -100,7 +102,22 @@ public interface ConsumableController {
     ResponseEntity<?> updateConsumable(@RequestBody ConsumableDto consumable);
 
 
-    @Operation(summary = "Get all consumables, paginated and sorted. You can also include 2 filters: name, description and status. Valid status: Disponible, No disponible, En mantenimiento, Dañado, Nueva, En desuso")
+    @Operation(summary = "List consumables", description = """
+        Get all consumables, paginated and sorted. You can also include 2 filters:
+        - name
+        - description
+        - status.
+        
+        Valid status:
+        - Disponible -> ```AVAILABLE```
+        - No disponible -> ```NOT_AVAILABLE```
+        - En mantenimiento -> ```IN_MAINTENANCE```
+        - Dañado -> ```DAMAGED```
+        - Nueva -> ```NEW```
+        - En desuso -> ```DEPRECATED```
+        
+        """
+        + SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -124,7 +141,7 @@ public interface ConsumableController {
                                       @RequestParam(required = false, defaultValue = "") String filter );
 
 
-    @Operation(summary = "Delete an existing consumable.")
+    @Operation(summary = "Delete an existing consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -146,6 +163,7 @@ public interface ConsumableController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
 
+    @Operation(summary = "Load the consumables from an excel (XLS) file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -158,5 +176,6 @@ public interface ConsumableController {
             content = @Content(mediaType = "application/json")
     )
     @PostMapping("/loadExcel")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> loadExcel(@RequestParam("file") MultipartFile file);
 }
