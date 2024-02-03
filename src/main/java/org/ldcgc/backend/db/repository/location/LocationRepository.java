@@ -1,6 +1,5 @@
 package org.ldcgc.backend.db.repository.location;
 
-import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.location.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
 

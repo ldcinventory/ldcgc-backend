@@ -19,7 +19,6 @@ import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.ldcgc.backend.util.common.ConsumableExcelProcess;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +29,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Objects;
 
 import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CONSUMABLE_NOT_FOUND;
 import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.CONSUMABLE_LISTED;

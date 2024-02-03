@@ -1,19 +1,15 @@
 package org.ldcgc.backend.service.category.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
-import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

@@ -1,7 +1,6 @@
 package org.ldcgc.backend.service.location.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.location.LocationDto;

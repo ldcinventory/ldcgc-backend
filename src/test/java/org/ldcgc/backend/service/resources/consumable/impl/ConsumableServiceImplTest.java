@@ -3,21 +3,11 @@ package org.ldcgc.backend.service.resources.consumable.impl;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.controller.resources.ConsumableController;
 import org.ldcgc.backend.controller.resources.impl.ConsumableControllerImpl;
-import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 

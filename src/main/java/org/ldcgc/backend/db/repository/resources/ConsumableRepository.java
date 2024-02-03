@@ -1,13 +1,10 @@
 package org.ldcgc.backend.db.repository.resources;
 
-import io.swagger.v3.core.filter.SpecFilter;
 import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.model.resources.Consumable;
-import org.ldcgc.backend.db.model.resources.Tool;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
