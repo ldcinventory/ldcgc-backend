@@ -25,6 +25,7 @@ public class SwaggerConfig {
         HTTP_404 = "404",
         HTTP_406 = "406",
         HTTP_409 = "409",
+        HTTP_422 = "422",
         HTTP_500 = "500",
         HTTP_501 = "501";
 
@@ -38,6 +39,7 @@ public class SwaggerConfig {
         HTTP_REASON_404 = "Not Found",
         HTTP_REASON_406 = "Not Acceptable",
         HTTP_REASON_409 = "Conflict",
+        HTTP_REASON_422 = "Unprocessable Entity",
         HTTP_REASON_500 = "Internal Server Error",
         HTTP_REASON_501 = "Not Implemented";
 
