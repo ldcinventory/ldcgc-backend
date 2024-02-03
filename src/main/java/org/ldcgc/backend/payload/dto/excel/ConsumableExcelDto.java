@@ -2,6 +2,7 @@ package org.ldcgc.backend.payload.dto.excel;
 
 import lombok.Builder;
 import lombok.Value;
+
 @Builder
 @Value
 public class ConsumableExcelDto {
@@ -16,6 +17,6 @@ public class ConsumableExcelDto {
     Integer stock;
     Integer minStock;
     String stockType;
-    String locationLvl2;
+    String location;
     String group;
 }

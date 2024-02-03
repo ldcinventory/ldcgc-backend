@@ -16,19 +16,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupsService {
 
-    private final GroupRepository repository;
+    private final GroupRepository groupRepository;
+
     @Override
     public List<GroupDto> getAllGroups() {
-        return repository.findAll().stream()
+        return groupRepository.findAll().stream()
                 .map(GroupMapper.MAPPER::toDto)
                 .toList();
     }
+
     @Override
-    public GroupDto findGroupInListByName(String groupName, List<GroupDto> groups){
-        return groups.stream()
-                .filter(group -> group.getName().equalsIgnoreCase(groupName))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.GROUP_NOT_FOUND
-                        .formatted(groups.stream().map(GroupDto::getName).toList().toString())));
+    public GroupDto findGroupByName(String groupName) {
+        return groupRepository.getGroupByName(groupName)
+            .map(GroupMapper.MAPPER::toDto)
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.GROUP_NOT_FOUND.formatted(groupName)));
     }
 }

@@ -8,8 +8,6 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.dto.excel.ConsumableExcelDto;
-import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.category.CategoryService;
@@ -129,8 +127,6 @@ public class ConsumableServiceImpl implements ConsumableService {
         CategoryDto brandParent = categoryService.getCategoryParent(CategoryParentEnum.BRANDS);
         CategoryDto categoryParent = categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES);
         CategoryDto stockTypeParent = categoryService.getCategoryParent(CategoryParentEnum.STOCKTYPE);
-        List<GroupDto> groups = groupsService.getAllGroups();
-        List<LocationDto> locations = locationService.getAllLocations();
 
         return consumablesExcel.stream()
                 .map(consumableExcel -> ConsumableDto.builder()
@@ -144,8 +140,8 @@ public class ConsumableServiceImpl implements ConsumableService {
                         .urlImages(consumableExcel.getUrlImages())
                         .stock(consumableExcel.getStock())
                         .stockType(categoryService.getCategoryByName(consumableExcel.getStockType(), stockTypeParent))
-                        .locationLvl2(locationService.findLocationByName(consumableExcel.getLocationLvl2(), locations))
-                        .group(groupsService.findGroupInListByName(consumableExcel.getGroup(), groups))
+                        .location(locationService.findLocationByName(consumableExcel.getLocation()))
+                        .group(groupsService.findGroupByName(consumableExcel.getGroup()))
                         .build()
                 ).toList();
     }

@@ -1,6 +1,5 @@
 package org.ldcgc.backend.payload.dto.resources;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
@@ -24,8 +23,7 @@ public class ConsumableDto {
     Integer stock;
     Integer minStock;
     CategoryDto stockType;
-    @JsonAlias("location")
-    LocationDto locationLvl2;
+    LocationDto location;
     GroupDto group;
 
 }

@@ -4,7 +4,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.excel.ConsumableExcelDto;
+import org.ldcgc.backend.util.retrieving.Messages;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,13 +23,12 @@ public class ConsumableExcelProcess {
             InputStream stream = file.getInputStream();
             Workbook workbook = new XSSFWorkbook(stream);
             Sheet sheet = workbook.getSheetAt(0);
-            sheet.forEach( row ->{
-                if(row.getRowNum() != 0){
+            sheet.forEach(row ->{
+                if(row.getRowNum() != 0)
                     consumable.add(parseToConsumable(row));
-                }
             });
         } catch(IOException e){
-            throw new RuntimeException(e);
+            throw new RequestException(HttpStatus.PROCESSING, Messages.Error.EXCEL_PARSE_ERROR);
         }
         return consumable;
     }
@@ -42,7 +44,7 @@ public class ConsumableExcelProcess {
                 .stock((int)row.getCell(7).getNumericCellValue())
                 .minStock((int)row.getCell(8).getNumericCellValue())
                 .stockType(row.getCell(9).getStringCellValue())
-                .locationLvl2(row.getCell(10).getStringCellValue())
+                .location(row.getCell(10).getStringCellValue())
                 .group(row.getCell(11).getStringCellValue())
                 .build();
     }

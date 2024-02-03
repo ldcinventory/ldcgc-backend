@@ -20,19 +20,16 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LocationDto> getAllLocations() {
         return repository.findAll().stream()
-                .map(LocationMapper.MAPPER::toDto)
-                .toList();
+            .map(LocationMapper.MAPPER::toDto)
+            .toList();
     }
 
     @Override
-    public LocationDto findLocationByName(String locationLvl2, List<LocationDto> locations) {
+    public LocationDto findLocationByName(String locationName) {
+        return repository.getLocationByName(locationName)
+            .map(LocationMapper.MAPPER::toDto)
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.LOCATION_NOT_FOUND.formatted(locationName)));
 
-        return LocationMapper.MAPPER.toDto(
-                repository.getLocationByName(locationLvl2)
-                        .orElseThrow(() ->
-                                new RequestException(HttpStatus.NOT_FOUND, Messages.Error.LOCATION_NOT_FOUND.formatted(locations.stream().map(LocationDto::getName).toList().toString())))
-
-                );
     }
 
 }
