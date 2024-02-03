@@ -1,6 +1,5 @@
 package org.ldcgc.backend.service.users;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
@@ -45,7 +44,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@Slf4j
 @SpringBootTest
 class VolunteerServiceImplTest {
 
@@ -96,6 +94,7 @@ class VolunteerServiceImplTest {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(USER_WITH_VOLUNTEER.getVolunteer());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(volunteerDto, responseBody.getData());
 
@@ -130,6 +129,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(volunteerDto, responseBody.getData());
 
@@ -165,6 +165,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_CREATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
@@ -186,6 +187,7 @@ class VolunteerServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(responseBody.getData(), volunteerExpected);
 
@@ -206,6 +208,7 @@ class VolunteerServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
         assertEquals(volunteers, responseBody.getData());
@@ -227,6 +230,7 @@ class VolunteerServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
         assertEquals(volunteers, responseBody.getData());
@@ -285,6 +289,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_UPDATED, responseBody.getMessage());
         assertEquals(volunteerDto, responseBody.getData());
@@ -316,6 +321,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_DELETED, responseBody.getMessage());
 
@@ -350,6 +356,7 @@ class VolunteerServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 1), responseBody.getMessage());
 

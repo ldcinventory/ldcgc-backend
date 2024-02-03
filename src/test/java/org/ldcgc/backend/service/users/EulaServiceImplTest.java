@@ -1,6 +1,5 @@
 package org.ldcgc.backend.service.users;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@Slf4j
 @SpringBootTest
 class EulaServiceImplTest {
 
@@ -67,10 +65,6 @@ class EulaServiceImplTest {
 
     @Test
     public void whenGetEula_returnUserNotFound() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.NOT_FOUND));
-        log.info(String.format("Expected: %s", Messages.Error.USER_NOT_FOUND));
-
         ReflectionTestUtils.setField(eulaService, "EULA_STANDARD", "standard Eula URL");
 
         final User user = USER_NOT_FOUND;
@@ -84,19 +78,11 @@ class EulaServiceImplTest {
 
         verify(userRepository, atMostOnce()).findById(USER_NOT_FOUND.getId());
 
-        log.error("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", ex.getHttpStatus()));
-        log.info(String.format("Returned from exception: %s", ex.getMessage()));
     }
 
     @Test
     public void whenGetEula_returnStandardEula() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s (standard)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
-        log.info("Expected: standard_EULA_url");
-
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
-        log.info(String.format("Expected: %s", String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER)));
 
         ReflectionTestUtils.setField(eulaService, "EULA_STANDARD", "standard_EULA_url");
 
@@ -114,19 +100,7 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", ((EulaDto) responseBody.getData()).getUrl()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
         // managers
-
-        log.info(String.format("### TESTING ### %s -> %s (managers)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
-        log.info(String.format("Expected: %s", "managers_EULA_url"));
-
-        String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
-        log.info(String.format("Expected: %s", String.format(Messages.App.EULA_SELECT_ACTION, MANAGERS)));
 
         ReflectionTestUtils.setField(eulaService, "EULA_MANAGERS", "managers_EULA_url");
 
@@ -142,21 +116,10 @@ class EulaServiceImplTest {
         verify(userRepository, atMostOnce()).findById(userManager.getId());
         assertTrue(StringUtils.isNotBlank(((EulaDto) Objects.requireNonNull(responseBody).getData()).getUrl()));
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", ((EulaDto) responseBody.getData()).getUrl()));
-
     }
 
     @Test
     public void whenGetEula_returnManagerEula() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
-        log.info(String.format("Expected: %s", "managers_EULA_url"));
-
-        String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
-        log.info(String.format("Expected: %s", String.format(Messages.App.EULA_SELECT_ACTION, MANAGERS)));
-
         ReflectionTestUtils.setField(eulaService, "EULA_MANAGERS", "managers_EULA_url");
 
         final User userManager = USER_MANAGER_EULA_STANDARD_ACCEPTED_EULA_MANAGER_NOT;
@@ -172,18 +135,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(StringUtils.isNotBlank(((EulaDto) Objects.requireNonNull(responseBody).getData()).getUrl()));
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", ((EulaDto) responseBody.getData()).getUrl()));
-
     }
 
     @Test
     public void whenGetEula_returnStandardEulaAlreadyAccepted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.CONFLICT));
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER)));
 
         final User userStandard = USER_STANDARD_EULA_ACCEPTED;
 
@@ -199,18 +155,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenGetEula_returnManagerEulaAlreadyAccepted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.CONFLICT));
         String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS)));
 
         final User userManager = USER_MANAGER_EULA_STANDARD_AND_MANAGER_ACCEPTED;
 
@@ -226,19 +175,12 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", "response.getStatusCode()"));
-        log.info(String.format("Returned: %s", "x"));
-
     }
 
     // putEula
 
     @Test
     public void whenUpdateEula_returnUserNotFound() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.NOT_FOUND));
-        log.info(String.format("Expected: %s", Messages.Error.USER_NOT_FOUND));
 
         final User user = USER_NOT_FOUND;
 
@@ -252,18 +194,11 @@ class EulaServiceImplTest {
 
         verify(userRepository, atMostOnce()).findById(user.getId());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", ex.getHttpStatus()));
-        log.info(String.format("Returned: %s", ex.getMessage()));
-
     }
 
     @Test
     public void whenUpdateEulaAndUserIsStandard_returnEulaAlreadyAccepted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.CONFLICT));
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER)));
 
         final User userStandard = USER_STANDARD_EULA_ACCEPTED;
 
@@ -279,18 +214,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenUpdateEulaAndUserIsManagerOrAdmin_returnEulaAlreadyAccepted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.CONFLICT));
         String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS)));
 
         final User userManager = USER_MANAGER_EULA_STANDARD_AND_MANAGER_ACCEPTED;
 
@@ -306,19 +234,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ALREADY_ACCEPTED, MANAGERS), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenAcceptStandardEula_returnStandardEulaAccepted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s (standard)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER)));
-
         final User userStandard = USER_STANDARD_EULA_NOT_ACCEPTED;
 
         doReturn(userStandard.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
@@ -334,14 +254,6 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
-        log.info(String.format("### TESTING ### %s -> %s (managers)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER)));
-
         final User userManager = USER_MANAGER_EULA_STANDARD_NOT_ACCEPTED;
 
         doReturn(userManager.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
@@ -356,18 +268,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenAcceptManagerEula_returnManagerEulaAccepted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s (managers)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_ACCEPTED, MANAGERS)));
 
         final User userManager = USER_MANAGER_EULA_STANDARD_ACCEPTED_EULA_MANAGER_NOT;
 
@@ -384,18 +289,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ACCEPTED, MANAGERS), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenPendingEula_returnStandardEulaPending() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s (standard)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_PENDING, EVERY_USER)));
 
         final User userStandard = USER_STANDARD_EULA_NOT_ACCEPTED;
 
@@ -411,18 +309,11 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_PENDING, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenPendingEula_returnManagerEulaPending() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s (manager, and standard eula not accepted)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_PENDING, EVERY_USER)));
 
         final User userManager1 = USER_MANAGER_EULA_STANDARD_NOT_ACCEPTED;
 
@@ -438,14 +329,8 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_PENDING, EVERY_USER), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
 
-        log.info(String.format("### TESTING ### %s -> %s (manager, and manager eula not accepted)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_PENDING, MANAGERS)));
 
         final User userManager2 = USER_MANAGER_EULA_STANDARD_ACCEPTED_EULA_MANAGER_NOT;
 
@@ -461,19 +346,12 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_PENDING, MANAGERS), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenRejectStandardEula_returnUserDeleted() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s (standard)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String EVERY_USER = (String) ReflectionTestUtils.getField(eulaService, "EVERY_USER");
         String rejectionMessage = Messages.Info.EULA_DELETE_USER;
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage)));
 
         final User userStandard = USER_STANDARD_EULA_NOT_ACCEPTED;
 
@@ -491,14 +369,6 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
-        log.info(String.format("### TESTING ### %s -> %s (managers)", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage)));
-
         final User userManager = USER_MANAGER_EULA_STANDARD_NOT_ACCEPTED;
 
         doReturn(userManager.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
@@ -515,19 +385,12 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenRejectManagerEula_returnUserDowngraded() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.OK));
         String MANAGERS = (String) ReflectionTestUtils.getField(eulaService, "MANAGERS");
         String rejectionMessage = Messages.Info.EULA_DOWNGRADE_USER;
-        log.info(String.format("Expected: %s", String.format(Messages.Info.EULA_REJECTED, MANAGERS, rejectionMessage)));
 
         final User userManager = USER_MANAGER_EULA_STANDARD_ACCEPTED_EULA_MANAGER_NOT;
 
@@ -546,18 +409,10 @@ class EulaServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_REJECTED, MANAGERS, rejectionMessage), responseBody.getMessage());
 
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
-
     }
 
     @Test
     public void whenUpdateEula_returnActionInvalid() throws ParseException {
-        log.info(String.format("### TESTING ### %s -> %s", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName()));
-        log.info(String.format("Expected: %s", HttpStatus.BAD_REQUEST));
-        log.info(String.format("Expected: %s", Messages.Error.EULA_ACTION_INVALID));
-
         final User userStandard = USER_STANDARD_EULA_NOT_ACCEPTED;
 
         doReturn(userStandard.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
@@ -571,10 +426,6 @@ class EulaServiceImplTest {
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(Messages.Error.EULA_ACTION_INVALID, responseBody.getMessage());
-
-        log.info("### RESULTS ###");
-        log.info(String.format("HTTP Returned Code: %s", response.getStatusCode()));
-        log.info(String.format("Returned: %s", responseBody.getMessage()));
 
     }
 

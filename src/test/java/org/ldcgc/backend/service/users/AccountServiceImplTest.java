@@ -3,10 +3,8 @@ package org.ldcgc.backend.service.users;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.mail.internet.MimeMessage;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.base.mock.MockedToken;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -58,7 +56,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.crypto.argon2.Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8;
 
-@Slf4j
 @SpringBootTest
 class AccountServiceImplTest {
 
@@ -434,8 +431,6 @@ class AccountServiceImplTest {
         mockedTokenEntity.setIssuedAt(LocalDateTime.now());
         mockedTokenEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
 
-        SignedJWT mockedRefreshToken = MockedToken.generateRefreshToken(USER_STANDARD);
-
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         MockHttpServletResponse httpResponse = new MockHttpServletResponse();
 
@@ -451,6 +446,7 @@ class AccountServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        assertNotNull(responseBody);
         UserDto userDto = (UserDto) responseBody.getData();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

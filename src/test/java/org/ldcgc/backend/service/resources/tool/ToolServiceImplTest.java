@@ -241,6 +241,7 @@ class ToolServiceImplTest {
 
         assertNotNull(response);
         Response.DTO responseBody = ((Response.DTO) response.getBody());
+        assertNotNull(responseBody);
         assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
     }
 }
