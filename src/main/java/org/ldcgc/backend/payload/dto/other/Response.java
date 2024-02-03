@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
-import java.util.Map;
 
 public class Response {
 
@@ -21,14 +20,5 @@ public class Response {
         String message;
         String location;
     }
-
-    @Value @Builder(toBuilder = true) @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class DTOWhithPagination {
-        String status;
-        List<String> details;
-        Map<String, Object> data;
-    }
-
-
 
 }
