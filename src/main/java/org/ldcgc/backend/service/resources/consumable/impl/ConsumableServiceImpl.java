@@ -14,7 +14,6 @@ import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
-import org.ldcgc.backend.util.common.ConsumableExcelProcess;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
