@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
-import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_NON_LOGGED;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
