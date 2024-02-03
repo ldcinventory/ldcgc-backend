@@ -30,11 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 
-import static org.ldcgc.backend.util.retrieving.Message.ErrorMessage.CONSUMABLE_NOT_FOUND;
-import static org.ldcgc.backend.util.retrieving.Message.InfoMessage.CONSUMABLE_LISTED;
-import static org.ldcgc.backend.util.retrieving.Message.getErrorMessage;
-import static org.ldcgc.backend.util.retrieving.Message.getInfoMessage;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -73,7 +68,7 @@ public class ConsumableServiceImpl implements ConsumableService {
         Page<ConsumableDto> consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable)
                 .map(ConsumableMapper.MAPPER::toDto);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(getInfoMessage(CONSUMABLE_LISTED), consumablePaged.getTotalElements()), consumablePaged);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.CONSUMABLE_LISTED.formatted( consumablePaged.getTotalElements()), consumablePaged);
     }
 
     @Override
@@ -100,8 +95,8 @@ public class ConsumableServiceImpl implements ConsumableService {
     }
 
     private Consumable getOrElseThrow(Integer consumableId) {
-        return consumableRepository.findById(consumableId)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(getErrorMessage(CONSUMABLE_NOT_FOUND), consumableId)));
+        return consumableRepository.findById(consumableId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CONSUMABLE_NOT_FOUND.formatted(consumableId)));
     }
 
     @Override

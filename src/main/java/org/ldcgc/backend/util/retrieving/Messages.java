@@ -37,6 +37,7 @@ public class Messages {
             TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
             TOOL_DELETED = "Tool deleted",
 
+            CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
 
             AVAILABILITY_UPDATED = "Availability updated",
