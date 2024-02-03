@@ -21,4 +21,5 @@ public interface ConsumableMapper {
     Consumable toMo(ConsumableDto consumableDto);
     List<Consumable> toMo(List<ConsumableDto> consumable);
     void update(ConsumableDto from, @MappingTarget ConsumableDto to);
+
 }

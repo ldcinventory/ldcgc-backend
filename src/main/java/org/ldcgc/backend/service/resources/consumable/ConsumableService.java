@@ -7,16 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface ConsumableService {
+
     ResponseEntity<?> getConsumable(Integer consumableId);
-
     ResponseEntity<?> createConsumable(ConsumableDto consumable);
-
     ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String sortField, String filterString);
-
     ResponseEntity<?> updateConsumable(ConsumableDto consumableDto);
-
     ResponseEntity<?> deleteConsumable(Integer consumableId);
-
-
     ResponseEntity<?> loadExcel(MultipartFile file);
+
 }

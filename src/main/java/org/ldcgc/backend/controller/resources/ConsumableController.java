@@ -175,6 +175,11 @@ public interface ConsumableController {
             description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json")
     )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_REASON_422,
+        content = @Content(mediaType = "application/json")
+    )
     @PostMapping("/loadExcel")
     @PreAuthorize("hasAnyRole('ADMIN')")
     ResponseEntity<?> loadExcel(@RequestParam("file") MultipartFile file);
