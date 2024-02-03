@@ -172,9 +172,9 @@ class UserServiceImplTest {
         assertEquals(Messages.Info.USER_UPDATED, responseBody.getMessage());
         assertEquals(2, response.getHeaders().size());
         assertTrue(response.getHeaders().containsKey("x-header-payload-token"));
-        assertEquals(headerPayLoad, response.getHeaders().get("x-header-payload-token").get(0));
+        assertEquals(headerPayLoad, response.getHeaders().get("x-header-payload-token").getFirst());
         assertTrue(response.getHeaders().containsKey("x-signature-token"), signature);
-        assertEquals(signature, response.getHeaders().get("x-signature-token").get(0));
+        assertEquals(signature, response.getHeaders().get("x-signature-token").getFirst());
         assertEquals(user, responseData.getData());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
@@ -789,9 +789,9 @@ class UserServiceImplTest {
         assertEquals(responseBody.getMessage(), Messages.Info.USER_UPDATED);
         assertEquals(response.getHeaders().size(), 2);
         assertTrue(response.getHeaders().containsKey("x-header-payload-token"));
-        assertEquals(response.getHeaders().get("x-header-payload-token").get(0), headerPayLoad);
+        assertEquals(response.getHeaders().get("x-header-payload-token").getFirst(), headerPayLoad);
         assertTrue(response.getHeaders().containsKey("x-signature-token"), signature);
-        assertEquals(response.getHeaders().get("x-signature-token").get(0), signature);
+        assertEquals(response.getHeaders().get("x-signature-token").getFirst(), signature);
         assertEquals(responseData.getData(), userDtoExpected);
 
         verify(userRepository, times(2)).findById(any());
