@@ -17,11 +17,11 @@ import java.util.Optional;
 
 @SpringBootTest
 public class ConsumableControllerImplTest {
-    //TODO: HACER LOS TESTS DEL CONTROLLER CON COBERTURA DE 75% O MÁS
-    @Mock
-    private ConsumableService service;
+
+    @Mock private ConsumableService service;
     private CategoryService categoryService;
 
+    //TODO: HACER LOS TESTS DEL CONTROLLER CON COBERTURA DE 75% O MÁS
     public ResponseEntity<?> uploadExcelFile(MultipartFile file) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         try {
