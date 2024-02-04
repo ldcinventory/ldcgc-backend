@@ -9,8 +9,6 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
-
 @Mapper(uses = { LocationMapper.class, CategoryMapper.class },
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ConsumableMapper {
@@ -19,7 +17,6 @@ public interface ConsumableMapper {
 
     ConsumableDto toDto(Consumable consumable);
     Consumable toMo(ConsumableDto consumableDto);
-    List<Consumable> toMo(List<ConsumableDto> consumable);
     void update(ConsumableDto from, @MappingTarget ConsumableDto to);
 
 }

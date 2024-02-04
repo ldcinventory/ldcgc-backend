@@ -2,17 +2,19 @@ package org.ldcgc.backend.service.resources.consumable.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
+import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.dto.excel.ConsumableExcelDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
-import org.ldcgc.backend.service.category.CategoryService;
-import org.ldcgc.backend.service.groups.GroupsService;
-import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -22,12 +24,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -35,9 +39,9 @@ import java.util.Objects;
 public class ConsumableServiceImpl implements ConsumableService {
 
     private final ConsumableRepository consumableRepository;
-    private final CategoryService categoryService;
-    private final LocationService locationService;
-    private final GroupsService groupsService;
+    private final CategoryRepository categoryRepository;
+    private final LocationRepository locationRepository;
+    private final GroupRepository groupRepository;
 
     @Override
     public ResponseEntity<?> getConsumable(Integer consumableId) {
@@ -47,15 +51,14 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     @Override
     public ResponseEntity<?> createConsumable(ConsumableDto consumable) {
-        if(Objects.nonNull(consumable.getId()))
+        if (Objects.nonNull(consumable.getId()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_ID_SHOULDNT_BE_PRESENT);
 
-        consumableRepository.findFirstByBarcode(consumable.getBarcode())
-                .ifPresent(repeated -> {
-                    throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumable.getBarcode()));
-                });
+        if (consumableRepository.existsByBarcode(consumable.getBarcode()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumable.getBarcode()));
 
         Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumable));
+
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
 
     }
@@ -65,24 +68,27 @@ public class ConsumableServiceImpl implements ConsumableService {
         Pageable pageable = PageRequest.of(pageIndex, sizeIndex, Sort.by(sortField));
 
         Page<ConsumableDto> consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable)
-                .map(ConsumableMapper.MAPPER::toDto);
+            .map(ConsumableMapper.MAPPER::toDto);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.CONSUMABLE_LISTED.formatted( consumablePaged.getTotalElements()), consumablePaged);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.CONSUMABLE_LISTED.formatted(consumablePaged.getTotalElements()), consumablePaged);
+
     }
 
     @Override
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto) {
         ConsumableDto consumableToUpdate = ConsumableMapper.MAPPER.toDto(getOrElseThrow(consumableDto.getId()));
         consumableRepository.findAllByBarcode(consumableDto.getBarcode()).stream()
-                .filter(repeated -> !repeated.getId().equals(consumableDto.getId()))
-                .findFirst()
-                .ifPresent(repeated -> {
-                    throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
-                });
+            .filter(repeated -> !repeated.getId().equals(consumableDto.getId()))
+            .findFirst()
+            .ifPresent(repeated -> {
+                throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
+            });
         ConsumableMapper.MAPPER.update(consumableDto, consumableToUpdate);
 
-        consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumableToUpdate));
-        return Constructor.buildResponseObject(HttpStatus.OK, consumableDto);
+        Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumableToUpdate));
+
+        return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+
     }
 
     @Override
@@ -90,7 +96,9 @@ public class ConsumableServiceImpl implements ConsumableService {
         Consumable consumable = getOrElseThrow(consumableId);
 
         consumableRepository.deleteById(consumable.getId());
+
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_DELETED);
+
     }
 
     private Consumable getOrElseThrow(Integer consumableId) {
@@ -103,49 +111,71 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         List<ConsumableExcelDto> consumableExcel = ConsumableExcelProcess.excelProcess(file);
 
-        List<ConsumableDto> consumableToSave = convertExcelToConsumable(consumableExcel);
+        List<Consumable> consumablesToSave = convertExcelToConsumable(consumableExcel);
 
-        consumableRepository.saveAll(consumableToSave.stream().map(ConsumableMapper.MAPPER::toMo).toList());
+        consumableRepository.saveAll(consumablesToSave);
 
         return Constructor.buildResponseMessageObject(
-                HttpStatus.OK,
-                String.format(Messages.Info.TOOL_UPLOADED, consumableToSave.size()),
-                consumableToSave);
+            HttpStatus.OK,
+            String.format(Messages.Info.TOOL_UPLOADED, consumablesToSave.size()),
+            consumablesToSave.stream().map(ConsumableMapper.MAPPER::toDto).toList());
     }
 
-    private List<ConsumableDto> convertExcelToConsumable(List<ConsumableExcelDto> consumablesExcel) {
-        List<ConsumableDto> consumable = consumableRepository.findByBarcodeIn(consumablesExcel.stream().map(ConsumableExcelDto::getBarcode).toList())
-                .stream()
-                .map(ConsumableMapper.MAPPER::toDto)
-                .toList();
-        CategoryDto brandParent = categoryService.getCategoryParent(CategoryParentEnum.BRANDS);
-        CategoryDto categoryParent = categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES);
-        CategoryDto stockTypeParent = categoryService.getCategoryParent(CategoryParentEnum.STOCKTYPE);
+    private List<Consumable> convertExcelToConsumable(List<ConsumableExcelDto> consumablesExcel) {
+        // extract barcodes and get all from DB
+        List<String> consumablesIds= consumablesExcel.stream().map(ConsumableExcelDto::getBarcode).toList();
+        List<ConsumableDto> consumable = consumableRepository
+            .findByBarcodeIn(consumablesIds)
+            .stream()
+            .map(ConsumableMapper.MAPPER::toDto)
+            .toList();
 
+        // get categories from DB to "cache" in map
+        Map<String, Category> categories = categoryRepository
+            .findAllByParent_Name(CategoryParentEnum.CATEGORIES.getBbddName())
+            .stream()
+            .collect(Collectors.toMap(Category::getName, Function.identity()));
+        Map<String, Category> brands = categoryRepository
+            .findAllByParent_Name(CategoryParentEnum.BRANDS.getBbddName())
+            .stream()
+            .collect(Collectors.toMap(Category::getName, Function.identity()));
+        Map<String, Category> stockTypes = categoryRepository
+            .findAllByParent_Name(CategoryParentEnum.STOCKTYPE.getBbddName())
+            .stream()
+            .collect(Collectors.toMap(Category::getName, Function.identity()));
+        Map<String, Location> locations = locationRepository
+            .findAll()
+            .stream()
+            .collect(Collectors.toMap(Location::getName, Function.identity()));
+        Map<String, Group> groups = groupRepository
+            .findAll()
+            .stream()
+            .collect(Collectors.toMap(Group::getName, Function.identity()));
+
+        // return consumables list (built entities)
         return consumablesExcel.stream()
-                .map(consumableExcel -> ConsumableDto.builder()
-                        .id(getIdByBarcode(consumableExcel, consumable))
-                        .barcode(consumableExcel.getBarcode())
-                        .category(categoryService.getCategoryByName(consumableExcel.getCategory(), categoryParent))
-                        .brand(categoryService.getCategoryByName(consumableExcel.getBrand(), brandParent))
-                        .name(consumableExcel.getName())
-                        .model(consumableExcel.getModel())
-                        .description(consumableExcel.getDescription())
-                        .urlImages(consumableExcel.getUrlImages())
-                        .stock(consumableExcel.getStock())
-                        .stockType(categoryService.getCategoryByName(consumableExcel.getStockType(), stockTypeParent))
-                        .location(locationService.findLocationByName(consumableExcel.getLocation()))
-                        .group(groupsService.findGroupByName(consumableExcel.getGroup()))
-                        .build()
-                ).toList();
+            .map(consumableExcel -> Consumable.builder()
+                .id(getIdByBarcode(consumableExcel, consumable))
+                .barcode(consumableExcel.getBarcode())
+                .category(categories.get(consumableExcel.getCategory()))
+                .brand(brands.get(consumableExcel.getBrand()))
+                .name(consumableExcel.getName())
+                .model(consumableExcel.getModel())
+                .description(consumableExcel.getDescription())
+                .urlImages(consumableExcel.getUrlImages())
+                .stock(consumableExcel.getStock())
+                .stockType(stockTypes.get(consumableExcel.getStockType()))
+                .location(locations.get(consumableExcel.getLocation()))
+                .group(groups.get(consumableExcel.getGroup()))
+                .build()
+            ).toList();
     }
 
-    @Nullable
     private Integer getIdByBarcode(ConsumableExcelDto consumableExcel, List<ConsumableDto> consumable) {
         return consumable.stream()
-                .filter(tool -> tool.getBarcode().equals(consumableExcel.getBarcode()))
-                .map(ConsumableDto::getId)
-                .findFirst()
-                .orElse(null);
+            .filter(tool -> tool.getBarcode().equals(consumableExcel.getBarcode()))
+            .map(ConsumableDto::getId)
+            .findFirst()
+            .orElse(null);
     }
 }

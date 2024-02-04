@@ -18,23 +18,10 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Integer getCategoryIdByName(String categoryName) {
-        return categoryRepository.findCategoryIdByName(categoryName);
-    }
-
-    @Override
     public CategoryDto getCategoryParent(CategoryParentEnum parent) {
         return categoryRepository.findByName(parent.getBbddName())
                 .map(CategoryMapper.MAPPER::toDto)
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND.formatted(parent.getName(), parent.getBbddName())));
     }
 
-    @Override
-    public CategoryDto getCategoryByName(String name,CategoryDto parents) {
-        return CategoryMapper.MAPPER.toDto(categoryRepository.getCategoryByName(name)
-                .orElseThrow(() ->
-                        new RequestException(HttpStatus.NOT_FOUND, Messages.Error.LOCATION_NOT_FOUND.formatted(parents.getCategories().stream().map(CategoryDto::getName).toList().toString())))
-
-        );
-    }
 }

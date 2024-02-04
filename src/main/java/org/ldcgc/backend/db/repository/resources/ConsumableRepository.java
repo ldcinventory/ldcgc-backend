@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ConsumableRepository extends JpaRepository<Consumable, Integer> {
 
@@ -21,7 +20,7 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
 
     List<Consumable> findByBarcodeIn(List<String> barcodes);
 
-    Optional<Consumable> findFirstByBarcode(String barcode);
+    boolean existsByBarcode(String barcode);
 
     List<Consumable> findAllByBarcode(String barcode);
 }

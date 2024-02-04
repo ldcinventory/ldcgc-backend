@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CategoryService {
 
-    Integer getCategoryIdByName(String categoryName);
     CategoryDto getCategoryParent(CategoryParentEnum parent);
-    CategoryDto getCategoryByName(String name, CategoryDto parent);
 
 }
