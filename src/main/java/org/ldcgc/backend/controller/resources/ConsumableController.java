@@ -50,8 +50,8 @@ public interface ConsumableController {
 
     @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
+            responseCode = SwaggerConfig.HTTP_201,
+            description = SwaggerConfig.HTTP_REASON_201,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ConsumableDto.class))
     )
@@ -77,8 +77,8 @@ public interface ConsumableController {
 
     @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
+            responseCode = SwaggerConfig.HTTP_201,
+            description = SwaggerConfig.HTTP_REASON_201,
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ConsumableDto.class))
     )
@@ -166,8 +166,8 @@ public interface ConsumableController {
 
     @Operation(summary = "Load the consumables from an excel (XLS) file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
+            responseCode = SwaggerConfig.HTTP_201,
+            description = SwaggerConfig.HTTP_REASON_201,
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)))
     )

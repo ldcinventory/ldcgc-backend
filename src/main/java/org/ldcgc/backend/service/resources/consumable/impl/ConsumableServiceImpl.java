@@ -59,7 +59,7 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumable));
 
-        return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+        return Constructor.buildResponseObject(HttpStatus.CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
 
     }
 
@@ -87,7 +87,7 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumableToUpdate));
 
-        return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+        return Constructor.buildResponseObject(HttpStatus.CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
 
     }
 
@@ -113,11 +113,11 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         List<Consumable> consumablesToSave = convertExcelToConsumable(consumableExcel);
 
-        consumableRepository.saveAll(consumablesToSave);
+        consumablesToSave = consumableRepository.saveAll(consumablesToSave);
 
         return Constructor.buildResponseMessageObject(
-            HttpStatus.OK,
-            String.format(Messages.Info.TOOL_UPLOADED, consumablesToSave.size()),
+            HttpStatus.CREATED,
+            String.format(Messages.Info.CONSUMABLES_UPLOADED, consumablesToSave.size()),
             consumablesToSave.stream().map(ConsumableMapper.MAPPER::toDto).toList());
     }
 
