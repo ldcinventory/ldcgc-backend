@@ -5,28 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
-import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
-import org.ldcgc.backend.payload.dto.excel.ConsumableExcelDto;
-import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
+import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
-import org.ldcgc.backend.util.common.ConsumableExcelProcess;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,6 +40,7 @@ public class ConsumableServiceImpl implements ConsumableService {
     private final CategoryService categoryService;
     private final LocationService locationService;
     private final GroupsService groupsService;
+    private final ConsumableExcelService consumableExcelService;
 
     @Override
     public ResponseEntity<?> getConsumable(Integer consumableId) {
@@ -116,13 +110,9 @@ public class ConsumableServiceImpl implements ConsumableService {
         }
 
     }
-
     @Override
-    public ResponseEntity<?> loadExcel(MultipartFile file) {
-
-        List<ConsumableExcelDto> consumableExcel = ConsumableExcelProcess.excelProcess(file);
-
-        List<ConsumableDto> consumableToSave = convertExcelToConsumable(consumableExcel);
+    public ResponseEntity<?> loadExcel(MultipartFile file){
+        List<ConsumableDto> consumableToSave = consumableExcelService.excelToConsumable(file);
 
         consumableRepository.saveAll(consumableToSave.stream().map(ConsumableMapper.MAPPER::toMo).toList());
 
@@ -131,40 +121,6 @@ public class ConsumableServiceImpl implements ConsumableService {
                 String.format(Messages.Info.TOOL_UPLOADED, consumableToSave.size()),
                 consumableToSave);
     }
-    private List<ConsumableDto> convertExcelToConsumable(List<ConsumableExcelDto> consumablesExcel){
-        List<ConsumableDto> consumable = consumableRepository.findByBarcodeIn(consumablesExcel.stream().map(ConsumableExcelDto::getBarcode).toList())
-                .stream()
-                .map(ConsumableMapper.MAPPER::toDto)
-                .toList();
-        CategoryDto brandParent = categoryService.getCategoryParent(CategoryParentEnum.BRANDS);
-        CategoryDto categoryParent = categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES);
-        CategoryDto stockTypeParent = categoryService.getCategoryParent(CategoryParentEnum.STOCKTYPE);
-        List<GroupDto> groups = groupsService.getAllGroups();
-        List<LocationDto> locations = locationService.getAllLocations();
 
-        return consumablesExcel.stream()
-                .map(consumableExcel -> ConsumableDto.builder()
-                        .id(getIdByBarcode(consumableExcel, consumable))
-                        .barcode(consumableExcel.getBarcode())
-                        .category(categoryService.getCategoryByName(consumableExcel.getCategory(), categoryParent))
-                        .brand(categoryService.getCategoryByName(consumableExcel.getBrand(), brandParent))
-                        .name(consumableExcel.getName())
-                        .model(consumableExcel.getModel())
-                        .description(consumableExcel.getDescription())
-                        .urlImages(consumableExcel.getUrlImages())
-                        .stock(consumableExcel.getStock())
-                        .stockType(categoryService.getCategoryByName(consumableExcel.getStockType(), stockTypeParent))
-                        .locationLvl2(locationService.findLocationByName(consumableExcel.getLocationLvl2(), locations))
-                        .group(groupsService.findGroupInListByName(consumableExcel.getGroup(), groups))
-                        .build()
-                ).toList();
-    }
-    @Nullable
-    private Integer getIdByBarcode(ConsumableExcelDto consumableExcel, List<ConsumableDto> consumable) {
-        return consumable.stream()
-                .filter(tool -> tool.getBarcode().equals(consumableExcel.getBarcode()))
-                .map(ConsumableDto::getId)
-                .findFirst()
-                .orElse(null);
-    }
+
 }

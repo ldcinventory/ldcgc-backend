@@ -9,6 +9,8 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 
+import java.time.LocalDate;
+
 @Value
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,6 +20,8 @@ public class ConsumableDto {
     String barcode;
     CategoryDto category;
     CategoryDto brand;
+    float price;
+    LocalDate purchase_date;
     String name;
     String model;
     String description;
@@ -25,8 +29,7 @@ public class ConsumableDto {
     Integer stock;
     Integer minStock;
     CategoryDto stockType;
-    @JsonAlias("location")
-    LocationDto locationLvl2;
+    LocationDto location;
     GroupDto group;
 
 }
