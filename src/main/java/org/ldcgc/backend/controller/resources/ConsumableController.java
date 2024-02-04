@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables")
@@ -44,7 +45,7 @@ public interface ConsumableController {
                     })
     )
     @GetMapping("/{consumableId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
 
     @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
@@ -71,7 +72,7 @@ public interface ConsumableController {
                     })
     )
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createConsumable(@RequestBody ConsumableDto consumable);
 
     @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_ADMIN)
@@ -98,7 +99,7 @@ public interface ConsumableController {
                     })
     )
     @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateConsumable(@RequestBody ConsumableDto consumable);
 
 
@@ -160,7 +161,7 @@ public interface ConsumableController {
                     })
     )
     @DeleteMapping("/{consumableId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
 
     @Operation(summary = "Load the consumables from an excel (XLS) file", description = SWAGGER_ROLE_OPERATION_ADMIN)
@@ -181,6 +182,6 @@ public interface ConsumableController {
         content = @Content(mediaType = "application/json")
     )
     @PostMapping("/loadExcel")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> loadExcel(@RequestParam("file") MultipartFile file);
 }
