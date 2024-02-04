@@ -8,38 +8,28 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
-import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables")
 public interface ConsumableController {
 
-    // TODO
-    //  Create consumable POST
-    //   |-> (/resources/consumables)
-    //  Read all consumables (paginated/filtered) GET
-    //   |-> (/resources/consumables?page={pageIndex}&size={sizeIndex}&filter={filterString})
-    //  Read specific consumable GET
-    //   |-> (/resources/consumables/{consumableId})
-    //  Set barcode for consumable PATCH
-    //   |-> (/resources/consumables/{consumableId})
-    //  Update consumable details PUT
-    //   |-> (/resources/consumables/{consumableId})
-    //  Delete consumable DELETE
-    //   |-> (/resources/consumables/{consumableId})
-
-    @Operation(summary = "Get any consumable by providing its id.")
+    @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -55,10 +45,10 @@ public interface ConsumableController {
                     })
     )
     @GetMapping("/{consumableId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getConsumable(@PathVariable Integer consumableId);
 
-    @Operation(summary = "Create a new consumable.")
+    @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -82,10 +72,10 @@ public interface ConsumableController {
                     })
     )
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createConsumable(@RequestBody ConsumableDto consumable);
 
-    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.")
+    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -109,11 +99,26 @@ public interface ConsumableController {
                     })
     )
     @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateConsumable(@RequestBody ConsumableDto consumable);
 
 
-    @Operation(summary = "Get all consumables, paginated and sorted. You can also include 2 filters: name, description and status. Valid status: Disponible, No disponible, En mantenimiento, Dañado, Nueva, En desuso")
+    @Operation(summary = "List consumables", description = """
+        Get all consumables, paginated and sorted. You can also include 2 filters:
+        - name
+        - description
+        - status.
+        
+        Valid status:
+        - Disponible -> ```AVAILABLE```
+        - No disponible -> ```NOT_AVAILABLE```
+        - En mantenimiento -> ```IN_MAINTENANCE```
+        - Dañado -> ```DAMAGED```
+        - Nueva -> ```NEW```
+        - En desuso -> ```DEPRECATED```
+        
+        """
+        + SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -130,14 +135,14 @@ public interface ConsumableController {
                     })
     )
     @GetMapping
-    //@PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     ResponseEntity<?> listConsumables(@RequestParam(required = false, defaultValue = "0") Integer page,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
                                       @RequestParam(required = false, defaultValue = "id") String sortField,
                                       @RequestParam(required = false, defaultValue = "") String filter );
 
 
-    @Operation(summary = "Delete an existing consumable.")
+    @Operation(summary = "Delete an existing consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -156,9 +161,10 @@ public interface ConsumableController {
                     })
     )
     @DeleteMapping("/{consumableId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteConsumable(@PathVariable Integer consumableId);
 
+    @Operation(summary = "Load the consumables from an excel (XLS) file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -170,6 +176,12 @@ public interface ConsumableController {
             description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json")
     )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_REASON_422,
+        content = @Content(mediaType = "application/json")
+    )
     @PostMapping("/loadExcel")
+    @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> loadExcel(@RequestParam("file") MultipartFile file);
 }

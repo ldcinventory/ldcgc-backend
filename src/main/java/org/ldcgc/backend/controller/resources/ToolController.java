@@ -28,7 +28,6 @@ import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 @RequestMapping("/resources/tools")
 public interface ToolController {
 
-
     @Operation(summary = "Get any tool by providing its id.")
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,

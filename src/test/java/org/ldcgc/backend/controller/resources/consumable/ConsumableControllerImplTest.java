@@ -1,12 +1,12 @@
-package org.ldcgc.backend.controller.resources;
+package org.ldcgc.backend.controller.resources.consumable;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
-import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,11 +15,13 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
+@SpringBootTest
 public class ConsumableControllerImplTest {
-    @Mock
-    private ConsumableService service;
+
+    @Mock private ConsumableService service;
     private CategoryService categoryService;
 
+    //TODO: HACER LOS TESTS DEL CONTROLLER CON COBERTURA DE 75% O MÁS
     public ResponseEntity<?> uploadExcelFile(MultipartFile file) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         try {

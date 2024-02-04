@@ -37,6 +37,7 @@ public class Messages {
             TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
             TOOL_DELETED = "Tool deleted",
 
+            CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
 
             AVAILABILITY_UPDATED = "Availability updated",
@@ -115,10 +116,10 @@ public class Messages {
 
             STATUS_NOT_FOUND = "Status %s not found",
 
-            LOCATION_NOT_FOUND = "Location with id %s not found.",
+            LOCATION_NOT_FOUND = "Location with id/name %s not found.",
             LOCATION_NOT_FOUND_EXCEL = "Location %s not found. Please, fix the excel sheet or add it. Valid locations: %s",
 
-            GROUP_NOT_FOUND = "Group with id %s not found.",
+            GROUP_NOT_FOUND = "Group with id/name %s not found.",
             GROUP_NOT_FOUND_EXCEL = "Group %s not found. Please, fix the excel sheet or add it. Valid groups: %s",
 
             CATEGORY_PARENT_NOT_FOUND = "%s with id %s not found.",
