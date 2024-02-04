@@ -39,6 +39,7 @@ public class Messages {
 
             CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
+            CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables",
 
             AVAILABILITY_UPDATED = "Availability updated",
             AVAILABILITY_CLEARED = "Availability cleared",
