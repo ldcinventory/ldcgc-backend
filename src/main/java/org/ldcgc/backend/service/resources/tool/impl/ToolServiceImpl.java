@@ -49,7 +49,6 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_CREATED, ToolMapper.MAPPER.toDto(entityTool));
     }
 
-    @Override
     public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) {
         Tool toolToUpdate = findToolOrElseThrow(toolId);
 
@@ -63,7 +62,6 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_UPDATED, toolDto);
     }
 
-    @Override
     public ResponseEntity<?> deleteTool(Integer toolId) {
         Tool tool = findToolOrElseThrow(toolId);
         toolRepository.delete(tool);
@@ -71,7 +69,6 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.TOOL_DELETED);
     }
 
-    @Override
     public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
@@ -89,7 +86,6 @@ public class ToolServiceImpl implements ToolService {
             page);
     }
 
-    @Override
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
         List<ToolDto> toolsToSave = toolExcelService.excelToTools(file);
 

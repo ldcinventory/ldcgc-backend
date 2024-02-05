@@ -113,7 +113,15 @@ public class Messages {
 
         EXCEL_VALUE_INCORRECT = "The value %s is incorrect on excel row %s, column %s",
                 EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
-                EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.";
+                EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
+
+        INCORRECT_FILTER_STRING = "The filter string introduced is incorrect.",
+
+        TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
+        TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
+        TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
+        TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers."
+        ;
 
     }
 

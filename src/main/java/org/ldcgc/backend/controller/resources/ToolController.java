@@ -149,6 +149,7 @@ public interface ToolController {
                                   @RequestParam(required = false, defaultValue = "") String model,
                                   @RequestParam(required = false, defaultValue = "") String description,
                                   @RequestParam(required = false) String status);
+    @Operation(summary = "Upload excel file to introduce all tools into the database. Any repeated barcodes will be updated instead.")
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,

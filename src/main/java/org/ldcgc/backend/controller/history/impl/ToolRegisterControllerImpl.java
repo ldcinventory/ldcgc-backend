@@ -16,4 +16,14 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
     public ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto) {
         return null;
     }
+
+    @Override
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String filterString) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
+        return null;
+    }
 }

@@ -29,4 +29,6 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
 
     Optional<Volunteer> findTopByIdNotNull();
 
+    Integer countByBuilderAssistantId(String builderAssistantId);
+
 }

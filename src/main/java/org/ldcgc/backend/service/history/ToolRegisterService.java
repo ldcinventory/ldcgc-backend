@@ -6,4 +6,6 @@ import org.springframework.http.ResponseEntity;
 public interface ToolRegisterService {
 
     ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto);
+    ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String filterString);
+    ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto);
 }
