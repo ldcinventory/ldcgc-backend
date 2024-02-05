@@ -113,6 +113,7 @@ public class Messages {
 
             CONSUMABLE_NOT_FOUND = "Consumable with id %s not found",
             CONSUMABLE_BARCODE_ALREADY_EXISTS = "There is another consumable with the same barcode (%s) in the database. Please make sure that the barcode is unique",
+            CONSUMABLE_BARCODE_USED_MANY_TIMES = "The barcode %s is used by more than one consumable. Please report to admin",
             CONSUMABLE_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the consumable id is null",
 
             STATUS_NOT_FOUND = "Status %s not found",
@@ -144,7 +145,9 @@ public class Messages {
 
             EXCEL_VALUE_INCORRECT = "The value %s is incorrect on excel row %s, column %s",
             EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
-            EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.";
+            EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
+
+            EXCEL_EMPTY_CELL = "The empty value is not allowed on excel row %s, column %s";
 
     }
 
