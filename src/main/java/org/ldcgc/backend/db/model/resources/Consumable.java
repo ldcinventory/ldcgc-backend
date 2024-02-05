@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.db.mapper.TimeUnitConverter;
+import org.ldcgc.backend.db.mapper.StockTypeConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
@@ -64,7 +64,7 @@ public class Consumable {
 
     private Integer minStock;
 
-    @Convert(converter = TimeUnitConverter.class)
+    @Convert(converter = StockTypeConverter.class)
     @Column(columnDefinition = "int")
     private EStockType stockType;
 
