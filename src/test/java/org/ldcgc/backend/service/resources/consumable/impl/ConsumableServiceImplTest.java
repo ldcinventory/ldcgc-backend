@@ -6,6 +6,7 @@ import org.ldcgc.backend.db.repository.category.CategoryRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
+import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +21,13 @@ class ConsumableServiceImplTest {
     @Mock private GroupRepository groupRepository;
 
     // service
+    private ConsumableExcelService consumableExcelService;
     private ConsumableService consumableService;
 
     @BeforeEach
     void init() {
-        consumableService = new ConsumableServiceImpl(consumableRepository, categoryRepository, locationRepository, groupRepository);
+        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, categoryRepository, locationRepository, groupRepository);
+        consumableService = new ConsumableServiceImpl(consumableRepository, consumableExcelService);
     }
 
     //TODO: ACABAR LOS TESTS DEL SERVICIO CON COBERTURA DE 75% O MÁS

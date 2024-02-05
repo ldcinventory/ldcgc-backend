@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-public class ConsumableControllerImpl implements ConsumableController{
+public class ConsumableControllerImpl implements ConsumableController {
 
     private final ConsumableService consumableService;
 
@@ -18,26 +18,23 @@ public class ConsumableControllerImpl implements ConsumableController{
         return consumableService.getConsumable(consumableId);
     }
 
-    public ResponseEntity<?> createConsumable(ConsumableDto consumable) {
-        return consumableService.createConsumable(consumable);
+    public ResponseEntity<?> createConsumable(ConsumableDto consumableDto) {
+        return consumableService.createConsumable(consumableDto);
     }
 
-    @Override
-    public ResponseEntity<?> updateConsumable(ConsumableDto consumable) {
-        return consumableService.updateConsumable(consumable);
+    public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {
+        return consumableService.updateConsumable(consumableDto, consumableId);
     }
 
-    @Override
-    public ResponseEntity<?> listConsumables(Integer page, Integer size, String sortField, String filter) {
-        return consumableService.listConsumables(page, size, sortField, filter);
+    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer size, String filter, String sortField) {
+        return consumableService.listConsumables(pageIndex, size, filter, sortField);
     }
 
-    @Override
     public ResponseEntity<?> deleteConsumable(Integer consumableId) {
         return consumableService.deleteConsumable(consumableId);
     }
-    @Override
-    public ResponseEntity<?> loadExcel(MultipartFile file){
-        return consumableService.loadExcel(file);
+
+    public ResponseEntity<?> loadExcel(Integer groupId, MultipartFile file) {
+        return consumableService.loadExcel(groupId, file);
     }
 }

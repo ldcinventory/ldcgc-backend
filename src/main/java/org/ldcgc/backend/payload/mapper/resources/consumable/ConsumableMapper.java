@@ -17,6 +17,6 @@ public interface ConsumableMapper {
 
     ConsumableDto toDto(Consumable consumable);
     Consumable toMo(ConsumableDto consumableDto);
-    void update(ConsumableDto from, @MappingTarget ConsumableDto to);
+    void update(ConsumableDto from, @MappingTarget Consumable to);
 
 }
