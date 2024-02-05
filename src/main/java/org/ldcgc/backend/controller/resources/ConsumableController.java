@@ -204,7 +204,7 @@ public interface ConsumableController {
                 @ExampleObject(name = "Error parsing consumable (type)", value = Messages.Error.EXCEL_CELL_TYPE_INCORRECT)
             })
     )
-    @PostMapping("/loadExcel")
+    @PostMapping("/excel")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> loadExcel(
         @Parameter(description = "The group id in which all the volunteers will be included", required = true)
