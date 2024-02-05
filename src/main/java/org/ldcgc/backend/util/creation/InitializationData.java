@@ -202,6 +202,7 @@ public class InitializationData {
 
             // CATEGORIES (select name from categories;)
 
+            // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
 
             Category resource = Category.builder()
