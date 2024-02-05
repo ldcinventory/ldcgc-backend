@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
-import org.ldcgc.backend.db.model.category.Category;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class CategoryDto {
     String name;
     Boolean locked;
     @JsonInclude(NON_NULL)
-    Category parent;
+    CategoryDto parent;
     @JsonInclude(NON_EMPTY)
     @Singular("category")
     List<CategoryDto> categories;
