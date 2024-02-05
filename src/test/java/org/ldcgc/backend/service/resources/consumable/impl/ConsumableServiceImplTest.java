@@ -27,7 +27,7 @@ class ConsumableServiceImplTest {
     @BeforeEach
     void init() {
         consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, categoryRepository, locationRepository, groupRepository);
-        consumableService = new ConsumableServiceImpl(consumableRepository, consumableExcelService);
+        consumableService = new ConsumableServiceImpl(consumableRepository, categoryRepository, locationRepository, groupRepository, consumableExcelService);
     }
 
     //TODO: ACABAR LOS TESTS DEL SERVICIO CON COBERTURA DE 75% O MÁS
