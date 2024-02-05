@@ -6,6 +6,7 @@ import lombok.Value;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.ldcgc.backend.util.common.EStockType;
 
 import java.time.LocalDate;
 
@@ -23,10 +24,10 @@ public class ConsumableDto {
     String name;
     String model;
     String description;
-    String urlImages;
+    String[] urlImages;
     Integer stock;
     Integer minStock;
-    CategoryDto stockType;
+    EStockType stockType;
     LocationDto location;
     GroupDto group;
 

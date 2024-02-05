@@ -24,4 +24,5 @@ public class CategoryDto {
     @JsonInclude(NON_EMPTY)
     @Singular("category")
     List<CategoryDto> categories;
+
 }
