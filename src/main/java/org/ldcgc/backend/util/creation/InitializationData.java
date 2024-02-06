@@ -23,6 +23,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
@@ -313,23 +314,27 @@ public class InitializationData {
             //                  where cn.BrandId = b.BrandId
             //                  and cn.CategoryId = c.CategoryId;)
 
+            Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-            consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
-                .barcode(cFieldList.get(0))
-                .brand(brandsMap.get(cFieldList.get(1)))
-                .model(cFieldList.get(2))
-                .name(cFieldList.get(3))
-                .description(cFieldList.get(4))
-                //.location(null)
-                .group(_8g)
-                .category(resourceCategoriesMap.get(cFieldList.get(5)))
-                .price(convertToFloat2Decimals(cFieldList.get(6)))
-                .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
-                .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
-                //.stockType()
-                .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
-                //.urlImages()
-                .build()));
+            consumables.forEach(cFieldList -> {
+                if (!consumableRepository.existsByBarcode(cFieldList.get(0)))
+                    consumableRepository.save(Consumable.builder()
+                        .barcode(cFieldList.get(0))
+                        .brand(brandsMap.get(cFieldList.get(1)))
+                        .model(cFieldList.get(2))
+                        .name(cFieldList.get(3))
+                        .description(cFieldList.get(4))
+                        .location(location)
+                        .group(_8g)
+                        .category(resourceCategoriesMap.get(cFieldList.get(5)))
+                        .price(convertToFloat2Decimals(cFieldList.get(6)))
+                        .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
+                        .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
+                        .stockType(EStockType.UNITS)
+                        .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
+                        .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
+                        .build());
+            });
 
             // CHEST REGISTRATION
 
