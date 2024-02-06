@@ -13,7 +13,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum EStockType implements EnumMethods {
 
-    UNITS("unidades", "unid", 0),
+    UNITS("unidades", "ud", 0),
 
     LITERS("litros", "l", 1),
     MILLILITERS("mililitros", "ml", 2),
