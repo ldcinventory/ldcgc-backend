@@ -18,6 +18,7 @@ public interface UserMapper {
 
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(source = "password", target = "password", qualifiedByName = "mapPasswordToEncryptedPassword")
     @Mapping(target = "group.location.locations", ignore = true)
     User toEntity(UserDto userRequest);
 
