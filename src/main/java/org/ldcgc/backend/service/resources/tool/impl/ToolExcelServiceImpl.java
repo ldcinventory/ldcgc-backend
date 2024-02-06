@@ -106,7 +106,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
                 .model(getStringCellValue(row, EExcelToolsPositions.MODEL.getColumnNumber()))
                 .category(category)
                 .description(getStringCellValue(row, EExcelToolsPositions.DESCRIPTION.getColumnNumber()))
-                .urlImages(getStringCellValue(row, EExcelToolsPositions.URL_IMAGES.getColumnNumber()))
+                .urlImages(getStringArrayCellValue(row, EExcelToolsPositions.URL_IMAGES.getColumnNumber()))
                 .status(status)
                 .location(location)
                 .maintenancePeriod(getIntegerCellValue(row, EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber()))
@@ -128,6 +128,11 @@ public class ToolExcelServiceImpl implements ToolExcelService {
             throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
 
         return cell.getStringCellValue();
+    }
+
+    private String[] getStringArrayCellValue(Row row, Integer columnNumber) {
+        String cellValue = getStringCellValue(row, columnNumber);
+        return cellValue.split(", ?");
     }
 
     private Integer getIntegerCellValue(Row row, Integer columnNumber) {

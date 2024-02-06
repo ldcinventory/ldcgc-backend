@@ -65,7 +65,8 @@ public class Tool {
 
     private LocalDate purchaseDate;
 
-    private String urlImages;
+    @Column(columnDefinition = "text[]")
+    private String[] urlImages;
 
     private Integer maintenancePeriod;
 

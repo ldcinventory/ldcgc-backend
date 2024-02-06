@@ -31,7 +31,7 @@ public class MultipartFileFactory {
                 row.createCell(EExcelToolsPositions.MODEL.getColumnNumber()).setCellValue(tool.getModel());
                 row.createCell(EExcelToolsPositions.CATEGORY.getColumnNumber()).setCellValue(tool.getCategory().getName());
                 row.createCell(EExcelToolsPositions.DESCRIPTION.getColumnNumber()).setCellValue(tool.getDescription());
-                row.createCell(EExcelToolsPositions.URL_IMAGES.getColumnNumber()).setCellValue(tool.getUrlImages());
+                row.createCell(EExcelToolsPositions.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", tool.getUrlImages()));
                 row.createCell(EExcelToolsPositions.STATUS.getColumnNumber()).setCellValue(tool.getStatus().getDesc());
                 row.createCell(EExcelToolsPositions.LOCATION.getColumnNumber()).setCellValue(tool.getLocation().getName());
                 row.createCell(EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(tool.getMaintenancePeriod());
