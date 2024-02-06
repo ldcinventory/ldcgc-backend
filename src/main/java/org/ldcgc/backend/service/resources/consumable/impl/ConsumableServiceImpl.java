@@ -2,7 +2,13 @@ package org.ldcgc.backend.service.resources.consumable.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
+import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
@@ -29,6 +35,9 @@ import java.util.Objects;
 public class ConsumableServiceImpl implements ConsumableService {
 
     private final ConsumableRepository consumableRepository;
+    private final CategoryRepository categoryRepository;
+    private final LocationRepository locationRepository;
+    private final GroupRepository groupRepository;
     private final ConsumableExcelService consumableExcelService;
 
     public ResponseEntity<?> getConsumable(Integer consumableId) {
@@ -36,17 +45,21 @@ public class ConsumableServiceImpl implements ConsumableService {
             ConsumableMapper.MAPPER.toDto(getOrElseThrowNotFound(consumableId)));
     }
 
-    public ResponseEntity<?> createConsumable(ConsumableDto consumable) {
-        if(Objects.nonNull(consumable.getId()))
-            throw new RequestException(HttpStatus.BAD_REQUEST,
-                String.format(Messages.Error.CONSUMABLE_ID_SHOULDNT_BE_PRESENT, consumable.getBarcode()));
+    public ResponseEntity<?> createConsumable(ConsumableDto consumableDto) {
+        if (Objects.nonNull(consumableDto.getId()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_ID_SHOULDNT_BE_PRESENT);
 
-        if (consumableRepository.existsByBarcode(consumable.getBarcode()))
+        if (consumableRepository.existsByBarcode(consumableDto.getBarcode()))
             throw new RequestException(HttpStatus.BAD_REQUEST,
-                String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumable.getBarcode()));
+                String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
 
-        Consumable consumableEntity = consumableRepository.saveAndFlush(ConsumableMapper.MAPPER.toMo(consumable));
+        Consumable consumableEntity = ConsumableMapper.MAPPER.toMo(consumableDto);
+        setLinkedEntitiesForConsumable(consumableEntity, consumableDto);
+
+        consumableEntity = consumableRepository.saveAndFlush(consumableEntity);
+
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+
     }
 
     public ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String filterString, String sortField) {
@@ -66,16 +79,17 @@ public class ConsumableServiceImpl implements ConsumableService {
         List<Consumable> consumables = consumableRepository.findAllByBarcode(consumableDto.getBarcode());
 
         // if the barcode is used right now with multiple consumables
-        if(consumableRepository.findAllByBarcode(consumableDto.getBarcode()).size() > 1)
+        if (consumables.size() > 1)
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 String.format(Messages.Error.CONSUMABLE_BARCODE_USED_MANY_TIMES, consumableDto.getBarcode()));
         // if the barcode is used by another consumable, other than informed to update
-        else if(consumables.get(0).getId() != consumableId)
+        else if (!consumables.isEmpty() && !Objects.equals(consumables.getFirst().getId(), consumableId))
             throw new RequestException(HttpStatus.BAD_REQUEST,
                 String.format(Messages.Error.CONSUMABLE_BARCODE_ALREADY_EXISTS, consumableDto.getBarcode()));
 
-        Consumable consumableEntity = getOrElseThrowNotFound(consumableDto.getId());
+        Consumable consumableEntity = getOrElseThrowNotFound(consumableId);
         ConsumableMapper.MAPPER.update(consumableDto, consumableEntity);
+        setLinkedEntitiesForConsumable(consumableEntity, consumableDto);
         consumableEntity = consumableRepository.saveAndFlush(consumableEntity);
 
         return Constructor.buildResponseObject(HttpStatus.CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
@@ -101,6 +115,26 @@ public class ConsumableServiceImpl implements ConsumableService {
     private Consumable getOrElseThrowNotFound(Integer consumableId) {
         return consumableRepository.findById(consumableId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_NOT_FOUND, consumableId)));
+    }
+
+    private void setLinkedEntitiesForConsumable(Consumable consumableEntity, ConsumableDto consumableDto) {
+        Category brand = categoryRepository.findById(consumableDto.getBrand().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.BRAND_NOT_FOUND, consumableDto.getBrand())));
+
+        Category consumableCategory = categoryRepository.findById(consumableDto.getCategory().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, consumableDto.getCategory().getId())));
+
+        Location location = locationRepository.findById(consumableDto.getLocation().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.LOCATION_NOT_FOUND, consumableDto.getLocation().getId())));
+
+        Group group = groupRepository.findById(consumableDto.getGroup().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.GROUP_NOT_FOUND, consumableDto.getGroup().getId())));
+
+        consumableEntity.setBrand(brand);
+        consumableEntity.setCategory(consumableCategory);
+        consumableEntity.setLocation(location);
+        consumableEntity.setGroup(group);
+
     }
 
 }

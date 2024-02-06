@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -20,6 +21,7 @@ import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.dto.excel.ConsumableExcelMasterDto;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.util.common.EExcelConsumablesPositions;
+import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -53,11 +55,12 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
             ConsumableExcelMasterDto master = ConsumableExcelMasterDto.builder()
-                .consumable(consumableRepository.findAll().stream()
+                .consumables(consumableRepository.findAll().stream()
+                    .filter(c -> c.getBarcode() != null)
                     .collect(Collectors.toMap(Consumable::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .brands(categoryRepository.findAllByParent_Name(CategoryParentEnum.BRANDS.getBbddName()).stream()
                     .collect(Collectors.toMap(Category::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .categories(categoryRepository.findAllByParent_Name(CategoryParentEnum.BRANDS.getBbddName()).stream()
+                .resources(categoryRepository.findAllByParent_Name(CategoryParentEnum.RESOURCES.getBbddName()).stream()
                     .collect(Collectors.toMap(Category::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .locations(locationRepository.findAll().stream()
                     .collect(Collectors.toMap(Location::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
@@ -78,7 +81,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
 
     private Consumable parseRowToTool(Row row, ConsumableExcelMasterDto master) {
         String barcode = getStringCellValue(row, EExcelConsumablesPositions.BARCODE.getColumnNumber());
-        Integer id = Optional.ofNullable(master.consumable.get(barcode)).map(Consumable::getId).orElse(null);
+        Integer id = Optional.ofNullable(master.consumables.get(barcode)).map(Consumable::getId).orElse(null);
 
         String brandName = getStringCellValue(row, EExcelConsumablesPositions.BRAND.getColumnNumber());
         Category brand = Optional.ofNullable(master.brands.get(brandName))
@@ -87,11 +90,11 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
                     .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.brands.values().stream().map(Category::getName).toList().toString()))));
 
         String categoryName = getStringCellValue(row, EExcelConsumablesPositions.CATEGORY.getColumnNumber());
-        Category category = Optional.ofNullable(master.categories.get(categoryName))
+        Category category = Optional.ofNullable(master.resources.get(categoryName))
             .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 generateExcelErrorMessage(categoryName, row.getRowNum(), EExcelConsumablesPositions.CATEGORY.getColumnNumber(),
                     Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.categories.values().stream().map(Category::getName).toList().toString()))));
+                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.resources.values().stream().map(Category::getName).toList().toString()))));
 
         String locationName = row.getCell(EExcelConsumablesPositions.LOCATION.getColumnNumber()).getStringCellValue();
         Location location = Optional.ofNullable(master.locations.get(locationName))
@@ -108,25 +111,24 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         return Consumable.builder()
             .id(id)
             .barcode(barcode)
-            .name(getStringCellValue(row, EExcelConsumablesPositions.NAME.getColumnNumber()))
-            .brand(brand)
-            .model(getStringCellValue(row, EExcelConsumablesPositions.MODEL.getColumnNumber()))
             .category(category)
+            .brand(brand)
             .name(getStringCellValue(row, EExcelConsumablesPositions.NAME.getColumnNumber()))
+            .model(getStringCellValue(row, EExcelConsumablesPositions.MODEL.getColumnNumber()))
             .description(getStringCellValue(row, EExcelConsumablesPositions.DESCRIPTION.getColumnNumber()))
-            .urlImages(getStringArrayCellValue(row, EExcelConsumablesPositions.URL_IMAGES.getColumnNumber()))
-            .location(location)
-            .minStock(getIntegerCellValue(row, EExcelConsumablesPositions.MIN_STOCK.getColumnNumber()))
             .price(getFloatCellValue(row, EExcelConsumablesPositions.PRICE.getColumnNumber()))
             .purchaseDate(getDateCellValue(row, EExcelConsumablesPositions.PURCHASE_DATE.getColumnNumber()))
+            .urlImages(getStringArrayCellValue(row, EExcelConsumablesPositions.URL_IMAGES.getColumnNumber()))
             .stock(getIntegerCellValue(row, EExcelConsumablesPositions.STOCK.getColumnNumber()))
-            .group(group)
             .minStock(getIntegerCellValue(row, EExcelConsumablesPositions.MIN_STOCK.getColumnNumber()))
+            .stockType(EStockType.getStockTypeByName(getStringCellValue(row, EExcelConsumablesPositions.STOCK_TYPE.getColumnNumber())))
+            .location(location)
+            .group(group)
             .build();
     }
 
     private String generateExcelErrorMessage(String value, Integer row, Integer column, String message) {
-        return Messages.Error.EXCEL_VALUE_INCORRECT.formatted(value, row, column).concat("\n").concat(message);
+        return Messages.Error.EXCEL_VALUE_INCORRECT.formatted(value, row, column).concat(". ").concat(message);
     }
 
     private String getStringCellValue(Row row, Integer columnNumber) {
@@ -134,8 +136,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         CellType cellType = cell.getCellType();
 
         if (!cellType.equals(CellType.STRING))
-            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
+            return ((XSSFCell) cell).getRawValue();
 
         return cell.getStringCellValue();
     }

@@ -10,9 +10,9 @@ import java.util.Map;
 
 @Builder
 public class ConsumableExcelMasterDto {
-        public Map<String, Consumable> consumable;
+        public Map<String, Consumable> consumables;
         public Map<String, Category> brands;
-        public Map<String, Category> categories;
+        public Map<String, Category> resources;
         public Map<String, Location> locations;
         public Map<String, Group> groups;
 }
