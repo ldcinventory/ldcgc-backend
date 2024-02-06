@@ -59,14 +59,14 @@ public class JwtUtils {
     @Setter private Boolean isRefreshToken = false;
 
     private final TokenRepository tokenRepository;
-    private static BidiMap<Integer, TokenDto> tokenLocalRepository = new DualHashBidiMap<>();
-    private static BidiMap<Integer, TokenDto> refreshTokenLocalRepository = new DualHashBidiMap<>();
+    private static final BidiMap<Integer, TokenDto> tokenLocalRepository = new DualHashBidiMap<>();
+    private static final BidiMap<Integer, TokenDto> refreshTokenLocalRepository = new DualHashBidiMap<>();
 
     private static final Clock clock = Clock.systemUTC();
 
     private static final String ISSUER_URL = "https://gc8inventory.es";
 
-    public SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
+    public synchronized SignedJWT generateNewToken(User user) throws ParseException, JOSEException {
         runInBackground(() -> tokenRepository.deleteAllExpiredTokensFromUser(user.getId()));
 
         // Generate a key pair with Ed25519 curve
@@ -198,7 +198,7 @@ public class JwtUtils {
         }
     }
 
-    public boolean verifyJwt(SignedJWT signedJwt, String expectedAudience) throws ParseException, JOSEException, IllegalArgumentException, NullPointerException {
+    public synchronized boolean verifyJwt(SignedJWT signedJwt, String expectedAudience) throws ParseException, JOSEException, IllegalArgumentException, NullPointerException {
 
         int userId = getUserIdFromJwtToken(signedJwt);
 
