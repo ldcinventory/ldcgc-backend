@@ -35,7 +35,9 @@ public class Consumable {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    // TODO validation to not allow null nor duplications once a barcode is registered
+    //  (i.e. after batch a tool could have a null barcode)
+    @Column(unique = true)
     private String barcode;
 
     @ManyToOne
