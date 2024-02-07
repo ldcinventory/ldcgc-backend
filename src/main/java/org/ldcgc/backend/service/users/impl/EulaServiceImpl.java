@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.common.ERole.ROLE_USER;
@@ -99,6 +100,7 @@ public class EulaServiceImpl implements EulaService {
 
             case REJECT -> {
                 String rejectionMessage;
+                cleanLocalTokensFromUserId(user.getId(), true);
                 tokenRepository.deleteAllTokensFromUser(user.getId());
                 if(user.getAcceptedEULA() == null) {
                     // if standard user doesn't accept EULA, delete

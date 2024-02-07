@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
@@ -39,7 +41,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 @Tag(name = "Volunteers", description = "Volunteers methods with CRUD functions")
 public interface VolunteerController {
 
-    @Operation(summary = "Get my volunteer")
+    @Operation(summary = "Get my volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -60,7 +62,7 @@ public interface VolunteerController {
         @Parameter(description = "Valid JWT of the user to get own volunteer details", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
-    @Operation(summary = "Get any volunteer")
+    @Operation(summary = "Get any volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -81,7 +83,7 @@ public interface VolunteerController {
         @Parameter(description = "Volunteer Builder Assistant Id", in = ParameterIn.PATH, name = "builderAssistantId", schema = @Schema(type = "string"))
             @PathVariable String builderAssistantId);
 
-    @Operation(summary = "Create a volunteer")
+    @Operation(summary = "Create a volunteer", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -105,7 +107,7 @@ public interface VolunteerController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
             @RequestBody VolunteerDto volunteer);
 
-    @Operation(summary = "List volunteers")
+    @Operation(summary = "List volunteers", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -128,7 +130,7 @@ public interface VolunteerController {
             @RequestParam(required = false) String builderAssistantId);
 
 
-    @Operation(summary = "Update any volunteer")
+    @Operation(summary = "Update any volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -162,7 +164,7 @@ public interface VolunteerController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Volunteer properties", required = true)
             @RequestBody VolunteerDto volunteer);
 
-    @Operation(summary = "Delete any volunteer")
+    @Operation(summary = "Delete any volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -185,11 +187,7 @@ public interface VolunteerController {
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
             @PathVariable String builderAssistantId);
 
-    @Operation(
-        summary = "Upload volunteers from CSV",
-        description = "Defines a POST operation to create volunteers from CSV",
-        operationId = "uploadVolunteers"
-    )
+    @Operation(summary = "Upload volunteers from CSV", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_204,
         description = SwaggerConfig.HTTP_REASON_204,

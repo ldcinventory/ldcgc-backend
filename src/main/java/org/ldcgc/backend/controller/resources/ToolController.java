@@ -22,13 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 
 @Controller
 @RequestMapping("/resources/tools")
 public interface ToolController {
 
-    @Operation(summary = "Get any tool by providing its id.")
+    @Operation(summary = "Get any tool by providing its id", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -47,7 +48,7 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
-    @Operation(summary = "Create a new tool.")
+    @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -74,7 +75,7 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
-    @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown.")
+    @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -101,7 +102,7 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
-    @Operation(summary = "Delete an existing tool.")
+    @Operation(summary = "Delete an existing tool", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -123,7 +124,22 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
-    @Operation(summary = "Get all tools, paginated and sorted. You can also include 4 filters: brand, model, description and status. Valid status: Disponible, No disponible, En mantenimiento, Dañado, Nueva, En desuso")
+    @Operation(summary = "Get all tools, paginated and sorted.", description = """
+        You can also include 4 filters:
+        - brand
+        - model
+        - description
+        - status
+        
+        Valid status:
+        - Disponible -> ```AVAILABLE```
+        - No disponible -> ```NOT_AVAILABLE```
+        - En mantenimiento -> ```IN_MAINTENANCE```
+        - Dañado -> ```DAMAGED```
+        - Nueva -> ```NEW```
+        - En desuso -> ```DEPRECATED```
+        
+        """ + SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -148,6 +164,8 @@ public interface ToolController {
                                   @RequestParam(required = false, defaultValue = "") String model,
                                   @RequestParam(required = false, defaultValue = "") String description,
                                   @RequestParam(required = false) String status);
+
+    @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,

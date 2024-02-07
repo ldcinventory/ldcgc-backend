@@ -55,7 +55,7 @@ public class SwaggerConfig {
                 .info(new Info().title("LDC-GC API")
                         .description("LDC-GC Backend")
                         .version(version)
-                        .license(new License().name("Apache 2.0").url("https://gc8inventory.es")))
+                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .externalDocs(new ExternalDocumentation()
                         .description("LDC Inventory Help")
                         .url("https://help.gc8inventory.es"));

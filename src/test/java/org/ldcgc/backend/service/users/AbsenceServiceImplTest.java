@@ -1,6 +1,13 @@
 package org.ldcgc.backend.service.users;
 
-import lombok.extern.slf4j.Slf4j;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
@@ -19,6 +26,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.AbsenceServiceImpl;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.retrieving.Messages;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,12 +51,14 @@ import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomBuilderAs
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@Slf4j
 @SpringBootTest
 class AbsenceServiceImplTest {
 
@@ -58,6 +68,15 @@ class AbsenceServiceImplTest {
     @Mock UserRepository userRepository;
     @Mock VolunteerRepository volunteerRepository;
     @Mock AbsenceRepository absenceRepository;
+
+    // -- lambda part ->>
+    @Mock EntityManager entityManager;
+    @Mock CriteriaBuilder criteriaBuilder;
+    @Mock CriteriaQuery<Absence> criteriaQuery;
+    @Mock Root<Absence> rootAbsence;
+    @Mock Join<Volunteer, Absence> joinVolunteerAbsence;
+    @Mock Path<String> builderAssistantIdExpression;
+    // -- lambda part <<-
 
     private String mockedToken;
 
@@ -124,8 +143,7 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        final User USER_WITHOUT_ABSENCES = USER_WITH_VOLUNTEER;
-        USER_WITHOUT_ABSENCES.getVolunteer().setAbsences(null);
+        USER_WITH_VOLUNTEER.getVolunteer().setAbsences(null);
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.getMyAbsence(mockedToken, 0));
 
@@ -141,9 +159,8 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        final User USER_WITHOUT_ABSENCES = USER_WITH_VOLUNTEER;
         Absence ABSENCE = AbsenceMapper.MAPPER.toEntity(this.ABSENCE);
-        USER_WITHOUT_ABSENCES.getVolunteer().setAbsences(Collections.singletonList(ABSENCE));
+        USER_WITH_VOLUNTEER.getVolunteer().setAbsences(Collections.singletonList(ABSENCE));
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.getMyAbsence(mockedToken, 0));
 
@@ -166,6 +183,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(AbsenceMapper.MAPPER.toDto(absenceExpected), responseBody.getData());
 
@@ -222,8 +240,7 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        final User USER_WITHOUT_ABSENCES = USER_WITH_VOLUNTEER;
-        USER_WITHOUT_ABSENCES.getVolunteer().setAbsences(null);
+        USER_WITH_VOLUNTEER.getVolunteer().setAbsences(null);
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, DATE_FROM, DATE_TO));
 
@@ -247,6 +264,7 @@ class AbsenceServiceImplTest {
 
         ResponseEntity<?> response = absenceService.listMyAbsences(mockedToken, null, null);
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        assertNotNull(responseBody);
         HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -276,6 +294,7 @@ class AbsenceServiceImplTest {
 
         ResponseEntity<?> response = absenceService.listMyAbsences(mockedToken, dateFrom, dateTo);
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        assertNotNull(responseBody);
         HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -348,6 +367,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(Messages.Info.ABSENCE_CREATED, responseBody.getMessage());
         assertEquals(ABSENCE, responseBody.getData());
@@ -407,8 +427,7 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        final User USER_WITHOUT_ABSENCES = USER_WITH_VOLUNTEER;
-        USER_WITHOUT_ABSENCES.getVolunteer().setAbsences(null);
+        USER_WITH_VOLUNTEER.getVolunteer().setAbsences(null);
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.updateMyAbsence(mockedToken, 0, ABSENCE));
 
@@ -424,9 +443,8 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        final User USER_WITHOUT_ABSENCES = USER_WITH_VOLUNTEER;
         Absence ABSENCE = AbsenceMapper.MAPPER.toEntity(this.ABSENCE);
-        USER_WITHOUT_ABSENCES.getVolunteer().setAbsences(Collections.singletonList(ABSENCE));
+        USER_WITH_VOLUNTEER.getVolunteer().setAbsences(Collections.singletonList(ABSENCE));
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.updateMyAbsence(mockedToken, 0, this.ABSENCE));
 
@@ -454,6 +472,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(Messages.Info.ABSENCE_UPDATED, responseBody.getMessage());
         assertEquals(ABSENCE, responseBody.getData());
@@ -513,8 +532,7 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        final User USER_WITHOUT_ABSENCES = USER_WITH_VOLUNTEER;
-        USER_WITHOUT_ABSENCES.getVolunteer().setAbsences(null);
+        USER_WITH_VOLUNTEER.getVolunteer().setAbsences(null);
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.deleteMyAbsence(mockedToken, 0));
 
@@ -557,6 +575,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.ABSENCE_DELETED, responseBody.getMessage());
 
@@ -592,6 +611,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(ABSENCE, responseBody.getData());
 
@@ -614,9 +634,14 @@ class AbsenceServiceImplTest {
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(bothLists).when(absenceRepository).findAll(any(Specification.class));
+        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
 
         ResponseEntity<?> response = absenceService.listAbsences(null, null, null);
+
+        // -- lambda part
+        List<Absence> testAbsences = testLambdaPart(specCaptor);
+
         Response.DTO responseBody = (Response.DTO) response.getBody();
         HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
 
@@ -628,9 +653,10 @@ class AbsenceServiceImplTest {
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
+        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, atMostOnce()).findAll(any(Specification.class));
+        verify(absenceRepository, times(2)).findAll(any(Specification.class));
 
     }
 
@@ -649,13 +675,19 @@ class AbsenceServiceImplTest {
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(bothLists).when(absenceRepository).findAll(any(Specification.class));
+        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
 
         LocalDate dateFrom = absencesDto.getFirst().getDateFrom();
         LocalDate dateTo = absencesDto.getLast().getDateTo();
 
         ResponseEntity<?> response = absenceService.listAbsences(dateFrom, dateTo, null);
+
+        // -- lambda part
+        List<Absence> testAbsences = testLambdaPart(specCaptor);
+
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        assertNotNull(responseBody);
         HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -666,9 +698,10 @@ class AbsenceServiceImplTest {
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
+        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, atMostOnce()).findAll(any(Specification.class));
+        verify(absenceRepository, times(2)).findAll(any(Specification.class));
 
     }
 
@@ -687,12 +720,18 @@ class AbsenceServiceImplTest {
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(bothLists).when(absenceRepository).findAll(any(Specification.class));
+        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
 
         ResponseEntity<?> response = absenceService.listAbsences(null, null, new String[]{
             USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId(),
             ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()});
+
+        // -- lambda part
+        List<Absence> testAbsences = testLambdaPart(specCaptor);
+
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        assertNotNull(responseBody);
         HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -703,9 +742,10 @@ class AbsenceServiceImplTest {
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
+        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, atMostOnce()).findAll(any(Specification.class));
+        verify(absenceRepository, times(2)).findAll(any(Specification.class));
 
     }
 
@@ -724,7 +764,8 @@ class AbsenceServiceImplTest {
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(bothLists).when(absenceRepository).findAll((Specification<Absence>) any());
+        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
 
         LocalDate dateFrom = absencesDto.getFirst().getDateFrom();
         LocalDate dateTo = absencesDto.getLast().getDateTo();
@@ -732,7 +773,12 @@ class AbsenceServiceImplTest {
         ResponseEntity<?> response = absenceService.listAbsences(dateFrom, dateTo, new String[]{
             USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId(),
             ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()});
+
+        // -- lambda part
+        List<Absence> testAbsences = testLambdaPart(specCaptor);
+
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        assertNotNull(responseBody);
         HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -743,10 +789,22 @@ class AbsenceServiceImplTest {
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
+        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, atMostOnce()).findAll(any(Specification.class));
+        verify(absenceRepository, times(2)).findAll(any(Specification.class));
 
+    }
+
+    private List<Absence> testLambdaPart(ArgumentCaptor<Specification<Absence>> specCaptor) {
+        when(entityManager.getCriteriaBuilder()).thenReturn(this.criteriaBuilder);
+        doReturn(joinVolunteerAbsence).when(rootAbsence).join(anyString(), eq(JoinType.LEFT));
+        doReturn(builderAssistantIdExpression).when(joinVolunteerAbsence).get(anyString());
+
+        Specification<Absence> capturedSpec = specCaptor.getValue();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        Predicate predicate = capturedSpec.toPredicate(rootAbsence, criteriaQuery, criteriaBuilder);
+        return absenceRepository.findAll((Specification<Absence>) (r, q, cb) -> predicate);
     }
 
     @Test
@@ -792,6 +850,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(Messages.Info.ABSENCE_CREATED, responseBody.getMessage());
 
@@ -827,6 +886,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(Messages.Info.ABSENCE_UPDATED, responseBody.getMessage());
         assertEquals(absenceDto, responseBody.getData());
@@ -883,6 +943,7 @@ class AbsenceServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.ABSENCE_DELETED, responseBody.getMessage());
 

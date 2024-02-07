@@ -7,6 +7,7 @@ public class Messages {
         public static final String
 
             RECOVERY_TOKEN_VALID = "Recovery token valid",
+            TOKEN_REFRESHED = "Regular token recreated from refresh token",
 
             USER_CREATED = "User created successfully!",
             USER_LISTED = "Found %s user/s",
@@ -75,11 +76,14 @@ public class Messages {
     public static class Error {
 
         public static final String
+            TOKEN_NOT_FOUND_HEADERS = "The token is not found in headers",
             TOKEN_NOT_PARSEABLE = "This token is not parseable",
             TOKEN_NOT_VALID = "This token is not valid",
             TOKEN_NOT_FOUND = "This token doesn't exist in DB",
-            JWT_NOT_FOR_RECOVERY = "This token is not for recover the account. Sorry, mate!",
+            TOKEN_EXPIRED = "This token is expired",
+            JWT_NOT_FOR_RECOVERY_REFRESH = "This token is not for recover the account or refresh actual expired token. Sorry, mate!",
             RECOVERY_TOKEN_NOT_VALID_NOT_FOUND = "This recovery token is not valid or is not found",
+            REFRESH_TOKEN_NOT_VALID = "This refresh token is not valid",
 
             USER_ALREADY_EXIST = "There's already a user with this id or email",
             USER_NOT_FOUND = "User not found",

@@ -43,10 +43,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
@@ -113,7 +113,7 @@ class UserServiceImplTest {
         doReturn(Optional.of(UserMapper.MAPPER.toEntity(user))).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.getMyUser(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -160,13 +160,13 @@ class UserServiceImplTest {
         doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, user, headers)).when(accountService).login(credentials);
 
         ResponseEntity<?> response = userService.updateMyUser(mockedToken, user);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertTrue(Objects.nonNull(responseBody));
+        assertNotNull(responseBody);
 
         Response.DTO responseData = (Response.DTO) responseBody.getData();
-        assertTrue(Objects.nonNull(responseData));
+        assertNotNull(responseData);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(Messages.Info.USER_UPDATED, responseBody.getMessage());
@@ -209,7 +209,7 @@ class UserServiceImplTest {
         doReturn(true).when(userRepository).existsById(user.getId());
 
         ResponseEntity<?> response = userService.deleteMyUser(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -266,7 +266,7 @@ class UserServiceImplTest {
         doReturn(userEntity).when(userRepository).save(userEntity);
 
         ResponseEntity<?> response = userService.createUser(mockedToken, user);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -301,7 +301,7 @@ class UserServiceImplTest {
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.getUser(user.getId());
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -320,7 +320,7 @@ class UserServiceImplTest {
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.listUsers(null, null, null, user.getId());
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -344,7 +344,7 @@ class UserServiceImplTest {
         doReturn(userPage).when(userRepository).findAll(any(Pageable.class));
 
         ResponseEntity<?> response = userService.listUsers(0, 5, null, null);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -369,7 +369,7 @@ class UserServiceImplTest {
         doReturn(userPage).when(userRepository).findAllFiltered(anyString(), any(Pageable.class));
 
         ResponseEntity<?> response = userService.listUsers(0, 5, "x", null);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -781,7 +781,7 @@ class UserServiceImplTest {
         doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, userDtoExpected, headers)).when(accountService).login(credentials);
 
         ResponseEntity<?> response = userService.updateUser(mockedToken, userId, userDtoUpdating);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         Response.DTO responseData = (Response.DTO) responseBody.getData();
@@ -827,7 +827,7 @@ class UserServiceImplTest {
         doReturn(true).when(userRepository).existsById(user.getId());
 
         ResponseEntity<?> response = userService.deleteUser(user.getId());
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
