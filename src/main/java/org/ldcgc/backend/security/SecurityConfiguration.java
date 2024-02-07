@@ -48,9 +48,9 @@ public class SecurityConfiguration {
     private final String[] allowedMethods = { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
 
     private final String[] allowedHeaders = { "Authorization", "Accept", "Accept-Language", "content-type",
-            "Requestor-Type", "X-Requested-With", "x-header-payload-token", "x-signature-token", "skip-eula" };
+            "Requestor-Type", "X-Requested-With", "x-header-payload-token", "x-signature-token", "x-refresh-token", "skip-eula" };
 
-    private final String[] exposedHeaders = { "Allow", "X-Get-Header", "x-header-payload-token", "x-signature-token" };
+    private final String[] exposedHeaders = { "Allow", "X-Get-Header", "x-header-payload-token", "x-signature-token", "x-refresh-token" };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

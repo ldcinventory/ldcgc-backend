@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
@@ -35,7 +37,7 @@ public interface AvailabilityController {
 
     // my user
 
-    @Operation(summary = "Get own user availability")
+    @Operation(summary = "Get own user availability", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -56,7 +58,7 @@ public interface AvailabilityController {
         @Parameter(description = "Valid JWT of the user to get availability", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token);
 
-    @Operation(summary = "Update own user availability")
+    @Operation(summary = "Update own user availability", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -79,7 +81,7 @@ public interface AvailabilityController {
         @Parameter(description = "Availability details", required = true)
             @RequestBody List<EWeekday> availability);
 
-    @Operation(summary = "Clear own user availability")
+    @Operation(summary = "Clear own user availability", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -104,7 +106,7 @@ public interface AvailabilityController {
 
     // managed user
 
-    @Operation(summary = "Get any user availability")
+    @Operation(summary = "Get any user availability", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -125,7 +127,7 @@ public interface AvailabilityController {
         @Parameter(description = "Builder Assistant Id to get details")
             @PathVariable String builderAssistantId);
 
-    @Operation(summary = "Update user availability")
+    @Operation(summary = "Update user availability", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -148,7 +150,7 @@ public interface AvailabilityController {
         @Parameter(description = "Availability details for this user to update")
             @RequestBody List<EWeekday> availability);
 
-    @Operation(summary = "Clear own user availability")
+    @Operation(summary = "Clear own user availability", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,

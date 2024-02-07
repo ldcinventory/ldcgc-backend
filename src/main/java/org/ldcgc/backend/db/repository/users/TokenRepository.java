@@ -25,6 +25,16 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
 
     @Modifying
     @Transactional
+    @Query("DELETE from Token t WHERE t.userId = :userId and t.isRefreshToken = false")
+    void deleteNonRefreshTokensFromUser(Integer userId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE from Token t WHERE t.userId = :userId and t.isRecoveryToken = true")
+    void deleteRecoveryTokenForUserId(Integer userId);
+
+    @Modifying
+    @Transactional
     @Query("DELETE from Token t WHERE t.expiresAt < current_timestamp")
     void deleteExpiredTokens();
 

@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
@@ -37,7 +39,7 @@ public interface AbsenceController {
 
     // my user
 
-    @Operation(summary = "Get own user absence")
+    @Operation(summary = "Get own user absence", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -60,7 +62,7 @@ public interface AbsenceController {
         @Parameter(description = "AbsenceId for getting details", required = true)
             @PathVariable Integer absenceId);
 
-    @Operation(summary = "Get own user absences")
+    @Operation(summary = "Get own user absences", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -88,7 +90,7 @@ public interface AbsenceController {
         @Parameter(description = "Date 'to' to filter absences")
             @RequestParam(required = false) LocalDate dateTo);
 
-    @Operation(summary = "Create own user absence")
+    @Operation(summary = "Create own user absence", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -112,7 +114,7 @@ public interface AbsenceController {
         @Parameter(description = "Absence details", required = true)
             @RequestBody AbsenceDto absenceDto);
 
-    @Operation(summary = "Update own user absence")
+    @Operation(summary = "Update own user absence", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -138,7 +140,7 @@ public interface AbsenceController {
         @Parameter(description = "Absence details", required = true)
             @RequestBody AbsenceDto absenceDto);
 
-    @Operation(summary = "Delete own user absence")
+    @Operation(summary = "Delete own user absence", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -167,7 +169,7 @@ public interface AbsenceController {
 
     // managed user
 
-    @Operation(summary = "Get any user absence")
+    @Operation(summary = "Get any user absence", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -190,7 +192,7 @@ public interface AbsenceController {
         @Parameter(description = "AbsenceId to get details")
             @PathVariable Integer absenceId);
 
-    @Operation(summary = "List any user absences")
+    @Operation(summary = "List any user absences", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -216,7 +218,7 @@ public interface AbsenceController {
         @Parameter(description = "Builder Assistant Ids (array of one or more ids)")
             @RequestParam(required = false) String[] builderAssistantIds);
 
-    @Operation(summary = "Create user absence")
+    @Operation(summary = "Create user absence", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -237,7 +239,7 @@ public interface AbsenceController {
         @Parameter(description = "Absence details for this user to create")
             @RequestBody AbsenceDto absenceDto);
 
-    @Operation(summary = "Update user absence")
+    @Operation(summary = "Update user absence", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -260,7 +262,7 @@ public interface AbsenceController {
         @Parameter(description = "Absence details for this user to update")
             @RequestBody AbsenceDto absenceDto);
 
-    @Operation(summary = "Delete user absence")
+    @Operation(summary = "Delete user absence", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,

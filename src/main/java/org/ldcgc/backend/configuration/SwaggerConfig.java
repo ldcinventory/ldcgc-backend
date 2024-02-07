@@ -41,13 +41,19 @@ public class SwaggerConfig {
         HTTP_REASON_500 = "Internal Server Error",
         HTTP_REASON_501 = "Not Implemented";
 
+    // Swagger constants
+    public static final String SWAGGER_ROLE_OPERATION_ADMIN = "Roles addmited: <b>ADMIN</b>",
+        SWAGGER_ROLE_OPERATION_MANAGER = "Roles addmited: <b>ADMIN</b>, <b>MANAGER</b>",
+        SWAGGER_ROLE_OPERATION_USER = "Roles addmited: <b>ADMIN</b>, <b>MANAGER</b>, <b>STANDARD</b>",
+        SWAGGER_ROLE_OPERATION_NON_LOGGED = "Roles addmited: <b>Non-logged user</b>";
+
     @Bean
     public OpenAPI gc8InventoryAPI() {
         return new OpenAPI()
                 .info(new Info().title("LDC-GC API")
                         .description("LDC-GC Backend")
                         .version(version)
-                        .license(new License().name("Apache 2.0").url("https://gc8inventory.es")))
+                        .license(new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .externalDocs(new ExternalDocumentation()
                         .description("LDC Inventory Help")
                         .url("https://help.gc8inventory.es"));

@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -26,6 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
@@ -48,10 +50,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
 
+        final String refreshJwt = request.getHeader("x-refresh-token");
         final String jwtHeaderPayload = request.getHeader("x-header-payload-token");
         final String jwtSignature = request.getHeader("x-signature-token");
 
-        final boolean authIsNotPresent = StringUtils.isBlank(jwtHeaderPayload) && StringUtils.isBlank(jwtSignature);
+        String jwt = null;
+        if(Objects.nonNull(refreshJwt) && request.getMethod().equals("POST") && request.getRequestURI().equals("/api/accounts/refresh-token"))
+            jwt = String.format("Bearer %s", refreshJwt);
+        else if(ObjectUtils.allNotNull(jwtHeaderPayload, jwtSignature))
+            jwt = String.format("Bearer %s.%s", jwtHeaderPayload, jwtSignature);
+
+        final boolean authIsNotPresent = Objects.isNull(jwt);
 
         if (authIsNotPresent || nonTokenEndpoint(request.getMethod(), request.getRequestURI())) {
             response.setHeader("Expires", LocalDateTime.now().plusSeconds(jwtExpirationSeconds).toString());
@@ -59,7 +68,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String jwt = String.format("Bearer %s.%s", jwtHeaderPayload, jwtSignature);
+        if(StringUtils.isBlank(jwt))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND_HEADERS);
 
         SignedJWT decodedJWT = jwtUtils.getDecodedJwt(jwt);
 
@@ -92,9 +102,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            if(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                tokenRepository.deleteExpiredTokens();
-
         } catch (ParseException | JOSEException | IllegalArgumentException | NullPointerException e) {
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_VALID);
         }
@@ -103,6 +110,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         if (isTokenEndpoint(request.getMethod(), request.getRequestURI()) &&
             isNotReplaceTokenEndpoint(request.getMethod(), request.getRequestURI())) {
+            response.setHeader("x-refresh-token", refreshJwt);
             response.setHeader("x-header-payload-token", jwtHeaderPayload);
             response.setHeader("x-signature-token", jwtSignature);
             try {

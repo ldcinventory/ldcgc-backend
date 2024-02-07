@@ -1,6 +1,5 @@
 package org.ldcgc.backend.service.users;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-@Slf4j
 @SpringBootTest
 class AvailabilityServiceImplTest {
 
@@ -137,6 +135,7 @@ class AvailabilityServiceImplTest {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(USER_WITH_VOLUNTEER.getVolunteer());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(volunteerDto.getAvailability(), responseBody.getData());
 
@@ -225,6 +224,7 @@ class AvailabilityServiceImplTest {
         VolunteerDto volunteerDto = VolunteerMapper.MAPPER.toDto(USER_WITH_VOLUNTEER.getVolunteer());
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(responseBody.getMessage(), Messages.Info.AVAILABILITY_UPDATED);
         assertEquals(volunteerDto.getAvailability(), responseBody.getData());
@@ -307,6 +307,7 @@ class AvailabilityServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(responseBody.getMessage(), Messages.Info.AVAILABILITY_CLEARED);
         assertEquals(Collections.emptyList(), responseBody.getData());
@@ -344,6 +345,7 @@ class AvailabilityServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(volunteer.getAvailability().stream().toList(), responseBody.getData());
 
@@ -379,6 +381,7 @@ class AvailabilityServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(responseBody.getMessage(), Messages.Info.AVAILABILITY_UPDATED);
         assertEquals(volunteer.getAvailability().stream().toList(), responseBody.getData());
@@ -415,6 +418,7 @@ class AvailabilityServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
         assertEquals(responseBody.getMessage(), Messages.Info.AVAILABILITY_CLEARED);
         assertEquals(Collections.emptyList(), responseBody.getData());

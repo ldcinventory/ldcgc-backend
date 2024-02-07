@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
@@ -39,7 +42,7 @@ public interface UserController {
 
     // users
 
-    @Operation(summary = "Get my user")
+    @Operation(summary = "Get my user", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -61,7 +64,7 @@ public interface UserController {
         @Parameter(description = "Valid JWT of the user to get details", required = true)
         @RequestAttribute("Authorization") @UserFromTokenInDb String token);
 
-    @Operation(summary = "Update my user")
+    @Operation(summary = "Update my user", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -86,7 +89,7 @@ public interface UserController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
             @RequestBody UserDto user) throws ParseException, JOSEException;
 
-    @Operation(summary = "Delete my user")
+    @Operation(summary = "Delete my user", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -111,7 +114,7 @@ public interface UserController {
 
     // admin
 
-    @Operation(summary = "Create a user (admin)")
+    @Operation(summary = "Create a user (admin)", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -136,7 +139,7 @@ public interface UserController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
             @RequestBody UserDto user);
 
-    @Operation(summary = "Get any user (admin)")
+    @Operation(summary = "Get any user (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -157,7 +160,7 @@ public interface UserController {
         @Parameter(description = "User id", required = true)
             @PathVariable Integer userId);
 
-    @Operation(summary = "List users (admin)")
+    @Operation(summary = "List users (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -176,7 +179,7 @@ public interface UserController {
         @Parameter(description = "User Id (ignores the other params)")
             @RequestParam(required = false) Integer userId);
 
-    @Operation(summary = "Update any user (admin)")
+    @Operation(summary = "Update any user (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -203,7 +206,7 @@ public interface UserController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
             @RequestBody UserDto user) throws ParseException, JOSEException;
 
-    @Operation(summary = "Delete any user (admin)")
+    @Operation(summary = "Delete any user (admin)", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,

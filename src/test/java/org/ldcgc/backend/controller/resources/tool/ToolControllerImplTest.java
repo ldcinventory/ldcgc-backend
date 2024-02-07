@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,7 +50,7 @@ class ToolControllerImplTest {
         ResponseEntity<?> response = controller.createTool(tool);
 
         verify(service, times(1)).createTool(tool);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
     }
 
     @Test

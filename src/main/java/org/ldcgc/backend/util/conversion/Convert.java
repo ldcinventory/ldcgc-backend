@@ -14,7 +14,11 @@ import java.util.Locale;
 public class Convert {
 
     public static String nowToTimeStampString(){
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS", Locale.ENGLISH).format(LocalDateTime.now());
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.ENGLISH).format(LocalDateTime.now());
+    }
+
+    public static String localDateTimeToTimeStampString(LocalDateTime localDateTime){
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH).format(localDateTime);
     }
 
     public static LocalDate stringToLocalDate(String dbString, String pattern) {

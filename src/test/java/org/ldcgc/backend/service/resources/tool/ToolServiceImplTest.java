@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -55,7 +56,7 @@ class ToolServiceImplTest {
 
         ResponseEntity<?> response = service.getTool(tool.getId());
 
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
         verify(toolRepository, times(1)).findById(tool.getId());
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(toolDto, responseBody.getData());
@@ -86,7 +87,7 @@ class ToolServiceImplTest {
 
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
         verify(toolRepository, times(1)).save(entityTool);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, responseBody.getData().getClass());
     }
@@ -129,7 +130,7 @@ class ToolServiceImplTest {
         verify(toolRepository, times(1)).findById(toolDto.getId());
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
         verify(toolRepository, times(1)).save(tool);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, responseBody.getData().getClass());
     }
@@ -177,7 +178,7 @@ class ToolServiceImplTest {
         verify(toolRepository, times(1)).findById(toolId);
         verify(toolRepository, times(1)).delete(tool);
 
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(Messages.Info.TOOL_DELETED, responseBody.getMessage());
     }
@@ -209,7 +210,7 @@ class ToolServiceImplTest {
 
         verify(toolRepository, times(1)).findAllFiltered(eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, ((Page<ToolDto>) responseBody.getData()).stream().findFirst().get().getClass());
     }
@@ -238,8 +239,9 @@ class ToolServiceImplTest {
         verify(toolExcelService, times(1)).excelToTools(any());
         verify(toolRepository, times(1)).saveAll(any());
 
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
         Response.DTO responseBody = ((Response.DTO) response.getBody());
+        assertNotNull(responseBody);
         assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
     }
 }
