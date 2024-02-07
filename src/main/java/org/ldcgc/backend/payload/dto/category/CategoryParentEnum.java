@@ -6,13 +6,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CategoryParentEnum {
-
-    MANUFACTURERS("Fabricantes", "Manufacturer"),
     RESPONSIBILITIES("Responsabilidades", "Responsibility"),
     RESOURCES("Recursos", "Resource"),
     BRANDS("Marcas", "Brand"),
+    MANUFACTURERS("Fabricantes", "Manufacturer"),
     CATEGORIES("Categorías", "Category"),
-    MAINTENANCE_TIME("Unidad periodo de mantenimiento", "Maintenance time");
+    STOCKTYPE("TipoStock", "StockType"),
+    MAINTENANCE_TIME("Unidad periodo de mantenimiento", "Maintenance_Time");
 
     private final String bbddName;
     private final String name;

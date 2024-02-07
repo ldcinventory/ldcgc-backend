@@ -212,7 +212,7 @@ public interface VolunteerController {
     ResponseEntity<?> uploadVolunteers(
         @Parameter(description = "The group id in which all the volunteers will be included", required = true)
             @RequestParam Integer groupId,
-        @Parameter(description = "The file with all the volunteers", required = true)
+        @Parameter(description = "The CSV file with all the volunteers to upload", required = true)
             @RequestPart MultipartFile document);
 
 }

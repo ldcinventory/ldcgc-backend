@@ -83,4 +83,5 @@ public class Constructor {
     public static ResponseEntity<Object> buildExceptionResponseMessageObject(HttpStatus httpStatus, String message, Object object) {
         return ResponseEntity.status(httpStatus).body(buildResponseMessageObject(message, object));
     }
+
 }

@@ -23,6 +23,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.retrieving.Files;
@@ -202,6 +203,7 @@ public class InitializationData {
 
             // CATEGORIES (select name from categories;)
 
+            // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
 
             Category resource = Category.builder()
@@ -280,11 +282,11 @@ public class InitializationData {
             Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
 
             // TODO check status when final migration
-            //final Status available = statusRepository.findByName(EStatus.AVAILABLE).orElseThrow(() ->
-            //    new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
+            Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-            tools.forEach(tFieldList -> toolRepository.save(Tool.builder()
+            tools.forEach(tFieldList ->
+                toolRepository.save(Tool.builder()
                 .barcode(toolRepository.existsByBarcode(tFieldList.get(0)) ? null : tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
                     ? brandsMap.get("<empty>")
@@ -292,14 +294,14 @@ public class InitializationData {
                 .model(tFieldList.get(2))
                 .name(tFieldList.get(3))
                 .description(tFieldList.get(4))
-                //.location(null)
+                .location(location)
                 .group(_8g)
                 .category(resourceCategoriesMap.get(tFieldList.get(5)))
-                .status(EStatus.NOT_AVAILABLE)
+                .status(EStatus.AVAILABLE)
                 .weight(convertToFloat(tFieldList.get(6)))
                 .price(convertToFloat(tFieldList.get(7)))
                 .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
-                //.urlImages()
+                .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                 //.lastMaintenance()
                 //.maintenancePeriod()
                 .maintenanceTime(getRandomTimeUnit())
@@ -313,22 +315,23 @@ public class InitializationData {
             //                  and cn.CategoryId = c.CategoryId;)
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-            consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
-                .barcode(cFieldList.get(0))
-                .brand(brandsMap.get(cFieldList.get(1)))
-                .model(cFieldList.get(2))
-                .name(cFieldList.get(3))
-                .description(cFieldList.get(4))
-                //.location(null)
-                .group(_8g)
-                .category(resourceCategoriesMap.get(cFieldList.get(5)))
-                .price(convertToFloat2Decimals(cFieldList.get(6)))
-                .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
-                .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
-                //.stockType()
-                .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
-                //.urlImages()
-                .build()));
+            consumables.forEach(cFieldList ->
+                consumableRepository.save(Consumable.builder()
+                    .barcode(consumableRepository.existsByBarcode(cFieldList.get(0)) ? null : cFieldList.get(0))
+                    .brand(brandsMap.get(cFieldList.get(1)))
+                    .model(cFieldList.get(2))
+                    .name(cFieldList.get(3))
+                    .description(cFieldList.get(4))
+                    .location(location)
+                    .group(_8g)
+                    .category(resourceCategoriesMap.get(cFieldList.get(5)))
+                    .price(convertToFloat2Decimals(cFieldList.get(6)))
+                    .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
+                    .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
+                    .stockType(EStockType.UNITS)
+                    .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
+                    .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
+                    .build()));
 
             // CHEST REGISTRATION
 

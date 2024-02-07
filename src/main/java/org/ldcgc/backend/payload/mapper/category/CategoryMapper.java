@@ -15,7 +15,7 @@ public interface CategoryMapper {
 
     CategoryMapper MAPPER = Mappers.getMapper(CategoryMapper.class);
 
-    @Mapping(target = "parent.categories", expression = "java(null)")
+    @Mapping(target = "parent.categories", ignore = true)
     @Mapping(target = "categories", qualifiedByName = "mapNestedCategoriesParentAsNull")
     CategoryDto toDto(Category category);
 

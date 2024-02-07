@@ -24,7 +24,7 @@ public class ToolDto {
     String name;
     String model;
     String description;
-    String urlImages;
+    String[] urlImages;
     Integer maintenancePeriod;
     ETimeUnit maintenanceTime;
     LocalDateTime lastMaintenance;

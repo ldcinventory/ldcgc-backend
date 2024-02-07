@@ -1,12 +1,14 @@
 package org.ldcgc.backend.payload.dto.resources;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.ldcgc.backend.util.common.EStockType;
+
+import java.time.LocalDate;
 
 @Value
 @Builder
@@ -17,15 +19,16 @@ public class ConsumableDto {
     String barcode;
     CategoryDto category;
     CategoryDto brand;
+    Float price;
+    LocalDate purchaseDate;
     String name;
     String model;
     String description;
-    String urlImages;
+    String[] urlImages;
     Integer stock;
     Integer minStock;
-    CategoryDto stockType;
-    @JsonAlias("location")
-    Location locationLvl2;
+    EStockType stockType;
+    LocationDto location;
     GroupDto group;
 
 }
