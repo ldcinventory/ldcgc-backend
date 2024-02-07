@@ -17,9 +17,17 @@ import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -31,28 +39,38 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
 
     public ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto) {
         String builderAssistantId = toolRegisterDto.getVolunteer().getBuilderAssistantId();
-        Integer volunteerNumber = volunteerRepository.countByBuilderAssistantId(builderAssistantId);
-        if(volunteerNumber < 1)
+        List<Volunteer> volunteers = volunteerRepository.findAllByBuilderAssistantId(builderAssistantId);
+        if (volunteers.isEmpty())
             throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_VOLUNTEER_NOT_FOUND);
-        else if(volunteerNumber > 1)
+        else if (volunteers.size() > 1)
             throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS, builderAssistantId));
+        else if (!Objects.equals(volunteers.getFirst().getId(), toolRegisterDto.getVolunteer().getId()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID, builderAssistantId));
 
         Tool tool = toolRepository.findById(toolRegisterDto.getTool().getId())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_TOOL_NOT_FOUND));
 
-        if (tool.getStatus().equals(EStatus.AVAILABLE))
+        if (!tool.getStatus().equals(EStatus.AVAILABLE))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
         ToolRegister register = repository.save(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String filterString) {
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, String filterString) {
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortString));
 
-        return null;
+        Page<ToolRegister> page = Optional.of(filterString)
+                .filter(String::isEmpty)
+                .map(fs -> repository.findAllFiltered(fs, pageable))
+                .orElse(repository.findAll(pageable));
+
+        return Constructor.buildResponseMessageObject(
+                HttpStatus.OK,
+                String.format(Messages.Info.TOOL_LISTED, page.getTotalElements()),
+                page);
     }
 
-    @Override
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
         return null;
     }

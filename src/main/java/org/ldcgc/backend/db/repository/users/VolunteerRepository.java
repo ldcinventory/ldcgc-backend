@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
 
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
+    List<Volunteer> findAllByBuilderAssistantId(String builderAssistantId);
 
     @Query("""
             SELECT v FROM Volunteer v
@@ -28,7 +29,4 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer> {
     List<Volunteer> findAllByNameAndLastName(String name, String lastName);
 
     Optional<Volunteer> findTopByIdNotNull();
-
-    Integer countByBuilderAssistantId(String builderAssistantId);
-
 }

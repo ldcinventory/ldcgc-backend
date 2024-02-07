@@ -18,7 +18,7 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
     }
 
     @Override
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String filterString) {
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString,String filterString) {
         return null;
     }
 

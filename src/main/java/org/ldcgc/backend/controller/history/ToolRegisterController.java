@@ -54,7 +54,8 @@ public interface ToolRegisterController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createToolRegister(@RequestBody ToolRegisterDto toolRegisterDto);
 
-    @Operation(summary = "Get all the registers. Add open/close as the filter string to select OPEN (no in registration date) or CLOSED (with in registration date)")
+    @Operation(summary = "Get all the registers.",
+            description = "Add opened/closed as the filter string to select OPENED (no in registration date) or CLOSED (with in registration date) registers. Leave empty to get all.")
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -73,7 +74,8 @@ public interface ToolRegisterController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllRegisters(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
-                                      @RequestParam(required = false, defaultValue = "name") String filterString);
+                                      @RequestParam(required = false, defaultValue = "out_registration") String sortString,
+                                      @RequestParam(required = false) String filterString);
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")
     @ApiResponse(

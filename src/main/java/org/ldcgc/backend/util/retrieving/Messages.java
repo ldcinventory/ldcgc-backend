@@ -118,9 +118,10 @@ public class Messages {
         INCORRECT_FILTER_STRING = "The filter string introduced is incorrect.",
 
         TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
-        TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
-        TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
-        TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers."
+                TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
+                TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
+                TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers.",
+                TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer."
         ;
 
     }
