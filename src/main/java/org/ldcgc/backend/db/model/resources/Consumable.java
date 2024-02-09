@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StockTypeConverter;
+import org.ldcgc.backend.db.mapper.StringArrayConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
@@ -58,7 +59,8 @@ public class Consumable {
 
     private LocalDate purchaseDate;
 
-    @Column(columnDefinition = "text[]")
+    @Convert(converter = StringArrayConverter.class)
+    @Column(columnDefinition = "text")
     private String[] urlImages;
 
     @Column(nullable = false)
