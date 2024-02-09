@@ -89,9 +89,9 @@ public interface ToolController {
     ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                   @RequestParam(required = false, defaultValue = "25") Integer size,
                                   @RequestParam(required = false, defaultValue = "name") String sortField,
-                                  @RequestParam(required = false, defaultValue = "") String brand,
-                                  @RequestParam(required = false, defaultValue = "") String model,
-                                  @RequestParam(required = false, defaultValue = "") String description,
+                                  @RequestParam(required = false) String brand,
+                                  @RequestParam(required = false) String model,
+                                  @RequestParam(required = false) String description,
                                   @RequestParam(required = false) String status);
 
     @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_MANAGER)

@@ -117,7 +117,7 @@ public interface ConsumableController {
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Filter to search (see description)")
-            @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required = false) String filter,
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
             @RequestParam(required = false, defaultValue = "id") String sortField);
 
