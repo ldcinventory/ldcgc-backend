@@ -299,6 +299,7 @@ public class InitializationData {
                 .category(resourceCategoriesMap.get(tFieldList.get(5)))
                 .status(EStatus.AVAILABLE)
                 .weight(convertToFloat(tFieldList.get(6)))
+                .stockWeightType(EStockType.KILOGRAMS)
                 .price(convertToFloat(tFieldList.get(7)))
                 .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
                 .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})

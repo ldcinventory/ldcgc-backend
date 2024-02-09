@@ -2,22 +2,22 @@ package org.ldcgc.backend.payload.dto.history;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 
 import java.time.LocalDateTime;
 
-@Value
+@Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsumableRegisterDto {
 
-    Integer id;
-    LocalDateTime inRegistration;
-    LocalDateTime outRegistration;
-    Integer stockAmount;
-    ConsumableDto tool;
-    VolunteerDto volunteer;
+    private Integer id;
+    private LocalDateTime inRegistration;
+    private LocalDateTime outRegistration;
+    private Integer stockAmount;
+    private ConsumableDto tool;
+    private VolunteerDto volunteer;
 
 }

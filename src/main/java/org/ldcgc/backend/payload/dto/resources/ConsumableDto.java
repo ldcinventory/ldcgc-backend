@@ -2,7 +2,7 @@ package org.ldcgc.backend.payload.dto.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
@@ -10,25 +10,25 @@ import org.ldcgc.backend.util.common.EStockType;
 
 import java.time.LocalDate;
 
-@Value
+@Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsumableDto {
 
-    Integer id;
-    String barcode;
-    CategoryDto category;
-    CategoryDto brand;
-    Float price;
-    LocalDate purchaseDate;
-    String name;
-    String model;
-    String description;
-    String[] urlImages;
-    Integer stock;
-    Integer minStock;
-    EStockType stockType;
-    LocationDto location;
-    GroupDto group;
+    private Integer id;
+    private String barcode;
+    private CategoryDto category;
+    private CategoryDto brand;
+    private Float price;
+    private LocalDate purchaseDate;
+    private String name;
+    private String model;
+    private String description;
+    private String[] urlImages;
+    private Integer stock;
+    private Integer minStock;
+    private EStockType stockType;
+    private LocationDto location;
+    private GroupDto group;
 
 }
