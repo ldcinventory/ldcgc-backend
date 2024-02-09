@@ -14,9 +14,10 @@ import java.time.LocalDateTime;
 public class ConsumableRegisterDto {
 
     private Integer id;
-    private LocalDateTime inRegistration;
-    private LocalDateTime outRegistration;
-    private Integer stockAmount;
+    private LocalDateTime registrationIn;
+    private LocalDateTime registrationOut;
+    private Integer stockAmountIn;
+    private Integer stockAmountOut;
     private ConsumableDto tool;
     private VolunteerDto volunteer;
 

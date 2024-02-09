@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MaintenanceDto {
 
-    Integer id;
-    LocalDateTime inRegistration;
-    LocalDateTime outRegistration;
-    ToolDto tool;
-    VolunteerDto volunteer;
-    CategoryDto inStatus;
-    CategoryDto outStatus;
+    private Integer id;
+    private LocalDateTime inRegistration;
+    private LocalDateTime outRegistration;
+    private ToolDto tool;
+    private VolunteerDto volunteer;
+    private CategoryDto inStatus;
+    private CategoryDto outStatus;
 
 }

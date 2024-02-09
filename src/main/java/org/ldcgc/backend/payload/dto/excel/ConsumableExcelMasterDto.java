@@ -12,9 +12,9 @@ import java.util.Map;
 @Getter
 @Builder
 public class ConsumableExcelMasterDto {
-        private Map<String, Consumable> consumables;
-        private Map<String, Category> brands;
-        private Map<String, Category> resources;
-        private Map<String, Location> locations;
-        private Map<String, Group> groups;
+    private Map<String, Consumable> consumables;
+    private Map<String, Category> brands;
+    private Map<String, Category> resources;
+    private Map<String, Location> locations;
+    private Map<String, Group> groups;
 }

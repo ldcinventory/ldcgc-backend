@@ -15,16 +15,16 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 
-    Integer id;
-    String email;
-    String password;
-    ERole role;
-    VolunteerDto volunteer;
-    CategoryDto responsibility;
-    GroupDto group;
+    private Integer id;
+    private String email;
+    private String password;
+    private ERole role;
+    private VolunteerDto volunteer;
+    private CategoryDto responsibility;
+    private GroupDto group;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    LocalDateTime tokenExpires;
+    private LocalDateTime tokenExpires;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    LocalDateTime refreshExpires;
+    private LocalDateTime refreshExpires;
 
 }
