@@ -7,7 +7,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -23,6 +25,7 @@ public interface CategoryMapper {
 
     @Named("mapNestedCategoriesParentAsNull")
     static List<CategoryDto> mapNestedCategoriesParentAsNull(List<Category> categories) {
+        if(CollectionUtils.isEmpty(categories)) return new ArrayList<>();
         return categories.stream().map(category -> {
             category.setParent(null);
             return CategoryMapper.MAPPER.toDto(category);
