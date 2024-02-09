@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables")
@@ -47,7 +48,7 @@ public interface ConsumableController {
             })
     )
     @GetMapping("/{consumableId}")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getConsumable(
         @Parameter(description = "Consumable Id to get an existing consumable entity", required = true)
             @PathVariable Integer consumableId);
@@ -76,7 +77,7 @@ public interface ConsumableController {
             })
     )
     @PostMapping
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createConsumable(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Consumable object to create", required = true)
             @RequestBody ConsumableDto consumableDto);
@@ -105,7 +106,7 @@ public interface ConsumableController {
         )
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumables(
         @Parameter(description = "Page index (default = 0)")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
@@ -148,7 +149,7 @@ public interface ConsumableController {
             })
     )
     @PutMapping("/{consumableId}")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateConsumable(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Consumable object to create", required = true)
             @RequestBody ConsumableDto consumableDto,
