@@ -23,13 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/tools")
 public interface ToolController {
 
-    @Operation(summary = "Get any tool by providing its id", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Get any tool by providing its id", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -45,10 +47,54 @@ public interface ToolController {
                     })
     )
     @GetMapping("/{toolId}")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
-    @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Get all tools, paginated and sorted.", description = """
+        You can also include 4 filters:
+        - brand
+        - model
+        - description
+        - status
+        
+        Valid status:
+        - Disponible -> ```AVAILABLE```
+        - No disponible -> ```NOT_AVAILABLE```
+        - En mantenimiento -> ```IN_MAINTENANCE```
+        - Dañado -> ```DAMAGED```
+        - Nueva -> ```NEW```
+        - En desuso -> ```DEPRECATED```
+        
+        """ + SWAGGER_ROLE_OPERATION_MANAGER)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)),
+            examples = {
+                @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Status not found", value = Messages.Error.STATUS_NOT_FOUND)
+            })
+    )
+    @GetMapping
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+                                  @RequestParam(required = false, defaultValue = "25") Integer size,
+                                  @RequestParam(required = false, defaultValue = "name") String sortField,
+                                  @RequestParam(required = false, defaultValue = "") String brand,
+                                  @RequestParam(required = false, defaultValue = "") String model,
+                                  @RequestParam(required = false, defaultValue = "") String description,
+                                  @RequestParam(required = false) String status);
+
+    @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -72,10 +118,10 @@ public interface ToolController {
                     })
     )
     @PostMapping
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createTool(@RequestBody ToolDto tool);
 
-    @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
@@ -99,7 +145,7 @@ public interface ToolController {
                     })
     )
     @PutMapping("/{toolId}")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
 
     @Operation(summary = "Delete an existing tool", description = SWAGGER_ROLE_OPERATION_ADMIN)
@@ -123,47 +169,6 @@ public interface ToolController {
     @DeleteMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
-
-    @Operation(summary = "Get all tools, paginated and sorted.", description = """
-        You can also include 4 filters:
-        - brand
-        - model
-        - description
-        - status
-        
-        Valid status:
-        - Disponible -> ```AVAILABLE```
-        - No disponible -> ```NOT_AVAILABLE```
-        - En mantenimiento -> ```IN_MAINTENANCE```
-        - Dañado -> ```DAMAGED```
-        - Nueva -> ```NEW```
-        - En desuso -> ```DEPRECATED```
-        
-        """ + SWAGGER_ROLE_OPERATION_ADMIN)
-    @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
-            content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class))
-            )
-    )
-    @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_404,
-            description = SwaggerConfig.HTTP_REASON_404,
-            content = @Content(mediaType = "application/json",
-                    examples = {
-                            @ExampleObject(name = "Status not found", value = Messages.Error.STATUS_NOT_FOUND)
-                    })
-    )
-    @GetMapping
-    @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-                                  @RequestParam(required = false, defaultValue = "25") Integer size,
-                                  @RequestParam(required = false, defaultValue = "name") String sortField,
-                                  @RequestParam(required = false, defaultValue = "") String brand,
-                                  @RequestParam(required = false, defaultValue = "") String model,
-                                  @RequestParam(required = false, defaultValue = "") String description,
-                                  @RequestParam(required = false) String status);
 
     @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
