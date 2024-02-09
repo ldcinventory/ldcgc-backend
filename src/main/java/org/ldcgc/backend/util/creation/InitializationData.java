@@ -235,6 +235,7 @@ public class InitializationData {
                     .name(vFieldList.get(2))
                     .lastName(vFieldList.get(3))
                     .isActive(Boolean.parseBoolean(vFieldList.get(4)))
+                    .group(_8g)
                     .availability(getRandomAvailability())
                     .build();
                 volunteer.setAbsences(getRandomAbsences(volunteer));
@@ -430,6 +431,7 @@ public class InitializationData {
                         .responsibility(responsibilitiesEntities.stream()
                             .filter(r -> r.getName().equals("Voluntario")).findFirst()
                             .orElse(null))
+                        .group(_8g)
                         .acceptedEULA(LocalDateTime.now())
                         .acceptedEULAManager(Integer.valueOf(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
                         .build();
