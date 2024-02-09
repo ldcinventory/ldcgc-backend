@@ -120,6 +120,15 @@ public class Messages {
             CONSUMABLE_BARCODE_USED_MANY_TIMES = "The barcode '%s' is used by more than one consumable. Please report to admin",
             CONSUMABLE_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the consumable id is null",
 
+            CONSUMABLE_REGISTER_NOT_FOUND = "Consumable register with id '%s' not found",
+            CONSUMABLE_REGISTER_CONSUMABLE_DUPLICATED = "Consumable register for this consumable has been already assigned to a volunteer",
+            CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED = "This consumable has been registered to this volunteer",
+            CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ASSIGN = "There is no enough amount to assign for this consumable to this volunteer",
+            CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_RETURN = "There is no enough amount to return (it's more than origin) for this consumable to return to stock",
+            CONSUMABLE_REGISTER_ASSIGN_DATE_BEFORE_TODAY = "The date of assign the consumable is before the actual date",
+            CONSUMABLE_REGISTER_RETURN_DATE_BEFORE_ASSIGN = "The date of returning the consumable is before the date of assignment",
+            CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is afeter the actual date",
+
             STATUS_NOT_FOUND = "Status '%s' not found",
 
             LOCATION_NOT_FOUND = "Location with id/name '%s' not found.",
