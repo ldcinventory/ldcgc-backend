@@ -35,7 +35,7 @@ public class ConsumableRegister {
 
     private LocalDateTime outRegistration;
 
-    private Integer stockLeft;
+    private Integer stockAmount;
 
     @OneToOne
     @JoinColumn(name = "consumable_id", referencedColumnName = "id")

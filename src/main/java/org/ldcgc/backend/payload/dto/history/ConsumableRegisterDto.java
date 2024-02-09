@@ -16,7 +16,7 @@ public class ConsumableRegisterDto {
     Integer id;
     LocalDateTime inRegistration;
     LocalDateTime outRegistration;
-    Integer stockLeft;
+    Integer stockAmount;
     ConsumableDto tool;
     VolunteerDto volunteer;
 
