@@ -119,7 +119,7 @@ public interface ToolController {
     )
     @PostMapping
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> createTool(@RequestBody ToolDto tool);
+    ResponseEntity<?> createTool(@RequestBody ToolDto toolDto);
 
     @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

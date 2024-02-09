@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -145,13 +145,13 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         return (int) cell.getNumericCellValue();
     }
 
-    private LocalDateTime getDateCellValue(Row row, Integer columnNumber) {
+    private LocalDate getDateCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
 
         if (!cellType.equals(CellType.NUMERIC))
             throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.NUMERIC.toString()));
 
-        return cell.getLocalDateTimeCellValue();
+        return cell.getLocalDateTimeCellValue().toLocalDate();
     }
 }
