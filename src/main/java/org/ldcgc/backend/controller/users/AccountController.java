@@ -168,7 +168,7 @@ public interface AccountController {
     )
     @PostMapping("/new-credentials")
     ResponseEntity<?> newCredentials(
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password) *token not required for this action*", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException;
 
     @Operation(summary = "Set new credentials for the user", description = SWAGGER_ROLE_OPERATION_USER)
