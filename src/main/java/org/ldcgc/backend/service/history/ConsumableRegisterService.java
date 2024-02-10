@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Service
 public interface ConsumableRegisterService {
 
-    ResponseEntity<?> getConsumableRegister(String registerId);
+    ResponseEntity<?> getConsumableRegister(Integer registerId);
     ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String builderAssistantId, String consumableBarcode, LocalDate dateFrom, LocalDate dateTo, String sortField);
     ResponseEntity<?> createConsumableRegister(ConsumableRegisterDto consumableRegisterDto);
-    ResponseEntity<?> updateConsumableRegister(String registerId, ConsumableRegisterDto consumableRegisterDto);
-    ResponseEntity<?> deleteConsumableRegister(String registerId);
+    ResponseEntity<?> updateConsumableRegister(Integer registerId, ConsumableRegisterDto consumableRegisterDto);
+    ResponseEntity<?> deleteConsumableRegister(Integer registerId);
 
 }

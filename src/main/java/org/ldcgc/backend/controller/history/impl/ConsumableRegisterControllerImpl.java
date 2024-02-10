@@ -15,7 +15,7 @@ public class ConsumableRegisterControllerImpl implements ConsumableRegisterContr
 
     public ConsumableRegisterService consumableRegisterService;
 
-    public ResponseEntity<?> getConsumableRegister(String registerId) {
+    public ResponseEntity<?> getConsumableRegister(Integer registerId) {
         return consumableRegisterService.getConsumableRegister(registerId);
     }
 
@@ -27,11 +27,11 @@ public class ConsumableRegisterControllerImpl implements ConsumableRegisterContr
         return consumableRegisterService.createConsumableRegister(consumableRegisterDto);
     }
 
-    public ResponseEntity<?> updateConsumableRegister(String registerId, ConsumableRegisterDto consumableRegisterDto) {
+    public ResponseEntity<?> updateConsumableRegister(Integer registerId, ConsumableRegisterDto consumableRegisterDto) {
         return consumableRegisterService.updateConsumableRegister(registerId, consumableRegisterDto);
     }
 
-    public ResponseEntity<?> deleteConsumableRegister(String registerId) {
+    public ResponseEntity<?> deleteConsumableRegister(Integer registerId) {
         return consumableRegisterService.deleteConsumableRegister(registerId);
     }
 }

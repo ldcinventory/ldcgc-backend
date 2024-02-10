@@ -53,7 +53,7 @@ public interface ConsumableRegisterController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getConsumableRegister(
         @Parameter(description = "Register ID to get details")
-            @PathVariable String registerId);
+            @PathVariable Integer registerId);
 
     @Operation(summary = "List consumable registers", description = """
         Get all registers from consumable registers, paginated and sorted. You can also include 4 filters:
@@ -134,7 +134,7 @@ public interface ConsumableRegisterController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateConsumableRegister(
         @Parameter(description = "Consumable register ID to update")
-            @PathVariable String registerId,
+            @PathVariable Integer registerId,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Consumable register object to update", required = true)
             @RequestBody ConsumableRegisterDto consumableRegisterDto);
 
@@ -160,6 +160,6 @@ public interface ConsumableRegisterController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> deleteConsumableRegister(
         @Parameter(description = "Consumable register ID to delete")
-            @PathVariable String registerId);
+            @PathVariable Integer registerId);
 
 }
