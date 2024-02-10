@@ -31,13 +31,15 @@ public class ConsumableRegister {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private LocalDateTime registrationIn;
 
     private LocalDateTime registrationOut;
 
-    private Integer stockAmountIn;
+    @Column(nullable = false)
+    private Float stockAmountIn;
 
-    private Integer stockAmountOut;
+    private Float stockAmountOut;
 
     @OneToOne
     @JoinColumn(name = "consumable_id", referencedColumnName = "id")
