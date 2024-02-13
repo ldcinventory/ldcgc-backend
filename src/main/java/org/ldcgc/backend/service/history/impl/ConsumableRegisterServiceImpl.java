@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.history.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.users.Volunteer;
@@ -78,6 +79,11 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
         ConsumableRegister newConsumableRegister = ConsumableRegisterMapper.MAPPER.toEntity(consumableRegisterDto);
+        if(Objects.isNull(newConsumableRegister.getStockAmountOut()))
+            consumable.setStock(consumable.getStock() - newConsumableRegister.getStockAmountIn());
+        if(ObjectUtils.allNotNull(newConsumableRegister.getStockAmountIn(), newConsumableRegister.getStockAmountOut()))
+            consumable.setStock(consumable.getStock() + newConsumableRegister.getStockAmountOut());
+
         newConsumableRegister.setConsumable(consumable);
         newConsumableRegister.setVolunteer(volunteer);
 

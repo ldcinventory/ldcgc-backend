@@ -329,9 +329,9 @@ public class InitializationData {
                     .category(resourceCategoriesMap.get(cFieldList.get(5)))
                     .price(convertToFloat2Decimals(cFieldList.get(6)))
                     .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
-                    .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
+                    .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Float.valueOf(cFieldList.get(8)))
                     .stockType(EStockType.UNITS)
-                    .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
+                    .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Float.valueOf(cFieldList.get(9)))
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                     .build()));
 

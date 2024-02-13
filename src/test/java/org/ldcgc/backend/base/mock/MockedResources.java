@@ -24,14 +24,14 @@ public class MockedResources {
             .id(getRandomId())
             .barcode(getRandomBarcode())
             .group(getRandomGroup())
-            .model(getRandomAlphaNumeric(getRandomFromRange(3, 10)))
+            .model(getRandomAlphaNumeric(getRandomIntegerFromRange(3, 10)))
             .brand(getRandomBrand())
             .description(new Faker().text().text())
             .price(new Faker().random().nextFloat())
-            .name(getRandomString(getRandomFromRange(5, 15)))
-            .stock(getRandomFromRange(1,100))
+            .name(getRandomString(getRandomIntegerFromRange(5, 15)))
+            .stock(getRandomFloatFromRange(1,100))
             .stockType(getRandomStockType())
-            .minStock(getRandomFromRange(0,100))
+            .minStock(getRandomFloatFromRange(0,100))
             .purchaseDate(getRandomLocalDate())
             .urlImages(getRandomURLs())
             .category(getRandomCategory())
@@ -60,7 +60,7 @@ public class MockedResources {
     }
 
     private static String[] getRandomURLs() {
-        return IntStream.rangeClosed(1, getRandomFromRange(2, 4))
+        return IntStream.rangeClosed(1, getRandomIntegerFromRange(2, 4))
             .mapToObj(x -> new Faker().internet().url())
             .toArray(String[]::new);
     }
@@ -73,7 +73,7 @@ public class MockedResources {
     }
 
     private static EStockType getRandomStockType() {
-        return EStockType.values()[getRandomFromRange(0, EStockType.values().length - 1)];
+        return EStockType.values()[getRandomIntegerFromRange(0, EStockType.values().length - 1)];
     }
 
     private static String getRandomAlphaNumeric(int size) {
@@ -96,14 +96,18 @@ public class MockedResources {
         return RandomStringUtils.randomNumeric(size);
     }
 
-    private static Integer getRandomFromRange(int min, int max) {
+    private static Integer getRandomIntegerFromRange(int min, int max) {
         return new Random().ints(1, min, max).iterator().nextInt();
+    }
+
+    private static Float getRandomFloatFromRange(float min, float max) {
+        return min + new Random().nextFloat() * (max - min);
     }
 
     private static CategoryDto getRandomBrand() {
         return CategoryDto.builder()
             .id(getRandomId())
-            .name(brandNames.get(getRandomFromRange(1, brandNames.size()) - 1))
+            .name(brandNames.get(getRandomIntegerFromRange(1, brandNames.size()) - 1))
             .parent(CategoryDto.builder()
                 .id(0)
                 .name("Marcas")

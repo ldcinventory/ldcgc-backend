@@ -64,9 +64,9 @@ public class Consumable {
     private String[] urlImages;
 
     @Column(nullable = false)
-    private Integer stock;
+    private Float stock;
 
-    private Integer minStock;
+    private Float minStock;
 
     @Convert(converter = StockTypeConverter.class)
     @Column(columnDefinition = "int")
