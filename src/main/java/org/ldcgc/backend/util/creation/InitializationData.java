@@ -1,6 +1,8 @@
 package org.ldcgc.backend.util.creation;
 
+import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
@@ -44,9 +46,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -226,8 +230,9 @@ public class InitializationData {
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
             List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', true);
+            Map<String, Volunteer> volunteerEntities = new HashMap<>();
             volunteers.forEach(vFieldList -> {
-                if(volunteerRepository.findByBuilderAssistantId(vFieldList.get(1)).isPresent())
+                if(Objects.nonNull(volunteerEntities.get(vFieldList.get(1))))
                     return;
 
                 Volunteer volunteer = Volunteer.builder()
@@ -239,9 +244,18 @@ public class InitializationData {
                     .availability(getRandomAvailability())
                     .build();
                 volunteer.setAbsences(getRandomAbsences(volunteer));
-
-                volunteerRepository.save(volunteer);
+                volunteerEntities.put(vFieldList.get(1), volunteer);
             });
+
+            List<Volunteer> volunteerEntitiesList = volunteerEntities.values().stream().toList();
+
+            for(int i = 0; i < volunteerEntitiesList.size(); i += 500) {
+                if(i + 500 > volunteerEntitiesList.size()) {
+                    volunteerRepository.saveAllAndFlush(volunteerEntitiesList.subList(i, volunteerEntitiesList.size() - 1));
+                    continue;
+                }
+                volunteerRepository.saveAllAndFlush(volunteerEntitiesList.subList(i, i + 500));
+            }
 
             // CONSUMABLES + TOOLS
 
@@ -286,28 +300,34 @@ public class InitializationData {
             Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
-            tools.forEach(tFieldList ->
-                toolRepository.save(Tool.builder()
-                .barcode(toolRepository.existsByBarcode(tFieldList.get(0)) ? null : tFieldList.get(0))
-                .brand(StringUtils.isBlank(tFieldList.get(1))
-                    ? brandsMap.get("<empty>")
-                    : brandsMap.get(tFieldList.get(1)))
-                .model(tFieldList.get(2))
-                .name(tFieldList.get(3))
-                .description(tFieldList.get(4))
-                .location(location)
-                .group(_8g)
-                .category(resourceCategoriesMap.get(tFieldList.get(5)))
-                .status(EStatus.AVAILABLE)
-                .weight(convertToFloat(tFieldList.get(6)))
-                .stockWeightType(EStockType.KILOGRAMS)
-                .price(convertToFloat(tFieldList.get(7)))
-                .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
-                .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
-                //.lastMaintenance()
-                //.maintenancePeriod()
-                .maintenanceTime(getRandomTimeUnit())
-                .build()));
+            Map<String, Tool> toolEntities = new HashMap<>();
+            tools.forEach(tFieldList -> {
+                Tool tool = Tool.builder()
+                    .barcode(toolEntities.get(tFieldList.get(0)) != null
+                        ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
+                        : tFieldList.get(0))
+                    .brand(StringUtils.isBlank(tFieldList.get(1))
+                        ? brandsMap.get("<empty>")
+                        : brandsMap.get(tFieldList.get(1)))
+                    .model(tFieldList.get(2))
+                    .name(tFieldList.get(3))
+                    .description(tFieldList.get(4))
+                    .location(location)
+                    .group(_8g)
+                    .category(resourceCategoriesMap.get(tFieldList.get(5)))
+                    .status(EStatus.AVAILABLE)
+                    .weight(convertToFloat(tFieldList.get(6)))
+                    .stockWeightType(EStockType.KILOGRAMS)
+                    .price(convertToFloat(tFieldList.get(7)))
+                    .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
+                    .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
+                    //.lastMaintenance()
+                    //.maintenancePeriod()
+                    .maintenanceTime(getRandomTimeUnit())
+                    .build();
+                toolEntities.put(tool.getBarcode(), tool);
+            });
+            toolRepository.saveAll(toolEntities.values());
 
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
             //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
@@ -317,9 +337,12 @@ public class InitializationData {
             //                  and cn.CategoryId = c.CategoryId;)
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
-            consumables.forEach(cFieldList ->
-                consumableRepository.save(Consumable.builder()
-                    .barcode(consumableRepository.existsByBarcode(cFieldList.get(0)) ? null : cFieldList.get(0))
+            Map<String, Consumable> consumableEntities = new HashMap<>();
+            consumables.forEach(cFieldList -> {
+                Consumable consumable = Consumable.builder()
+                    .barcode(consumableEntities.get(cFieldList.get(0)) != null
+                        ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
+                        : cFieldList.get(0))
                     .brand(brandsMap.get(cFieldList.get(1)))
                     .model(cFieldList.get(2))
                     .name(cFieldList.get(3))
@@ -333,7 +356,10 @@ public class InitializationData {
                     .stockType(EStockType.UNITS)
                     .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Float.valueOf(cFieldList.get(9)))
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
-                    .build()));
+                    .build();
+                consumableEntities.put(consumable.getBarcode(), consumable);
+            });
+            consumableRepository.saveAll(consumableEntities.values());
 
             // CHEST REGISTRATION
 
@@ -420,32 +446,30 @@ public class InitializationData {
                 .build());
 
             List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
-            if(users != null) {
-                users.forEach(userFields -> {
-                    User user = User.builder()
-                        .email(userFields.get(4))
-                        .password(passwordEncoder.encode(userFields.get(3)))
-                        .role(Integer.valueOf(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
-                            Integer.valueOf(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
-                                ERole.ROLE_USER)
-                        .responsibility(responsibilitiesEntities.stream()
-                            .filter(r -> r.getName().equals("Voluntario")).findFirst()
-                            .orElse(null))
-                        .group(_8g)
-                        .acceptedEULA(LocalDateTime.now())
-                        .acceptedEULAManager(Integer.valueOf(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
-                        .build();
-                    Volunteer volunteer = null;
-                    if(!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
-                        var volunteerList = volunteerRepository.findAllByNameAndLastName(userFields.get(1), userFields.get(2));
-                        if (!volunteerList.isEmpty())
-                            volunteer = volunteerList.get(0);
-                        user.setVolunteer(volunteer);
-                    }
+            users.forEach(userFields -> {
+                User user = User.builder()
+                    .email(userFields.get(4))
+                    .password(passwordEncoder.encode(userFields.get(3)))
+                    .role(Integer.parseInt(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
+                        Integer.parseInt(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
+                            ERole.ROLE_USER)
+                    .responsibility(responsibilitiesEntities.stream()
+                        .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                        .orElse(null))
+                    .group(_8g)
+                    .acceptedEULA(LocalDateTime.now())
+                    .acceptedEULAManager(Integer.parseInt(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
+                    .build();
+                Volunteer volunteer = null;
+                if (!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
+                    var volunteerList = volunteerRepository.findAllByNameAndLastName(userFields.get(1), userFields.get(2));
+                    if (!volunteerList.isEmpty())
+                        volunteer = volunteerList.getFirst();
+                    user.setVolunteer(volunteer);
+                }
 
-                    userRepository.saveAndFlush(user);
-                });
-            }
+                userRepository.saveAndFlush(user);
+            });
 
         };
 
@@ -486,7 +510,7 @@ public class InitializationData {
 
         });
 
-        Collections.sort(absences, Comparator.comparing(Absence::getDateFrom));
+        absences.sort(Comparator.comparing(Absence::getDateFrom));
 
         return absences;
     }
