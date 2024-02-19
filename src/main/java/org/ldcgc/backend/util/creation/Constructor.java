@@ -1,6 +1,7 @@
 package org.ldcgc.backend.util.creation;
 
 import org.ldcgc.backend.exception.ApiError;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.util.conversion.Convert;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -52,6 +53,15 @@ public class Constructor {
 
     public static ResponseEntity<?> buildResponseMessageObject(HttpStatus httpStatus, String message, Object object) {
         return ResponseEntity.status(httpStatus).body(buildResponseMessageObject(message, object));
+    }
+
+    public static ResponseEntity<?> buildResponseMessageObjectPaged(HttpStatus httpStatus, String message, PaginationDetails paginationDetails, Object object) {
+        Response.DTOWithPaginationDetails body = Response.DTOWithPaginationDetails.builder()
+            .message(message)
+            .data(object)
+            .paginationDetails(paginationDetails)
+            .build();
+        return ResponseEntity.status(httpStatus).body(body);
     }
 
     public static ResponseEntity<?> buildResponseDetailedMessage(HttpStatus httpStatus, String message, List<String> details) {
