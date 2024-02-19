@@ -1,11 +1,11 @@
 package org.ldcgc.backend.util.creation;
 
-import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
@@ -15,7 +15,9 @@ import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.history.ConsumableRegisterRepository;
 import org.ldcgc.backend.db.repository.history.MaintenanceRepository;
+import org.ldcgc.backend.db.repository.history.ToolRegisterRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -42,9 +44,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -76,6 +80,8 @@ public class InitializationData {
     private final ConsumableRepository consumableRepository;
     private final MaintenanceRepository maintenanceRepository;
     private final GroupRepository groupRepository;
+    private final ConsumableRegisterRepository consumableRegisterRepository;
+    private final ToolRegisterRepository toolRegisterRepository;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -84,6 +90,9 @@ public class InitializationData {
     @Value("${DB_NAME:mydb}") private String dbName;
 
     @Value("${LOAD_INITIAL_DATA:false}") private boolean loadData;
+
+    @Value("${TOOLS_REGISTRARION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
+    @Value("${CONSUMABLES_REGISTRARION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
 
     @Value("classpath:chests.csv") Resource chestsCSV;
     @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;
@@ -329,6 +338,8 @@ public class InitializationData {
             });
             toolRepository.saveAll(toolEntities.values());
 
+            // TOOLS REGISTRATION
+
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
             //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
             //                         cn.Stock, cn.MinimumStock
@@ -360,6 +371,31 @@ public class InitializationData {
                 consumableEntities.put(consumable.getBarcode(), consumable);
             });
             consumableRepository.saveAll(consumableEntities.values());
+
+            // CONSUMABLES REGISTRATION
+            ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
+            long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+            long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
+
+            if (consumablesRegistrationTestData)
+                IntStream.range(0, 5000)
+                    .parallel()
+                    .forEach(i -> {
+                        LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+                        LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+                        float amountIn = new Random().nextFloat(0.01f, 20.00f);
+                        float amountOut = new Random().nextFloat(0.00f, amountIn);
+
+                        consumableRegisterRepository.saveAndFlush(
+                            ConsumableRegister.builder()
+                                .registrationIn(timeIn)
+                                .registrationOut(timeOut)
+                                .stockAmountIn(amountIn)
+                                .stockAmountOut(amountOut)
+                                .consumable(consumableRepository.getRandomConsumable())
+                                .volunteer(volunteerRepository.getRandomvolunteer())
+                                .build());
+                    });
 
             // CHEST REGISTRATION
 
