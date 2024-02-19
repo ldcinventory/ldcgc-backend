@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
@@ -87,9 +87,9 @@ public interface ConsumableRegisterController {
         @Parameter(description = "Volunteer Consumable barcode (ignores the other params)")
             @RequestParam(required = false) String consumableBarcode,
         @Parameter(description = "Date 'from' to filter absences")
-            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDateTime dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
-            @RequestParam(required = false) LocalDate dateTo,
+            @RequestParam(required = false) LocalDateTime dateTo,
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
             @RequestParam(required = false, defaultValue = "id") String sortField);
 

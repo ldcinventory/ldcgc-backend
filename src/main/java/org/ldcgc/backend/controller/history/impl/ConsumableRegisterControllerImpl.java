@@ -7,19 +7,19 @@ import org.ldcgc.backend.service.history.ConsumableRegisterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
 public class ConsumableRegisterControllerImpl implements ConsumableRegisterController {
 
-    public ConsumableRegisterService consumableRegisterService;
+    private final ConsumableRegisterService consumableRegisterService;
 
     public ResponseEntity<?> getConsumableRegister(Integer registerId) {
         return consumableRegisterService.getConsumableRegister(registerId);
     }
 
-    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String builderAssistantId, String consumableBarcode, LocalDate dateFrom, LocalDate dateTo, String sortField) {
+    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String builderAssistantId, String consumableBarcode, LocalDateTime dateFrom, LocalDateTime dateTo, String sortField) {
         return consumableRegisterService.listConsumableRegister(pageIndex, size, builderAssistantId, consumableBarcode, dateFrom, dateTo, sortField);
     }
 
