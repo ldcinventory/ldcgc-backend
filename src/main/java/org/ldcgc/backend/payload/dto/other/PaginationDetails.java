@@ -16,13 +16,13 @@ public class PaginationDetails {
     private int actualPageTo;
     private int totalPages;
 
-    public static PaginationDetails fromPaging(Pageable pageable, Page page) {
+    public static PaginationDetails fromPaging(Pageable pageable, Page<?> page) {
         return PaginationDetails.builder()
             .numElements((int) page.getTotalElements())
             .elementsPerPage(pageable.getPageSize())
             .actualPage(pageable.getPageNumber())
             .actualPageFrom(pageable.getPageNumber() * pageable.getPageSize() + 1)
-            .actualPageTo(((pageable.getPageNumber() + 1) * pageable.getPageSize()))
+            .actualPageTo(Math.min(((pageable.getPageNumber() + 1) * pageable.getPageSize()), (int) page.getTotalElements()))
             .totalPages(page.getTotalPages())
             .build();
     }
