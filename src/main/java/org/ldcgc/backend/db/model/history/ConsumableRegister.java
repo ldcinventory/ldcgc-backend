@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,11 +41,11 @@ public class ConsumableRegister {
 
     private Float stockAmountOut;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "consumable_id", referencedColumnName = "id")
     private Consumable consumable;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
