@@ -14,7 +14,7 @@ public interface VolunteerService {
 
     ResponseEntity<?> getVolunteer(String builderAssistantId);
 
-    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId);
+    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField);
 
     ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto);
 

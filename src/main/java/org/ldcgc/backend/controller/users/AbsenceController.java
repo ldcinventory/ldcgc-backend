@@ -88,7 +88,9 @@ public interface AbsenceController {
         @Parameter(description = "Date 'from' to filter absences")
             @RequestParam(required = false) LocalDate dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
-            @RequestParam(required = false) LocalDate dateTo);
+            @RequestParam(required = false) LocalDate dateTo,
+        @Parameter(description = "Sort by any field desired (see fields of Absence class)")
+            @RequestParam(required = false, defaultValue = "id") String sortField);
 
     @Operation(summary = "Create own user absence", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
@@ -216,7 +218,9 @@ public interface AbsenceController {
         @Parameter(description = "Date 'to' to filter absences")
             @RequestParam(required = false) LocalDate dateTo,
         @Parameter(description = "Builder Assistant Ids (array of one or more ids)")
-            @RequestParam(required = false) String[] builderAssistantIds);
+            @RequestParam(required = false) String[] builderAssistantIds,
+        @Parameter(description = "Sort by any field desired (see fields of Absence class)")
+            @RequestParam(required = false, defaultValue = "id") String sortField);
 
     @Operation(summary = "Create user absence", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

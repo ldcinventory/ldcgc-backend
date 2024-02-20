@@ -127,7 +127,9 @@ public interface VolunteerController {
         @Parameter(description = "Filter to search user name OR last name")
             @RequestParam(required = false) String filterString,
         @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
-            @RequestParam(required = false) String builderAssistantId);
+            @RequestParam(required = false) String builderAssistantId,
+        @Parameter(description = "Sort by any field desired (see fields of Volunteer class)")
+            @RequestParam(required = false, defaultValue = "id") String sortField);
 
 
     @Operation(summary = "Update any volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)

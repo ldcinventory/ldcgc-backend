@@ -20,6 +20,7 @@ import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -72,11 +73,11 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField) {
 
         if (builderAssistantId != null) return getVolunteer(builderAssistantId);
 
-        Pageable paging = PageRequest.of(pageIndex, size);
+        Pageable paging = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
         Page<Volunteer> pageUsers = StringUtils.isBlank(filterString) ?
             volunteerRepository.findAll(paging) :
             volunteerRepository.findAllFiltered(filterString, paging);

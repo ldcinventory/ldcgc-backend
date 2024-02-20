@@ -58,11 +58,11 @@ public class AbsenceServiceImpl implements AbsenceService {
         return Constructor.buildResponseObject(HttpStatus.OK, AbsenceMapper.MAPPER.toDto(absence));
     }
 
-    public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo) {
+    public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo, String sortField) {
         Volunteer volunteer = getVolunteerFromToken(token);
         validateVolunteerHasAbsences(volunteer);
 
-        return listAbsences(dateFrom, dateTo, new String[]{volunteer.getBuilderAssistantId()});
+        return listAbsences(dateFrom, dateTo, new String[]{volunteer.getBuilderAssistantId()}, sortField);
     }
 
     public ResponseEntity<?> createMyAbsence(String token, AbsenceDto absenceDto) {
@@ -123,7 +123,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         return Constructor.buildResponseObject(HttpStatus.OK, AbsenceMapper.MAPPER.toDto(absence));
     }
 
-    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds) {
+    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds, String sortField) {
         List<Absence> absences = absenceRepository.findAll((Specification<Absence>) (absence, query, cb) -> {
 
             List<Predicate> predicates = new ArrayList<>();
@@ -143,7 +143,7 @@ public class AbsenceServiceImpl implements AbsenceService {
             if (predicates.isEmpty())
                 return null;
 
-            query.orderBy(cb.asc(absence.get("dateFrom")));
+            query.orderBy(cb.asc(absence.get(sortField)));
 
             return cb.and(predicates.toArray(new Predicate[0]));
 

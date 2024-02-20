@@ -24,8 +24,8 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.getVolunteer(builderAssistantId);
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId) {
-        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId);
+    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField) {
+        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId, sortField);
     }
 
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {
