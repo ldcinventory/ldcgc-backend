@@ -13,7 +13,7 @@ import org.ldcgc.backend.util.common.ETimeUnit;
 import java.time.LocalDate;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ToolDto {
     private Integer id;

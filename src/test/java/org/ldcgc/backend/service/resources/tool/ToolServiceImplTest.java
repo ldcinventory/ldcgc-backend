@@ -1,7 +1,13 @@
 package org.ldcgc.backend.service.resources.tool;
 
 import org.junit.jupiter.api.Test;
+import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Tool;
+import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.other.Response;
@@ -28,10 +34,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -44,6 +53,9 @@ class ToolServiceImplTest {
     @InjectMocks private ToolServiceImpl service;
     @Mock private ToolRepository toolRepository;
     @Mock private ToolExcelService toolExcelService;
+    @Mock private CategoryRepository categoryRepository;
+    @Mock private LocationRepository locationRepository;
+    @Mock private GroupRepository groupRepository;
 
     private final PodamFactory factory = new PodamFactoryImpl();
 
@@ -59,7 +71,7 @@ class ToolServiceImplTest {
         assertNotNull(response);
         verify(toolRepository, times(1)).findById(tool.getId());
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
-        assertEquals(toolDto, responseBody.getData());
+        assertThat(toolDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
         assertEquals(ToolDto.class, responseBody.getData().getClass());
     }
 
@@ -77,16 +89,24 @@ class ToolServiceImplTest {
 
     @Test
     void createToolShouldReturnResponseEntity() {
-        ToolDto toolDto = ToolDto.builder().build();
+        ToolDto toolDto = getRandomToolDto().toBuilder().id(null).build();
         Tool entityTool = ToolMapper.MAPPER.toMo(toolDto);
+        Category category = factory.manufacturePojo(Category.class);
+        Category consumableCategory = factory.manufacturePojo(Category.class);
+        Location location = factory.manufacturePojo(Location.class);
+        Group group = factory.manufacturePojo(Group.class);
 
         doReturn(Optional.empty()).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
-        doReturn(entityTool).when(toolRepository).save(entityTool);
+        doReturn(Optional.of(category)).when(categoryRepository).findById(toolDto.getBrand().getId());
+        doReturn(Optional.of(consumableCategory)).when(categoryRepository).findById(toolDto.getCategory().getId());
+        doReturn(Optional.of(location)).when(locationRepository).findById(anyInt());
+        doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
+        doReturn(entityTool).when(toolRepository).saveAndFlush(any(Tool.class));
 
         ResponseEntity<?> response = service.createTool(toolDto);
 
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
-        verify(toolRepository, times(1)).save(entityTool);
+        verify(toolRepository, times(1)).saveAndFlush(any(Tool.class));
         assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, responseBody.getData().getClass());
@@ -120,16 +140,24 @@ class ToolServiceImplTest {
     void putToolShouldReturnResponseEntity() {
         ToolDto toolDto = factory.manufacturePojo(ToolDto.class);
         Tool tool = ToolMapper.MAPPER.toMo(toolDto);
+        Category category = factory.manufacturePojo(Category.class);
+        Category consumableCategory = factory.manufacturePojo(Category.class);
+        Location location = factory.manufacturePojo(Location.class);
+        Group group = factory.manufacturePojo(Group.class);
 
         doReturn(Optional.of(tool)).when(toolRepository).findById(toolDto.getId());
         doReturn(Optional.empty()).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
-        doReturn(tool).when(toolRepository).save(tool);
+        doReturn(Optional.of(category)).when(categoryRepository).findById(toolDto.getBrand().getId());
+        doReturn(Optional.of(consumableCategory)).when(categoryRepository).findById(toolDto.getCategory().getId());
+        doReturn(Optional.of(location)).when(locationRepository).findById(anyInt());
+        doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
+        doReturn(tool).when(toolRepository).saveAndFlush(any(Tool.class));
 
         ResponseEntity<?> response = service.updateTool(toolDto.getId(), toolDto);
 
         verify(toolRepository, times(1)).findById(toolDto.getId());
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
-        verify(toolRepository, times(1)).save(tool);
+        verify(toolRepository, times(1)).saveAndFlush(tool);
         assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, responseBody.getData().getClass());

@@ -136,7 +136,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listMyAbsences(Mockito.anyString(), Mockito.isNull(), Mockito.isNull())).willAnswer(
+        given(absenceService.listMyAbsences(Mockito.anyString(), Mockito.isNull(), Mockito.isNull(), Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -159,7 +159,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listMyAbsences(Mockito.anyString(), Mockito.any(LocalDate.class), Mockito.any(LocalDate.class))).willAnswer(
+        given(absenceService.listMyAbsences(Mockito.anyString(), Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -263,7 +263,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.isNull(), Mockito.isNull(), Mockito.isNull())).willAnswer(
+        given(absenceService.listAbsences(Mockito.isNull(), Mockito.isNull(), Mockito.isNull(), Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -286,7 +286,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.isNull())).willAnswer(
+        given(absenceService.listAbsences(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.isNull(), Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -311,7 +311,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.isNull(), Mockito.isNull(), Mockito.any())).willAnswer(
+        given(absenceService.listAbsences(Mockito.isNull(), Mockito.isNull(), Mockito.any(), Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -335,7 +335,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any())).willAnswer(
+        given(absenceService.listAbsences(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any(), Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 

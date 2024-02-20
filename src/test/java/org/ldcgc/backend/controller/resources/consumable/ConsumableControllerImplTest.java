@@ -1,22 +1,29 @@
 package org.ldcgc.backend.controller.resources.consumable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
 import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.controller.resources.ConsumableController;
+import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
+import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
-import org.ldcgc.backend.service.users.UserService;
+import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
+import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.ldcgc.backend.validator.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.mock.web.MockServletContext;
@@ -32,20 +39,27 @@ import java.text.ParseException;
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomConsumableDto;
 
-@SpringBootTest
+@Slf4j
+@WebMvcTest(controllers = ConsumableController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class ConsumableControllerImplTest {
 
     // controller
     @Autowired private ConsumableController consumableController;
 
     // services
-    @MockBean private UserService userService;
+    @MockBean private ConsumableService consumableService;
     @MockBean private UserDetailsServiceImpl userDetailsService;
     @MockBean private JwtUtils jwtUtils;
+    @MockBean private ConsumableExcelService consumableExcelService;
 
     // repositories
     @MockBean private TokenRepository tokenRepository;
     @MockBean private UserRepository userRepository;
+    @MockBean private ConsumableRepository consumableRepository;
+    @MockBean private CategoryRepository categoryRepository;
+    @MockBean private LocationRepository locationRepository;
+    @MockBean private GroupRepository groupRepository;
 
     // other
     @MockBean private UserValidation userValidation;
@@ -57,11 +71,10 @@ public class ConsumableControllerImplTest {
     // mapper
     @Autowired private ObjectMapper mapper;
 
-    private final String requestRoot = "/users";
+    private final String requestRoot = "/resources/consumables";
 
     private MockMvc mockMvc;
     private ConsumableDto consumableDto;
-
 
     @BeforeEach
     public void init() throws ParseException {
@@ -73,7 +86,8 @@ public class ConsumableControllerImplTest {
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setApplicationContext(context);
-        validatorFactoryBean.setConstraintValidatorFactory(new TestConstrainValidationFactory(context));
+        TestConstrainValidationFactory constrainValidationFactory = new TestConstrainValidationFactory(context);
+        validatorFactoryBean.setConstraintValidatorFactory(constrainValidationFactory);
         validatorFactoryBean.setProviderClass(HibernateValidator.class);
         validatorFactoryBean.afterPropertiesSet();
 
@@ -89,7 +103,6 @@ public class ConsumableControllerImplTest {
         setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 
     }
-
 
     //TODO: HACER LOS TESTS DEL CONTROLLER CON COBERTURA DE 75% O MÁS
     @Test

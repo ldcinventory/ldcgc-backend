@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -96,7 +97,7 @@ class VolunteerServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
-        assertEquals(volunteerDto, responseBody.getData());
+        assertThat(volunteerDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(any());
 
@@ -131,7 +132,7 @@ class VolunteerServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
-        assertEquals(volunteerDto, responseBody.getData());
+        assertThat(volunteerDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
 
@@ -168,7 +169,7 @@ class VolunteerServiceImplTest {
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_CREATED, responseBody.getMessage());
-        assertEquals(volunteerDto, responseBody.getData());
+        assertThat(volunteerDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
         verify(volunteerRepository, atMostOnce()).save(any());
@@ -182,14 +183,14 @@ class VolunteerServiceImplTest {
 
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, builderAssistantId);
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, builderAssistantId, "builderAssistantId");
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
-        assertEquals(responseBody.getData(), volunteerExpected);
+        assertThat(responseBody.getData()).usingRecursiveComparison().isEqualTo(volunteerExpected);
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -203,7 +204,7 @@ class VolunteerServiceImplTest {
 
         doReturn(userPage).when(volunteerRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, null, null);
+        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, null, null, "builderAssistantId");
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -211,7 +212,7 @@ class VolunteerServiceImplTest {
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
-        assertEquals(volunteers, responseBody.getData());
+        assertThat(volunteers).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -225,7 +226,7 @@ class VolunteerServiceImplTest {
 
         doReturn(userPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, "x", null);
+        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, "x", null, "builderAssistantId");
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -233,7 +234,7 @@ class VolunteerServiceImplTest {
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
-        assertEquals(volunteers, responseBody.getData());
+        assertThat(volunteers).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -292,7 +293,7 @@ class VolunteerServiceImplTest {
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(Messages.Info.VOLUNTEER_UPDATED, responseBody.getMessage());
-        assertEquals(volunteerDto, responseBody.getData());
+        assertThat(volunteerDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
         verify(volunteerRepository, atMostOnce()).save(any());

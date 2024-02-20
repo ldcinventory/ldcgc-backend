@@ -6,7 +6,10 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
+import org.ldcgc.backend.util.common.ETimeUnit;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -30,12 +33,36 @@ public class MockedResources {
             .price(new Faker().random().nextFloat())
             .name(getRandomString(getRandomIntegerFromRange(5, 15)))
             .stock(getRandomFloatFromRange(1,100))
-            .stockType(getRandomStockType())
+            .stockType(getRandomEnum(EStockType.class))
             .minStock(getRandomFloatFromRange(0,100))
-            .purchaseDate(getRandomLocalDate())
+            .purchaseDate(getRandomLocalDateUntilNow())
             .urlImages(getRandomURLs())
             .category(getRandomCategory())
             .location(getRandomLocation())
+            .build();
+    }
+
+    public static ToolDto getRandomToolDto() {
+        return ToolDto.builder()
+            .id(getRandomId())
+            .barcode(getRandomBarcode())
+            .category(getRandomCategory())
+            .brand(getRandomBrand())
+            .name(getRandomString(getRandomIntegerFromRange(5, 15)))
+            .model(getRandomAlphaNumeric(getRandomIntegerFromRange(3, 10)))
+            .description(new Faker().text().text())
+            .weight(getRandomFloatFromRange(1,100))
+            .stockWeightType(getRandomEnum(EStockType.class))
+            .price(new Faker().random().nextFloat())
+            .purchaseDate(getRandomLocalDateUntilNow())
+            .urlImages(getRandomURLs())
+            .maintenancePeriod(getRandomIntegerFromRange(0,10))
+            .maintenanceTime(getRandomEnum(ETimeUnit.class))
+            .lastMaintenance(null)
+            .nextMaintenance(getRandomLocalDateFromNow())
+            .status(getRandomEnum(EStatus.class))
+            .location(getRandomLocation())
+            .group(getRandomGroup())
             .build();
     }
 
@@ -49,7 +76,12 @@ public class MockedResources {
     }
 
     private static GroupDto getRandomGroup() {
-        return null;
+        return GroupDto.builder()
+            .id(getRandomId())
+            .name(new Faker().cat().name())
+            .description(new Faker().cat().breed())
+            .urlImage(new Faker().internet().url())
+            .build();
     }
 
     private static CategoryDto getRandomCategory() {
@@ -65,15 +97,25 @@ public class MockedResources {
             .toArray(String[]::new);
     }
 
-    private static LocalDate getRandomLocalDate() {
+    private static LocalDate getRandomLocalDateUntilNow() {
         long minDay = LocalDate.of(1970, 1, 1).toEpochDay();
         long maxDay = LocalDate.now().toEpochDay();
+        return getRandomLocalDate(minDay, maxDay);
+    }
+
+    private static LocalDate getRandomLocalDateFromNow() {
+        long minDay = LocalDate.now().toEpochDay();
+        long maxDay = LocalDate.of(2050, 12, 31).toEpochDay();
+        return getRandomLocalDate(minDay, maxDay);
+    }
+
+    private static LocalDate getRandomLocalDate(long minDay, long maxDay) {
         long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
         return LocalDate.ofEpochDay(randomDay);
     }
 
-    private static EStockType getRandomStockType() {
-        return EStockType.values()[getRandomIntegerFromRange(0, EStockType.values().length - 1)];
+    private static <E extends Enum<E>> E getRandomEnum(Class<E> enumType) {
+        return enumType.getEnumConstants()[getRandomIntegerFromRange(0, enumType.getEnumConstants().length)];
     }
 
     private static String getRandomAlphaNumeric(int size) {

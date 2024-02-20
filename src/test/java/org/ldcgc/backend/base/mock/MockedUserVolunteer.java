@@ -148,6 +148,7 @@ public class MockedUserVolunteer {
 
         return getMockedUser().toBuilder()
             .id(id)
+            .password(RandomStringUtils.randomAlphanumeric(8))
             .email(getRandomElementFromList(EMAILS))
             .volunteer(volunteerFromMocked.toBuilder()
                 .name(getRandomElementFromList(NAMES))
@@ -297,7 +298,7 @@ public class MockedUserVolunteer {
 
         });
 
-        Collections.sort(absences, Comparator.comparing(AbsenceDto::getDateFrom));
+        absences.sort(Comparator.comparing(AbsenceDto::getDateFrom));
 
         return absences;
     }

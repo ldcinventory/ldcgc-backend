@@ -180,7 +180,7 @@ public class AccountControllerImplTest {
         given(Email.sendRecoveringCredentials(mockedUser.getEmail(), JWT)).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
 
-        given(accountService.recoverCredentials(credentialsDto)).willAnswer(
+        given(accountService.recoverCredentials(any(UserCredentialsDto.class))).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
 
         mockMvc.perform(postRequest(request)
@@ -219,7 +219,7 @@ public class AccountControllerImplTest {
             .email(mockedUser.getEmail())
             .build();
 
-        given(accountService.newCredentials(credentialsDto)).willAnswer(
+        given(accountService.newCredentials(any(UserCredentialsDto.class))).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_CREDENTIALS_UPDATED));
 
         mockMvc.perform(postRequest(request)
