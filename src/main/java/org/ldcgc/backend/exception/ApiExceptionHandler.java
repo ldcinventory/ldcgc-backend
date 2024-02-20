@@ -75,4 +75,16 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return Constructor.buildExceptionResponseObject(HttpStatus.BAD_REQUEST, apiError);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex) {
+        ApiError apiError = ApiError.builder()
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+            .message(Messages.Error.UNEXPECTED_ERROR)
+            .error(ApiSubError.builder().message(ex.getLocalizedMessage()).build())
+            .build();
+
+        return Constructor.buildExceptionResponseObject(HttpStatus.INTERNAL_SERVER_ERROR, apiError);
+    }
+
 }
