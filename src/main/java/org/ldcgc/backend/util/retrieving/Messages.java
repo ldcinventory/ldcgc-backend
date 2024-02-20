@@ -165,8 +165,13 @@ public class Messages {
             EXCEL_VALUE_INCORRECT = "The value '%s' is incorrect on excel row %s, column %s",
             EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
             EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
+            EXCEL_EMPTY_CELL = "The empty value is not allowed on excel row %s, column %s",
 
-            EXCEL_EMPTY_CELL = "The empty value is not allowed on excel row %s, column %s";
+            PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL = "The index requested is out of bounds of the total pages available.",
+
+            UNEXPECTED_ERROR = "Unexpected error ocurred, or uncontrolled exception had been thrown."
+
+        ;
 
     }
 

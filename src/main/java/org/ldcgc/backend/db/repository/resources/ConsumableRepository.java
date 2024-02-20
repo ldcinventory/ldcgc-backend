@@ -20,8 +20,6 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
 
     void deleteById(@NotNull Integer consumableId);
 
-    List<Consumable> findByBarcodeIn(List<String> barcodes);
-
     boolean existsByBarcode(String barcode);
 
     List<Consumable> findAllByBarcode(String barcode);
