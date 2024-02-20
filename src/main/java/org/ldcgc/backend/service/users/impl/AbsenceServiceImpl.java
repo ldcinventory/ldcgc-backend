@@ -151,7 +151,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
         List<AbsenceDto> absencesDtoList = absences.stream().map(AbsenceMapper.MAPPER::toDto).toList();
         Map<String, List<AbsenceDto>> absencesDtoMap = absencesDtoList.stream().collect(Collectors.groupingBy(
-            absenceDto -> absenceDto.getBuilderAssistantId(),
+            AbsenceDto::getBuilderAssistantId,
             Collectors.mapping(Function.identity(), Collectors.toList())
         ));
 
