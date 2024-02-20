@@ -24,7 +24,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
     @Query("""
             SELECT v FROM Volunteer v
             WHERE LOWER(v.name) LIKE LOWER(CONCAT('%', :name,'%'))
-               AND LOWER(v.lastName) LIKE LOWER(CONCAT('%', :lastName,'%'))
+              AND LOWER(v.lastName) LIKE LOWER(CONCAT('%', :lastName,'%'))
             """)
     List<Volunteer> findAllByNameAndLastName(String name, String lastName);
 

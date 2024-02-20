@@ -43,7 +43,7 @@ public class Volunteer {
 
     private String lastName;
 
-    // also, this id will be their barcode
+    // this id will be their barcode
     private String builderAssistantId;
 
     private Boolean isActive;
