@@ -50,6 +50,15 @@ public interface ToolRegisterController {
                         @ExampleObject(name = "Volunteer not found", value = Messages.Error.VOLUNTEER_NOT_FOUND)
                     })
     )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_400,
+            description = SwaggerConfig.HTTP_REASON_400,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Too many volunteers", value = Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS),
+                            @ExampleObject(name = "Incorrect BA id", value = Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID)
+                    })
+    )
     @PostMapping()
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createToolRegister(@RequestBody ToolRegisterDto toolRegisterDto);
@@ -62,19 +71,11 @@ public interface ToolRegisterController {
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = ToolRegisterDto.class)))
     )
-    @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_400,
-            description = SwaggerConfig.HTTP_REASON_400,
-            content = @Content(mediaType = "application/json",
-                    examples = {
-                            @ExampleObject(name = "Incorrect filter string", value = Messages.Error.INCORRECT_FILTER_STRING)
-                    })
-    )
     @GetMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllRegisters(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
-                                      @RequestParam(required = false, defaultValue = "out_registration") String sortString,
+                                      @RequestParam(required = false, defaultValue = "outRegistration") String sortString,
                                       @RequestParam(required = false) String filterString);
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")
@@ -89,11 +90,51 @@ public interface ToolRegisterController {
             description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json",
                     examples = {
-                            @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
-                            @ExampleObject(name = "Volunteer not found", value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                            @ExampleObject(name = "Tool register not found", value = Messages.Error.TOOL_REGISTER_NOT_FOUND)
                     })
     )
     @PutMapping("/{registerId}")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> updateRegister(@PathVariable Integer registerId, @RequestBody ToolRegisterDto registerDto);
+
+
+    @Operation(summary = "Get a specific register")
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ToolRegisterDto.class))
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool register not found", value = Messages.Error.TOOL_REGISTER_NOT_FOUND)
+                    })
+    )
+    @GetMapping("/{registerId}")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> getRegister(@PathVariable Integer registerId);
+
+
+    @Operation(summary = "Delete a tool register")
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ToolRegisterDto.class))
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool register not found", value = Messages.Error.TOOL_REGISTER_NOT_FOUND)
+                    })
+    )
+    @GetMapping("/{registerId}")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> deleteRegister(@PathVariable Integer registerId);
+
 }

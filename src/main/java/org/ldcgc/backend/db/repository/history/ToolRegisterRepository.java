@@ -1,7 +1,6 @@
 package org.ldcgc.backend.db.repository.history;
 
 import org.ldcgc.backend.db.model.history.ToolRegister;
-import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +10,8 @@ public interface ToolRegisterRepository extends JpaRepository<ToolRegister, Inte
 
     @Query("""
             SELECT r FROM ToolRegister r
-            WHERE (LOWER(:filterString) LIKE ("opened") AND r.inRegistration IS NULL)
-            AND (LOWER(:filterString) LIKE ("closed") AND r.inRegistration IS NOT NULL)
+            WHERE (LOWER(:filterString) LIKE ('opened') AND r.inRegistration IS NULL)
+            OR (LOWER(:filterString) LIKE ('closed') AND r.inRegistration IS NOT NULL)
             """)
     Page<ToolRegister> findAllFiltered(String filterString, Pageable pageable);
 }

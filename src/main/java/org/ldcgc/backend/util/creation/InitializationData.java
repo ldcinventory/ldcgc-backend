@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
+import org.ldcgc.backend.db.model.history.ToolRegister;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
@@ -13,6 +14,7 @@ import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.category.CategoryRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.history.MaintenanceRepository;
+import org.ldcgc.backend.db.repository.history.ToolRegisterRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -22,6 +24,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.retrieving.Files;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -57,29 +61,41 @@ public class InitializationData {
     private final ConsumableRepository consumableRepository;
     private final MaintenanceRepository maintenanceRepository;
     private final GroupRepository groupRepository;
+    private final ToolRegisterRepository toolRegisterRepository;
 
     private final JdbcTemplate jdbcTemplate;
 
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${DB_NAME:mydb}") private String dbName;
+    @Value("${DB_NAME:mydb}")
+    private String dbName;
 
-    @Value("${LOAD_INITIAL_DATA:false}") private boolean loadData;
+    @Value("${LOAD_INITIAL_DATA:false}")
+    private boolean loadData;
 
-    @Value("classpath:chests.csv") Resource chestsCSV;
-    @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;
+    @Value("classpath:chests.csv")
+    Resource chestsCSV;
+    @Value("classpath:chestRegistration.csv")
+    Resource chestRegisterCSV;
 
-    @Value("classpath:consumables.csv") Resource consumablesCSV;
-    @Value("classpath:tools.csv") Resource toolsCSV;
-    @Value("classpath:maintenance.csv") Resource maintenanceCSV;
+    @Value("classpath:consumables.csv")
+    Resource consumablesCSV;
+    @Value("classpath:tools.csv")
+    Resource toolsCSV;
+    @Value("classpath:maintenance.csv")
+    Resource maintenanceCSV;
 
-    @Value("classpath:users.csv") Resource usersCSV;
-    @Value("classpath:volunteers.csv") Resource volunteersCSV;
+    @Value("classpath:users.csv")
+    Resource usersCSV;
+    @Value("classpath:volunteers.csv")
+    Resource volunteersCSV;
+    @Value("classpath:tool_register.csv")
+    Resource toolRegisterCSV;
 
     @Bean
     @Profile("!pro")
     InitializingBean sendDatabase() {
-        if(!loadData) return null;
+        if (!loadData) return null;
 
         return () -> {
             // execute when changing database version
@@ -93,67 +109,67 @@ public class InitializationData {
 
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
             locationRepository.save(Location.builder()
-                .name("Guadalajara SR")
-                .description("Calle León Felipe, 6, bajo derecha")
-                .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
-                .level(0)
-                .build());
+                    .name("Guadalajara SR")
+                    .description("Calle León Felipe, 6, bajo derecha")
+                    .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
+                    .level(0)
+                    .build());
             // Leganés SR Maestro (Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés)
             locationRepository.save(Location.builder()
-                .name("Leganés SR Maestro")
-                .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
-                .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
-                .level(0)
-                .build());
+                    .name("Leganés SR Maestro")
+                    .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
+                    .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
+                    .level(0)
+                    .build());
             // Parla SR Zurbarán (Salón del Reino situado en Calle Zurbarán 1 posterior Parla)
             locationRepository.save(Location.builder()
-                .name("Parla SR Zurbarán")
-                .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
-                .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
-                .level(0)
-                .build());
+                    .name("Parla SR Zurbarán")
+                    .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
+                    .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
+                    .level(0)
+                    .build());
             // Local/Almacén Cristopher
             locationRepository.save(Location.builder()
-                .name("Local/Almacén Cristopher")
-                .description("Local/Almacén Cristopher")
-                .level(0)
-                .build());
+                    .name("Local/Almacén Cristopher")
+                    .description("Local/Almacén Cristopher")
+                    .level(0)
+                    .build());
             // Local/Almacén Geñi
             locationRepository.save(Location.builder()
-                .name("Local/Almacén Geñi")
-                .description("Local/Almacén Geñi")
-                .level(0)
-                .build());
+                    .name("Local/Almacén Geñi")
+                    .description("Local/Almacén Geñi")
+                    .level(0)
+                    .build());
             // Betel
             locationRepository.save(Location.builder()
-                .name("Betel")
-                .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
-                .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
-                .level(0)
-                .build());
+                    .name("Betel")
+                    .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
+                    .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
+                    .level(0)
+                    .build());
             // SA Ajalvir
             locationRepository.save(Location.builder()
-                .name("SA Ajalvir")
-                .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
-                .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
-                .level(0)
-                .build());
+                    .name("SA Ajalvir")
+                    .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
+                    .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
+                    .level(0)
+                    .build());
             // Oficina (no es necesario indicar dirección)
             locationRepository.save(Location.builder()
-                .name("Oficina")
-                .description("Oficina")
-                .level(0)
-                .build());
+                    .name("Oficina")
+                    .description("Oficina")
+                    .level(0)
+                    .build());
             // Ferreteria (no es necesario indicar dirección)
             // ==> "Arcón" o "Estantería" estará ubicado en Ferreteria
             Location ferreteria = new Location("Ferretería", 0);
             ferreteria.setLocations(List.of(
-                new Location("Estantería 1", ferreteria, 1),
-                new Location("Estantería 2", ferreteria, 1),
-                new Location("Arcón-suelo 1", ferreteria, 1),
-                new Location("Arcón-suelo 2", ferreteria, 1),
-                new Location("Arcón-medio 1", ferreteria, 1),
-                new Location("Arcón-medio 2", ferreteria, 1)
+                    new Location("Estantería 1", ferreteria, 1),
+                    new Location("Estantería 2", ferreteria, 1),
+                    new Location("Arcón-suelo 1", ferreteria, 1),
+                    new Location("Arcón-suelo 2", ferreteria, 1),
+                    new Location("Arcón-medio 1", ferreteria, 1),
+                    new Location("Arcón-medio 2", ferreteria, 1)
             ));
 
             ferreteria = locationRepository.save(ferreteria);
@@ -167,42 +183,42 @@ public class InitializationData {
 
             List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',', false);
 
-            if(chests != null)
+            if (chests != null)
                 chests.forEach(c -> {
                     Location entityFromMap = locationMap.get(c.get(1));
                     entityFromMap.getLocations().add(Location.builder()
-                        .name(c.get(0))
-                        .parent(entityFromMap)
-                        .description(c.get(0))
-                        .level(2)
-                        .build());
+                            .name(c.get(0))
+                            .parent(entityFromMap)
+                            .description(c.get(0))
+                            .level(2)
+                            .build());
                     locationRepository.save(entityFromMap);
                 });
 
             // GROUP
 
             final Group _8g = groupRepository.save(Group.builder()
-                .name("Grupo 8 de Construcción")
-                .phoneNumber("+34630480855")
-                .location(ferreteria)
-                .build());
+                    .name("Grupo 8 de Construcción")
+                    .phoneNumber("+34630480855")
+                    .location(ferreteria)
+                    .build());
 
             // CATEGORIES (select name from categories;)
 
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
 
             Category resource = Category.builder()
-                .name("Recursos")
-                .locked(true)
-                .build();
+                    .name("Recursos")
+                    .locked(true)
+                    .build();
 
             List<Category> resources = resourceNames.stream()
-                .map(c -> Category.builder()
-                        .name(c)
-                        .parent(resource)
-                        .locked(true)
-                        .build())
-                .toList();
+                    .map(c -> Category.builder()
+                            .name(c)
+                            .parent(resource)
+                            .locked(true)
+                            .build())
+                    .toList();
 
             resource.setCategories(resources);
 
@@ -212,14 +228,14 @@ public class InitializationData {
 
             List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', false);
 
-            if(volunteers != null)
+            if (volunteers != null)
                 volunteers.parallelStream().forEach(vFieldList -> volunteerRepository.save(Volunteer.builder()
-                    .builderAssistantId(vFieldList.get(1))
-                    .name(vFieldList.get(2))
-                    .lastName(vFieldList.get(3))
-                    .isActive(Boolean.parseBoolean(vFieldList.get(4)))
-                    .group(_8g)
-                    .build()));
+                        .builderAssistantId(vFieldList.get(1))
+                        .name(vFieldList.get(2))
+                        .lastName(vFieldList.get(3))
+                        .isActive(Boolean.parseBoolean(vFieldList.get(4)))
+                        .group(_8g)
+                        .build()));
 
             // CONSUMABLES + TOOLS
 
@@ -228,17 +244,17 @@ public class InitializationData {
             List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
             Category brand = Category.builder()
-                .name("Marcas")
-                .locked(true)
-                .build();
+                    .name("Marcas")
+                    .locked(true)
+                    .build();
 
             List<Category> brands = brandNames.stream()
-                .map(b -> Category.builder()
-                        .name(b)
-                        .parent(brand)
-                        .locked(true)
-                        .build())
-                .toList();
+                    .map(b -> Category.builder()
+                            .name(b)
+                            .parent(brand)
+                            .locked(true)
+                            .build())
+                    .toList();
 
             brand.setCategories(brands);
 
@@ -266,27 +282,27 @@ public class InitializationData {
 
             List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
 
-            if(tools != null)
+            if (tools != null)
                 tools.parallelStream().forEach(tFieldList -> toolRepository.save(Tool.builder()
-                    .barcode(tFieldList.get(0))
-                    .brand(StringUtils.isBlank(tFieldList.get(1))
+                        //.barcode(tFieldList.getFirst())
+                        .brand(StringUtils.isBlank(tFieldList.get(1))
                                 ? brandsMap.get("<empty>")
                                 : brandsMap.get(tFieldList.get(1)))
-                    .model(tFieldList.get(2))
-                    .name(tFieldList.get(3))
-                    .description(tFieldList.get(4))
-                    //.location(null)
-                    .group(_8g)
-                    .category(resourceCategoriesMap.get(tFieldList.get(5)))
-                    .status(EStatus.NOT_AVAILABLE)
-                    .weight(convertToFloat(tFieldList.get(6)))
-                    .price(convertToFloat(tFieldList.get(7)))
-                    .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
-                    //.urlImages()
-                    //.lastMaintenance()
-                    //.maintenancePeriod()
-                    //.maintenanceTime()
-                    .build()));
+                        .model(tFieldList.get(2))
+                        .name(tFieldList.get(3))
+                        .description(tFieldList.get(4))
+                        //.location(null)
+                        .group(_8g)
+                        .category(resourceCategoriesMap.get(tFieldList.get(5)))
+                        .status(EStatus.NOT_AVAILABLE)
+                        .weight(convertToFloat(tFieldList.get(6)))
+                        .price(convertToFloat(tFieldList.get(7)))
+                        .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
+                        //.urlImages()
+                        //.lastMaintenance()
+                        //.maintenancePeriod()
+                        .maintenanceTime(ETimeUnit.DAYS)
+                        .build()));
 
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
             //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
@@ -297,23 +313,23 @@ public class InitializationData {
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
 
-            if(consumables != null)
+            if (consumables != null)
                 consumables.parallelStream().forEach(cFieldList -> consumableRepository.save(Consumable.builder()
-                    .barcode(cFieldList.get(0))
-                    .brand(brandsMap.get(cFieldList.get(1)))
-                    .model(cFieldList.get(2))
-                    .name(cFieldList.get(3))
-                    .description(cFieldList.get(4))
-                    //.location(null)
-                    .group(_8g)
-                    .category(resourceCategoriesMap.get(cFieldList.get(5)))
-                    .price(convertToFloat2Decimals(cFieldList.get(6)))
-                    .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
-                    .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
-                    //.stockType()
-                    .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
-                    //.urlImages()
-                    .build()));
+                        .barcode(cFieldList.get(0))
+                        .brand(brandsMap.get(cFieldList.get(1)))
+                        .model(cFieldList.get(2))
+                        .name(cFieldList.get(3))
+                        .description(cFieldList.get(4))
+                        //.location(null)
+                        .group(_8g)
+                        .category(resourceCategoriesMap.get(cFieldList.get(5)))
+                        .price(convertToFloat2Decimals(cFieldList.get(6)))
+                        .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
+                        .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Integer.valueOf(cFieldList.get(8)))
+                        //.stockType()
+                        .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Integer.valueOf(cFieldList.get(9)))
+                        //.urlImages()
+                        .build()));
 
             // CHEST REGISTRATION
 
@@ -329,27 +345,27 @@ public class InitializationData {
 
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
 
-            if(maintenance != null)
+            if (maintenance != null)
                 maintenance.parallelStream().forEach(mFieldList -> {
                     final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                     final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
                     maintenanceRepository.save(Maintenance.builder()
-                        .outRegistration(stringToLocalDate(mFieldList.get(0).substring(0, 10), "yyyy-MM-dd"))
-                        .details(mFieldList.get(1))
-                        .urlImages(mFieldList.get(2))
-                        .tool(tool)
-                        .volunteer(volunteer)
-                        .inStatus(EStatus.AVAILABLE)
-                        .outStatus(EStatus.AVAILABLE)
-                        .build());
+                            .outRegistration(stringToLocalDate(mFieldList.get(0).substring(0, 10), "yyyy-MM-dd"))
+                            .details(mFieldList.get(1))
+                            .urlImages(mFieldList.get(2))
+                            .tool(tool)
+                            .volunteer(volunteer)
+                            .inStatus(EStatus.AVAILABLE)
+                            .outStatus(EStatus.AVAILABLE)
+                            .build());
                 });
 
             // USERS (examples)
 
             Category responsibilityCat = Category.builder()
-                .name("Responsabilidades")
-                .locked(true)
-                .build();
+                    .name("Responsabilidades")
+                    .locked(true)
+                    .build();
 
             List<Category> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario").map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
 
@@ -358,67 +374,67 @@ public class InitializationData {
             categoryRepository.saveAndFlush(responsibilityCat);
 
             List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSIBILITIES.getBbddName()).map(Category::getCategories)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
-                    .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
+                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
+                            .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
             userRepository.save(User.builder()
-                .email("admin@admin")
-                .password(passwordEncoder.encode("admin"))
-                .group(_8g)
-                .role(ERole.ROLE_ADMIN)
-                .responsibility(responsibilitiesEntities.stream()
-                    .filter(r -> r.getName().equals("Coordinador")).findFirst()
-                    .orElse(null))
-                .build());
+                    .email("admin@admin")
+                    .password(passwordEncoder.encode("admin"))
+                    .group(_8g)
+                    .role(ERole.ROLE_ADMIN)
+                    .responsibility(responsibilitiesEntities.stream()
+                            .filter(r -> r.getName().equals("Coordinador")).findFirst()
+                            .orElse(null))
+                    .build());
 
             userRepository.save(User.builder()
-                .email("manager@manager")
-                .password(passwordEncoder.encode("manager"))
-                .group(_8g)
-                .role(ERole.ROLE_MANAGER)
-                .responsibility(responsibilitiesEntities.stream()
-                    .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
-                    .orElse(null))
-                .build());
+                    .email("manager@manager")
+                    .password(passwordEncoder.encode("manager"))
+                    .group(_8g)
+                    .role(ERole.ROLE_MANAGER)
+                    .responsibility(responsibilitiesEntities.stream()
+                            .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
+                            .orElse(null))
+                    .build());
 
             userRepository.save(User.builder()
-                .email("user@user")
-                .password(passwordEncoder.encode("user"))
-                .group(_8g)
-                .role(ERole.ROLE_USER)
-                .responsibility(responsibilitiesEntities.stream()
-                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
-                    .orElse(null))
-                .build());
-
-            userRepository.save(User.builder()
-                .email("volunteer@volunteer")
-                .password(passwordEncoder.encode("volunteer"))
-                .group(_8g)
-                .role(ERole.ROLE_USER)
-                .responsibility(responsibilitiesEntities.stream()
-                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
-                    .orElse(null))
-                .volunteer(volunteerRepository.findTopByIdNotNull().orElse(null))
-                .build());
-
-            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
-            if(users != null) {
-                users.forEach(userFields -> {
-                    User user = User.builder()
-                        .email(userFields.get(4))
-                        .password(passwordEncoder.encode(userFields.get(3)))
-                        .role(Integer.valueOf(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
-                            Integer.valueOf(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
-                                ERole.ROLE_USER)
-                        .responsibility(responsibilitiesEntities.stream()
+                    .email("user@user")
+                    .password(passwordEncoder.encode("user"))
+                    .group(_8g)
+                    .role(ERole.ROLE_USER)
+                    .responsibility(responsibilitiesEntities.stream()
                             .filter(r -> r.getName().equals("Voluntario")).findFirst()
                             .orElse(null))
-                        .acceptedEULA(LocalDateTime.now())
-                        .acceptedEULAManager(Integer.valueOf(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
-                        .build();
+                    .build());
+
+            userRepository.save(User.builder()
+                    .email("volunteer@volunteer")
+                    .password(passwordEncoder.encode("volunteer"))
+                    .group(_8g)
+                    .role(ERole.ROLE_USER)
+                    .responsibility(responsibilitiesEntities.stream()
+                            .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                            .orElse(null))
+                    .volunteer(volunteerRepository.findTopByIdNotNull().orElse(null))
+                    .build());
+
+            List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
+            if (users != null) {
+                users.forEach(userFields -> {
+                    User user = User.builder()
+                            .email(userFields.get(4))
+                            .password(passwordEncoder.encode(userFields.get(3)))
+                            .role(Integer.valueOf(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
+                                    Integer.valueOf(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
+                                            ERole.ROLE_USER)
+                            .responsibility(responsibilitiesEntities.stream()
+                                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
+                                    .orElse(null))
+                            .acceptedEULA(LocalDateTime.now())
+                            .acceptedEULAManager(Integer.valueOf(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
+                            .build();
                     Volunteer volunteer = null;
-                    if(!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
+                    if (!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
                         var volunteerList = volunteerRepository.findAllByNameAndLastName(userFields.get(1), userFields.get(2));
                         if (!volunteerList.isEmpty())
                             volunteer = volunteerList.get(0);
@@ -429,6 +445,22 @@ public class InitializationData {
                 });
             }
 
+            toolRegisterRepository.save(ToolRegister.builder()
+                    .inRegistration(LocalDateTime.of(2023, 12, 1, 9, 35))
+                    .outRegistration(LocalDateTime.of(2023, 12, 2, 10, 40))
+                    .tool(Tool.builder().id(1).build())
+                    .volunteer(Volunteer.builder().id(1).build())
+                    .build());
+            toolRegisterRepository.save(ToolRegister.builder()
+                    .outRegistration(LocalDateTime.of(2023, 12, 1, 9, 35))
+                    .tool(Tool.builder().id(2).build())
+                    .volunteer(Volunteer.builder().id(2).build())
+                    .build());
+            toolRegisterRepository.save(ToolRegister.builder()
+                    .outRegistration(LocalDateTime.of(2023, 12, 1, 9, 35))
+                    .tool(Tool.builder().id(3).build())
+                    .volunteer(Volunteer.builder().id(3).build())
+                    .build());
         };
 
     }

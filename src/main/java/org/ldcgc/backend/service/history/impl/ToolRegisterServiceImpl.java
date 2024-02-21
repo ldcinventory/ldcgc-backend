@@ -60,18 +60,51 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, String filterString) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortString));
 
-        Page<ToolRegister> page = Optional.of(filterString)
-                .filter(String::isEmpty)
+        Page<ToolRegister> page = Optional.ofNullable(filterString)
+                .filter(fs -> !fs.isEmpty())
                 .map(fs -> repository.findAllFiltered(fs, pageable))
                 .orElse(repository.findAll(pageable));
 
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
-                String.format(Messages.Info.TOOL_LISTED, page.getTotalElements()),
+                Messages.Info.TOOL_REGISTER_LISTED.formatted(page.getTotalElements()),
                 page);
     }
 
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
-        return null;
+        ToolRegister register = repository.findById(registerId)
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+
+        ToolRegisterMapper.MAPPER.update(registerDto, register);
+
+        repository.save(register);
+        return Constructor.buildResponseMessageObject(
+                HttpStatus.OK,
+                Messages.Info.TOOL_REGISTER_UPDATED,
+                registerDto
+        );
+    }
+
+    public ResponseEntity<?> getRegister(Integer registerId) {
+        ToolRegister register = repository.findById(registerId)
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+
+        return Constructor.buildResponseMessageObject(
+                HttpStatus.OK,
+                Messages.Info.TOOL_REGISTER_FOUND,
+                register
+        );
+    }
+
+    public ResponseEntity<?> deleteRegister(Integer registerId) {
+        ToolRegister register = repository.findById(registerId)
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+
+        repository.delete(register);
+
+        return Constructor.buildResponseMessage(
+                HttpStatus.OK,
+                Messages.Info.TOOL_REGISTER_DELETED
+        );
     }
 }

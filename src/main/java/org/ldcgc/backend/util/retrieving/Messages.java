@@ -37,7 +37,11 @@ public class Messages {
                 TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
                 TOOL_DELETED = "Tool deleted",
 
-        TOOL_REGISTER_CREATED = "Tool register created successfully!";
+        TOOL_REGISTER_CREATED = "Tool register created successfully!",
+                TOOL_REGISTER_UPDATED = "Tool register updated successfully!",
+                TOOL_REGISTER_LISTED = "Found %s tool registers",
+                TOOL_REGISTER_FOUND = "Found tool register",
+                TOOL_REGISTER_DELETED = "Deleted tool register successfully!";
 
     }
 
@@ -121,7 +125,8 @@ public class Messages {
                 TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
                 TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
                 TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers.",
-                TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer."
+                TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer.",
+                TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found."
         ;
 
     }

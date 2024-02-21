@@ -50,7 +50,7 @@ public class Volunteer {
     @PrimaryKeyJoinColumn
     private Availability availability;
 
-    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Absence> absences;
 
     @ManyToOne

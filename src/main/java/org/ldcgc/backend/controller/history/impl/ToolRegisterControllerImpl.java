@@ -12,18 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class ToolRegisterControllerImpl implements ToolRegisterController {
 
     private final ToolRegisterService service;
-    @Override
     public ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto) {
-        return null;
+        return service.createToolRegister(toolRegisterDto);
     }
 
-    @Override
     public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString,String filterString) {
-        return null;
+        return service.getAllRegisters(pageIndex, size, sortString, filterString);
     }
 
-    @Override
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
-        return null;
+        return service.updateRegister(registerId, registerDto);
+    }
+    public ResponseEntity<?> getRegister(Integer registerId) {
+        return service.getRegister(registerId);
+    }
+    public ResponseEntity<?> deleteRegister(Integer registerId) {
+        return service.deleteRegister(registerId);
     }
 }
