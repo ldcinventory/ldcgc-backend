@@ -49,4 +49,6 @@ public class ConsumableRegister {
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 
+    private Boolean isClosedRegister;
+
 }
