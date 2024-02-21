@@ -130,11 +130,13 @@ public class Messages {
             CONSUMABLE_REGISTER_NOT_FOUND = "Consumable register with id '%s' not found",
             CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED = "This consumable has been registered to this volunteer",
             CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE = "There is no enough amount to allocate for this consumable to this volunteer",
+            CONSUMABLE_REGISTER_CLOSED_FOR_MODIFICATIONS = "Consumable register only allows modify stock amount returned and volunteer assigned",
             CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_RETURN = "The amount to be returned to stock for this consumable is higher than the amount allocated",
             CONSUMABLE_REGISTER_ALLOCATE_DATE_BEFORE_TODAY = "The date of allocation the consumable is before the actual date and time",
             CONSUMABLE_REGISTER_RETURN_DATE_BEFORE_ALLOCATE = "The date of returning the consumable is before the date and time of allocations",
             CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date and time",
             CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
+            CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE = "The data for closing the consumible lacks any of the required fields: registrationOut, stockAmountOut",
 
             STATUS_NOT_FOUND = "Status '%s' not found",
 
