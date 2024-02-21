@@ -332,7 +332,7 @@ public class InitializationData {
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                     //.lastMaintenance()
                     //.maintenancePeriod()
-                    .maintenanceTime(getRandomTimeUnit())
+                    .maintenanceTime(getRandomEnum(ETimeUnit.class))
                     .build();
                 toolEntities.put(tool.getBarcode(), tool);
             });
@@ -350,6 +350,20 @@ public class InitializationData {
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
             Map<String, Consumable> consumableEntities = new HashMap<>();
             consumables.forEach(cFieldList -> {
+                int stockInt = getRandomIntegerFromRange(2, 10);
+
+                Float quantityEachItem = StringUtils.isBlank(cFieldList.get(8))
+                    ? getRandomFloatFromRange(0.01f, 10.00f)
+                    : Float.valueOf(cFieldList.get(8)) / stockInt;
+
+                Float stock = StringUtils.isBlank(cFieldList.get(8))
+                    ? (float) stockInt * quantityEachItem
+                    : Float.valueOf(cFieldList.get(8));
+
+                Float minStock = StringUtils.isBlank(cFieldList.get(9))
+                    ? (float) getRandomIntegerFromRange(1, stockInt) * quantityEachItem
+                    : Float.valueOf(cFieldList.get(9));
+
                 Consumable consumable = Consumable.builder()
                     .barcode(consumableEntities.get(cFieldList.get(0)) != null
                         ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
@@ -363,9 +377,10 @@ public class InitializationData {
                     .category(resourceCategoriesMap.get(cFieldList.get(5)))
                     .price(convertToFloat2Decimals(cFieldList.get(6)))
                     .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
-                    .stock(StringUtils.isBlank(cFieldList.get(8)) ? null : Float.valueOf(cFieldList.get(8)))
-                    .stockType(EStockType.UNITS)
-                    .minStock(StringUtils.isBlank(cFieldList.get(9)) ? null : Float.valueOf(cFieldList.get(9)))
+                    .quantityEachItem(quantityEachItem)
+                    .stock(stock)
+                    .stockType(getRandomEnum(EStockType.class))
+                    .minStock(minStock)
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                     .build();
                 consumableEntities.put(consumable.getBarcode(), consumable);
@@ -378,7 +393,7 @@ public class InitializationData {
             long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
 
             if (consumablesRegistrationTestData)
-                IntStream.range(0, 5000)
+                IntStream.range(0, 10_000)
                     .parallel()
                     .forEach(i -> {
                         LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
@@ -551,9 +566,16 @@ public class InitializationData {
         return absences;
     }
 
-    private ETimeUnit getRandomTimeUnit() {
-        int index = new Random().ints(1, 0, ETimeUnit.values().length).iterator().nextInt();
-        return ETimeUnit.values()[index];
+    private static <E extends Enum<E>> E getRandomEnum(Class<E> enumType) {
+        return enumType.getEnumConstants()[getRandomIntegerFromRange(0, enumType.getEnumConstants().length)];
+    }
+
+    private static Integer getRandomIntegerFromRange(int min, int max) {
+        return new Random().ints(1, min, max).iterator().nextInt();
+    }
+
+    private static Float getRandomFloatFromRange(float min, float max) {
+        return min + new Random().nextFloat() * (max - min);
     }
 
 }
