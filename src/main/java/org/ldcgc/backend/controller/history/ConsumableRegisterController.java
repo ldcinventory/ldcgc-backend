@@ -90,7 +90,7 @@ public interface ConsumableRegisterController {
             @RequestParam(required = false) LocalDateTime dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
             @RequestParam(required = false) LocalDateTime dateTo,
-        @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
+        @Parameter(description = "Sort by any field desired (see fields of ConsumableRegister class)")
             @RequestParam(required = false, defaultValue = "id") String sortField);
 
     @Operation(summary = "Create a consumable register.", description = SWAGGER_ROLE_OPERATION_MANAGER)
@@ -160,6 +160,8 @@ public interface ConsumableRegisterController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> deleteConsumableRegister(
         @Parameter(description = "Consumable register ID to delete")
-            @PathVariable Integer registerId);
+            @PathVariable Integer registerId,
+        @Parameter(description = "When deleting a register, undo also stock changes")
+            @RequestParam(required = false) boolean undoStockChanges);
 
 }

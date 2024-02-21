@@ -198,9 +198,15 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             ConsumableRegisterMapper.MAPPER.toDto(updateConsumableRegister));
     }
 
-    public ResponseEntity<?> deleteConsumableRegister(Integer registerId) {
+    public ResponseEntity<?> deleteConsumableRegister(Integer registerId, boolean undoStockChanges) {
         ConsumableRegister consumableRegister = consumableRegisterRepository.findById(registerId)
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_REGISTER_NOT_FOUND, registerId)));
+
+        if(undoStockChanges) {
+            Consumable consumable = consumableRegister.getConsumable();
+            consumable.setStock(consumable.getStock() + (consumableRegister.getStockAmountIn() - consumableRegister.getStockAmountOut()));
+            consumableRepository.saveAndFlush(consumable);
+        }
 
         consumableRegisterRepository.delete(consumableRegister);
 

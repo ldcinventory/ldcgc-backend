@@ -31,7 +31,7 @@ public class ConsumableRegisterControllerImpl implements ConsumableRegisterContr
         return consumableRegisterService.updateConsumableRegister(registerId, consumableRegisterDto);
     }
 
-    public ResponseEntity<?> deleteConsumableRegister(Integer registerId) {
-        return consumableRegisterService.deleteConsumableRegister(registerId);
+    public ResponseEntity<?> deleteConsumableRegister(Integer registerId, boolean undoStockChanges) {
+        return consumableRegisterService.deleteConsumableRegister(registerId, undoStockChanges);
     }
 }
