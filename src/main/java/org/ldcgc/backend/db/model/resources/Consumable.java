@@ -64,6 +64,9 @@ public class Consumable {
     private String[] urlImages;
 
     @Column(nullable = false)
+    private Float quantityEachItem;
+
+    @Column(nullable = false)
     private Float stock;
 
     private Float minStock;

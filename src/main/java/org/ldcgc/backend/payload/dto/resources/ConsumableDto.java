@@ -25,6 +25,7 @@ public class ConsumableDto {
     private String model;
     private String description;
     private String[] urlImages;
+    private Float quantityEachItem;
     private Float stock;
     private Float minStock;
     private EStockType stockType;
