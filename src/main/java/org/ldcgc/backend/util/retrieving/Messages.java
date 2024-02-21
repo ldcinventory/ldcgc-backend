@@ -112,6 +112,7 @@ public class Messages {
             VOLUNTEER_NOT_INFORMED = "Volunter is not informed in the payload",
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
+            VOLUNTEER_BARCODE_NOT_FOUND = "The volunteer you're searching for with builder assistant id '%s' couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
@@ -121,17 +122,19 @@ public class Messages {
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
 
             CONSUMABLE_NOT_FOUND = "Consumable with id '%s' not found",
+            CONSUMABLE_BARCODE_NOT_FOUND = "Consumable with barcode '%s' not found",
             CONSUMABLE_BARCODE_ALREADY_EXISTS = "There is another consumable with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             CONSUMABLE_BARCODE_USED_MANY_TIMES = "The barcode '%s' is used by more than one consumable. Please report to admin",
             CONSUMABLE_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the consumable id is null",
 
             CONSUMABLE_REGISTER_NOT_FOUND = "Consumable register with id '%s' not found",
             CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED = "This consumable has been registered to this volunteer",
-            CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ASSIGN = "There is no enough amount to assign for this consumable to this volunteer",
-            CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_RETURN = "There is no enough amount to return (it's more than origin) for this consumable to return to stock",
-            CONSUMABLE_REGISTER_ASSIGN_DATE_BEFORE_TODAY = "The date of assign the consumable is before the actual date",
-            CONSUMABLE_REGISTER_RETURN_DATE_BEFORE_ASSIGN = "The date of returning the consumable is before the date of assignment",
-            CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date",
+            CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE = "There is no enough amount to allocate for this consumable to this volunteer",
+            CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_RETURN = "The amount to be returned to stock for this consumable is higher than the amount allocated",
+            CONSUMABLE_REGISTER_ALLOCATE_DATE_BEFORE_TODAY = "The date of allocation the consumable is before the actual date and time",
+            CONSUMABLE_REGISTER_RETURN_DATE_BEFORE_ALLOCATE = "The date of returning the consumable is before the date and time of allocations",
+            CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date and time",
+            CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
 
             STATUS_NOT_FOUND = "Status '%s' not found",
 
@@ -165,7 +168,7 @@ public class Messages {
             EXCEL_VALUE_INCORRECT = "The value '%s' is incorrect on excel row %s, column %s",
             EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
             EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
-            EXCEL_EMPTY_CELL = "The empty value is not allowed on excel row %s, column %s",
+            EXCEL_EMPTY_CELL = "An empty value is not allowed on excel row %s, column %s",
 
             PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL = "The index requested is out of bounds of the total pages available.",
 
