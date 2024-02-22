@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsumableRegisterDto {
 
-    @NotNull private Integer id;
+    private Integer id;
     @NotNull private String consumableBardcode;
     @NotNull private String volunteerBAId;
-    @NotNull private LocalDateTime registrationIn;
+    private LocalDateTime registrationIn;
     private LocalDateTime registrationOut;
     @NotNull private Float stockAmountIn;
     private Float stockAmountOut;
