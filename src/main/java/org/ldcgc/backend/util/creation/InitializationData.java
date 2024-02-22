@@ -349,20 +349,20 @@ public class InitializationData {
 
             List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
             Map<String, Consumable> consumableEntities = new HashMap<>();
-            consumables.forEach(cFieldList -> {
+            for (List<String> cFieldList : consumables) {
                 int stockInt = getRandomIntegerFromRange(2, 10);
 
-                Float quantityEachItem = StringUtils.isBlank(cFieldList.get(8))
+                float quantityEachItem = StringUtils.isBlank(cFieldList.get(8))
                     ? getRandomFloatFromRange(0.01f, 10.00f)
-                    : Float.valueOf(cFieldList.get(8)) / stockInt;
+                    : Float.parseFloat(cFieldList.get(8)) / stockInt;
 
                 Float stock = StringUtils.isBlank(cFieldList.get(8))
                     ? (float) stockInt * quantityEachItem
-                    : Float.valueOf(cFieldList.get(8));
+                    : Float.parseFloat(cFieldList.get(8));
 
                 Float minStock = StringUtils.isBlank(cFieldList.get(9))
                     ? (float) getRandomIntegerFromRange(1, stockInt) * quantityEachItem
-                    : Float.valueOf(cFieldList.get(9));
+                    : Float.parseFloat(cFieldList.get(9));
 
                 Consumable consumable = Consumable.builder()
                     .barcode(consumableEntities.get(cFieldList.get(0)) != null
@@ -384,7 +384,7 @@ public class InitializationData {
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                     .build();
                 consumableEntities.put(consumable.getBarcode(), consumable);
-            });
+            }
             consumableRepository.saveAll(consumableEntities.values());
 
             // CONSUMABLES REGISTRATION
@@ -409,6 +409,7 @@ public class InitializationData {
                                 .stockAmountOut(amountOut)
                                 .consumable(consumableRepository.getRandomConsumable())
                                 .volunteer(volunteerRepository.getRandomvolunteer())
+                                .closedRegister(true)
                                 .build());
                     });
 

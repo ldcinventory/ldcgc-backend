@@ -23,5 +23,7 @@ public class ConsumableRegisterDto {
     private Float stockAmountOut;
     private ConsumableDto consumable;
     private VolunteerDto volunteer;
+    private Boolean closedRegister;
+    private boolean processingStockChanges;
 
 }
