@@ -32,9 +32,9 @@ public class ConsumableRegister {
     private Integer id;
 
     @Column(nullable = false)
-    private LocalDateTime registrationIn;
+    private LocalDateTime registerFrom;
 
-    private LocalDateTime registrationOut;
+    private LocalDateTime registerTo;
 
     @Column(nullable = false)
     private Float stockAmountIn;

@@ -403,8 +403,8 @@ public class InitializationData {
 
                         consumableRegisterRepository.saveAndFlush(
                             ConsumableRegister.builder()
-                                .registrationIn(timeIn)
-                                .registrationOut(timeOut)
+                                .registerFrom(timeIn)
+                                .registerTo(timeOut)
                                 .stockAmountIn(amountIn)
                                 .stockAmountOut(amountOut)
                                 .consumable(consumableRepository.getRandomConsumable())

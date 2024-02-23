@@ -62,8 +62,8 @@ public class MockedResources {
             .id(getRandomId())
             .consumableBardcode(getRandomAlphaNumeric(8))
             .volunteerBAId(getRandomAlphaNumeric(8))
-            .registrationIn(timeIn)
-            .registrationOut(timeOut)
+            .registerFrom(timeIn)
+            .registerTo(timeOut)
             .stockAmountIn(amountIn)
             .stockAmountOut(amountOut)
             .build();

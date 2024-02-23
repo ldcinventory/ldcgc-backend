@@ -27,7 +27,7 @@ public interface ConsumableRegisterMapper {
 
     @Mapping(target = "consumable", ignore = true)
     @Mapping(target = "volunteer", ignore = true)
-    @Mapping(target = "registrationIn", source = "registrationIn", qualifiedByName = "mapRegistrationIn")
+    @Mapping(target = "registerFrom", source = "registerFrom", qualifiedByName = "mapRegistrationIn")
     @Mapping(target = "closedRegister", source = "closedRegister", qualifiedByName = "mapClosedRegister")
     ConsumableRegister toEntity(ConsumableRegisterDto consumableRegisterDto);
 
