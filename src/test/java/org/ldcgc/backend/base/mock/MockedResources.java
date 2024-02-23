@@ -4,6 +4,7 @@ import net.datafaker.Faker;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
@@ -12,6 +13,10 @@ import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -39,6 +44,28 @@ public class MockedResources {
             .urlImages(getRandomURLs())
             .category(getRandomCategory())
             .location(getRandomLocation())
+            .build();
+    }
+
+    public static ConsumableRegisterDto getRandomConsumableRegisterDto() {
+        ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
+        long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+        long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
+
+        LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+        LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+
+        float amountIn = getRandomFloatFromRange(0.01f, 20.00f);
+        float amountOut = getRandomFloatFromRange(0.00f, amountIn);
+
+        return ConsumableRegisterDto.builder()
+            .id(getRandomId())
+            .consumableBardcode(getRandomAlphaNumeric(8))
+            .volunteerBAId(getRandomAlphaNumeric(8))
+            .registrationIn(timeIn)
+            .registrationOut(timeOut)
+            .stockAmountIn(amountIn)
+            .stockAmountOut(amountOut)
             .build();
     }
 
