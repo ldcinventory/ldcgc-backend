@@ -23,9 +23,11 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
         return service.updateRegister(registerId, registerDto);
     }
+
     public ResponseEntity<?> getRegister(Integer registerId) {
         return service.getRegister(registerId);
     }
+
     public ResponseEntity<?> deleteRegister(Integer registerId) {
         return service.deleteRegister(registerId);
     }
