@@ -162,10 +162,6 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             consumableRegisterDto.getRegistrationOut().isBefore(consumableRegisterDto.getRegistrationIn()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_RETURN_DATE_BEFORE_ALLOCATE);
 
-        if (Objects.nonNull(consumableRegisterDto.getRegistrationOut()) &&
-            consumableRegisterDto.getRegistrationOut().isAfter(LocalDateTime.now()))
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY);
-
         // check the present amount if the parameter registrationOut in dto is not present
         if (consumableRegisterDto.getStockAmountIn() > consumable.getStock() &&
             consumableRegisterDto.getRegistrationOut() == null)
@@ -210,6 +206,10 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
                     String.format(Messages.Error.VOLUNTEER_BARCODE_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
 
         validateUpdateConsumableRegister(consumableRegisterDto, updateConsumableRegister, consumable);
+
+        // if modifying amount in, replace stock values in warehouse and volunteer
+        if (!consumableRegisterDto.getStockAmountIn().equals(updateConsumableRegister.getStockAmountIn()))
+            consumable.setStock(consumable.getStock() + updateConsumableRegister.getStockAmountIn() - consumableRegisterDto.getStockAmountIn());
 
         // update non used stock from volunteer to warehouse
         if (Objects.nonNull(consumableRegisterDto.getStockAmountOut())) {
@@ -265,10 +265,6 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         if (Boolean.TRUE.equals(consumableRegisterDto.getClosedRegister()) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegistrationOut(), consumableRegisterDto.getStockAmountOut()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE);
-
-        // if modifying amount in, replace stock values in warehouse and volunteer
-        if (!consumableRegisterDto.getStockAmountIn().equals(updateConsumableRegister.getStockAmountIn()))
-            consumable.setStock(consumable.getStock() + updateConsumableRegister.getStockAmountIn() - consumableRegisterDto.getStockAmountIn());
     }
 
     public ResponseEntity<?> deleteConsumableRegister(Integer registerId, boolean undoStockChanges) {
