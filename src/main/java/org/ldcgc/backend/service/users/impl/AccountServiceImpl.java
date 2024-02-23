@@ -30,16 +30,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
-import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;

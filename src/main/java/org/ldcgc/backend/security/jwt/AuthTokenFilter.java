@@ -29,7 +29,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.validator.Endpoint.isNotReplaceTokenEndpoint;
