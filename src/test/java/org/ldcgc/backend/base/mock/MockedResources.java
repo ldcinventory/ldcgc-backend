@@ -55,8 +55,8 @@ public class MockedResources {
         LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
         LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
 
-        float amountIn = getRandomFloatFromRange(0.01f, 20.00f);
-        float amountOut = getRandomFloatFromRange(0.00f, amountIn);
+        float amountRequest = getRandomFloatFromRange(0.01f, 20.00f);
+        float amountReturn = getRandomFloatFromRange(0.00f, amountRequest);
 
         return ConsumableRegisterDto.builder()
             .id(getRandomId())
@@ -64,8 +64,8 @@ public class MockedResources {
             .volunteerBAId(getRandomAlphaNumeric(8))
             .registerFrom(timeIn)
             .registerTo(timeOut)
-            .stockAmountIn(amountIn)
-            .stockAmountOut(amountOut)
+            .stockAmountRequest(amountRequest)
+            .stockAmountReturn(amountReturn)
             .build();
     }
 

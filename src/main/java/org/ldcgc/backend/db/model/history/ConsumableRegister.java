@@ -37,9 +37,9 @@ public class ConsumableRegister {
     private LocalDateTime registerTo;
 
     @Column(nullable = false)
-    private Float stockAmountIn;
+    private Float stockAmountRequest;
 
-    private Float stockAmountOut;
+    private Float stockAmountReturn;
 
     @ManyToOne
     @JoinColumn(name = "consumable_id", referencedColumnName = "id")

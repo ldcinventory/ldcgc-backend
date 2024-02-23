@@ -398,15 +398,15 @@ public class InitializationData {
                     .forEach(i -> {
                         LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
                         LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
-                        float amountIn = new Random().nextFloat(0.01f, 20.00f);
-                        float amountOut = new Random().nextFloat(0.00f, amountIn);
+                        float amountRequest = new Random().nextFloat(0.01f, 20.00f);
+                        float amountReturn = new Random().nextFloat(0.00f, amountRequest);
 
                         consumableRegisterRepository.saveAndFlush(
                             ConsumableRegister.builder()
                                 .registerFrom(timeIn)
                                 .registerTo(timeOut)
-                                .stockAmountIn(amountIn)
-                                .stockAmountOut(amountOut)
+                                .stockAmountRequest(amountRequest)
+                                .stockAmountReturn(amountReturn)
                                 .consumable(consumableRepository.getRandomConsumable())
                                 .volunteer(volunteerRepository.getRandomvolunteer())
                                 .closedRegister(true)

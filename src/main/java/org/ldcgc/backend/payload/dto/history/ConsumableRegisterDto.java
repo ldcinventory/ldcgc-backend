@@ -19,8 +19,8 @@ public class ConsumableRegisterDto {
     @NotNull private String volunteerBAId;
     private LocalDateTime registerFrom;
     private LocalDateTime registerTo;
-    @NotNull private Float stockAmountIn;
-    private Float stockAmountOut;
+    @NotNull private Float stockAmountRequest;
+    private Float stockAmountReturn;
     private ConsumableDto consumable;
     private VolunteerDto volunteer;
     private Boolean closedRegister;

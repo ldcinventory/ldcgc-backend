@@ -114,21 +114,21 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         ConsumableRegister newConsumableRegister = ConsumableRegisterMapper.MAPPER.toEntity(consumableRegisterDto);
 
         // substract stock from warehouse to volunteer
-        if(consumableRegisterDto.getStockAmountOut() == null)
-            consumable.setStock(consumable.getStock() - newConsumableRegister.getStockAmountIn());
+        if(consumableRegisterDto.getStockAmountReturn() == null)
+            consumable.setStock(consumable.getStock() - newConsumableRegister.getStockAmountRequest());
 
         // return non used stock from volunteer to warehouse
         // (only if we want to process stock change, not previous historic)
         else if(consumableRegisterDto.isProcessingStockChanges()) {
-            consumable.setStock(consumable.getStock() - newConsumableRegister.getStockAmountIn());
-            consumable.setStock(consumable.getStock() + consumableRegisterDto.getStockAmountOut());
+            consumable.setStock(consumable.getStock() - newConsumableRegister.getStockAmountRequest());
+            consumable.setStock(consumable.getStock() + consumableRegisterDto.getStockAmountReturn());
         }
 
         consumable = consumableRepository.saveAndFlush(consumable);
         newConsumableRegister.setConsumable(consumable);
         newConsumableRegister.setVolunteer(volunteer);
 
-        newConsumableRegister.setClosedRegister(consumableRegisterDto.getStockAmountOut() != null);
+        newConsumableRegister.setClosedRegister(consumableRegisterDto.getStockAmountReturn() != null);
 
         newConsumableRegister = consumableRegisterRepository.saveAndFlush(newConsumableRegister);
 
@@ -142,15 +142,15 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         // dto doesn't contain registrationOut field
         if(!CollectionUtils.isEmpty(consumableRegisters) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(),
-                                consumableRegisterDto.getStockAmountOut())) {
+                                consumableRegisterDto.getStockAmountReturn())) {
             if (consumableRegisters.stream().anyMatch(cr -> cr.getVolunteer().getBuilderAssistantId().equals(consumableRegisterDto.getVolunteerBAId())))
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED);
 
             // check
             if (consumableRegisters.stream()
                 .filter(c -> !c.getClosedRegister())
-                .map(ConsumableRegister::getStockAmountIn)
-                .reduce(0.0f, Float::sum) + consumableRegisterDto.getStockAmountIn() > consumable.getStock())
+                .map(ConsumableRegister::getStockAmountRequest)
+                .reduce(0.0f, Float::sum) + consumableRegisterDto.getStockAmountRequest() > consumable.getStock())
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE);
 
             if (consumableRegisterDto.getRegisterFrom() != null &&
@@ -163,7 +163,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_RETURN_DATE_BEFORE_ALLOCATE);
 
         // check the present amount if the parameter registrationOut in dto is not present
-        if (consumableRegisterDto.getStockAmountIn() > consumable.getStock() &&
+        if (consumableRegisterDto.getStockAmountRequest() > consumable.getStock() &&
             consumableRegisterDto.getRegisterTo() == null)
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE);
 
@@ -172,18 +172,18 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY);
 
         if (consumableRegisterDto.getRegisterTo() != null ^
-            consumableRegisterDto.getStockAmountOut() != null)
+            consumableRegisterDto.getStockAmountReturn() != null)
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE);
 
         if (Boolean.FALSE.equals(consumableRegisterDto.getClosedRegister()) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegisterFrom(),
                                 consumableRegisterDto.getRegisterTo(),
-                                consumableRegisterDto.getStockAmountOut()))
+                                consumableRegisterDto.getStockAmountReturn()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE);
 
         // to close register, check the mandatory values first
         if (Boolean.TRUE.equals(consumableRegisterDto.getClosedRegister()) &&
-            ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountOut()))
+            ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountReturn()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE);
     }
 
@@ -208,21 +208,21 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         validateUpdateConsumableRegister(consumableRegisterDto, updateConsumableRegister, consumable);
 
         // if modifying amount in, replace stock values in warehouse and volunteer
-        if (!consumableRegisterDto.getStockAmountIn().equals(updateConsumableRegister.getStockAmountIn()))
-            consumable.setStock(consumable.getStock() + updateConsumableRegister.getStockAmountIn() - consumableRegisterDto.getStockAmountIn());
+        if (!consumableRegisterDto.getStockAmountRequest().equals(updateConsumableRegister.getStockAmountRequest()))
+            consumable.setStock(consumable.getStock() + updateConsumableRegister.getStockAmountRequest() - consumableRegisterDto.getStockAmountRequest());
 
         // update non used stock from volunteer to warehouse
-        if (Objects.nonNull(consumableRegisterDto.getStockAmountOut())) {
+        if (Objects.nonNull(consumableRegisterDto.getStockAmountReturn())) {
             updateConsumableRegister.setClosedRegister(true);
             consumable.setStock(consumable.getStock()
-                - ObjectUtils.defaultIfNull(updateConsumableRegister.getStockAmountOut(), 0.00f)
-                + consumableRegisterDto.getStockAmountOut());
+                - ObjectUtils.defaultIfNull(updateConsumableRegister.getStockAmountReturn(), 0.00f)
+                + consumableRegisterDto.getStockAmountReturn());
         }
 
         ConsumableRegisterMapper.MAPPER.update(consumableRegisterDto, updateConsumableRegister);
 
         // mark register closed when registerOut and stockAmountOut fields are filled
-        if (ObjectUtils.allNotNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountOut()))
+        if (ObjectUtils.allNotNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountReturn()))
             updateConsumableRegister.setClosedRegister(true);
 
         consumable = consumableRepository.saveAndFlush(consumable);
@@ -239,10 +239,10 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
     private void validateUpdateConsumableRegister(ConsumableRegisterDto consumableRegisterDto, ConsumableRegister updateConsumableRegister, Consumable consumable) {
         if (updateConsumableRegister.getClosedRegister() &&
-           ((ObjectUtils.allNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountOut())) ||
+           ((ObjectUtils.allNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountReturn())) ||
            (Boolean.FALSE.equals(consumableRegisterDto.getClosedRegister()) ||
             !consumableRegisterDto.getConsumableBardcode().equals(updateConsumableRegister.getConsumable().getBarcode()) ||
-            !consumableRegisterDto.getStockAmountIn().equals(updateConsumableRegister.getStockAmountIn()) ||
+            !consumableRegisterDto.getStockAmountRequest().equals(updateConsumableRegister.getStockAmountRequest()) ||
             !consumableRegisterDto.getRegisterFrom().equals(updateConsumableRegister.getRegisterFrom()))))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_CLOSED_FOR_MODIFICATIONS);
 
@@ -254,16 +254,16 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             consumableRegisterDto.getRegisterTo().isAfter(LocalDateTime.now()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY);
 
-        if (consumableRegisterDto.getStockAmountIn() > (updateConsumableRegister.getStockAmountIn() + updateConsumableRegister.getConsumable().getStock()))
+        if (consumableRegisterDto.getStockAmountRequest() > (updateConsumableRegister.getStockAmountRequest() + updateConsumableRegister.getConsumable().getStock()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE);
 
-        if (Objects.nonNull(consumableRegisterDto.getStockAmountOut()) &&
-            consumableRegisterDto.getStockAmountOut() > updateConsumableRegister.getStockAmountIn())
+        if (Objects.nonNull(consumableRegisterDto.getStockAmountReturn()) &&
+            consumableRegisterDto.getStockAmountReturn() > updateConsumableRegister.getStockAmountRequest())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_RETURN);
 
         // to close register, check the mandatory values first
         if (Boolean.TRUE.equals(consumableRegisterDto.getClosedRegister()) &&
-            ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountOut()))
+            ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountReturn()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE);
     }
 
@@ -273,7 +273,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
         if(undoStockChanges) {
             Consumable consumable = consumableRegister.getConsumable();
-            consumable.setStock(consumable.getStock() + (consumableRegister.getStockAmountIn() - consumableRegister.getStockAmountOut()));
+            consumable.setStock(consumable.getStock() + (consumableRegister.getStockAmountRequest() - consumableRegister.getStockAmountReturn()));
             consumableRepository.saveAndFlush(consumable);
         }
 
