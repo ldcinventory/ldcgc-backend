@@ -83,7 +83,14 @@ A Docker-based project, you just execute this command to run the multi-container
 
 or, for make-it-easier-for-you purposes, you can run:
 
-`./run.sh` in Mac, `run.bat` in Windows, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
+`./run.sh` in Mac, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
+
+The options used for run the full API are:
+
+- `create`: create the API with CSVs
+- `create-test-data`: create the API with CSVs and test data for consumible and tool registers
+- `restart`: just restart the containers
+- `purge`: clean all the data in Docker (images included!)
 
 All previous environment variables can be changed through command line invocation to docker-compose specifying explicitly **before** the `docker-compose up` command. For example, to change DB_NAME we'd run as follows:
 

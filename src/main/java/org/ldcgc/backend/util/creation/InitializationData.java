@@ -91,8 +91,8 @@ public class InitializationData {
 
     @Value("${LOAD_INITIAL_DATA:false}") private boolean loadData;
 
-    @Value("${TOOLS_REGISTRARION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
-    @Value("${CONSUMABLES_REGISTRARION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
+    @Value("${TOOLS_REGISTRATION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
+    @Value("${CONSUMABLES_REGISTRATION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
 
     @Value("classpath:chests.csv") Resource chestsCSV;
     @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;
