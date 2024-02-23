@@ -82,8 +82,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
 
             // skip eula if header or exempted endpoint (i.e.: get/accept eula)
-            if(notExemptedEndpoint(request.getMethod(), request.getRequestURI())
-                && FALSE.equals(Boolean.parseBoolean(request.getHeader("skip-eula")))) {
+            if(notExemptedEndpoint(request.getMethod(), request.getRequestURI())) {
 
                 // get eula details (standard user)
                 if (userDetails.getAcceptedEULA() == null)

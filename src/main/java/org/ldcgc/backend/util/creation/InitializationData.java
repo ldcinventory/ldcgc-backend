@@ -479,6 +479,19 @@ public class InitializationData {
                 .build());
 
             userRepository.save(User.builder()
+                .email("noeula@adminv")
+                .password(passwordEncoder.encode("admin"))
+                .group(_8g)
+                .role(ERole.ROLE_ADMIN)
+                .acceptedEULA(LocalDateTime.now())
+                .acceptedEULAManager(LocalDateTime.now())
+                .volunteer(volunteerRepository.getRandomvolunteer())
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Coordinador")).findFirst()
+                    .orElse(null))
+                .build());
+
+            userRepository.save(User.builder()
                 .email("manager@manager")
                 .password(passwordEncoder.encode("manager"))
                 .group(_8g)
@@ -495,6 +508,19 @@ public class InitializationData {
                 .role(ERole.ROLE_MANAGER)
                 .acceptedEULA(LocalDateTime.now())
                 .acceptedEULAManager(LocalDateTime.now())
+                .responsibility(responsibilitiesEntities.stream()
+                    .filter(r -> r.getName().equals("Coordinador")).findFirst()
+                    .orElse(null))
+                .build());
+
+            userRepository.save(User.builder()
+                .email("noeula@managerv")
+                .password(passwordEncoder.encode("manager"))
+                .group(_8g)
+                .role(ERole.ROLE_MANAGER)
+                .acceptedEULA(LocalDateTime.now())
+                .acceptedEULAManager(LocalDateTime.now())
+                .volunteer(volunteerRepository.getRandomvolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Coordinador")).findFirst()
                     .orElse(null))
@@ -522,19 +548,8 @@ public class InitializationData {
                 .build());
 
             userRepository.save(User.builder()
-                .email("volunteer@volunteer")
-                .password(passwordEncoder.encode("volunteer"))
-                .group(_8g)
-                .role(ERole.ROLE_USER)
-                .volunteer(volunteerRepository.getRandomvolunteer())
-                .responsibility(responsibilitiesEntities.stream()
-                    .filter(r -> r.getName().equals("Voluntario")).findFirst()
-                    .orElse(null))
-                .build());
-
-            userRepository.save(User.builder()
-                .email("noeula@volunteer")
-                .password(passwordEncoder.encode("volunteer"))
+                .email("noeula@userv")
+                .password(passwordEncoder.encode("user"))
                 .group(_8g)
                 .role(ERole.ROLE_USER)
                 .acceptedEULA(LocalDateTime.now())

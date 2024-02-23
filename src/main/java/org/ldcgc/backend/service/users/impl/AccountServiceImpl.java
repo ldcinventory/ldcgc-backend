@@ -82,19 +82,16 @@ public class AccountServiceImpl implements AccountService {
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
 
-        HttpServletRequest actualRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        // skip eula
-        if(FALSE.equals(Boolean.parseBoolean(actualRequest.getHeader("skip-eula")))) {
+        // HttpServletRequest actualRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 
-            // get eula details (standard user)
-            if (userEntity.getAcceptedEULA() == null)
-                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
+        // get eula details (standard user)
+        if (userEntity.getAcceptedEULA() == null)
+            return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
-            // get eula details (manager)
-            if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
-                && userEntity.getAcceptedEULAManager() == null)
-                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
-        }
+        // get eula details (manager)
+        if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
+            && userEntity.getAcceptedEULAManager() == null)
+            return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
         UserDto userDto = UserMapper.MAPPER.toDTO(userEntity).toBuilder()
             .tokenExpires(convertDateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))

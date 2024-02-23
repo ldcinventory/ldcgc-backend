@@ -137,7 +137,19 @@ The end user license agreement is the contract between the user and the applicat
 
 A standard user may accept a standard EULA, a manager or admin may accept a standard and a manager EULA.
 
-**Temp**: to skip eula while frontend is aligning this functionality, a special header is provided skip it. The header is `skip-eula` and must be set as `true`.
+**Temp**: to skip eula while frontend is aligning this functionality, some users are provided with EULA accepted:
+
+> **ADMIN USER**  email: `noeula@admin`, pass: `admin `
+> 
+> **MANAGER USER**. email: `noeula@manager`, pass: `manager`
+> 
+> **STANDARD USER**. email: `noeula@user`, pass: `user`
+> 
+> **ADMIN USER+VOLUNTEER**. email: `noeula@adminv`, pass: `admin`
+>
+> **MANAGER USER+VOLUNTEER**. email: `noeula@managerv`, pass: `manager`
+>
+> **STANDARD USER+VOLUNTEER**. email: `noeula@userv`, pass: `user`
 
 ---
 
