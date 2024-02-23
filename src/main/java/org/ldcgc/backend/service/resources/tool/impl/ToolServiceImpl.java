@@ -97,6 +97,13 @@ public class ToolServiceImpl implements ToolService {
             toolsToSave);
     }
 
+    public Tool updateToolStatus(Tool tool, EStatus status){
+        tool.setStatus(status);
+
+        return toolRepository.save(tool);
+    }
+
+
     private Tool findToolOrElseThrow(Integer toolId) {
         return toolRepository.findById(toolId).orElseThrow(() ->
                 new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_NOT_FOUND, toolId)));

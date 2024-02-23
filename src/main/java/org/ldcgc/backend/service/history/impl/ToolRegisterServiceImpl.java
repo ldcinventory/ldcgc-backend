@@ -36,6 +36,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     private final ToolRegisterRepository repository;
     private final VolunteerRepository volunteerRepository;
     private final ToolRepository toolRepository;
+    private final ToolService toolService;
 
     public ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto) {
         String builderAssistantId = toolRegisterDto.getVolunteer().getBuilderAssistantId();
@@ -54,6 +55,8 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
         ToolRegister register = repository.save(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
+        toolService.updateToolStatus(register.getTool(), EStatus.NOT_AVAILABLE);
+
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
     }
 
@@ -77,7 +80,10 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
 
-        repository.save(register);
+        if(Objects.nonNull(register.getInRegistration()))
+            toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
+
+
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
                 Messages.Info.TOOL_REGISTER_UPDATED,
@@ -101,6 +107,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
 
         repository.delete(register);
+        toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
 
         return Constructor.buildResponseMessage(
                 HttpStatus.OK,
