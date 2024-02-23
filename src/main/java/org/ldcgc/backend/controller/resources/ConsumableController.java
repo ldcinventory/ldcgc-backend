@@ -25,13 +25,15 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables")
 public interface ConsumableController {
 
-    @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -47,12 +49,12 @@ public interface ConsumableController {
             })
     )
     @GetMapping("/{consumableId}")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getConsumable(
         @Parameter(description = "Consumable Id to get an existing consumable entity", required = true)
             @PathVariable Integer consumableId);
 
-    @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -76,7 +78,7 @@ public interface ConsumableController {
             })
     )
     @PostMapping
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> createConsumable(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Consumable object to create", required = true)
             @RequestBody ConsumableDto consumableDto);
@@ -96,27 +98,30 @@ public interface ConsumableController {
         - En desuso -> ```DEPRECATED```
                 
         """
-        + SWAGGER_ROLE_OPERATION_ADMIN)
+        + SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)),
+            examples = {
+                @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+            }
         )
     )
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumables(
         @Parameter(description = "Page index (default = 0)")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Filter to search (see description)")
-            @RequestParam(required = false, defaultValue = "") String filter,
+            @RequestParam(required = false) String filter,
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
             @RequestParam(required = false, defaultValue = "id") String sortField);
 
-    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -148,7 +153,7 @@ public interface ConsumableController {
             })
     )
     @PutMapping("/{consumableId}")
-    @PreAuthorize(ADMIN_LEVEL)
+    @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> updateConsumable(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Consumable object to create", required = true)
             @RequestBody ConsumableDto consumableDto,

@@ -11,14 +11,14 @@ public interface AbsenceService {
 
     // my
     ResponseEntity<?> getMyAbsence(String token, Integer absenceId);
-    ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo);
+    ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo, String sortField);
     ResponseEntity<?> createMyAbsence(String token, AbsenceDto absenceDto);
     ResponseEntity<?> updateMyAbsence(String token, Integer absenceId, AbsenceDto absenceDto);
     ResponseEntity<?> deleteMyAbsence(String token, Integer absenceId);
 
     // managed
     ResponseEntity<?> getAbsence(Integer absenceId);
-    ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds);
+    ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds, String sortField);
     ResponseEntity<?> createAbsence(AbsenceDto absenceDto);
     ResponseEntity<?> updateAbsence(Integer absenceId, AbsenceDto absenceDto);
     ResponseEntity<?> deleteAbsence(Integer absenceId);

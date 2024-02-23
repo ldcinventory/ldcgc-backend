@@ -5,8 +5,10 @@ import org.ldcgc.backend.db.model.resources.Consumable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ConsumableRepository extends JpaRepository<Consumable, Integer> {
 
@@ -18,9 +20,13 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
 
     void deleteById(@NotNull Integer consumableId);
 
-    List<Consumable> findByBarcodeIn(List<String> barcodes);
-
     boolean existsByBarcode(String barcode);
 
     List<Consumable> findAllByBarcode(String barcode);
+
+    Optional<Consumable> findByBarcode(String barcode);
+
+    @Query("SELECT c FROM Consumable c ORDER BY random() LIMIT 1")
+    Consumable getRandomConsumable();
+
 }

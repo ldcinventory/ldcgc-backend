@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,18 +31,24 @@ public class ConsumableRegister {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    private LocalDateTime inRegistration;
+    @Column(nullable = false)
+    private LocalDateTime registerFrom;
 
-    private LocalDateTime outRegistration;
+    private LocalDateTime registerTo;
 
-    private Integer stockLeft;
+    @Column(nullable = false)
+    private Float stockAmountRequest;
 
-    @OneToOne
+    private Float stockAmountReturn;
+
+    @ManyToOne
     @JoinColumn(name = "consumable_id", referencedColumnName = "id")
     private Consumable consumable;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
+
+    private Boolean closedRegister;
 
 }

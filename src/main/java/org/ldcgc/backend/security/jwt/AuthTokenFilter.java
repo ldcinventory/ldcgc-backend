@@ -29,7 +29,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.validator.Endpoint.isNotReplaceTokenEndpoint;
@@ -82,8 +81,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
 
             // skip eula if header or exempted endpoint (i.e.: get/accept eula)
-            if(notExemptedEndpoint(request.getMethod(), request.getRequestURI())
-                && FALSE.equals(Boolean.parseBoolean(request.getHeader("skip-eula")))) {
+            if(notExemptedEndpoint(request.getMethod(), request.getRequestURI())) {
 
                 // get eula details (standard user)
                 if (userDetails.getAcceptedEULA() == null)

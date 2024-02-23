@@ -19,8 +19,8 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.getMyAbsence(token, absenceId);
     }
 
-    public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo) {
-        return absenceService.listMyAbsences(token, dateFrom, dateTo);
+    public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo, String sortField) {
+        return absenceService.listMyAbsences(token, dateFrom, dateTo, sortField);
     }
 
     public ResponseEntity<?> createMyAbsence(String token, AbsenceDto absenceDto) {
@@ -39,8 +39,8 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.getAbsence(absenceId);
     }
 
-    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds) {
-        return absenceService.listAbsences(dateFrom, dateTo, builderAssistantIds);
+    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds, String sortField) {
+        return absenceService.listAbsences(dateFrom, dateTo, builderAssistantIds, sortField);
     }
 
     public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {

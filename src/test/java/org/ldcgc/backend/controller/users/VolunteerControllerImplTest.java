@@ -178,7 +178,7 @@ public class VolunteerControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(volunteers).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(volunteerService.listVolunteers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull()))
+        given(volunteerService.listVolunteers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull(), Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
         mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER)

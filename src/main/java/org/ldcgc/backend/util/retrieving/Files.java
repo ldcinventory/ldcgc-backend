@@ -36,12 +36,11 @@ public class Files {
                 csvArrayList.add(values);
             }
 
-            return csvArrayList;
         } catch (IOException e) {
             log.warn("File %s not found".formatted(file.getFilename()));
         }
 
-        return null;
+        return csvArrayList;
 
     }
 

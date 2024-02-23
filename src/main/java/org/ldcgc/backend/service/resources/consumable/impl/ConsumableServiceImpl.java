@@ -108,7 +108,7 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            String.format(Messages.Info.TOOL_UPLOADED, consumablesToSave.size()),
+            String.format(Messages.Info.CONSUMABLES_UPLOADED, consumablesToSave.size()),
             consumablesToSave.stream().map(ConsumableMapper.MAPPER::toDto).toList());
     }
 

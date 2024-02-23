@@ -4,11 +4,19 @@ import net.datafaker.Faker;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
+import org.ldcgc.backend.util.common.ETimeUnit;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -24,18 +32,64 @@ public class MockedResources {
             .id(getRandomId())
             .barcode(getRandomBarcode())
             .group(getRandomGroup())
-            .model(getRandomAlphaNumeric(getRandomFromRange(3, 10)))
+            .model(getRandomAlphaNumeric(getRandomIntegerFromRange(3, 10)))
             .brand(getRandomBrand())
             .description(new Faker().text().text())
             .price(new Faker().random().nextFloat())
-            .name(getRandomString(getRandomFromRange(5, 15)))
-            .stock(getRandomFromRange(1,100))
-            .stockType(getRandomStockType())
-            .minStock(getRandomFromRange(0,100))
-            .purchaseDate(getRandomLocalDate())
+            .name(getRandomString(getRandomIntegerFromRange(5, 15)))
+            .stock(getRandomFloatFromRange(1,100))
+            .stockType(getRandomEnum(EStockType.class))
+            .minStock(getRandomFloatFromRange(0,100))
+            .purchaseDate(getRandomLocalDateUntilNow())
             .urlImages(getRandomURLs())
             .category(getRandomCategory())
             .location(getRandomLocation())
+            .build();
+    }
+
+    public static ConsumableRegisterDto getRandomConsumableRegisterDto() {
+        ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
+        long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+        long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
+
+        LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+        LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+
+        float amountRequest = getRandomFloatFromRange(0.01f, 20.00f);
+        float amountReturn = getRandomFloatFromRange(0.00f, amountRequest);
+
+        return ConsumableRegisterDto.builder()
+            .id(getRandomId())
+            .consumableBardcode(getRandomAlphaNumeric(8))
+            .volunteerBAId(getRandomAlphaNumeric(8))
+            .registerFrom(timeIn)
+            .registerTo(timeOut)
+            .stockAmountRequest(amountRequest)
+            .stockAmountReturn(amountReturn)
+            .build();
+    }
+
+    public static ToolDto getRandomToolDto() {
+        return ToolDto.builder()
+            .id(getRandomId())
+            .barcode(getRandomBarcode())
+            .category(getRandomCategory())
+            .brand(getRandomBrand())
+            .name(getRandomString(getRandomIntegerFromRange(5, 15)))
+            .model(getRandomAlphaNumeric(getRandomIntegerFromRange(3, 10)))
+            .description(new Faker().text().text())
+            .weight(getRandomFloatFromRange(1,100))
+            .stockWeightType(getRandomEnum(EStockType.class))
+            .price(new Faker().random().nextFloat())
+            .purchaseDate(getRandomLocalDateUntilNow())
+            .urlImages(getRandomURLs())
+            .maintenancePeriod(getRandomIntegerFromRange(0,10))
+            .maintenanceTime(getRandomEnum(ETimeUnit.class))
+            .lastMaintenance(null)
+            .nextMaintenance(getRandomLocalDateFromNow())
+            .status(getRandomEnum(EStatus.class))
+            .location(getRandomLocation())
+            .group(getRandomGroup())
             .build();
     }
 
@@ -49,7 +103,12 @@ public class MockedResources {
     }
 
     private static GroupDto getRandomGroup() {
-        return null;
+        return GroupDto.builder()
+            .id(getRandomId())
+            .name(new Faker().cat().name())
+            .description(new Faker().cat().breed())
+            .urlImage(new Faker().internet().url())
+            .build();
     }
 
     private static CategoryDto getRandomCategory() {
@@ -60,20 +119,30 @@ public class MockedResources {
     }
 
     private static String[] getRandomURLs() {
-        return IntStream.rangeClosed(1, getRandomFromRange(2, 4))
+        return IntStream.rangeClosed(1, getRandomIntegerFromRange(2, 4))
             .mapToObj(x -> new Faker().internet().url())
             .toArray(String[]::new);
     }
 
-    private static LocalDate getRandomLocalDate() {
+    private static LocalDate getRandomLocalDateUntilNow() {
         long minDay = LocalDate.of(1970, 1, 1).toEpochDay();
         long maxDay = LocalDate.now().toEpochDay();
+        return getRandomLocalDate(minDay, maxDay);
+    }
+
+    private static LocalDate getRandomLocalDateFromNow() {
+        long minDay = LocalDate.now().toEpochDay();
+        long maxDay = LocalDate.of(2050, 12, 31).toEpochDay();
+        return getRandomLocalDate(minDay, maxDay);
+    }
+
+    private static LocalDate getRandomLocalDate(long minDay, long maxDay) {
         long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
         return LocalDate.ofEpochDay(randomDay);
     }
 
-    private static EStockType getRandomStockType() {
-        return EStockType.values()[getRandomFromRange(0, EStockType.values().length - 1)];
+    private static <E extends Enum<E>> E getRandomEnum(Class<E> enumType) {
+        return enumType.getEnumConstants()[getRandomIntegerFromRange(0, enumType.getEnumConstants().length)];
     }
 
     private static String getRandomAlphaNumeric(int size) {
@@ -96,14 +165,18 @@ public class MockedResources {
         return RandomStringUtils.randomNumeric(size);
     }
 
-    private static Integer getRandomFromRange(int min, int max) {
+    private static Integer getRandomIntegerFromRange(int min, int max) {
         return new Random().ints(1, min, max).iterator().nextInt();
+    }
+
+    private static Float getRandomFloatFromRange(float min, float max) {
+        return min + new Random().nextFloat() * (max - min);
     }
 
     private static CategoryDto getRandomBrand() {
         return CategoryDto.builder()
             .id(getRandomId())
-            .name(brandNames.get(getRandomFromRange(1, brandNames.size()) - 1))
+            .name(brandNames.get(getRandomIntegerFromRange(1, brandNames.size()) - 1))
             .parent(CategoryDto.builder()
                 .id(0)
                 .name("Marcas")

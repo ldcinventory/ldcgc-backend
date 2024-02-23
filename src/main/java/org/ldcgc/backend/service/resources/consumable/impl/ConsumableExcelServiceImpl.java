@@ -81,32 +81,32 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
 
     private Consumable parseRowToTool(Row row, ConsumableExcelMasterDto master) {
         String barcode = getStringCellValue(row, EExcelConsumablesPositions.BARCODE.getColumnNumber());
-        Integer id = Optional.ofNullable(master.consumables.get(barcode)).map(Consumable::getId).orElse(null);
+        Integer id = Optional.ofNullable(master.getConsumables().get(barcode)).map(Consumable::getId).orElse(null);
 
         String brandName = getStringCellValue(row, EExcelConsumablesPositions.BRAND.getColumnNumber());
-        Category brand = Optional.ofNullable(master.brands.get(brandName))
+        Category brand = Optional.ofNullable(master.getBrands().get(brandName))
             .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 generateExcelErrorMessage(brandName, row.getRowNum(), EExcelConsumablesPositions.BRAND.getColumnNumber(), Messages.Error.CATEGORY_SON_NOT_FOUND
-                    .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.brands.values().stream().map(Category::getName).toList().toString()))));
+                    .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.getBrands().values().stream().map(Category::getName).toList().toString()))));
 
         String categoryName = getStringCellValue(row, EExcelConsumablesPositions.CATEGORY.getColumnNumber());
-        Category category = Optional.ofNullable(master.resources.get(categoryName))
+        Category category = Optional.ofNullable(master.getResources().get(categoryName))
             .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 generateExcelErrorMessage(categoryName, row.getRowNum(), EExcelConsumablesPositions.CATEGORY.getColumnNumber(),
                     Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.resources.values().stream().map(Category::getName).toList().toString()))));
+                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.getResources().values().stream().map(Category::getName).toList().toString()))));
 
         String locationName = row.getCell(EExcelConsumablesPositions.LOCATION.getColumnNumber()).getStringCellValue();
-        Location location = Optional.ofNullable(master.locations.get(locationName))
+        Location location = Optional.ofNullable(master.getLocations().get(locationName))
             .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 generateExcelErrorMessage(locationName, row.getRowNum(), EExcelConsumablesPositions.LOCATION.getColumnNumber(),
-                    Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.locations.values().stream().map(Location::getName).toList()))));
+                    Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(Location::getName).toList()))));
 
         String groupName = getStringCellValue(row, EExcelConsumablesPositions.GROUP.getColumnNumber());
-        Group group = Optional.ofNullable(master.groups.get(groupName))
+        Group group = Optional.ofNullable(master.getGroups().get(groupName))
             .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 generateExcelErrorMessage(groupName, row.getRowNum(), EExcelConsumablesPositions.GROUP.getColumnNumber(),
-                    Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.groups.values().stream().map(Group::getName).toList()))));
+                    Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(Group::getName).toList()))));
 
         return Consumable.builder()
             .id(id)
@@ -119,8 +119,8 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
             .price(getFloatCellValue(row, EExcelConsumablesPositions.PRICE.getColumnNumber()))
             .purchaseDate(getDateCellValue(row, EExcelConsumablesPositions.PURCHASE_DATE.getColumnNumber()))
             .urlImages(getStringArrayCellValue(row, EExcelConsumablesPositions.URL_IMAGES.getColumnNumber()))
-            .stock(getIntegerCellValue(row, EExcelConsumablesPositions.STOCK.getColumnNumber()))
-            .minStock(getIntegerCellValue(row, EExcelConsumablesPositions.MIN_STOCK.getColumnNumber()))
+            .stock(getFloatCellValue(row, EExcelConsumablesPositions.STOCK.getColumnNumber()))
+            .minStock(getFloatCellValue(row, EExcelConsumablesPositions.MIN_STOCK.getColumnNumber()))
             .stockType(EStockType.getStockTypeByName(getStringCellValue(row, EExcelConsumablesPositions.STOCK_TYPE.getColumnNumber())))
             .location(location)
             .group(group)

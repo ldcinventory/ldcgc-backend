@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller.resources.consumable;
+package org.ldcgc.backend.controller.resources.history;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -7,18 +7,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
 import org.ldcgc.backend.configuration.ContextConstants;
-import org.ldcgc.backend.controller.resources.ConsumableController;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
-import org.ldcgc.backend.db.repository.group.GroupRepository;
-import org.ldcgc.backend.db.repository.location.LocationRepository;
+import org.ldcgc.backend.controller.history.ConsumableRegisterController;
+import org.ldcgc.backend.db.repository.history.ConsumableRegisterRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
-import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
-import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
-import org.ldcgc.backend.service.resources.consumable.ConsumableService;
+import org.ldcgc.backend.service.history.ConsumableRegisterService;
 import org.ldcgc.backend.validator.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -37,29 +34,26 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
-import static org.ldcgc.backend.base.mock.MockedResources.getRandomConsumableDto;
+import static org.ldcgc.backend.base.mock.MockedResources.getRandomConsumableRegisterDto;
 
 @Slf4j
-@WebMvcTest(controllers = ConsumableController.class)
+@WebMvcTest(controllers = ConsumableRegisterController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ConsumableControllerImplTest {
+public class ConsumableRegisterControllerImplTest {
 
     // controller
-    @Autowired private ConsumableController consumableController;
+    @Autowired private ConsumableRegisterController consumableRegisterController;
 
     // services
-    @MockBean private ConsumableService consumableService;
+    @MockBean private ConsumableRegisterService consumableRegisterService;
     @MockBean private UserDetailsServiceImpl userDetailsService;
     @MockBean private JwtUtils jwtUtils;
-    @MockBean private ConsumableExcelService consumableExcelService;
 
     // repositories
     @MockBean private TokenRepository tokenRepository;
     @MockBean private UserRepository userRepository;
     @MockBean private ConsumableRepository consumableRepository;
-    @MockBean private CategoryRepository categoryRepository;
-    @MockBean private LocationRepository locationRepository;
-    @MockBean private GroupRepository groupRepository;
+    @MockBean private ConsumableRegisterRepository consumableRegisterRepository;
 
     // other
     @MockBean private UserValidation userValidation;
@@ -71,10 +65,10 @@ public class ConsumableControllerImplTest {
     // mapper
     @Autowired private ObjectMapper mapper;
 
-    private final String requestRoot = "/resources/consumables";
+    private final String requestRoot = "/resources/consumables/register";
 
     private MockMvc mockMvc;
-    private ConsumableDto consumableDto;
+    private ConsumableRegisterDto consumableRegisterDto;
 
     @BeforeEach
     public void init() throws ParseException {
@@ -92,46 +86,40 @@ public class ConsumableControllerImplTest {
         validatorFactoryBean.afterPropertiesSet();
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(consumableController)
+            .standaloneSetup(consumableRegisterController)
             .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
             .setValidator(validatorFactoryBean)
             .setHandlerExceptionResolvers()
             .build();
 
-        consumableDto = getRandomConsumableDto();
+        consumableRegisterDto = getRandomConsumableRegisterDto();
 
         setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 
     }
 
-    //TODO: HACER LOS TESTS DEL CONTROLLER CON COBERTURA DE 75% O MÁS
     @Test
     void getConsumable() {
 
     }
 
     @Test
-    void createConsumable() {
+    void listConsumableRegister() {
 
     }
 
     @Test
-    void updateConsumable() {
+    void createConsumableRegister() {
 
     }
 
     @Test
-    void listConsumables() {
+    void updateConsumableRegister() {
 
     }
 
     @Test
-    void deleteConsumable() {
-
-    }
-
-    @Test
-    void loadExcel() {
+    void deleteConsumableRegister() {
 
     }
 

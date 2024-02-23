@@ -30,16 +30,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
-import static java.lang.Boolean.FALSE;
 import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
@@ -82,19 +78,16 @@ public class AccountServiceImpl implements AccountService {
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
 
-        HttpServletRequest actualRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        // skip eula
-        if(FALSE.equals(Boolean.parseBoolean(actualRequest.getHeader("skip-eula")))) {
+        // HttpServletRequest actualRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 
-            // get eula details (standard user)
-            if (userEntity.getAcceptedEULA() == null)
-                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
+        // get eula details (standard user)
+        if (userEntity.getAcceptedEULA() == null)
+            return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
-            // get eula details (manager)
-            if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
-                && userEntity.getAcceptedEULAManager() == null)
-                return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
-        }
+        // get eula details (manager)
+        if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
+            && userEntity.getAcceptedEULAManager() == null)
+            return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
         UserDto userDto = UserMapper.MAPPER.toDTO(userEntity).toBuilder()
             .tokenExpires(convertDateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))

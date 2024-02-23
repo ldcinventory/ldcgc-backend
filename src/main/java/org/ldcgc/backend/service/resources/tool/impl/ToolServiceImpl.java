@@ -1,7 +1,13 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Tool;
+import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
@@ -29,6 +35,9 @@ import java.util.Optional;
 public class ToolServiceImpl implements ToolService {
 
     private final ToolRepository toolRepository;
+    private final CategoryRepository categoryRepository;
+    private final LocationRepository locationRepository;
+    private final GroupRepository groupRepository;
     private final ToolExcelService toolExcelService;
 
     public ResponseEntity<?> getTool(Integer toolId) {
@@ -36,15 +45,17 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseObject(HttpStatus.OK, ToolMapper.MAPPER.toDto(tool));
     }
 
-    public ResponseEntity<?> createTool(ToolDto tool) {
-        if(Objects.nonNull(tool.getId()))
+    public ResponseEntity<?> createTool(ToolDto toolDto) {
+        if(Objects.nonNull(toolDto.getId()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_ID_SHOULDNT_BE_PRESENT);
 
-        Optional<Tool> repeatedTool = toolRepository.findFirstByBarcode(tool.getBarcode());
+        Optional<Tool> repeatedTool = toolRepository.findFirstByBarcode(toolDto.getBarcode());
         if(repeatedTool.isPresent())
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, tool.getBarcode()));
+            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, toolDto.getBarcode()));
 
-        Tool entityTool = toolRepository.save(ToolMapper.MAPPER.toMo(tool));
+        Tool entityTool = ToolMapper.MAPPER.toMo(toolDto);
+        setLinkedEntitiesForConsumable(entityTool, toolDto);
+        entityTool = toolRepository.saveAndFlush(entityTool);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_CREATED, ToolMapper.MAPPER.toDto(entityTool));
     }
@@ -58,9 +69,10 @@ public class ToolServiceImpl implements ToolService {
             throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, toolDto.getBarcode()));
 
         ToolMapper.MAPPER.update(toolDto, toolToUpdate);
+        setLinkedEntitiesForConsumable(toolToUpdate, toolDto);
+        toolToUpdate = toolRepository.saveAndFlush(toolToUpdate);
 
-        toolRepository.save(toolToUpdate);
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_UPDATED, toolDto);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_UPDATED, ToolMapper.MAPPER.toDto(toolToUpdate));
     }
 
     @Override
@@ -104,5 +116,25 @@ public class ToolServiceImpl implements ToolService {
     private Tool findToolOrElseThrow(Integer toolId) {
         return toolRepository.findById(toolId).orElseThrow(() ->
                 new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_NOT_FOUND, toolId)));
+    }
+
+    private void setLinkedEntitiesForConsumable(Tool toolEntity, ToolDto toolDto) {
+        Category brand = categoryRepository.findById(toolDto.getBrand().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.BRAND_NOT_FOUND, toolDto.getBrand())));
+
+        Category consumableCategory = categoryRepository.findById(toolDto.getCategory().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, toolDto.getCategory().getId())));
+
+        Location location = locationRepository.findById(toolDto.getLocation().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.LOCATION_NOT_FOUND, toolDto.getLocation().getId())));
+
+        Group group = groupRepository.findById(toolDto.getGroup().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.GROUP_NOT_FOUND, toolDto.getGroup().getId())));
+
+        toolEntity.setBrand(brand);
+        toolEntity.setCategory(consumableCategory);
+        toolEntity.setLocation(location);
+        toolEntity.setGroup(group);
+
     }
 }

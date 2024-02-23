@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.resources.consumable.impl;
+package org.ldcgc.backend.service.resources.consumable;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,8 +6,8 @@ import org.ldcgc.backend.db.repository.category.CategoryRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
-import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
-import org.ldcgc.backend.service.resources.consumable.ConsumableService;
+import org.ldcgc.backend.service.resources.consumable.impl.ConsumableExcelServiceImpl;
+import org.ldcgc.backend.service.resources.consumable.impl.ConsumableServiceImpl;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
