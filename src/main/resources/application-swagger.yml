@@ -38,9 +38,9 @@ springdoc:
         - /resources/consumables/registers/**
         - /resources/import/**
       display-name: Consumables
-    - group: import
-      paths-to-match: /resources/import/**
-      display-name: Import
+    - group: upload
+      paths-to-match: /resources/upload/**
+      display-name: Upload
     - group: tools
       paths-to-match: /resources/tools/**
       paths-to-exclude:

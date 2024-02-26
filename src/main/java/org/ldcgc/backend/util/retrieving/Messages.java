@@ -38,6 +38,8 @@ public class Messages {
             TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
             TOOL_DELETED = "Tool deleted",
 
+            CONSUMABLE_CREATED = "Consumable created successfully!",
+            CONSUMABLE_UPDATED = "Consumable details updated",
             CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
             CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables",
@@ -137,6 +139,10 @@ public class Messages {
             CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date and time",
             CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
             CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE = "The data for closing the consumible lacks any of the required fields: registrationOut, stockAmountOut",
+
+            UPLOAD_IMAGES_TOO_FEW_ARGUMENTS = "There are few arguments defined for this operation. Inform a tool or a consumable at least",
+
+            UPLOAD_IMAGES_TOO_MANY_ARGUMENTS = "There are many arguments defined for this operation. Inform a tool or a consumable only",
 
             STATUS_NOT_FOUND = "Status '%s' not found",
 
