@@ -24,3 +24,5 @@ data/
 /.apt_generated_tests/
 .DS_Store
 *.zip
+
+gdrive_secret.json
