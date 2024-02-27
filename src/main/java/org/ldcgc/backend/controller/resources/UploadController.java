@@ -34,11 +34,10 @@ public interface UploadController {
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
-            //oneOf = {@Schema(implementation = ToolDto.class), @Schema(implementation = ConsumableDto.class)},
             schema = @Schema(oneOf = { ToolDto.class, ConsumableDto.class }),
             examples = {
-                @ExampleObject(name = "ToolDto", value = "test tool"),
-                @ExampleObject(name = "ConsumableDto", value = "test consumable")
+                @ExampleObject(name = "Tool updated", value = Messages.Info.TOOL_IMAGES_UPDATED),
+                @ExampleObject(name = "Consumable updated", value = Messages.Info.CONSUMABLE_IMAGES_UPDATED)
             }
         )
     )
@@ -56,6 +55,7 @@ public interface UploadController {
         description = SwaggerConfig.HTTP_422,
         content = @Content(mediaType = "application/json",
             examples = {
+                @ExampleObject(name = "Few arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_FEW_ARGUMENTS),
                 @ExampleObject(name = "Many arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS)
             })
     )
@@ -77,11 +77,12 @@ public interface UploadController {
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
-            //oneOf = {@Schema(implementation = ToolDto.class), @Schema(implementation = ConsumableDto.class)},
             schema = @Schema(oneOf = { ToolDto.class, ConsumableDto.class }),
             examples = {
-                @ExampleObject(name = "ToolDto", value = "test tool"),
-                @ExampleObject(name = "ConsumableDto", value = "test consumable")
+                @ExampleObject(name = "Tool untouched", value = Messages.Info.TOOL_UNTOUCHED),
+                @ExampleObject(name = "Tool updated", value = Messages.Info.TOOL_IMAGES_UPDATED),
+                @ExampleObject(name = "Consumable untouched", value = Messages.Info.CONSUMABLE_UNTOUCHED),
+                @ExampleObject(name = "Consumable updated", value = Messages.Info.CONSUMABLE_IMAGES_UPDATED)
             }
         )
     )
@@ -91,7 +92,9 @@ public interface UploadController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Tool image not found", value = Messages.Error.TOOL_IMAGE_INFORMED_NOT_FOUND),
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND),
+                @ExampleObject(name = "Consumable image not found", value = Messages.Error.CONSUMABLE_IMAGE_INFORMED_NOT_FOUND)
             })
     )
     @ApiResponse(
@@ -99,6 +102,7 @@ public interface UploadController {
         description = SwaggerConfig.HTTP_422,
         content = @Content(mediaType = "application/json",
             examples = {
+                @ExampleObject(name = "Few arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_FEW_ARGUMENTS),
                 @ExampleObject(name = "Many arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS)
             })
     )

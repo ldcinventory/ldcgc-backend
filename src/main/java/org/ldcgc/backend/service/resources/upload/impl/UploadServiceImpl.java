@@ -249,8 +249,6 @@ public class UploadServiceImpl implements UploadService {
         // Cleanup resources
         writer.dispose();
 
-        //ImageIO.write(resizedImage, Objects.requireNonNull(mpImage.getContentType()), outputStream);
-
         return CompressedMultipartFile.builder()
             .name(mpImage.getName())
             .originalFilename(mpImage.getOriginalFilename())
