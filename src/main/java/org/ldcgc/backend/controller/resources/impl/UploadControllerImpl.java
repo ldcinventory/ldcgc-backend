@@ -31,4 +31,16 @@ public class UploadControllerImpl implements UploadController {
 
         throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_FEW_ARGUMENTS);
     }
+
+    public ResponseEntity<?> detachImages(String toolBarcode, String consumableBarcode, String[] imageIds) throws GeneralSecurityException {
+        if(ObjectUtils.allNotNull(toolBarcode, consumableBarcode))
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS);
+
+        if(toolBarcode != null)
+            return uploadService.cleanToolImages(toolBarcode, imageIds);
+        if(consumableBarcode != null)
+            return uploadService.cleanConsumableImages(consumableBarcode, imageIds);
+
+        throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_FEW_ARGUMENTS);
+    }
 }

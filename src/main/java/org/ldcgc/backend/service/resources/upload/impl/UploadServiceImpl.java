@@ -13,7 +13,7 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.Arrays;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -60,7 +61,6 @@ public class UploadServiceImpl implements UploadService {
 
     @Value("classpath:gdrive_secret.json") Resource CREDENTIALS_FILE;
     private final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-
 
     public ResponseEntity<?> uploadToolImages(String toolBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException {
         Tool tool = toolRepository.findFirstByBarcode(toolBarcode).orElseThrow(() ->
@@ -93,20 +93,86 @@ public class UploadServiceImpl implements UploadService {
         String[] urlImages = uploadToGDrive(images, consumablesFolderId);
         consumable.setUrlImages(cleanExisting
             ? urlImages
-            : Stream.concat(Stream.of(consumable.getUrlImages()), Stream.of(urlImages)).toArray(String[]::new));
+            : Stream.concat(Stream.of(ObjectUtils.defaultIfNull(consumable.getUrlImages(), new String[0])), Stream.of(urlImages)).toArray(String[]::new));
 
         consumable = consumableRepository.saveAndFlush(consumable);
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.CONSUMABLE_UPDATED, ConsumableMapper.MAPPER.toDto(consumable));
     }
 
-    private void cleanFromGDrive(String[] urlImages) throws GeneralSecurityException {
+    public ResponseEntity<?> cleanToolImages(String toolBarcode, String[] imageIds) throws GeneralSecurityException {
+        Tool tool = toolRepository.findFirstByBarcode(toolBarcode).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_NOT_FOUND));
+
+        if (tool.getUrlImages() == null)
+            return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.TOOL_UNTOUCHED, ToolMapper.MAPPER.toDto(tool));
+
+        if (imageIds == null) { // clean all images
+            cleanFromGDrive(tool.getUrlImages());
+            tool.setUrlImages(null);
+        } else { // clean images from array
+            List<String> imageList = new ArrayList<>(Arrays.stream(tool.getUrlImages()).toList());
+            for (String image : imageIds)
+                if (imageList.contains(image)) {
+                    cleanFromGDrive(image);
+                    imageList.remove(image);
+                } else
+                    throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_IMAGE_INFORMED_NOT_FOUND, image));
+            tool.setUrlImages(imageList.toArray(new String[0]));
+        }
+
+        tool = toolRepository.saveAndFlush(tool);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.TOOL_IMAGES_UPDATED, ToolMapper.MAPPER.toDto(tool));
+    }
+
+    public ResponseEntity<?> cleanConsumableImages(String consumableBarcode, String[] imageIds) throws GeneralSecurityException {
+        Consumable consumable = consumableRepository.findByBarcode(consumableBarcode).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CONSUMABLE_NOT_FOUND));
+
+        if (consumable.getUrlImages() == null)
+            return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.CONSUMABLE_UNTOUCHED, ConsumableMapper.MAPPER.toDto(consumable));
+
+        if (imageIds == null) { // clean all images
+            cleanFromGDrive(consumable.getUrlImages());
+            consumable.setUrlImages(null);
+        } else { // clean images from array
+            List<String> imageList = new ArrayList<>(Arrays.stream(consumable.getUrlImages()).toList());
+            for (String image : imageIds)
+                if(imageList.contains(image)) {
+                    cleanFromGDrive(image);
+                    imageList.remove(image);
+                } else
+                    throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_IMAGE_INFORMED_NOT_FOUND, image));
+            consumable.setUrlImages(imageList.toArray(new String[0]));
+        }
+
+        consumable = consumableRepository.saveAndFlush(consumable);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.CONSUMABLE_IMAGES_UPDATED, ConsumableMapper.MAPPER.toDto(consumable));
+    }
+
+    private Drive getGDriveInstance() throws GeneralSecurityException, IOException {
+        // Load client secrets
+        InputStream in = CREDENTIALS_FILE.getInputStream();
+
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        final List<String> SCOPE = Collections.singletonList(DriveScopes.DRIVE_FILE);
+        GoogleCredentials credentials = GoogleCredentials.fromStream(in).createScoped(SCOPE);
+        HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+
+        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, requestInitializer)
+            .setApplicationName("ldcgc-backend")
+            .build();
+
+    }
+
+    private void cleanFromGDrive(String ...urlImages) throws GeneralSecurityException {
         if(urlImages == null) return;
 
         for(String urlImage : urlImages) {
-            String imageId = urlImage.split("id=")[1];
             try {
-                getInstance().files().delete(imageId).execute();
+                getGDriveInstance().files().delete(urlImage).execute();
             } catch (IOException e) {
                 log.warn(e.getMessage());
             }
@@ -118,26 +184,25 @@ public class UploadServiceImpl implements UploadService {
 
         for(MultipartFile image : images) {
 
-            image = compressImage(image);
+            image = compressAndResizeImage(image);
 
             File fileMetadata = new File();
             fileMetadata.setParents(Collections.singletonList(folderId));
             fileMetadata.setName(image.getOriginalFilename());
 
             InputStreamContent mediacontent = new InputStreamContent(image.getContentType(), new ByteArrayInputStream(image.getBytes()));
-            File uploadFile = getInstance()
+            File uploadFile = getGDriveInstance()
                 .files()
                 .create(fileMetadata, mediacontent)
                 .setFields("id").execute();
-            //System.out.println(uploadFile);
-            urlImages.add(String.format("https://drive.google.com/uc?export=view&id=%s", uploadFile.getId()));
+            urlImages.add(uploadFile.getId());
         }
 
         return urlImages.toArray(new String[0]);
 
     }
 
-    private MultipartFile compressImage(MultipartFile mpImage) throws IOException {
+    private MultipartFile compressAndResizeImage(MultipartFile mpImage) throws IOException {
         float quality = 0.8f;
         byte[] imageBytes = mpImage.getBytes();
 
@@ -192,31 +257,6 @@ public class UploadServiceImpl implements UploadService {
             .contentType(mpImage.getContentType())
             .input(outputStream.toByteArray()).build();
 
-    }
-
-    private Drive getInstance() throws GeneralSecurityException, IOException {
-        // Load client secrets
-        InputStream in = CREDENTIALS_FILE.getInputStream();
-
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        final List<String> SCOPE = Collections.singletonList(DriveScopes.DRIVE_FILE);
-        GoogleCredentials credentials = GoogleCredentials.fromStream(in).createScoped(SCOPE);
-        HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
-
-        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, requestInitializer)
-            .setApplicationName("ldcgc-backend")
-            .build();
-
-        /*GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow
-            .Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-            .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-            .setAccessType("offline")
-            .build();
-
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        //returns an authorized Credential object.
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-         */
     }
 
 }

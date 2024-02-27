@@ -13,4 +13,7 @@ public interface UploadService {
     ResponseEntity<?> uploadToolImages(String toolBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException;
     ResponseEntity<?> uploadConsumableImages(String consumableBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException;
 
+    ResponseEntity<?> cleanToolImages(String toolBarcode, String[] imageIds) throws GeneralSecurityException;
+    ResponseEntity<?> cleanConsumableImages(String consumableBarcode, String[] imageIds) throws GeneralSecurityException;
+
 }

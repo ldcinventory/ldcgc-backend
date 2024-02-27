@@ -58,7 +58,7 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         consumableEntity = consumableRepository.saveAndFlush(consumableEntity);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.CONSUMABLE_CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
 
     }
 

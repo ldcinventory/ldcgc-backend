@@ -13,6 +13,7 @@ import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,5 +71,46 @@ public interface UploadController {
         @Parameter(description = "Images to upload")
             @RequestParam("images") MultipartFile[] images
     ) throws GeneralSecurityException, IOException;
+
+    @Operation(summary = "Update a tool or consumable to detach its images.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            //oneOf = {@Schema(implementation = ToolDto.class), @Schema(implementation = ConsumableDto.class)},
+            schema = @Schema(oneOf = { ToolDto.class, ConsumableDto.class }),
+            examples = {
+                @ExampleObject(name = "ToolDto", value = "test tool"),
+                @ExampleObject(name = "ConsumableDto", value = "test consumable")
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_422,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Many arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS)
+            })
+    )
+    @PatchMapping("/clean")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> detachImages(
+        @Parameter(description = "The barcode to upload some images for specific tool")
+            @RequestParam(required = false) String toolBarcode,
+        @Parameter(description = "The barcode to upload some images for specific consumable")
+            @RequestParam(required = false) String consumableBarcode,
+        @Parameter(description = "Clean previous attached images to this resource, if null it'll clean everything")
+            @RequestParam(required = false) String[] imageIds
+    ) throws GeneralSecurityException;
 
 }
