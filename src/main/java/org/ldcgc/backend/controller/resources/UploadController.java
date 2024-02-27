@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
@@ -64,6 +67,6 @@ public interface UploadController {
             @RequestParam(required = false) String consumableBarcode,
         @Parameter(description = "Images to upload")
             @RequestParam("images") MultipartFile[] images
-    );
+    ) throws GeneralSecurityException, IOException;
 
 }

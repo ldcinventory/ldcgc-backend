@@ -11,13 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 @RestController
 @RequiredArgsConstructor
 public class UploadControllerImpl implements UploadController {
 
     private final UploadService uploadService;
 
-    public ResponseEntity<?> uploadImages(String toolBarcode, String consumableBarcode, MultipartFile[] images) {
+    public ResponseEntity<?> uploadImages(String toolBarcode, String consumableBarcode, MultipartFile[] images) throws GeneralSecurityException, IOException {
         if(ObjectUtils.allNotNull(toolBarcode, consumableBarcode))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS);
 
