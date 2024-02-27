@@ -169,7 +169,7 @@ public class UploadServiceImpl implements UploadService {
 
         // Compress the image
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(Objects.requireNonNull(mpImage.getContentType().split("/")[1]));
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(Objects.requireNonNull(mpImage.getContentType()).split("/")[1]);
         ImageWriter writer = writers.next();
         ImageWriteParam param = writer.getDefaultWriteParam();
 
