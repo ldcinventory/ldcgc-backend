@@ -10,7 +10,7 @@ import java.security.GeneralSecurityException;
 @Service
 public interface UploadService {
 
-    ResponseEntity<?> uploadToolImages(String toolBarcode, MultipartFile[] images) throws GeneralSecurityException, IOException;
-    ResponseEntity<?> uploadConsumableImages(String consumableBarcode, MultipartFile[] images) throws GeneralSecurityException, IOException;
+    ResponseEntity<?> uploadToolImages(String toolBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException;
+    ResponseEntity<?> uploadConsumableImages(String consumableBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException;
 
 }

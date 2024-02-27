@@ -65,6 +65,8 @@ public interface UploadController {
             @RequestParam(required = false) String toolBarcode,
         @Parameter(description = "The barcode to upload some images for specific consumable")
             @RequestParam(required = false) String consumableBarcode,
+        @Parameter(description = "Clean previous attached images to this resource")
+            @RequestParam(required = false, defaultValue = "false") boolean cleanExisting,
         @Parameter(description = "Images to upload")
             @RequestParam("images") MultipartFile[] images
     ) throws GeneralSecurityException, IOException;

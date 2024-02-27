@@ -20,14 +20,14 @@ public class UploadControllerImpl implements UploadController {
 
     private final UploadService uploadService;
 
-    public ResponseEntity<?> uploadImages(String toolBarcode, String consumableBarcode, MultipartFile[] images) throws GeneralSecurityException, IOException {
+    public ResponseEntity<?> uploadImages(String toolBarcode, String consumableBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException {
         if(ObjectUtils.allNotNull(toolBarcode, consumableBarcode))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS);
 
         if(toolBarcode != null)
-            return uploadService.uploadToolImages(toolBarcode, images);
+            return uploadService.uploadToolImages(toolBarcode, cleanExisting, images);
         if(consumableBarcode != null)
-            return uploadService.uploadConsumableImages(consumableBarcode, images);
+            return uploadService.uploadConsumableImages(consumableBarcode, cleanExisting, images);
 
         throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_FEW_ARGUMENTS);
     }
