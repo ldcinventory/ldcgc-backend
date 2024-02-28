@@ -149,6 +149,7 @@ public class Messages {
             UPLOAD_IMAGES_TOO_FEW_ARGUMENTS = "There are few arguments defined for this operation. Inform a tool or a consumable at least",
 
             UPLOAD_IMAGES_TOO_MANY_ARGUMENTS = "There are many arguments defined for this operation. Inform a tool or a consumable only",
+            CLEAN_IMAGES_ENTITY_CANT_BE_CASTABLE = "Couldn't cast the entity to Tool or Consumable",
 
             STATUS_NOT_FOUND = "Status '%s' not found",
 

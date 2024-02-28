@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
+import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -113,13 +114,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             cleanFromGDrive(tool.getUrlImages());
             tool.setUrlImages(null);
         } else { // clean images from array
-            List<String> imageList = new ArrayList<>(Arrays.stream(tool.getUrlImages()).toList());
-            for (String image : imageIds)
-                if (imageList.contains(image)) {
-                    cleanFromGDrive(image);
-                    imageList.remove(image);
-                } else
-                    throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_IMAGE_INFORMED_NOT_FOUND, image));
+            List<String> imageList = cleanImagesFromArray(imageIds, tool);
             tool.setUrlImages(imageList.toArray(new String[0]));
         }
 
@@ -139,19 +134,32 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             cleanFromGDrive(consumable.getUrlImages());
             consumable.setUrlImages(null);
         } else { // clean images from array
-            List<String> imageList = new ArrayList<>(Arrays.stream(consumable.getUrlImages()).toList());
-            for (String image : imageIds)
-                if(imageList.contains(image)) {
-                    cleanFromGDrive(image);
-                    imageList.remove(image);
-                } else
-                    throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_IMAGE_INFORMED_NOT_FOUND, image));
+            List<String> imageList = cleanImagesFromArray(imageIds, consumable);
             consumable.setUrlImages(imageList.toArray(new String[0]));
         }
 
         consumable = consumableRepository.saveAndFlush(consumable);
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.CONSUMABLE_IMAGES_UPDATED, ConsumableMapper.MAPPER.toDto(consumable));
+    }
+
+    @NotNull
+    private List<String> cleanImagesFromArray(String[] imageIds, Object resource) throws GeneralSecurityException {
+        List<String> imageList;
+        if(resource instanceof Tool)
+            imageList = new ArrayList<>(Arrays.stream(((Tool) resource).getUrlImages()).toList());
+        else if(resource instanceof Consumable)
+            imageList = new ArrayList<>(Arrays.stream(((Consumable) resource).getUrlImages()).toList());
+        else
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.CLEAN_IMAGES_ENTITY_CANT_BE_CASTABLE);
+
+        for (String image : imageIds)
+            if (imageList.contains(image)) {
+                cleanFromGDrive(image);
+                imageList.remove(image);
+            } else
+                throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_IMAGE_INFORMED_NOT_FOUND, image));
+        return imageList;
     }
 
     private Drive getGDriveInstance() throws GeneralSecurityException, IOException {

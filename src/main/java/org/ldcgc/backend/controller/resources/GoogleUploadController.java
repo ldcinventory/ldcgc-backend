@@ -110,7 +110,8 @@ public interface GoogleUploadController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Few arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_FEW_ARGUMENTS),
-                @ExampleObject(name = "Many arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS)
+                @ExampleObject(name = "Many arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS),
+                @ExampleObject(name = "Entity not castable", value = Messages.Error.CLEAN_IMAGES_ENTITY_CANT_BE_CASTABLE)
             })
     )
     @PatchMapping("/clean")
