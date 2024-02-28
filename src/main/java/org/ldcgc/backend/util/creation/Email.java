@@ -23,7 +23,7 @@ import org.thymeleaf.context.Context;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static org.ldcgc.backend.util.process.Process.runInBackground;
+import static org.ldcgc.backend.util.process.Threads.runInBackground;
 
 @Slf4j
 @Getter

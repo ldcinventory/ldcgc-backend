@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
-import static org.ldcgc.backend.util.process.Process.runInBackground;
+import static org.ldcgc.backend.util.process.Threads.runInBackground;
 
 @Component
 @RequiredArgsConstructor
