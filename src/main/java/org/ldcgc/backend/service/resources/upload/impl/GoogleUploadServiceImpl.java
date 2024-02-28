@@ -14,6 +14,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Range;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -62,6 +63,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
     private final ConsumableRepository consumableRepository;
 
     @Value("classpath:gdrive_secret.json") Resource CREDENTIALS_FILE;
+    @Value("${IMAGE_QUALITY:0.8f}") private float IMAGE_QUALITY;
     private final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     public ResponseEntity<?> uploadToolImages(String toolBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException {
@@ -203,7 +205,9 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
     }
 
     private MultipartFile compressAndResizeImage(MultipartFile mpImage) throws IOException {
-        float quality = 0.8f;
+        if(Range.of(0.0f, 1.0f).contains(IMAGE_QUALITY))
+            throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, Messages.Error.IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE);
+
         byte[] imageBytes = mpImage.getBytes();
 
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
@@ -240,7 +244,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
 
         // Set compression quality
         param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        param.setCompressionQuality(quality);
+        param.setCompressionQuality(IMAGE_QUALITY);
 
         // Write the compressed image to the output stream
         writer.setOutput(ImageIO.createImageOutputStream(outputStream));

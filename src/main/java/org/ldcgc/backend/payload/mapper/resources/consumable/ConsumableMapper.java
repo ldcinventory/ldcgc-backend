@@ -4,7 +4,6 @@ import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.util.constants.GoogleConstants;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

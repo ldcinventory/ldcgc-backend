@@ -186,6 +186,7 @@ public class Messages {
 
             PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL = "The index requested is out of bounds of the total pages available.",
 
+            IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE = "The value of image quality to compress is between 0.0 and 1.0",
             UNEXPECTED_ERROR = "Unexpected error ocurred, or uncontrolled exception had been thrown."
 
         ;

@@ -59,6 +59,14 @@ public interface GoogleUploadController {
                 @ExampleObject(name = "Many arguments", value = Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS)
             })
     )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_500,
+        description = SwaggerConfig.HTTP_500,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Image quality out of range", value = Messages.Error.IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE)
+            })
+    )
     @PutMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> uploadImages(
