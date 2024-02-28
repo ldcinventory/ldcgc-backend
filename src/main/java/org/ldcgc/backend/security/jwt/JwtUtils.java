@@ -171,7 +171,7 @@ public class JwtUtils {
     }
 
     public String getEmailFromJwtToken(SignedJWT signedJWT) throws ParseException {
-        return ((Map) signedJWT.getJWTClaimsSet().getClaim("userClaims")).get("email").toString();
+        return ((Map<?, ?>) signedJWT.getJWTClaimsSet().getClaim("userClaims")).get("email").toString();
     }
 
     public Integer getUserIdFromJwtToken(SignedJWT signedJWT) throws ParseException {
@@ -247,7 +247,7 @@ public class JwtUtils {
 
         // must have subject, email
         Preconditions.checkNotNull(claims.getSubject());
-        Preconditions.checkNotNull(((Map) claims.getClaim("userClaims")).get("email"));
+        Preconditions.checkNotNull(((Map<?, ?>) claims.getClaim("userClaims")).get("email"));
 
         JWK jwk = JWK.parse(jwkString);
         Preconditions.checkNotNull(jwk);

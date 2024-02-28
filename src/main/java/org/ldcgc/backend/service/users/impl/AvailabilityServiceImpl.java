@@ -54,7 +54,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
             if(Optional.ofNullable(user.getVolunteer()).isEmpty())
                 throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_DOESNT_HAVE_VOLUNTEER);
 
-            if(Optional.ofNullable(user.getVolunteer()).map(Volunteer::getBuilderAssistantId).isEmpty())
+            if(Optional.of(user.getVolunteer()).map(Volunteer::getBuilderAssistantId).isEmpty())
                 throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_WITHOUT_BA_ID);
 
             return user.getVolunteer();
