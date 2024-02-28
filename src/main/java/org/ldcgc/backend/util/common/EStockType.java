@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.compare.EnumMethods;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;

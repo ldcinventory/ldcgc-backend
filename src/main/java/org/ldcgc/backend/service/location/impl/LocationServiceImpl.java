@@ -6,7 +6,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.service.location.LocationService;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

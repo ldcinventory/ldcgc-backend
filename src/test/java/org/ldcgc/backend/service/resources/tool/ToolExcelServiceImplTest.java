@@ -17,7 +17,7 @@ import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.impl.ToolExcelServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
 import org.ldcgc.backend.util.common.EExcelToolsPositions;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;

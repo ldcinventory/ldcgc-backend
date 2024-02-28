@@ -30,7 +30,7 @@ import org.ldcgc.backend.exception.ApiSubError;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.TokenDto;
 import org.ldcgc.backend.payload.mapper.users.TokenMapper;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

@@ -6,7 +6,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.mapper.group.GroupMapper;
 import org.ldcgc.backend.service.groups.GroupsService;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

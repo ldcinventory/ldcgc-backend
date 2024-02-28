@@ -5,7 +5,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.controller.resources.GoogleUploadController;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.service.resources.upload.GoogleUploadService;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

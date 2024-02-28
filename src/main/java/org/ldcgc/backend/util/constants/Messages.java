@@ -1,4 +1,4 @@
-package org.ldcgc.backend.util.retrieving;
+package org.ldcgc.backend.util.constants;
 
 public class Messages {
 
