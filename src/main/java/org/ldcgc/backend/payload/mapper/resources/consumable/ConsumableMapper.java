@@ -3,6 +3,7 @@ package org.ldcgc.backend.payload.mapper.resources.consumable;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
+import org.ldcgc.backend.util.constants.GoogleConstants;
 import org.ldcgc.backend.util.retrieving.Messages;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -35,7 +36,7 @@ public interface ConsumableMapper {
         if(urlImages == null) return null;
 
         return Arrays.stream(urlImages)
-            .map(url -> String.format(Messages.App.DRIVE_IMAGES_URL, url))
+            .map(url -> String.format(GoogleConstants.DRIVE_IMAGES_URL, url))
             .toArray(String[]::new);
     }
 

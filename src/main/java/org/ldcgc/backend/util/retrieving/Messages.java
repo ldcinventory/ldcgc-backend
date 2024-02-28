@@ -74,8 +74,6 @@ public class Messages {
         EULA_SELECT_ACTION = "EULA for %s: Please select an action to do",
         EULA_ENDPOINT = "/api/eula",
 
-        DRIVE_IMAGES_URL = "https://drive.google.com/uc?export=view&id=%s",
-
         CREDENTIALS_EMAIL_TEMPLATE = "credentialsTemplate.html",
         CREDENTIALS_RECOVERY_SUBJECT = "GC8Inventory : [Recuperación de credenciales] 🙃",
 
