@@ -1,4 +1,4 @@
-package org.ldcgc.backend.util.retrieving;
+package org.ldcgc.backend.util.process;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;

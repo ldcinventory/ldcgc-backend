@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.ldcgc.backend.util.retrieving.Files.getContentFromCSV;
+import static org.ldcgc.backend.util.process.Files.getContentFromCSV;
 
 @Component
 @RequiredArgsConstructor
