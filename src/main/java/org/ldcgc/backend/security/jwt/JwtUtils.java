@@ -30,7 +30,7 @@ import org.ldcgc.backend.exception.ApiSubError;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.TokenDto;
 import org.ldcgc.backend.payload.mapper.users.TokenMapper;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
-import static org.ldcgc.backend.util.process.Process.runInBackground;
+import static org.ldcgc.backend.util.process.Threads.runInBackground;
 
 @Component
 @RequiredArgsConstructor
@@ -171,7 +171,7 @@ public class JwtUtils {
     }
 
     public String getEmailFromJwtToken(SignedJWT signedJWT) throws ParseException {
-        return ((Map) signedJWT.getJWTClaimsSet().getClaim("userClaims")).get("email").toString();
+        return ((Map<?, ?>) signedJWT.getJWTClaimsSet().getClaim("userClaims")).get("email").toString();
     }
 
     public Integer getUserIdFromJwtToken(SignedJWT signedJWT) throws ParseException {
@@ -247,7 +247,7 @@ public class JwtUtils {
 
         // must have subject, email
         Preconditions.checkNotNull(claims.getSubject());
-        Preconditions.checkNotNull(((Map) claims.getClaim("userClaims")).get("email"));
+        Preconditions.checkNotNull(((Map<?, ?>) claims.getClaim("userClaims")).get("email"));
 
         JWK jwk = JWK.parse(jwkString);
         Preconditions.checkNotNull(jwk);

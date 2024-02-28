@@ -7,7 +7,7 @@ import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.service.category.CategoryService;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

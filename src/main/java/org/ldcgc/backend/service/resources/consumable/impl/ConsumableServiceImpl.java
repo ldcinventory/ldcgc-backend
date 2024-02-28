@@ -15,8 +15,8 @@ import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +58,7 @@ public class ConsumableServiceImpl implements ConsumableService {
 
         consumableEntity = consumableRepository.saveAndFlush(consumableEntity);
 
-        return Constructor.buildResponseObject(HttpStatus.OK, ConsumableMapper.MAPPER.toDto(consumableEntity));
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.CONSUMABLE_CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
 
     }
 

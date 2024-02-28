@@ -30,8 +30,8 @@ import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EWeekday;
-import org.ldcgc.backend.util.retrieving.Files;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
+import org.ldcgc.backend.util.process.Files;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -91,8 +91,8 @@ public class InitializationData {
 
     @Value("${LOAD_INITIAL_DATA:false}") private boolean loadData;
 
-    @Value("${TOOLS_REGISTRARION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
-    @Value("${CONSUMABLES_REGISTRARION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
+    @Value("${TOOLS_REGISTRATION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
+    @Value("${CONSUMABLES_REGISTRATION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
 
     @Value("classpath:chests.csv") Resource chestsCSV;
     @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;

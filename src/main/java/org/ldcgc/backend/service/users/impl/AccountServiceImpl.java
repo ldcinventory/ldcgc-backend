@@ -17,8 +17,8 @@ import org.ldcgc.backend.payload.mapper.users.TokenMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,7 +121,7 @@ public class AccountServiceImpl implements AccountService {
         SignedJWT jwt = jwtUtils.getDecodedJwt(token);
 
         // check exists
-        boolean isRefreshToken = "true".equals(((Map) jwt.getJWTClaimsSet().getClaim("userClaims")).get("refresh-token"));
+        boolean isRefreshToken = "true".equals(((Map<?, ?>) jwt.getJWTClaimsSet().getClaim("userClaims")).get("refresh-token"));
         TokenDto tokenDto = getBySignedJwtFromLocal(jwt, isRefreshToken);
 
         // check token exists

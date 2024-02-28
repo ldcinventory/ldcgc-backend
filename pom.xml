@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.2</version>
+		<version>3.2.3</version>
 		<relativePath/>
 	</parent>
 
@@ -18,12 +18,14 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<postgresql.version>42.7.2</postgresql.version>
 		<maven.compiler.release>21</maven.compiler.release>
 		<maven-compiler.version>3.12.1</maven-compiler.version>
-		<spring-boot.version>3.2.2</spring-boot.version>
+		<spring-boot.version>3.2.3</spring-boot.version>
 		<guava.version>33.0.0-jre</guava.version>
 		<snake-yaml.version>2.2</snake-yaml.version>
 		<apache-poi.version>5.2.5</apache-poi.version>
+		<commons-compress.version>1.26.0</commons-compress.version>
 		<nimbus.version>9.37.3</nimbus.version>
 		<tink.version>1.12.0</tink.version>
 		<openapi.version>2.3.0</openapi.version>
@@ -32,6 +34,8 @@
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
 		<bouncy.castle.version>1.77</bouncy.castle.version>
+		<google-oauth.version>1.35.0</google-oauth.version>
+		<google-auth.version>1.23.0</google-auth.version>
 		<logback.version>1.4.14</logback.version>
 		<junit-platform-suite.version>1.10.2</junit-platform-suite.version>
 		<datafaker.version>2.1.0</datafaker.version>
@@ -73,6 +77,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -122,6 +127,25 @@
 			<artifactId>simple-java-mail</artifactId>
 			<version>${simple-java-mail.version}</version>
 		</dependency>
+
+		<!-- Google -->
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client</artifactId>
+			<version>${google-oauth.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.auth</groupId>
+			<artifactId>google-auth-library-oauth2-http</artifactId>
+			<version>${google-auth.version}</version>
+		</dependency>
+		<!-- presumably final version (this one is the latest from 2020) -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-drive</artifactId>
+			<version>v3-rev197-1.25.0</version>
+		</dependency>
+
 
 		<!-- SpringDoc -->
 		<dependency>
@@ -178,6 +202,13 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${apache-poi.version}</version>
 		</dependency>
+		<!-- while poi-ooxml is vulnerable -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>${commons-compress.version}</version>
+		</dependency>
+
 
 		<!-- Test -->
 		<dependency>

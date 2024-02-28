@@ -1,4 +1,4 @@
-package org.ldcgc.backend.util.retrieving;
+package org.ldcgc.backend.util.constants;
 
 public class Messages {
 
@@ -35,9 +35,15 @@ public class Messages {
             TOOL_CREATED = "Tool created successfully!",
             TOOL_LISTED = "Found %s tool/s",
             TOOL_UPDATED = "Tool details updated",
+            TOOL_UNTOUCHED = "Tool untouched",
+            TOOL_IMAGES_UPDATED = "Tool details for attached images updated",
             TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
             TOOL_DELETED = "Tool deleted",
 
+            CONSUMABLE_CREATED = "Consumable created successfully!",
+            CONSUMABLE_UPDATED = "Consumable details updated",
+            CONSUMABLE_UNTOUCHED = "Consumable untouched",
+            CONSUMABLE_IMAGES_UPDATED = "Consumable details for attached images updated",
             CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
             CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables",
@@ -120,12 +126,14 @@ public class Messages {
             TOOL_NOT_FOUND = "Tool with id '%s' not found",
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
+            TOOL_IMAGE_INFORMED_NOT_FOUND = "The image with id '%s' is not registered for this tool",
 
             CONSUMABLE_NOT_FOUND = "Consumable with id '%s' not found",
             CONSUMABLE_BARCODE_NOT_FOUND = "Consumable with barcode '%s' not found",
             CONSUMABLE_BARCODE_ALREADY_EXISTS = "There is another consumable with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             CONSUMABLE_BARCODE_USED_MANY_TIMES = "The barcode '%s' is used by more than one consumable. Please report to admin",
             CONSUMABLE_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the consumable id is null",
+            CONSUMABLE_IMAGE_INFORMED_NOT_FOUND = "The image with id '%s' is not registered for this consumable",
 
             CONSUMABLE_REGISTER_NOT_FOUND = "Consumable register with id '%s' not found",
             CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED = "This consumable has been registered to this volunteer",
@@ -137,6 +145,11 @@ public class Messages {
             CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date and time",
             CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
             CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE = "The data for closing the consumible lacks any of the required fields: registrationOut, stockAmountOut",
+
+            UPLOAD_IMAGES_TOO_FEW_ARGUMENTS = "There are few arguments defined for this operation. Inform a tool or a consumable at least",
+
+            UPLOAD_IMAGES_TOO_MANY_ARGUMENTS = "There are many arguments defined for this operation. Inform a tool or a consumable only",
+            CLEAN_IMAGES_ENTITY_CANT_BE_CASTABLE = "Couldn't cast the entity to Tool or Consumable",
 
             STATUS_NOT_FOUND = "Status '%s' not found",
 
@@ -174,6 +187,7 @@ public class Messages {
 
             PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL = "The index requested is out of bounds of the total pages available.",
 
+            IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE = "The value of image quality to compress is between 0.0 and 1.0",
             UNEXPECTED_ERROR = "Unexpected error ocurred, or uncontrolled exception had been thrown."
 
         ;

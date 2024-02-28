@@ -3,11 +3,15 @@ package org.ldcgc.backend.payload.mapper.resources.consumable;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
+import org.ldcgc.backend.util.constants.GoogleConstants;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
+
+import java.util.Arrays;
 
 @Mapper(uses = LocationMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ConsumableMapper {
@@ -23,7 +27,17 @@ public interface ConsumableMapper {
     @Mapping(target = "brand.locked", ignore = true)
     @Mapping(target = "brand.categories", ignore = true)
     @Mapping(target = "brand.parent.locked", ignore = true)
+    @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapUrlImagesToDto")
     ConsumableDto toDto(Consumable consumable);
+
+    @Named("mapUrlImagesToDto")
+    static String[] mapUrlImagesToDto(String[] urlImages){
+        if(urlImages == null) return null;
+
+        return Arrays.stream(urlImages)
+            .map(url -> String.format(GoogleConstants.DRIVE_IMAGES_URL, url))
+            .toArray(String[]::new);
+    }
 
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "category", ignore = true)

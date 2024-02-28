@@ -15,8 +15,8 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.ldcgc.backend.util.retrieving.Files.getContentFromCSV;
+import static org.ldcgc.backend.util.process.Files.getContentFromCSV;
 
 @Component
 @RequiredArgsConstructor

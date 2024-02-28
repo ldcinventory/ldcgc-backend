@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
@@ -23,7 +23,7 @@ import org.thymeleaf.context.Context;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static org.ldcgc.backend.util.process.Process.runInBackground;
+import static org.ldcgc.backend.util.process.Threads.runInBackground;
 
 @Slf4j
 @Getter

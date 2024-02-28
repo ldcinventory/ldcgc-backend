@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import static org.ldcgc.backend.util.creation.Generator.getEncryptedPassword;
+import static org.ldcgc.backend.util.creation.EncryptedPassword.getEncryptedPassword;
 
 @Mapper(uses = { LocationMapper.class, CategoryMapper.class, VolunteerMapper.class })
 public interface UserMapper {
