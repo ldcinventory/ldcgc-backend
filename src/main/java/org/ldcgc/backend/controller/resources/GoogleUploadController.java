@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,7 +66,7 @@ public interface GoogleUploadController {
                 @ExampleObject(name = "Image quality out of range", value = Messages.Error.IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE)
             })
     )
-    @PutMapping
+    @PatchMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> uploadImages(
         @Parameter(description = "The barcode to upload some images for specific tool")
