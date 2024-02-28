@@ -3,7 +3,6 @@ package org.ldcgc.backend.util.common;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.util.compare.EnumMethods;
 
 import java.util.Arrays;
 import java.util.Map;

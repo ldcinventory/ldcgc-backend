@@ -1,7 +1,5 @@
 package org.ldcgc.backend.util.common;
 
-import org.ldcgc.backend.util.compare.EnumMethods;
-
 public enum EEULAStatus implements EnumMethods {
 
     // EULA
