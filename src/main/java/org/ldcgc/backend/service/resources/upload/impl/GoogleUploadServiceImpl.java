@@ -21,7 +21,7 @@ import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.resources.upload.UploadService;
+import org.ldcgc.backend.service.resources.upload.GoogleUploadService;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.process.CompressedMultipartFile;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -55,7 +55,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UploadServiceImpl implements UploadService {
+public class GoogleUploadServiceImpl implements GoogleUploadService {
 
     private final ToolRepository toolRepository;
     private final ConsumableRepository consumableRepository;

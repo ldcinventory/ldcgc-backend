@@ -26,10 +26,10 @@ import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATI
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
-@RequestMapping("/resources/upload")
-public interface UploadController {
+@RequestMapping("/resources/google-upload")
+public interface GoogleUploadController {
 
-    @Operation(summary = "Update a tool or consumable uploading images for any of them.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Google Upload. Update a tool or consumable uploading images for any of them.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -72,7 +72,7 @@ public interface UploadController {
             @RequestParam("images") MultipartFile[] images
     ) throws GeneralSecurityException, IOException;
 
-    @Operation(summary = "Update a tool or consumable to detach its images.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Google Upload. Update a tool or consumable to detach its images.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
