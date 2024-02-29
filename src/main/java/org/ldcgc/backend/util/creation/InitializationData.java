@@ -1,6 +1,7 @@
 package org.ldcgc.backend.util.creation;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
@@ -355,17 +356,24 @@ public class InitializationData {
             toolRepository.saveAll(toolEntities.values());
 
             // TOOLS REGISTRATION
+            List<Integer> openedToolRegisters = new ArrayList<>();
             if (toolsRegistrationTestData)
-                IntStream.range(0, 10_000)
+                IntStream.range(0, 3_000)
                     .parallel()
                     .forEach(i -> {
                         LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
                         LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
 
+                        Tool tool = toolRepository.getRandomTool();
+                        boolean isOpen = !openedToolRegisters.contains(tool.getId());
+
+                        if(isOpen)
+                            openedToolRegisters.add(tool.getId());
+
                         toolRegisterRepository.saveAndFlush(
                             ToolRegister.builder()
                                 .registerFrom(timeIn)
-                                .registerTo(timeOut)
+                                .registerTo(isOpen ? null : timeOut)
                                 .tool(toolRepository.getRandomTool())
                                 .volunteer(volunteerRepository.getRandomVolunteer())
                                 .build());
@@ -419,8 +427,9 @@ public class InitializationData {
             consumableRepository.saveAll(consumableEntities.values());
 
             // CONSUMABLES REGISTRATION
+            List<Integer> openedConsumableRegisters = new ArrayList<>();
             if (consumablesRegistrationTestData)
-                IntStream.range(0, 10_000)
+                IntStream.range(0, 3_000)
                     .parallel()
                     .forEach(i -> {
                         LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
@@ -428,15 +437,21 @@ public class InitializationData {
                         float amountRequest = new Random().nextFloat(0.01f, 20.00f);
                         float amountReturn = new Random().nextFloat(0.00f, amountRequest);
 
+                        Consumable consumable = consumableRepository.getRandomConsumable();
+                        boolean isOpen = !openedConsumableRegisters.contains(consumable.getId());
+
+                        if(isOpen)
+                            openedConsumableRegisters.add(consumable.getId());
+
                         consumableRegisterRepository.saveAndFlush(
                             ConsumableRegister.builder()
                                 .registerFrom(timeIn)
-                                .registerTo(timeOut)
+                                .registerTo(isOpen ? null : timeOut)
                                 .stockAmountRequest(amountRequest)
-                                .stockAmountReturn(amountReturn)
-                                .consumable(consumableRepository.getRandomConsumable())
+                                .stockAmountReturn(isOpen ? null : amountReturn)
+                                .consumable(consumable)
                                 .volunteer(volunteerRepository.getRandomVolunteer())
-                                .closedRegister(true)
+                                .closedRegister(!isOpen)
                                 .build());
                     });
 
