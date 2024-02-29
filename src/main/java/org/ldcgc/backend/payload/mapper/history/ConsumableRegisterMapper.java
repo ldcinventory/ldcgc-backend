@@ -22,6 +22,8 @@ public interface ConsumableRegisterMapper {
 
     @Mapping(target = "consumableBardcode", source = "consumable.barcode")
     @Mapping(target = "volunteerBAId", source = "volunteer.builderAssistantId")
+    @Mapping(target = "volunteerName", source = "volunteer.name")
+    @Mapping(target = "volunteerLastName", source = "volunteer.lastName")
     @Mapping(target = "processingStockChanges", ignore = true)
     ConsumableRegisterDto toDto(ConsumableRegister consumableRegister);
 

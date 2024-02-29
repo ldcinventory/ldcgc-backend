@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 public class ToolRegisterDto {
 
     private Integer id;
-    private LocalDateTime inRegistration;
-    private LocalDateTime outRegistration;
+    private LocalDateTime registerFrom;
+    private LocalDateTime registerTo;
     private ToolDto tool;
     private VolunteerDto volunteer;
 

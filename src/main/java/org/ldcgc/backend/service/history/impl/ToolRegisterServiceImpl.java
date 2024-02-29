@@ -9,11 +9,10 @@ import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -63,15 +62,16 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, String filterString) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortString));
 
-        Page<ToolRegister> page = Optional.ofNullable(filterString)
+        Page<ToolRegisterDto> page = Optional.ofNullable(filterString)
                 .filter(fs -> !fs.isEmpty())
                 .map(fs -> repository.findAllFiltered(fs, pageable))
-                .orElse(repository.findAll(pageable));
+                .orElse(repository.findAll(pageable))
+                .map(ToolRegisterMapper.MAPPER::toDto);
 
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
                 Messages.Info.TOOL_REGISTER_LISTED.formatted(page.getTotalElements()),
-                page);
+                PaginationDetails.fromPaging(pageable, page));
     }
 
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
@@ -80,7 +80,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
 
-        if(Objects.nonNull(register.getInRegistration()))
+        if(Objects.nonNull(register.getRegisterFrom()))
             toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
 
 
