@@ -1,6 +1,7 @@
 package org.ldcgc.backend.db.model.resources;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,9 +14,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ldcgc.backend.db.mapper.StockTypeConverter;
+import org.ldcgc.backend.db.mapper.StringArrayConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
+import org.ldcgc.backend.util.common.EStockType;
 
 import java.time.LocalDate;
 
@@ -32,8 +36,9 @@ public class Consumable {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    // TODO validation to not allow null once a barcode is registered
+    // TODO validation to not allow null nor duplications once a barcode is registered
     //  (i.e. after batch a tool could have a null barcode)
+    @Column(unique = true)
     private String barcode;
 
     @ManyToOne
@@ -54,16 +59,21 @@ public class Consumable {
 
     private LocalDate purchaseDate;
 
-    private String urlImages;
+    @Convert(converter = StringArrayConverter.class)
+    @Column(columnDefinition = "text")
+    private String[] urlImages;
 
     @Column(nullable = false)
-    private Integer stock;
+    private Float quantityEachItem;
 
-    private Integer minStock;
+    @Column(nullable = false)
+    private Float stock;
 
-    @ManyToOne
-    @JoinColumn(name = "stock_id", referencedColumnName = "id")
-    private Category stockType;
+    private Float minStock;
+
+    @Convert(converter = StockTypeConverter.class)
+    @Column(columnDefinition = "int")
+    private EStockType stockType;
 
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")

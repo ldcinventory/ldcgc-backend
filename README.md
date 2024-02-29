@@ -15,6 +15,8 @@ To perform a login in this API, just go with default credentials for testing pur
 
 > User: `user@user` Password: `user` 
 
+> User: `volunteer@volunteer` Password: `volunteer`. This is an account with user + volunteer associated (_needs the CSV files to test on local_).
+
 Call the api to endpoint `/api/account/login` with the payload:
 
 ```
@@ -81,7 +83,14 @@ A Docker-based project, you just execute this command to run the multi-container
 
 or, for make-it-easier-for-you purposes, you can run:
 
-`./run.sh` in Mac, `run.bat` in Windows, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
+`./run.sh` in Mac, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
+
+The options used for run the full API are:
+
+- `create`: create the API with CSVs
+- `create-test-data`: create the API with CSVs and test data for consumible and tool registers
+- `restart`: just restart the containers
+- `purge`: clean all the data in Docker (images included!)
 
 All previous environment variables can be changed through command line invocation to docker-compose specifying explicitly **before** the `docker-compose up` command. For example, to change DB_NAME we'd run as follows:
 
@@ -135,7 +144,19 @@ The end user license agreement is the contract between the user and the applicat
 
 A standard user may accept a standard EULA, a manager or admin may accept a standard and a manager EULA.
 
-**Temp**: to skip eula while frontend is aligning this functionality, a special header is provided skip it. The header is `skip-eula` and must be set as `true`.
+**Temp**: to skip eula while frontend is aligning this functionality, some users are provided with EULA accepted:
+
+> **ADMIN USER**  email: `noeula@admin`, pass: `admin `
+> 
+> **MANAGER USER**. email: `noeula@manager`, pass: `manager`
+> 
+> **STANDARD USER**. email: `noeula@user`, pass: `user`
+> 
+> **ADMIN USER+VOLUNTEER**. email: `noeula@adminv`, pass: `admin`
+>
+> **MANAGER USER+VOLUNTEER**. email: `noeula@managerv`, pass: `manager`
+>
+> **STANDARD USER+VOLUNTEER**. email: `noeula@userv`, pass: `user`
 
 ---
 

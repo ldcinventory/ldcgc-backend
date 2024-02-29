@@ -11,13 +11,14 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import static org.ldcgc.backend.util.creation.Generator.getEncryptedPassword;
+import static org.ldcgc.backend.util.creation.EncryptedPassword.getEncryptedPassword;
 
-@Mapper(uses = { LocationMapper.class, CategoryMapper.class, VolunteerMapper.class, AvailabilityMapper.class })
+@Mapper(uses = { LocationMapper.class, CategoryMapper.class, VolunteerMapper.class })
 public interface UserMapper {
 
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(source = "password", target = "password", qualifiedByName = "mapPasswordToEncryptedPassword")
     @Mapping(target = "group.location.locations", ignore = true)
     User toEntity(UserDto userRequest);
 

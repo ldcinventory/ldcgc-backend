@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.util.common.EEULAStatus;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,13 +21,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
+import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+
 @Controller
 @RequestMapping("/eula")
+@Tag(name = "EULA", description = "EULA methods with read and update functions")
 public interface EulaController {
 
     @Operation(
         summary = "Get EULA terms document",
-        description = "Defines a GET operation to get EULA terms in order to provide user information about the use of this personal data within GC8Inventory service",
+        description = "Defines a GET operation to get EULA terms in order to provide user information about the use of this personal data within GC8Inventory service. " + SWAGGER_ROLE_OPERATION_USER,
         operationId = "getEULA"
     )
     @ApiResponse(
@@ -44,6 +50,7 @@ public interface EulaController {
                 @ExampleObject(name = "User not found", value = Messages.Error.USER_NOT_FOUND)
             })
     )
+    @PreAuthorize(USER_LEVEL)
     @GetMapping
     ResponseEntity<?> getEULA(
         @Parameter(description = "Valid JWT of the user to update", required = true)
@@ -51,7 +58,7 @@ public interface EulaController {
 
     @Operation(
         summary = "Accept/Reject EULA terms document",
-        description = "Defines a PUT operation to accept or reject EULA terms",
+        description = "Defines a PUT operation to accept or reject EULA terms. " + SWAGGER_ROLE_OPERATION_USER,
         operationId = "putEULA"
     )
     @ApiResponse(
@@ -80,6 +87,7 @@ public interface EulaController {
                 @ExampleObject(name = "EULA Already Accepted" , value = Messages.Info.EULA_ACCEPTED, description = "%s will be replaced by 'every user' or 'managers and admins'")
             })
     )
+    @PreAuthorize(USER_LEVEL)
     @PutMapping
     ResponseEntity<?> putEULA(
         @Parameter(description = "Valid JWT of the user to update", required = true)

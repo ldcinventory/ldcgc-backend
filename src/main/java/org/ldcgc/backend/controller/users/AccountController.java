@@ -7,10 +7,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,13 +27,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_NON_LOGGED;
+import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
 import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/accounts")
+@Tag(name = "Accounts", description = "Account methods with CRUD functions")
 public interface AccountController {
 
-    @Operation(summary = "Perform a login for a user")
+    @Operation(summary = "Perform a login for a user", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -58,7 +64,7 @@ public interface AccountController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
-    @Operation(summary = "Perform a logout for a user")
+    @Operation(summary = "Perform a logout for a user", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -81,7 +87,7 @@ public interface AccountController {
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
-    @Operation(summary = "Send recovery credentials (an email with token in url)")
+    @Operation(summary = "Send recovery credentials (an email with token in url)", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -112,7 +118,7 @@ public interface AccountController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email)", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException, JOSEException;
 
-    @Operation(summary = "Validate recovery token from email")
+    @Operation(summary = "Validate recovery token from email", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -127,7 +133,7 @@ public interface AccountController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Recovery token not valid", value = Messages.Error.RECOVERY_TOKEN_NOT_VALID_NOT_FOUND),
-                @ExampleObject(name = "JWT not for recovery", value = Messages.Error.JWT_NOT_FOR_RECOVERY),
+                @ExampleObject(name = "JWT not for recovery", value = Messages.Error.JWT_NOT_FOR_RECOVERY_REFRESH),
             })
     )
     @ApiResponse(
@@ -143,7 +149,7 @@ public interface AccountController {
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestParam(name = "recovery-token") String token) throws ParseException;
 
-    @Operation(summary = "Set new credentials for the user")
+    @Operation(summary = "Set new credentials for the user", description = SWAGGER_ROLE_OPERATION_NON_LOGGED)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -162,7 +168,31 @@ public interface AccountController {
     )
     @PostMapping("/new-credentials")
     ResponseEntity<?> newCredentials(
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password)", required = true)
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User credentials (email + password) *token not required for this action*", required = true)
             @RequestBody UserCredentialsDto userCredentials) throws ParseException;
+
+    @Operation(summary = "Set new credentials for the user", description = SWAGGER_ROLE_OPERATION_USER)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Tokens recreated", value = Messages.Info.TOKEN_REFRESHED)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Refresh token not valid", value = Messages.Error.REFRESH_TOKEN_NOT_VALID)
+            })
+    )
+    @PostMapping("/refresh-token")
+    @PreAuthorize(USER_LEVEL)
+    ResponseEntity<?> refreshToken(
+        HttpServletRequest request, HttpServletResponse response,
+        @Parameter(description = "Valid refresh JWT of the user to get new token", required = true)
+            @RequestAttribute("Authorization") @UserFromTokenInDb String refreshToken) throws ParseException, JOSEException;
 
 }

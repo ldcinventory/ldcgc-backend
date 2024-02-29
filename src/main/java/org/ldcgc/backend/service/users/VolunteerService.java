@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.users;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 
@@ -13,7 +14,7 @@ public interface VolunteerService {
 
     ResponseEntity<?> getVolunteer(String builderAssistantId);
 
-    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId);
+    ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField);
 
     ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto);
 
@@ -21,4 +22,5 @@ public interface VolunteerService {
 
     ResponseEntity<?> deleteVolunteer(String builderAssistantId);
 
+    ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document);
 }

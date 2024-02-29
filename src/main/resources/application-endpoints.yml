@@ -3,6 +3,8 @@ exempted:
   GET:
     - "/api/eula"
   POST:
+    - "/api/accounts/logout"
+    - "/api/refresh-token"
   PUT:
     - "/api/eula"
   PATCH:

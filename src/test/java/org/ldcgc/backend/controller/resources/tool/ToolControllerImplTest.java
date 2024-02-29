@@ -43,8 +43,12 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+<<<<<<< HEAD
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.mockito.BDDMockito.given;
+=======
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+>>>>>>> develop
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -123,7 +127,11 @@ class ToolControllerImplTest {
         ResponseEntity<?> response = controller.createTool(tool);
 
         verify(service, times(1)).createTool(tool);
+<<<<<<< HEAD
         assertTrue(Objects.nonNull(response));*/
+=======
+        assertNotNull(response);
+>>>>>>> develop
     }
 
     @Test

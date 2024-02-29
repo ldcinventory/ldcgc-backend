@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public interface ToolService {
     ResponseEntity<?> getTool(Integer toolId);
-    ResponseEntity<?> createTool(ToolDto tool);
+    ResponseEntity<?> createTool(ToolDto toolDto);
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
     ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status);

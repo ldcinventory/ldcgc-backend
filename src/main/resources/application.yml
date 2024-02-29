@@ -60,11 +60,14 @@ spring:
       naming.implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     properties:
       hibernate:
-        format_sql: false # true for showing the queries
-        show_sql: false
+        format_sql: ${SHOW_SQL:false} # true for format the queries (requires show_sql to true)
+        show_sql: ${SHOW_SQL:false}
     defer-datasource-initialization: true # load schema from entities
     show-sql: false # show sql queries formatted (true for formatted, requires spring.jpa.properties.hibernate.show_sql and spring.jpa.properties.hibernate.format_sql)
-
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:4MB} # default is 1MB in Spring Boot
+      max-request-size: ${MAX_REQUEST_SIZE:40MB} # 10 images per request max @ 4MB per image. default is 10MB in Spring Boot
 
 # ---- SERVER ----
 server:
@@ -95,3 +98,4 @@ logging:
 
 eula-standard: "https://docs.google.com/document/d/e/2PACX-1vTMAT1BQXKqh0zNooCJPFCWHYP7lXUGXdVemuGbZt9DgkZIoVoBwLPnx7DBzjwyJ0LxCpNfRKUA3nfl/pub?embedded=true"
 eula-managers: "https://docs.google.com/document/d/e/2PACX-1vSXbZBtWjquXaJr9Spx7_LD9KNWg7t4G3Kxc7iGk4ZDZEhl5jVfO11ijCEAnoQY9RCN9lQqo5J6KBz4/pub?embedded=true"
+

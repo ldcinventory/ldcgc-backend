@@ -16,7 +16,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
+import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
@@ -104,7 +105,7 @@ public class UserControllerImplTest {
 
         mockedUser = getRandomMockedUserDto();
 
-        setAuthenticationForRequest();
+        setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 
     }
 
@@ -265,12 +266,6 @@ public class UserControllerImplTest {
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.USER_DELETED))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
-    }
-
-    private void setAuthenticationForRequest() throws ParseException {
-        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
-        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
-        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
     }
 
 }

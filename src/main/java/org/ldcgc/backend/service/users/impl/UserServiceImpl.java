@@ -23,8 +23,8 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +35,8 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+
+import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 
 @Component
 @RequiredArgsConstructor
@@ -177,6 +179,7 @@ public class UserServiceImpl implements UserService {
             .email(userDto.getEmail()).password(userDto.getPassword()).build();
 
         // when modifying my user, return new token
+        cleanLocalTokensFromUserId(userEntity.getId(), true);
         tokenRepository.deleteAllTokensFromUser(userEntity.getId());
         ResponseEntity<?> response = accountService.login(credentials);
         return Constructor.buildResponseMessageObjectHeader(HttpStatus.CREATED, Messages.Info.USER_UPDATED, response.getBody(), response.getHeaders());
@@ -187,6 +190,7 @@ public class UserServiceImpl implements UserService {
             throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND);
 
         userRepository.deleteById(userId);
+        cleanLocalTokensFromUserId(userId, true);
         tokenRepository.deleteAllTokensFromUser(userId);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.USER_DELETED);

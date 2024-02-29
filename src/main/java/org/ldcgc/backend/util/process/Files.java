@@ -1,4 +1,4 @@
-package org.ldcgc.backend.util.retrieving;
+package org.ldcgc.backend.util.process;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -36,12 +36,11 @@ public class Files {
                 csvArrayList.add(values);
             }
 
-            return csvArrayList;
         } catch (IOException e) {
             log.warn("File %s not found".formatted(file.getFilename()));
         }
 
-        return null;
+        return csvArrayList;
 
     }
 

@@ -16,16 +16,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StatusConverter;
+import org.ldcgc.backend.db.mapper.StockTypeConverter;
+import org.ldcgc.backend.db.mapper.StringArrayConverter;
 import org.ldcgc.backend.db.mapper.TimeUnitConverter;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
@@ -62,11 +64,16 @@ public class Tool {
 
     private Float weight;
 
+    @Convert(converter = StockTypeConverter.class)
+    private EStockType stockWeightType;
+
     private Float price;
 
     private LocalDate purchaseDate;
 
-    private String urlImages;
+    @Convert(converter = StringArrayConverter.class)
+    @Column(columnDefinition = "text")
+    private String[] urlImages;
 
     private Integer maintenancePeriod;
 
@@ -74,9 +81,9 @@ public class Tool {
     @Column(columnDefinition = "int")
     private ETimeUnit maintenanceTime;
 
-    private LocalDateTime lastMaintenance;
+    private LocalDate lastMaintenance;
 
-    private LocalDateTime nextMaintenance;
+    private LocalDate nextMaintenance;
 
     @OneToOne
     @JoinColumn(name = "lastMaintenanceDetails_id", referencedColumnName = "id")

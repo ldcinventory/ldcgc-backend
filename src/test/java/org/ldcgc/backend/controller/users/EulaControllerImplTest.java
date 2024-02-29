@@ -14,7 +14,7 @@ import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.EulaService;
 import org.ldcgc.backend.util.common.EEULAStatus;
 import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
+import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
@@ -65,7 +66,6 @@ public class EulaControllerImplTest {
     private final String requestRoot = "/eula";
 
     private MockMvc mockMvc;
-    private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
     public void init() throws ParseException {
@@ -77,7 +77,7 @@ public class EulaControllerImplTest {
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setApplicationContext(context);
-        constrainValidationFactory = new TestConstrainValidationFactory(context);
+        TestConstrainValidationFactory constrainValidationFactory = new TestConstrainValidationFactory(context);
         validatorFactoryBean.setConstraintValidatorFactory(constrainValidationFactory);
         validatorFactoryBean.setProviderClass(HibernateValidator.class);
         validatorFactoryBean.afterPropertiesSet();
@@ -89,7 +89,7 @@ public class EulaControllerImplTest {
             .setHandlerExceptionResolvers()
             .build();
 
-        setAuthenticationForRequest();
+        setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
     }
 
     @Test
@@ -127,9 +127,4 @@ public class EulaControllerImplTest {
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
-    private void setAuthenticationForRequest() throws ParseException {
-        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
-        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
-        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
-    }
 }

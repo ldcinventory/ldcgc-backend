@@ -3,8 +3,8 @@ package org.ldcgc.backend.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -52,7 +52,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, @NotNull HttpHeaders headers, HttpStatusCode status, @NotNull WebRequest request) {
         ApiError apiError = ApiError.builder()
             .status(status.value())
-            .endpoint(ex.getAllValidationResults().getFirst().getMethodParameter().getMethod().getName())
+            .endpoint(Objects.requireNonNull(ex.getAllValidationResults().getFirst().getMethodParameter().getMethod()).getName())
             .clazz(ex.getAllValidationResults().getFirst().getMethodParameter().getDeclaringClass().getName())
             .method(((ServletWebRequest) request).getRequest().getAttribute("org.springframework.web.util.ServletRequestPathUtils.PATH").toString())
             .build();
@@ -73,6 +73,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             .message(error)
             .build();
         return Constructor.buildExceptionResponseObject(HttpStatus.BAD_REQUEST, apiError);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex) {
+        ApiError apiError = ApiError.builder()
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+            .message(Messages.Error.UNEXPECTED_ERROR)
+            .error(ApiSubError.builder().message(ex.getLocalizedMessage()).build())
+            .build();
+
+        return Constructor.buildExceptionResponseObject(HttpStatus.INTERNAL_SERVER_ERROR, apiError);
     }
 
 }

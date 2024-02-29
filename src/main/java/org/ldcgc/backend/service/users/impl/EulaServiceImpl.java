@@ -9,8 +9,8 @@ import org.ldcgc.backend.payload.dto.users.EulaDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.EulaService;
 import org.ldcgc.backend.util.common.EEULAStatus;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.common.ERole.ROLE_USER;
@@ -99,6 +100,7 @@ public class EulaServiceImpl implements EulaService {
 
             case REJECT -> {
                 String rejectionMessage;
+                cleanLocalTokensFromUserId(user.getId(), true);
                 tokenRepository.deleteAllTokensFromUser(user.getId());
                 if(user.getAcceptedEULA() == null) {
                     // if standard user doesn't accept EULA, delete

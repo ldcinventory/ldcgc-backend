@@ -30,9 +30,10 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.UserServiceImpl;
 import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.ldcgc.backend.util.retrieving.Messages;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,10 +44,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
@@ -113,11 +115,11 @@ class UserServiceImplTest {
         doReturn(Optional.of(UserMapper.MAPPER.toEntity(user))).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.getMyUser(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(userExpected, responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).findById(any());
@@ -157,16 +159,16 @@ class UserServiceImplTest {
         final String signature = mockedSignedJWT.getParsedParts()[2].toString();
         headers.add("x-signature-token", signature);
 
-        doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, user, headers)).when(accountService).login(credentials);
+        doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, user, headers)).when(accountService).login(any(UserCredentialsDto.class));
 
         ResponseEntity<?> response = userService.updateMyUser(mockedToken, user);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertTrue(Objects.nonNull(responseBody));
+        assertNotNull(responseBody);
 
         Response.DTO responseData = (Response.DTO) responseBody.getData();
-        assertTrue(Objects.nonNull(responseData));
+        assertNotNull(responseData);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(Messages.Info.USER_UPDATED, responseBody.getMessage());
@@ -209,7 +211,7 @@ class UserServiceImplTest {
         doReturn(true).when(userRepository).existsById(user.getId());
 
         ResponseEntity<?> response = userService.deleteMyUser(mockedToken);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -263,15 +265,15 @@ class UserServiceImplTest {
         final User userEntity = UserMapper.MAPPER.toEntity(user);
 
         doReturn(Optional.empty()).when(userRepository).findByEmail(user.getEmail());
-        doReturn(userEntity).when(userRepository).save(userEntity);
+        doReturn(userEntity).when(userRepository).save(Mockito.any(User.class));
 
         ResponseEntity<?> response = userService.createUser(mockedToken, user);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(Messages.Info.USER_CREATED, responseBody.getMessage());
-        assertEquals(userExpected, responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(userRepository, atMostOnce()).save(any());
@@ -301,11 +303,11 @@ class UserServiceImplTest {
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.getUser(user.getId());
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(userExpected, responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -320,11 +322,11 @@ class UserServiceImplTest {
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.listUsers(null, null, null, user.getId());
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(userExpected, responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -333,19 +335,23 @@ class UserServiceImplTest {
     public void whenListUsersUnfiltered_returnMultipleUsers() {
         final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
         final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
-        final List<UserDto> usersExpected = users.stream().map(u -> u.toBuilder().password(null).build()).toList();
+        final List<UserDto> usersExpected = users.stream().map(u ->
+            u.toBuilder()
+                .password(null)
+                .volunteer(u.getVolunteer().toBuilder().absences(null).build())
+            .build()).toList();
 
         Page<User> userPage = new PageImpl<>(userEntities);
 
         doReturn(userPage).when(userRepository).findAll(any(Pageable.class));
 
         ResponseEntity<?> response = userService.listUsers(0, 5, null, null);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
-        assertEquals(usersExpected, responseBody.getData());
+        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -354,19 +360,23 @@ class UserServiceImplTest {
     public void whenListUsersFiltered_returnMultipleUsers() {
         final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
         final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
-        final List<UserDto> usersExpected = users.stream().map(u -> u.toBuilder().password(null).build()).toList();
+        final List<UserDto> usersExpected = users.stream().map(u ->
+            u.toBuilder()
+                .password(null)
+                .volunteer(u.getVolunteer().toBuilder().absences(null).build())
+            .build()).toList();
 
         Page<User> userPage = new PageImpl<>(userEntities);
 
         doReturn(userPage).when(userRepository).findAllFiltered(anyString(), any(Pageable.class));
 
         ResponseEntity<?> response = userService.listUsers(0, 5, "x", null);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
-        assertEquals(usersExpected, responseBody.getData());
+        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -770,10 +780,10 @@ class UserServiceImplTest {
         UserCredentialsDto credentials = UserCredentialsDto.builder()
             .email(userDtoUpdating.getEmail()).password(userDtoUpdating.getPassword()).build();
 
-        doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, userDtoExpected, headers)).when(accountService).login(credentials);
+        doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, userDtoExpected, headers)).when(accountService).login(any(UserCredentialsDto.class));
 
         ResponseEntity<?> response = userService.updateUser(mockedToken, userId, userDtoUpdating);
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         Response.DTO responseData = (Response.DTO) responseBody.getData();
@@ -819,7 +829,7 @@ class UserServiceImplTest {
         doReturn(true).when(userRepository).existsById(user.getId());
 
         ResponseEntity<?> response = userService.deleteUser(user.getId());
-        assertTrue(Objects.nonNull(response));
+        assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);

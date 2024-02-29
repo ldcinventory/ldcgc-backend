@@ -1,19 +1,25 @@
 package org.ldcgc.backend.payload.dto.users;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Value
-@Builder
+@Getter
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AbsenceDto {
 
-    Integer id;
-    LocalDate dateFrom;
-    LocalDate dateTo;
-    Integer volunteerId;
+    private Integer id;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dateFrom;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dateTo;
+
+    private String builderAssistantId;
 
 }

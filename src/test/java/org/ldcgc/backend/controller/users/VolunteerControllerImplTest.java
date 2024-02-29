@@ -17,7 +17,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +27,24 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
+import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.apiRoot;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
+import static org.ldcgc.backend.base.factory.TestRequestFactory.postMultipartRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
@@ -73,7 +78,6 @@ public class VolunteerControllerImplTest {
 
     private MockMvc mockMvc;
     private UserDto mockedUser;
-    private TestConstrainValidationFactory constrainValidationFactory;
 
     @BeforeEach
     public void init() throws ParseException {
@@ -85,7 +89,7 @@ public class VolunteerControllerImplTest {
 
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setApplicationContext(context);
-        constrainValidationFactory = new TestConstrainValidationFactory(context);
+        TestConstrainValidationFactory constrainValidationFactory = new TestConstrainValidationFactory(context);
         validatorFactoryBean.setConstraintValidatorFactory(constrainValidationFactory);
         validatorFactoryBean.setProviderClass(HibernateValidator.class);
         validatorFactoryBean.afterPropertiesSet();
@@ -99,7 +103,7 @@ public class VolunteerControllerImplTest {
 
         mockedUser = getRandomMockedUserDto();
 
-        setAuthenticationForRequest();
+        setAuthenticationForRequest(jwtUtils, userRepository, userValidation);
 
     }
 
@@ -174,7 +178,7 @@ public class VolunteerControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(volunteers).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(volunteerService.listVolunteers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull()))
+        given(volunteerService.listVolunteers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull(), Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
         mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER)
@@ -225,10 +229,24 @@ public class VolunteerControllerImplTest {
             .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
-    private void setAuthenticationForRequest() throws ParseException {
-        given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
-        given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
-        given(userValidation.userFromTokenExistsInDB(Mockito.anyString())).willReturn(Boolean.TRUE);
+    @Test
+    public void uploadVolunteers() throws Exception {
+        final String request = requestRoot + "/upload";
+
+        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+
+        given(volunteerService.uploadVolunteers(Mockito.anyInt(), Mockito.any(MultipartFile.class)))
+            .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 10)));
+
+        MockMultipartFile file = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());
+
+        mockMvc.perform(postMultipartRequest(request, file, ERole.ROLE_ADMIN)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .param("groupId", "8"))
+            .andDo(print())
+            .andExpect(status().isCreated())
+            .andExpect(content().string(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 10)))
+            .andExpect(content().encoding(StandardCharsets.UTF_8));
     }
 
 }

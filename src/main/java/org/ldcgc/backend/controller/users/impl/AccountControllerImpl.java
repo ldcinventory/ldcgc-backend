@@ -1,6 +1,8 @@
 package org.ldcgc.backend.controller.users.impl;
 
 import com.nimbusds.jose.JOSEException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.AccountController;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
@@ -34,6 +36,10 @@ public class AccountControllerImpl implements AccountController {
 
     public ResponseEntity<?> newCredentials(UserCredentialsDto userCredentials) throws ParseException {
         return accountService.newCredentials(userCredentials);
+    }
+
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws ParseException, JOSEException {
+        return accountService.refreshToken(request, response, refreshToken);
     }
 
 }

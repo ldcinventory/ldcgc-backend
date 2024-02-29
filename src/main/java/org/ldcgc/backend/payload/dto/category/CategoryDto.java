@@ -2,26 +2,26 @@ package org.ldcgc.backend.payload.dto.category;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
-import lombok.Value;
-import org.ldcgc.backend.db.model.category.Category;
 
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-@Value
+@Getter
 @Builder
 @JsonInclude(NON_NULL)
 public class CategoryDto {
 
-    Integer id;
-    String name;
-    Boolean locked;
+    private Integer id;
+    private String name;
+    private Boolean locked;
     @JsonInclude(NON_NULL)
-    Category parent;
+    private CategoryDto parent;
     @JsonInclude(NON_EMPTY)
     @Singular("category")
-    List<CategoryDto> categories;
+    private List<CategoryDto> categories;
+
 }
