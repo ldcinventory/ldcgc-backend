@@ -43,12 +43,10 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-<<<<<<< HEAD
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.mockito.BDDMockito.given;
-=======
 import static org.junit.jupiter.api.Assertions.assertNotNull;
->>>>>>> develop
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -122,16 +120,9 @@ class ToolControllerImplTest {
                 .andExpect(content().json(mapper.writeValueAsString(response)))
                 .andExpect(content().encoding(StandardCharsets.UTF_8));
 
-        /*
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tool).build())).when(service).createTool(tool);
-        ResponseEntity<?> response = controller.createTool(tool);
-
-        verify(service, times(1)).createTool(tool);
-<<<<<<< HEAD
-        assertTrue(Objects.nonNull(response));*/
-=======
+        verify(toolService, times(1)).createTool(tool);
         assertNotNull(response);
->>>>>>> develop
+
     }
 
     @Test
