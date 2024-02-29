@@ -61,10 +61,11 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, String filterString) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortString));
 
-        Page<ToolRegister> page = Optional.ofNullable(filterString)
+        Page<ToolRegisterDto> page = Optional.ofNullable(filterString)
                 .filter(fs -> !fs.isEmpty())
                 .map(fs -> repository.findAllFiltered(fs, pageable))
-                .orElse(repository.findAll(pageable));
+                .orElse(repository.findAll(pageable))
+                .map(ToolRegisterMapper.MAPPER::toDto);
 
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
