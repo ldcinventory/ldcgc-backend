@@ -32,5 +32,5 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
     boolean existsByBuilderAssistantId(String builderAssistantId);
 
     @Query("SELECT v FROM Volunteer v ORDER BY random() LIMIT 1")
-    Volunteer getRandomvolunteer();
+    Volunteer getRandomVolunteer();
 }

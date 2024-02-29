@@ -62,7 +62,7 @@ public interface ToolRegisterController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllRegisters(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
-                                      @RequestParam(required = false, defaultValue = "outRegistration") String sortString,
+                                      @RequestParam(required = false, defaultValue = "registerFrom") String sortString,
                                       @RequestParam(required = false) String filterString);
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")

@@ -9,11 +9,9 @@ import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.retrieving.Messages;
@@ -80,7 +78,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
 
-        if(Objects.nonNull(register.getInRegistration()))
+        if(Objects.nonNull(register.getRegisterFrom()))
             toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
 
 

@@ -12,8 +12,6 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     Optional<Tool> findFirstByBarcode(String barcode);
 
-    boolean existsByBarcode(String barcode);
-
     @Query("""
             SELECT t FROM Tool t
             WHERE LOWER(t.brand.name) LIKE LOWER(CONCAT('%', :brand,'%'))
@@ -23,5 +21,7 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
             """)
     Page<Tool> findAllFiltered(String brand, String model, String description, Integer statusId, Pageable pageable);
 
+    @Query("SELECT t FROM Tool t ORDER BY random() LIMIT 1")
+    Tool getRandomTool();
 
 }

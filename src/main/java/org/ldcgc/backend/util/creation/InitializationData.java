@@ -42,6 +42,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -299,6 +300,11 @@ public class InitializationData {
 
             categoryRepository.saveAndFlush(brand);
 
+            // REGISTRATION (TOOLS + CONSUMABLES) init data
+            ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
+            long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+            long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
+
             // --> TOOLS (select t.Barcode, b.Name as brand, t.Model, t.Name as name,
             //                   t.Description, c.Name as category, t.Weight, t.Price, t.PurchaseDate
             //            from Tools t, Brands b, Categories c
@@ -349,6 +355,21 @@ public class InitializationData {
             toolRepository.saveAll(toolEntities.values());
 
             // TOOLS REGISTRATION
+            if (toolsRegistrationTestData)
+                IntStream.range(0, 10_000)
+                    .parallel()
+                    .forEach(i -> {
+                        LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+                        LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+
+                        toolRegisterRepository.saveAndFlush(
+                            ToolRegister.builder()
+                                .registerFrom(timeIn)
+                                .registerTo(timeOut)
+                                .tool(toolRepository.getRandomTool())
+                                .volunteer(volunteerRepository.getRandomVolunteer())
+                                .build());
+                    });
 
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
             //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
@@ -398,10 +419,6 @@ public class InitializationData {
             consumableRepository.saveAll(consumableEntities.values());
 
             // CONSUMABLES REGISTRATION
-            ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
-            long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
-            long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
-
             if (consumablesRegistrationTestData)
                 IntStream.range(0, 10_000)
                     .parallel()
@@ -418,7 +435,7 @@ public class InitializationData {
                                 .stockAmountRequest(amountRequest)
                                 .stockAmountReturn(amountReturn)
                                 .consumable(consumableRepository.getRandomConsumable())
-                                .volunteer(volunteerRepository.getRandomvolunteer())
+                                .volunteer(volunteerRepository.getRandomVolunteer())
                                 .closedRegister(true)
                                 .build());
                     });
@@ -496,7 +513,7 @@ public class InitializationData {
                 .role(ERole.ROLE_ADMIN)
                 .acceptedEULA(LocalDateTime.now())
                 .acceptedEULAManager(LocalDateTime.now())
-                .volunteer(volunteerRepository.getRandomvolunteer())
+                .volunteer(volunteerRepository.getRandomVolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Coordinador")).findFirst()
                     .orElse(null))
@@ -531,7 +548,7 @@ public class InitializationData {
                 .role(ERole.ROLE_MANAGER)
                 .acceptedEULA(LocalDateTime.now())
                 .acceptedEULAManager(LocalDateTime.now())
-                .volunteer(volunteerRepository.getRandomvolunteer())
+                .volunteer(volunteerRepository.getRandomVolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Coordinador")).findFirst()
                     .orElse(null))
@@ -564,7 +581,7 @@ public class InitializationData {
                 .group(_8g)
                 .role(ERole.ROLE_USER)
                 .acceptedEULA(LocalDateTime.now())
-                .volunteer(volunteerRepository.getRandomvolunteer())
+                .volunteer(volunteerRepository.getRandomVolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Voluntario")).findFirst()
                     .orElse(null))
@@ -596,22 +613,6 @@ public class InitializationData {
                 userRepository.saveAndFlush(user);
             });
 
-            toolRegisterRepository.save(ToolRegister.builder()
-                    .inRegistration(LocalDateTime.of(2023, 12, 1, 9, 35))
-                    .outRegistration(LocalDateTime.of(2023, 12, 2, 10, 40))
-                    .tool(Tool.builder().id(1).build())
-                    .volunteer(Volunteer.builder().id(1).build())
-                    .build());
-            toolRegisterRepository.save(ToolRegister.builder()
-                    .outRegistration(LocalDateTime.of(2023, 12, 1, 9, 35))
-                    .tool(Tool.builder().id(2).build())
-                    .volunteer(Volunteer.builder().id(2).build())
-                    .build());
-            toolRegisterRepository.save(ToolRegister.builder()
-                    .outRegistration(LocalDateTime.of(2023, 12, 1, 9, 35))
-                    .tool(Tool.builder().id(3).build())
-                    .volunteer(Volunteer.builder().id(3).build())
-                    .build());
         };
 
     }
