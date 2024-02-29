@@ -1,12 +1,14 @@
 package org.ldcgc.backend.util.creation;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.history.Maintenance;
+import org.ldcgc.backend.db.model.history.ToolRegister;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Tool;
@@ -87,9 +89,11 @@ public class InitializationData {
 
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${DB_NAME:mydb}") private String dbName;
+    @Value("${DB_NAME:mydb}")
+    private String dbName;
 
-    @Value("${LOAD_INITIAL_DATA:false}") private boolean loadData;
+    @Value("${LOAD_INITIAL_DATA:false}")
+    private boolean loadData;
 
     @Value("${TOOLS_REGISTRATION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
     @Value("${CONSUMABLES_REGISTRATION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
@@ -97,17 +101,24 @@ public class InitializationData {
     @Value("classpath:chests.csv") Resource chestsCSV;
     @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;
 
-    @Value("classpath:consumables.csv") Resource consumablesCSV;
-    @Value("classpath:tools.csv") Resource toolsCSV;
-    @Value("classpath:maintenance.csv") Resource maintenanceCSV;
+    @Value("classpath:consumables.csv")
+    Resource consumablesCSV;
+    @Value("classpath:tools.csv")
+    Resource toolsCSV;
+    @Value("classpath:maintenance.csv")
+    Resource maintenanceCSV;
 
-    @Value("classpath:users.csv") Resource usersCSV;
-    @Value("classpath:volunteers.csv") Resource volunteersCSV;
+    @Value("classpath:users.csv")
+    Resource usersCSV;
+    @Value("classpath:volunteers.csv")
+    Resource volunteersCSV;
+    @Value("classpath:tool_register.csv")
+    Resource toolRegisterCSV;
 
     @Bean
     @Profile("!pro")
     InitializingBean sendDatabase() {
-        if(!loadData) return null;
+        if (!loadData) return null;
 
         return () -> {
             // execute when changing database version
@@ -121,67 +132,67 @@ public class InitializationData {
 
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
             locationRepository.save(Location.builder()
-                .name("Guadalajara SR")
-                .description("Calle León Felipe, 6, bajo derecha")
-                .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
-                .level(0)
-                .build());
+                    .name("Guadalajara SR")
+                    .description("Calle León Felipe, 6, bajo derecha")
+                    .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
+                    .level(0)
+                    .build());
             // Leganés SR Maestro (Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés)
             locationRepository.save(Location.builder()
-                .name("Leganés SR Maestro")
-                .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
-                .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
-                .level(0)
-                .build());
+                    .name("Leganés SR Maestro")
+                    .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
+                    .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
+                    .level(0)
+                    .build());
             // Parla SR Zurbarán (Salón del Reino situado en Calle Zurbarán 1 posterior Parla)
             locationRepository.save(Location.builder()
-                .name("Parla SR Zurbarán")
-                .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
-                .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
-                .level(0)
-                .build());
+                    .name("Parla SR Zurbarán")
+                    .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
+                    .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
+                    .level(0)
+                    .build());
             // Local/Almacén Cristopher
             locationRepository.save(Location.builder()
-                .name("Local/Almacén Cristopher")
-                .description("Local/Almacén Cristopher")
-                .level(0)
-                .build());
+                    .name("Local/Almacén Cristopher")
+                    .description("Local/Almacén Cristopher")
+                    .level(0)
+                    .build());
             // Local/Almacén Geñi
             locationRepository.save(Location.builder()
-                .name("Local/Almacén Geñi")
-                .description("Local/Almacén Geñi")
-                .level(0)
-                .build());
+                    .name("Local/Almacén Geñi")
+                    .description("Local/Almacén Geñi")
+                    .level(0)
+                    .build());
             // Betel
             locationRepository.save(Location.builder()
-                .name("Betel")
-                .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
-                .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
-                .level(0)
-                .build());
+                    .name("Betel")
+                    .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
+                    .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
+                    .level(0)
+                    .build());
             // SA Ajalvir
             locationRepository.save(Location.builder()
-                .name("SA Ajalvir")
-                .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
-                .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
-                .level(0)
-                .build());
+                    .name("SA Ajalvir")
+                    .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
+                    .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
+                    .level(0)
+                    .build());
             // Oficina (no es necesario indicar dirección)
             locationRepository.save(Location.builder()
-                .name("Oficina")
-                .description("Oficina")
-                .level(0)
-                .build());
+                    .name("Oficina")
+                    .description("Oficina")
+                    .level(0)
+                    .build());
             // Ferreteria (no es necesario indicar dirección)
             // ==> "Arcón" o "Estantería" estará ubicado en Ferreteria
             Location ferreteria = new Location("Ferretería", 0);
             ferreteria.setLocations(List.of(
-                new Location("Estantería 1", ferreteria, 1),
-                new Location("Estantería 2", ferreteria, 1),
-                new Location("Arcón-suelo 1", ferreteria, 1),
-                new Location("Arcón-suelo 2", ferreteria, 1),
-                new Location("Arcón-medio 1", ferreteria, 1),
-                new Location("Arcón-medio 2", ferreteria, 1)
+                    new Location("Estantería 1", ferreteria, 1),
+                    new Location("Estantería 2", ferreteria, 1),
+                    new Location("Arcón-suelo 1", ferreteria, 1),
+                    new Location("Arcón-suelo 2", ferreteria, 1),
+                    new Location("Arcón-medio 1", ferreteria, 1),
+                    new Location("Arcón-medio 2", ferreteria, 1)
             ));
 
             ferreteria = locationRepository.save(ferreteria);
@@ -206,13 +217,14 @@ public class InitializationData {
                 locationRepository.save(entityFromMap);
             });
 
+
             // GROUP
 
             final Group _8g = groupRepository.save(Group.builder()
-                .name("Grupo 8 de Construcción")
-                .phoneNumber("+34630480855")
-                .location(ferreteria)
-                .build());
+                    .name("Grupo 8 de Construcción")
+                    .phoneNumber("+34630480855")
+                    .location(ferreteria)
+                    .build());
 
             // CATEGORIES (select name from categories;)
 
@@ -220,17 +232,17 @@ public class InitializationData {
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
 
             Category resource = Category.builder()
-                .name("Recursos")
-                .locked(true)
-                .build();
+                    .name("Recursos")
+                    .locked(true)
+                    .build();
 
             List<Category> resources = resourceNames.stream()
-                .map(c -> Category.builder()
-                        .name(c)
-                        .parent(resource)
-                        .locked(true)
-                        .build())
-                .toList();
+                    .map(c -> Category.builder()
+                            .name(c)
+                            .parent(resource)
+                            .locked(true)
+                            .build())
+                    .toList();
 
             resource.setCategories(resources);
 
@@ -273,21 +285,26 @@ public class InitializationData {
             List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
             Category brand = Category.builder()
-                .name("Marcas")
-                .locked(true)
-                .build();
+                    .name("Marcas")
+                    .locked(true)
+                    .build();
 
             List<Category> brands = brandNames.stream()
-                .map(b -> Category.builder()
-                        .name(b)
-                        .parent(brand)
-                        .locked(true)
-                        .build())
-                .toList();
+                    .map(b -> Category.builder()
+                            .name(b)
+                            .parent(brand)
+                            .locked(true)
+                            .build())
+                    .toList();
 
             brand.setCategories(brands);
 
             categoryRepository.saveAndFlush(brand);
+
+            // REGISTRATION (TOOLS + CONSUMABLES) init data
+            ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
+            long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+            long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
 
             // --> TOOLS (select t.Barcode, b.Name as brand, t.Model, t.Name as name,
             //                   t.Description, c.Name as category, t.Weight, t.Price, t.PurchaseDate
@@ -339,6 +356,28 @@ public class InitializationData {
             toolRepository.saveAll(toolEntities.values());
 
             // TOOLS REGISTRATION
+            List<Integer> openedToolRegisters = new ArrayList<>();
+            if (toolsRegistrationTestData)
+                IntStream.range(0, 3_000)
+                    .parallel()
+                    .forEach(i -> {
+                        LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+                        LocalDateTime timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+
+                        Tool tool = toolRepository.getRandomTool();
+                        boolean isOpen = !openedToolRegisters.contains(tool.getId());
+
+                        if(isOpen)
+                            openedToolRegisters.add(tool.getId());
+
+                        toolRegisterRepository.saveAndFlush(
+                            ToolRegister.builder()
+                                .registerFrom(timeIn)
+                                .registerTo(isOpen ? null : timeOut)
+                                .tool(toolRepository.getRandomTool())
+                                .volunteer(volunteerRepository.getRandomVolunteer())
+                                .build());
+                    });
 
             // --> CONSUMABLES (select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
             //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
@@ -388,12 +427,9 @@ public class InitializationData {
             consumableRepository.saveAll(consumableEntities.values());
 
             // CONSUMABLES REGISTRATION
-            ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
-            long minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
-            long maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
-
+            List<Integer> openedConsumableRegisters = new ArrayList<>();
             if (consumablesRegistrationTestData)
-                IntStream.range(0, 10_000)
+                IntStream.range(0, 3_000)
                     .parallel()
                     .forEach(i -> {
                         LocalDateTime timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
@@ -401,15 +437,21 @@ public class InitializationData {
                         float amountRequest = new Random().nextFloat(0.01f, 20.00f);
                         float amountReturn = new Random().nextFloat(0.00f, amountRequest);
 
+                        Consumable consumable = consumableRepository.getRandomConsumable();
+                        boolean isOpen = !openedConsumableRegisters.contains(consumable.getId());
+
+                        if(isOpen)
+                            openedConsumableRegisters.add(consumable.getId());
+
                         consumableRegisterRepository.saveAndFlush(
                             ConsumableRegister.builder()
                                 .registerFrom(timeIn)
-                                .registerTo(timeOut)
+                                .registerTo(isOpen ? null : timeOut)
                                 .stockAmountRequest(amountRequest)
-                                .stockAmountReturn(amountReturn)
-                                .consumable(consumableRepository.getRandomConsumable())
-                                .volunteer(volunteerRepository.getRandomvolunteer())
-                                .closedRegister(true)
+                                .stockAmountReturn(isOpen ? null : amountReturn)
+                                .consumable(consumable)
+                                .volunteer(volunteerRepository.getRandomVolunteer())
+                                .closedRegister(!isOpen)
                                 .build());
                     });
 
@@ -425,6 +467,7 @@ public class InitializationData {
             //                 and m.VolunteerId = v.VolunteerId;
 
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
+
             maintenance.parallelStream().forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                 final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
@@ -442,9 +485,9 @@ public class InitializationData {
             // USERS
 
             Category responsibilityCat = Category.builder()
-                .name("Responsabilidades")
-                .locked(true)
-                .build();
+                    .name("Responsabilidades")
+                    .locked(true)
+                    .build();
 
             List<Category> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario").map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
 
@@ -457,14 +500,14 @@ public class InitializationData {
                             .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
             userRepository.save(User.builder()
-                .email("admin@admin")
-                .password(passwordEncoder.encode("admin"))
-                .group(_8g)
-                .role(ERole.ROLE_ADMIN)
-                .responsibility(responsibilitiesEntities.stream()
-                    .filter(r -> r.getName().equals("Coordinador")).findFirst()
-                    .orElse(null))
-                .build());
+                    .email("admin@admin")
+                    .password(passwordEncoder.encode("admin"))
+                    .group(_8g)
+                    .role(ERole.ROLE_ADMIN)
+                    .responsibility(responsibilitiesEntities.stream()
+                            .filter(r -> r.getName().equals("Coordinador")).findFirst()
+                            .orElse(null))
+                    .build());
 
             userRepository.save(User.builder()
                 .email("noeula@admin")
@@ -485,7 +528,7 @@ public class InitializationData {
                 .role(ERole.ROLE_ADMIN)
                 .acceptedEULA(LocalDateTime.now())
                 .acceptedEULAManager(LocalDateTime.now())
-                .volunteer(volunteerRepository.getRandomvolunteer())
+                .volunteer(volunteerRepository.getRandomVolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Coordinador")).findFirst()
                     .orElse(null))
@@ -520,7 +563,7 @@ public class InitializationData {
                 .role(ERole.ROLE_MANAGER)
                 .acceptedEULA(LocalDateTime.now())
                 .acceptedEULAManager(LocalDateTime.now())
-                .volunteer(volunteerRepository.getRandomvolunteer())
+                .volunteer(volunteerRepository.getRandomVolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Coordinador")).findFirst()
                     .orElse(null))
@@ -553,7 +596,7 @@ public class InitializationData {
                 .group(_8g)
                 .role(ERole.ROLE_USER)
                 .acceptedEULA(LocalDateTime.now())
-                .volunteer(volunteerRepository.getRandomvolunteer())
+                .volunteer(volunteerRepository.getRandomVolunteer())
                 .responsibility(responsibilitiesEntities.stream()
                     .filter(r -> r.getName().equals("Voluntario")).findFirst()
                     .orElse(null))

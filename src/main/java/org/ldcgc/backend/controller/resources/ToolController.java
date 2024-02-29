@@ -170,6 +170,7 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
+
     @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,

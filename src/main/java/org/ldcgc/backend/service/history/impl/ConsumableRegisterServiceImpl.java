@@ -52,12 +52,12 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
     public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String builderAssistantId, String consumableBarcode, LocalDateTime dateFrom, LocalDateTime dateTo, String sortField) {
         Pageable paging = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
-        Page<ConsumableRegister> consumableRegisters;
+        Page<ConsumableRegisterDto> consumableRegisters;
 
         if (ObjectUtils.allNull(builderAssistantId, consumableBarcode, dateFrom, dateTo))
-            consumableRegisters = consumableRegisterRepository.findAll(paging);
+            consumableRegisters = consumableRegisterRepository.findAll(paging).map(ConsumableRegisterMapper.MAPPER::toDto);
         else {
-            List<ConsumableRegister> consumableRegisterList = consumableRegisterRepository.findAll((Specification<ConsumableRegister>) (consumableRegister, query, cb) -> {
+            List<ConsumableRegisterDto> consumableRegisterList = consumableRegisterRepository.findAll((Specification<ConsumableRegister>) (consumableRegister, query, cb) -> {
                 List<Predicate> predicates = new ArrayList<>();
 
                 if (dateFrom != null)
@@ -77,7 +77,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
                 }
 
                 return cb.and(predicates.toArray(new Predicate[0]));
-            });
+            }).stream().map(ConsumableRegisterMapper.MAPPER::toDto).toList();
 
             int start = (int) paging.getOffset();
             int end = Math.min((start + paging.getPageSize()), consumableRegisterList.size());
@@ -85,7 +85,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             if (start > end)
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
-            List<ConsumableRegister> pageContent = consumableRegisterList.subList(start, end);
+            List<ConsumableRegisterDto> pageContent = consumableRegisterList.subList(start, end);
 
             consumableRegisters = new PageImpl<>(pageContent, paging, consumableRegisterList.size());
         }
@@ -93,10 +93,9 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         if (pageIndex > consumableRegisters.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
-        return Constructor.buildResponseMessageObjectPaged(HttpStatus.OK,
+        return Constructor.buildResponseMessageObject(HttpStatus.OK,
             String.format(Messages.Info.CONSUMABLE_REGISTER_LISTED, consumableRegisters.getTotalElements()),
-            PaginationDetails.fromPaging(paging, consumableRegisters),
-            consumableRegisters.getContent().stream().map(ConsumableRegisterMapper.MAPPER::toDto));
+            PaginationDetails.fromPaging(paging, consumableRegisters));
     }
 
     public ResponseEntity<?> createConsumableRegister(ConsumableRegisterDto consumableRegisterDto) {

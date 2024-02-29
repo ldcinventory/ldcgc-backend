@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,15 +31,15 @@ public class ToolRegister {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    private LocalDateTime inRegistration;
+    private LocalDateTime registerFrom;
 
-    private LocalDateTime outRegistration;
+    private LocalDateTime registerTo;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "tool_id", referencedColumnName = "id")
     private Tool tool;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
 

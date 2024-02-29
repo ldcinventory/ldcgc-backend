@@ -5,10 +5,13 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 @Getter
 @Builder(toBuilder = true)
 public class PaginationDetails {
 
+    private List<?> elements;
     private int numElements;
     private int elementsPerPage;
     private int elementsThisPage;
@@ -19,6 +22,7 @@ public class PaginationDetails {
 
     public static PaginationDetails fromPaging(Pageable pageable, Page<?> page) {
         PaginationDetails paginationDetails = PaginationDetails.builder()
+            .elements(page.getContent())
             .numElements((int) page.getTotalElements())
             .elementsPerPage(pageable.getPageSize())
             .actualPage(pageable.getPageNumber())

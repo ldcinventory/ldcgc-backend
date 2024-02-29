@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, JpaSpecificationExecutor<Volunteer> {
 
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
+    List<Volunteer> findAllByBuilderAssistantId(String builderAssistantId);
 
     @Query("""
             SELECT v FROM Volunteer v
@@ -31,5 +32,5 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
     boolean existsByBuilderAssistantId(String builderAssistantId);
 
     @Query("SELECT v FROM Volunteer v ORDER BY random() LIMIT 1")
-    Volunteer getRandomvolunteer();
+    Volunteer getRandomVolunteer();
 }
