@@ -29,12 +29,8 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
             """)
     List<Volunteer> findAllByNameAndLastName(String name, String lastName);
 
-<<<<<<< HEAD
-    Optional<Volunteer> findTopByIdNotNull();
-=======
     boolean existsByBuilderAssistantId(String builderAssistantId);
 
     @Query("SELECT v FROM Volunteer v ORDER BY random() LIMIT 1")
     Volunteer getRandomvolunteer();
->>>>>>> develop
 }

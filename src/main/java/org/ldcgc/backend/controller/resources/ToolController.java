@@ -170,36 +170,8 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
 
-<<<<<<< HEAD
-    @Operation(summary = "Get all tools, paginated and sorted. You can also include 4 filters: brand, model, description and status. Valid status: Disponible, No disponible, En mantenimiento, Dañado, Nueva, En desuso")
-    @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
-            content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class))
-            )
-    )
-    @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_404,
-            description = SwaggerConfig.HTTP_REASON_404,
-            content = @Content(mediaType = "application/json",
-                    examples = {
-                            @ExampleObject(name = "Status not found", value = Messages.Error.STATUS_NOT_FOUND)
-                    })
-    )
-    @GetMapping
-    @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-                                  @RequestParam(required = false, defaultValue = "25") Integer size,
-                                  @RequestParam(required = false, defaultValue = "name") String sortField,
-                                  @RequestParam(required = false, defaultValue = "") String brand,
-                                  @RequestParam(required = false, defaultValue = "") String model,
-                                  @RequestParam(required = false, defaultValue = "") String description,
-                                  @RequestParam(required = false) String status);
-    @Operation(summary = "Upload excel file to introduce all tools into the database. Any repeated barcodes will be updated instead.")
-=======
+
     @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
->>>>>>> develop
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_200,
             description = SwaggerConfig.HTTP_REASON_200,
