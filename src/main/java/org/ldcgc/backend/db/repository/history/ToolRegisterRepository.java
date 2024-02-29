@@ -10,8 +10,9 @@ public interface ToolRegisterRepository extends JpaRepository<ToolRegister, Inte
 
     @Query("""
             SELECT r FROM ToolRegister r
-            WHERE (LOWER(:filterString) LIKE ('opened') AND r.registerFrom IS NULL)
+            WHERE (LOWER(:filterString) LIKE ('opened') AND r.registerTo IS NULL)
             OR (LOWER(:filterString) LIKE ('closed') AND r.registerTo IS NOT NULL)
             """)
     Page<ToolRegister> findAllFiltered(String filterString, Pageable pageable);
+
 }
