@@ -9,6 +9,7 @@ import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
@@ -70,7 +71,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
                 Messages.Info.TOOL_REGISTER_LISTED.formatted(page.getTotalElements()),
-                page);
+                PaginationDetails.fromPaging(pageable, page));
     }
 
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
