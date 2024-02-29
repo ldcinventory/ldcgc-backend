@@ -17,6 +17,8 @@ public class ConsumableRegisterDto {
     private Integer id;
     @NotNull private String consumableBardcode;
     @NotNull private String volunteerBAId;
+    @NotNull private String volunteerName;
+    @NotNull private String volunteerLastName;
     private LocalDateTime registerFrom;
     private LocalDateTime registerTo;
     @NotNull private Float stockAmountRequest;
