@@ -38,16 +38,14 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     private final ToolService toolService;
 
     public ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto) {
-        String builderAssistantId = toolRegisterDto.getVolunteer().getBuilderAssistantId();
+        String builderAssistantId = toolRegisterDto.getVolunteerBuilderAssistantId();
         List<Volunteer> volunteers = volunteerRepository.findAllByBuilderAssistantId(builderAssistantId);
         if (volunteers.isEmpty())
             throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_VOLUNTEER_NOT_FOUND);
         else if (volunteers.size() > 1)
             throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS, builderAssistantId));
-        else if (!Objects.equals(volunteers.getFirst().getId(), toolRegisterDto.getVolunteer().getId()))
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID, builderAssistantId));
 
-        Tool tool = toolRepository.findById(toolRegisterDto.getTool().getId())
+        Tool tool = toolRepository.findFirstByBarcode(toolRegisterDto.getToolBarcode())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_TOOL_NOT_FOUND));
 
         if (!tool.getStatus().equals(EStatus.AVAILABLE))
@@ -59,13 +57,10 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, String filterString) {
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortString));
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, String status, String volunteer, String tool) {
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Boolean.TRUE.equals(descOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortString));
 
-        Page<ToolRegisterDto> page = Optional.ofNullable(filterString)
-                .filter(fs -> !fs.isEmpty())
-                .map(fs -> repository.findAllFiltered(fs, pageable))
-                .orElse(repository.findAll(pageable))
+        Page<ToolRegisterDto> page = repository.findAllFiltered(status, volunteer, tool, pageable)
                 .map(ToolRegisterMapper.MAPPER::toDto);
 
         return Constructor.buildResponseMessageObject(
@@ -77,6 +72,11 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
         ToolRegister register = repository.findById(registerId)
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+
+        if(!register.getTool().getBarcode().equals(registerDto.getToolBarcode()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BARCODE.formatted(registerDto.getToolBarcode()));
+        if(!register.getVolunteer().getBuilderAssistantId().equals(registerDto.getVolunteerBuilderAssistantId()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID.formatted(registerDto.getVolunteerBuilderAssistantId()));
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
 

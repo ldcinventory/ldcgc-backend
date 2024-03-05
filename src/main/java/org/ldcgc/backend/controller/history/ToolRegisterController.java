@@ -63,7 +63,11 @@ public interface ToolRegisterController {
     ResponseEntity<?> getAllRegisters(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
                                       @RequestParam(required = false, defaultValue = "registerFrom") String sortString,
-                                      @RequestParam(required = false) String filterString);
+                                      @RequestParam(required = false, defaultValue = "true") Boolean descOrder,
+                                      @RequestParam(required = false, defaultValue = "") String status,
+                                      @RequestParam(required = false, defaultValue = "") String volunteer,
+                                      @RequestParam(required = false, defaultValue = "") String tool
+    );
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")
     @ApiResponse(

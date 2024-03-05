@@ -43,16 +43,10 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-<<<<<<< HEAD
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
-import static org.mockito.BDDMockito.given;
-=======
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
->>>>>>> 442fbd8103363f635def456492647b4e84db3b6c
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

@@ -3,6 +3,7 @@ package org.ldcgc.backend.payload.dto.history;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 
@@ -14,9 +15,16 @@ import java.time.LocalDateTime;
 public class ToolRegisterDto {
 
     private Integer id;
+    @NotNull
     private LocalDateTime registerFrom;
     private LocalDateTime registerTo;
-    private ToolDto tool;
-    private VolunteerDto volunteer;
+    private String toolName;
+    @NotNull
+    private String toolBarcode;
+    private String[] toolUrlImages;
+    private String volunteerName;
+    private String volunteerLastName;
+    @NotNull
+    private String volunteerBuilderAssistantId;
 
 }

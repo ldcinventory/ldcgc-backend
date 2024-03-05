@@ -126,6 +126,7 @@ public class Messages {
                 TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
                 TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers.",
                 TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer.",
+                TOOL_REGISTER_INCORRECT_BARCODE = "The tool's barcode %s is incorrect.",
                 TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found."
         ;
 

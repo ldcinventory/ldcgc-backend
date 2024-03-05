@@ -16,8 +16,8 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
         return service.createToolRegister(toolRegisterDto);
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString,String filterString) {
-        return service.getAllRegisters(pageIndex, size, sortString, filterString);
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, String status, String volunteer, String tool) {
+        return service.getAllRegisters(pageIndex, size, sortString, descOrder, status, volunteer, tool);
     }
 
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
