@@ -10,6 +10,7 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
@@ -77,17 +78,18 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         if (builderAssistantId != null) return getVolunteer(builderAssistantId);
 
-        Pageable paging = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
-        Page<Volunteer> pageUsers = StringUtils.isBlank(filterString) ?
-            volunteerRepository.findAll(paging) :
-            volunteerRepository.findAllFiltered(filterString, paging);
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
+        Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) ?
+            volunteerRepository.findAll(pageable).map(VolunteerMapper.MAPPER::toDto) :
+            volunteerRepository.findAllFiltered(filterString, pageable).map(VolunteerMapper.MAPPER::toDto);
 
-        List<Volunteer> userList = pageUsers.getContent();
+        if (pageIndex > pagedVolunteers.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.VOLUNTEER_LISTED, pageUsers.getTotalElements()),
-            userList.stream().map(VolunteerMapper.MAPPER::toDto).toList());
+            String.format(Messages.Info.VOLUNTEER_LISTED, pagedVolunteers.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedVolunteers));
     }
 
     public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteerDto) {

@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
@@ -10,6 +11,7 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
@@ -82,20 +84,24 @@ public class ToolServiceImpl implements ToolService {
     }
 
     public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status) {
+
+        Integer statusId = Optional.ofNullable(status)
+            .map(EStatus::getStatusByName)
+            .map(EStatus::getId)
+            .orElse(null);
+
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
-        Integer statusId = null;
+        Page<ToolDto> pagedTools = ObjectUtils.allNull(sortField, brand, model, description, status)
+            ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+            : toolRepository.findAllFiltered(brand, model, description, statusId, pageable).map(ToolMapper.MAPPER::toDto);
 
-        if(Objects.nonNull(status))
-            statusId = EStatus.getStatusByName(status).getId();
+        if (pageIndex > pagedTools.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
-        Page<ToolDto> page = toolRepository.findAllFiltered(brand, model, description, statusId, pageable)
-                .map(ToolMapper.MAPPER::toDto);
-
-        return Constructor.buildResponseMessageObject(
-            HttpStatus.OK,
-            String.format(Messages.Info.TOOL_LISTED, page.getTotalElements()),
-            page);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK,
+            String.format(Messages.Info.TOOL_LISTED, pagedTools.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedTools));
     }
 
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {

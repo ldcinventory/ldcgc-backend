@@ -3,11 +3,13 @@ package org.ldcgc.backend.payload.mapper.history.tool;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.history.ToolRegister;
-import org.ldcgc.backend.db.model.resources.Tool;
-import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;

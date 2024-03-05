@@ -124,7 +124,7 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds, String sortField) {
-        List<Absence> absences = absenceRepository.findAll((Specification<Absence>) (absence, query, cb) -> {
+        List<AbsenceDto> absences = absenceRepository.findAll((Specification<Absence>) (absence, query, cb) -> {
 
             List<Predicate> predicates = new ArrayList<>();
 
@@ -147,15 +147,14 @@ public class AbsenceServiceImpl implements AbsenceService {
 
             return cb.and(predicates.toArray(new Predicate[0]));
 
-        });
+        }).stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
-        List<AbsenceDto> absencesDtoList = absences.stream().map(AbsenceMapper.MAPPER::toDto).toList();
-        Map<String, List<AbsenceDto>> absencesDtoMap = absencesDtoList.stream().collect(Collectors.groupingBy(
+        Map<String, List<AbsenceDto>> absencesDtoMap = absences.stream().collect(Collectors.groupingBy(
             AbsenceDto::getBuilderAssistantId,
             Collectors.mapping(Function.identity(), Collectors.toList())
         ));
 
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.Info.ABSENCES_FOUND, absencesDtoList.size()), absencesDtoMap);
+        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.Info.ABSENCES_FOUND, absences.size()), absencesDtoMap);
     }
 
     public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {

@@ -84,19 +84,12 @@ public interface ConsumableController {
             @RequestBody ConsumableDto consumableDto);
 
     @Operation(summary = "List consumables", description = """
-        Get all consumables, paginated and sorted. You can also include 3 filters:
+        Get all consumables, paginated and sorted. You can also include 5 filters:
+        - category
+        - brand
         - name
+        - model
         - description
-        - status
-                
-        Valid status:
-        - Disponible -> ```AVAILABLE```
-        - No disponible -> ```NOT_AVAILABLE```
-        - En mantenimiento -> ```IN_MAINTENANCE```
-        - Dañado -> ```DAMAGED```
-        - Nueva -> ```NEW```
-        - En desuso -> ```DEPRECATED```
-                
         """
         + SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
@@ -116,8 +109,16 @@ public interface ConsumableController {
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
-        @Parameter(description = "Filter to search (see description)")
-            @RequestParam(required = false) String filter,
+        @Parameter(description = "Filter to search by category")
+            @RequestParam(required = false) String category,
+        @Parameter(description = "Filter to search by brand")
+            @RequestParam(required = false) String brand,
+        @Parameter(description = "Filter to search by name")
+            @RequestParam(required = false) String name,
+        @Parameter(description = "Filter to search by model")
+            @RequestParam(required = false) String model,
+        @Parameter(description = "Filter to search by description")
+            @RequestParam(required = false) String description,
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
             @RequestParam(required = false, defaultValue = "id") String sortField);
 

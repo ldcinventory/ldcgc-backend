@@ -12,7 +12,15 @@ import java.util.Optional;
 
 public interface ConsumableRepository extends JpaRepository<Consumable, Integer> {
 
-    Page<Consumable> findByNameContainingOrDescriptionContaining(String likeNamePattern, String likeDescriptionPattern, Pageable pageable);
+    @Query("""
+            SELECT c FROM Consumable c
+            WHERE LOWER(c.category.name) LIKE LOWER(CONCAT('%', :category,'%'))
+            AND LOWER(c.brand) LIKE LOWER(CONCAT('%', :brand,'%'))
+            AND LOWER(c.name) LIKE LOWER(CONCAT('%', :name,'%'))
+            AND LOWER(c.model) LIKE LOWER(CONCAT('%', :model,'%'))
+            AND LOWER(c.description) LIKE LOWER(CONCAT('%', :description,'%'))
+            """)
+    Page<Consumable> findAllFiltered(String category, String brand, String name, String model, String description, Pageable pageable);
 
     @NotNull Page<Consumable> findAll(@NotNull Pageable pageable);
 

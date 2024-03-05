@@ -15,6 +15,7 @@ import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.CategoryDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
@@ -33,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.Optional;
 
 import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
@@ -99,17 +99,15 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId) {
         if (userId != null) return getUser(userId);
 
-        Pageable paging = PageRequest.of(pageIndex, size);
-        Page<User> pageUsers = StringUtils.isBlank(filterString) ?
-            userRepository.findAll(paging) :
-            userRepository.findAllFiltered(filterString, paging);
-
-        List<User> userList = pageUsers.getContent();
+        Pageable pageable = PageRequest.of(pageIndex, size);
+        Page<UserDto> pagedUsers = StringUtils.isBlank(filterString) ?
+            userRepository.findAll(pageable).map(UserMapper.MAPPER::toDTO) :
+            userRepository.findAllFiltered(filterString, pageable).map(UserMapper.MAPPER::toDTO);
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.USER_LISTED, pageUsers.getTotalElements()),
-            userList.stream().map(UserMapper.MAPPER::toDTO).toList());
+            String.format(Messages.Info.USER_LISTED, pagedUsers.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedUsers));
 
     }
 
