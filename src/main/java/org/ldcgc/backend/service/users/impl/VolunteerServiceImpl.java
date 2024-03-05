@@ -69,7 +69,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         Volunteer volunteerEntity = VolunteerMapper.MAPPER.toEntity(volunteer);
 
-        volunteerEntity = volunteerRepository.save(volunteerEntity);
+        volunteerEntity = volunteerRepository.saveAndFlush(volunteerEntity);
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
@@ -104,7 +104,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         VolunteerMapper.MAPPER.update(volunteerEntity, volunteerDto);
 
-        volunteerRepository.save(volunteerEntity);
+        volunteerRepository.saveAndFlush(volunteerEntity);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }

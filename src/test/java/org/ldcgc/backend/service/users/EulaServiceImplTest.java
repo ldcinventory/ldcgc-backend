@@ -249,7 +249,7 @@ class EulaServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
-        verify(userRepository, atMostOnce()).save(userStandard);
+        verify(userRepository, atMostOnce()).saveAndFlush(userStandard);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ACCEPTED, EVERY_USER), responseBody.getMessage());
@@ -284,7 +284,7 @@ class EulaServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
-        verify(userRepository, atMostOnce()).save(userManager);
+        verify(userRepository, atMostOnce()).saveAndFlush(userManager);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_ACCEPTED, MANAGERS), responseBody.getMessage());
@@ -364,7 +364,7 @@ class EulaServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userStandard.getId());
         verify(userRepository, atMostOnce()).delete(userStandard);
-        verify(userRepository, times(0)).save(userStandard);
+        verify(userRepository, times(0)).saveAndFlush(userStandard);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage), responseBody.getMessage());
@@ -380,7 +380,7 @@ class EulaServiceImplTest {
         responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
         verify(userRepository, atMostOnce()).delete(userManager);
-        verify(userRepository, times(0)).save(userManager);
+        verify(userRepository, times(0)).saveAndFlush(userManager);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_REJECTED, EVERY_USER, rejectionMessage), responseBody.getMessage());
@@ -396,7 +396,7 @@ class EulaServiceImplTest {
 
         doReturn(userManager.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userManager)).when(userRepository).findById(userManager.getId());
-        doReturn(userManager).when(userRepository).save(userManager);
+        doReturn(userManager).when(userRepository).saveAndFlush(userManager);
 
         ResponseEntity<?> response = eulaService.putEULA(mockedToken, EEULAStatus.REJECT);
         assertNotNull(response);
@@ -404,7 +404,7 @@ class EulaServiceImplTest {
         Response.DTO responseBody = (Response.DTO) response.getBody();
         verify(userRepository, atMostOnce()).findById(userManager.getId());
         verify(userRepository, times(0)).delete(userManager);
-        verify(userRepository, atMostOnce()).save(userManager);
+        verify(userRepository, atMostOnce()).saveAndFlush(userManager);
         assertTrue(StringUtils.isNotBlank(Objects.requireNonNull(responseBody).getMessage()));
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.EULA_REJECTED, MANAGERS, rejectionMessage), responseBody.getMessage());

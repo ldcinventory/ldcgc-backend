@@ -118,7 +118,7 @@ public class ToolServiceImpl implements ToolService {
     public Tool updateToolStatus(Tool tool, EStatus status){
         tool.setStatus(status);
 
-        return toolRepository.save(tool);
+        return toolRepository.saveAndFlush(tool);
     }
 
 

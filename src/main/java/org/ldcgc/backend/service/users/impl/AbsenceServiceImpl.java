@@ -208,7 +208,7 @@ public class AbsenceServiceImpl implements AbsenceService {
     private ResponseEntity<?> deleteAbsence(Volunteer volunteer, Absence absence) {
         //detach from volunteer absences
         volunteer.getAbsences().remove(absence);
-        volunteerRepository.save(volunteer);
+        volunteerRepository.saveAndFlush(volunteer);
 
         absenceRepository.delete(absence);
 

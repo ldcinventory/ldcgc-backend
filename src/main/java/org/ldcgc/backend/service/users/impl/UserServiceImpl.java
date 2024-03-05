@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
             throw new RequestException(HttpStatus.CONFLICT, Messages.Error.USER_ALREADY_EXIST);
 
         User userEntity = UserMapper.MAPPER.toEntity(user);
-        userEntity = userRepository.save(userEntity);
+        userEntity = userRepository.saveAndFlush(userEntity);
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.USER_CREATED, UserMapper.MAPPER.toDTO(userEntity));
     }
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setGroup(group);
         }
 
-        userRepository.save(userEntity);
+        userRepository.saveAndFlush(userEntity);
 
         UserCredentialsDto credentials = UserCredentialsDto.builder()
             .email(userDto.getEmail()).password(userDto.getPassword()).build();

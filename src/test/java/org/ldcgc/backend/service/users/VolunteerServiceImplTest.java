@@ -160,7 +160,7 @@ class VolunteerServiceImplTest {
         String builderAssistantId = volunteerDto.getBuilderAssistantId();
 
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
-        doReturn(VOLUNTEER).when(volunteerRepository).save(any(Volunteer.class));
+        doReturn(VOLUNTEER).when(volunteerRepository).saveAndFlush(any(Volunteer.class));
 
         ResponseEntity<?> response = volunteerService.createVolunteer(volunteerDto);
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -172,7 +172,7 @@ class VolunteerServiceImplTest {
         assertThat(volunteerDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
-        verify(volunteerRepository, atMostOnce()).save(any());
+        verify(volunteerRepository, atMostOnce()).saveAndFlush(any());
     }
 
     //list volunteer
@@ -284,7 +284,7 @@ class VolunteerServiceImplTest {
 
         doReturn(Optional.of(VOLUNTEER_2)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
-        doReturn(VOLUNTEER_2).when(volunteerRepository).save(any(Volunteer.class));
+        doReturn(VOLUNTEER_2).when(volunteerRepository).saveAndFlush(any(Volunteer.class));
 
         ResponseEntity<?> response = volunteerService.updateVolunteer(builderAssistantId, volunteerDto);
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -296,7 +296,7 @@ class VolunteerServiceImplTest {
         assertThat(volunteerDto).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(volunteerRepository, atMostOnce()).findByBuilderAssistantId(any());
-        verify(volunteerRepository, atMostOnce()).save(any());
+        verify(volunteerRepository, atMostOnce()).saveAndFlush(any());
     }
 
     //delete volunteer

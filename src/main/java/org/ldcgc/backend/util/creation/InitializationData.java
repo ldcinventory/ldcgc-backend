@@ -130,54 +130,54 @@ public class InitializationData {
             //List<String> locations = List.of("Guadalajara SR", "Salón Hilario Sangrador", "Oficina", "Estantería 2", "Ferretería", "Almacén C/Carrascales", "SR Getafe", "Estantería 1", "Arcón-suelo 2", "Arcón-suelo 1", "Arcón-medio 2", "Arcón-medio 1", "Betel");
 
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Guadalajara SR")
                     .description("Calle León Felipe, 6, bajo derecha")
                     .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
                     .level(0)
                     .build());
             // Leganés SR Maestro (Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés)
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Leganés SR Maestro")
                     .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
                     .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
                     .level(0)
                     .build());
             // Parla SR Zurbarán (Salón del Reino situado en Calle Zurbarán 1 posterior Parla)
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Parla SR Zurbarán")
                     .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
                     .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
                     .level(0)
                     .build());
             // Local/Almacén Cristopher
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Local/Almacén Cristopher")
                     .description("Local/Almacén Cristopher")
                     .level(0)
                     .build());
             // Local/Almacén Geñi
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Local/Almacén Geñi")
                     .description("Local/Almacén Geñi")
                     .level(0)
                     .build());
             // Betel
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Betel")
                     .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
                     .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
                     .level(0)
                     .build());
             // SA Ajalvir
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("SA Ajalvir")
                     .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
                     .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
                     .level(0)
                     .build());
             // Oficina (no es necesario indicar dirección)
-            locationRepository.save(Location.builder()
+            locationRepository.saveAndFlush(Location.builder()
                     .name("Oficina")
                     .description("Oficina")
                     .level(0)
@@ -194,7 +194,7 @@ public class InitializationData {
                     new Location("Arcón-medio 2", ferreteria, 1)
             ));
 
-            ferreteria = locationRepository.save(ferreteria);
+            ferreteria = locationRepository.saveAndFlush(ferreteria);
 
             Map<String, Location> locationMap = locationRepository.findAllByLevel(0).stream().collect(Collectors.toMap(Location::getName, l -> l));
 
@@ -213,13 +213,13 @@ public class InitializationData {
                     .description(c.get(0))
                     .level(2)
                     .build());
-                locationRepository.save(entityFromMap);
+                locationRepository.saveAndFlush(entityFromMap);
             });
 
 
             // GROUP
 
-            final Group _8g = groupRepository.save(Group.builder()
+            final Group _8g = groupRepository.saveAndFlush(Group.builder()
                     .name("Grupo 8 de Construcción")
                     .phoneNumber("+34630480855")
                     .location(ferreteria)
@@ -470,7 +470,7 @@ public class InitializationData {
             maintenance.parallelStream().forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
                 final Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(mFieldList.get(4)).orElse(null);
-                maintenanceRepository.save(Maintenance.builder()
+                maintenanceRepository.saveAndFlush(Maintenance.builder()
                     .outRegistration(stringToLocalDate(mFieldList.get(0).substring(0, 10), "yyyy-MM-dd"))
                     .details(mFieldList.get(1))
                     .urlImages(mFieldList.get(2))
@@ -498,7 +498,7 @@ public class InitializationData {
                     .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
                             .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                     .email("admin@admin")
                     .password(passwordEncoder.encode("admin"))
                     .group(_8g)
@@ -508,7 +508,7 @@ public class InitializationData {
                             .orElse(null))
                     .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("noeula@admin")
                 .password(passwordEncoder.encode("admin"))
                 .group(_8g)
@@ -520,7 +520,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("noeula@adminv")
                 .password(passwordEncoder.encode("admin"))
                 .group(_8g)
@@ -533,7 +533,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("manager@manager")
                 .password(passwordEncoder.encode("manager"))
                 .group(_8g)
@@ -543,7 +543,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("noeula@manager")
                 .password(passwordEncoder.encode("manager"))
                 .group(_8g)
@@ -555,7 +555,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("noeula@managerv")
                 .password(passwordEncoder.encode("manager"))
                 .group(_8g)
@@ -568,7 +568,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("user@user")
                 .password(passwordEncoder.encode("user"))
                 .group(_8g)
@@ -578,7 +578,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("noeula@user")
                 .password(passwordEncoder.encode("user"))
                 .group(_8g)
@@ -589,7 +589,7 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
-            userRepository.save(User.builder()
+            userRepository.saveAndFlush(User.builder()
                 .email("noeula@userv")
                 .password(passwordEncoder.encode("user"))
                 .group(_8g)

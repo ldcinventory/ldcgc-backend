@@ -50,7 +50,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         if (!tool.getStatus().equals(EStatus.AVAILABLE))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
-        ToolRegister register = repository.save(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
+        ToolRegister register = repository.saveAndFlush(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
         toolService.updateToolStatus(register.getTool(), EStatus.NOT_AVAILABLE);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
@@ -81,12 +81,11 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID.formatted(registerDto.getVolunteerBuilderAssistantId()));
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
-        repository.save(register);
+        register = repository.saveAndFlush(register);
 
         if(Objects.nonNull(register.getRegisterFrom()))
             toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
-
-
+        
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
                 Messages.Info.TOOL_REGISTER_UPDATED,
