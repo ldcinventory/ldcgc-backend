@@ -79,6 +79,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID.formatted(registerDto.getVolunteerBuilderAssistantId()));
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
+        repository.save(register);
 
         if(Objects.nonNull(register.getRegisterFrom()))
             toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
