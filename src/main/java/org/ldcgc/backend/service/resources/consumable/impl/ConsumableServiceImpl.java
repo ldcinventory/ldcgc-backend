@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.consumable.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
@@ -11,6 +12,7 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
@@ -62,17 +64,20 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     }
 
-    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer sizeIndex, String filterString, String sortField) {
+    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String sortField) {
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
-        Pageable pageable = PageRequest.of(pageIndex, sizeIndex, Sort.by(sortField));
+        Page<ConsumableDto> pagedConsumables = ObjectUtils.allNull(category, brand, name, model, description)
+            ? consumableRepository.findAll(pageable).map(ConsumableMapper.MAPPER::toDto)
+            : consumableRepository.findAllFiltered(category, brand, name, model, description, pageable).map(ConsumableMapper.MAPPER::toDto);
 
-        Page<ConsumableDto> consumablePaged = consumableRepository.findByNameContainingOrDescriptionContaining(filterString, filterString, pageable)
-            .map(ConsumableMapper.MAPPER::toDto);
+        if (pageIndex > pagedConsumables.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.CONSUMABLE_LISTED, consumablePaged.getTotalElements()),
-            consumablePaged);
+            String.format(Messages.Info.CONSUMABLE_LISTED, pagedConsumables.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedConsumables));
     }
 
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {

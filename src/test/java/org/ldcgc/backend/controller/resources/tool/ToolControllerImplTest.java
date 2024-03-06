@@ -43,10 +43,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.mockito.BDDMockito.given;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -122,7 +121,6 @@ class ToolControllerImplTest {
 
         verify(toolService, times(1)).createTool(tool);
         assertNotNull(response);
-
     }
 
     @Test

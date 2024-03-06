@@ -181,7 +181,7 @@ class UserServiceImplTest {
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).findById(any());
-        verify(userRepository, atMostOnce()).save(any());
+        verify(userRepository, atMostOnce()).saveAndFlush(any());
         verify(tokenRepository, atMostOnce()).deleteAllTokensFromUser(any());
 
     }
@@ -265,7 +265,7 @@ class UserServiceImplTest {
         final User userEntity = UserMapper.MAPPER.toEntity(user);
 
         doReturn(Optional.empty()).when(userRepository).findByEmail(user.getEmail());
-        doReturn(userEntity).when(userRepository).save(Mockito.any(User.class));
+        doReturn(userEntity).when(userRepository).saveAndFlush(Mockito.any(User.class));
 
         ResponseEntity<?> response = userService.createUser(mockedToken, user);
         assertNotNull(response);
@@ -276,7 +276,7 @@ class UserServiceImplTest {
         assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findByEmail(any());
-        verify(userRepository, atMostOnce()).save(any());
+        verify(userRepository, atMostOnce()).saveAndFlush(any());
     }
 
     // get user
@@ -801,9 +801,9 @@ class UserServiceImplTest {
         verify(volunteerRepository, atMostOnce()).findById(any());
         verify(categoryRepository, atMostOnce()).findById(any());
         verify(groupRepository, atMostOnce()).findById(any());
-        verify(userRepository, atMostOnce()).save(any());
+        verify(userRepository, atMostOnce()).saveAndFlush(any());
         verify(tokenRepository, atMostOnce()).deleteAllTokensFromUser(any());
-        verify(tokenRepository, atMostOnce()).save(any());
+        verify(tokenRepository, atMostOnce()).saveAndFlush(any());
 
     }
 

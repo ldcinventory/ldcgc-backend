@@ -375,7 +375,7 @@ class AbsenceServiceImplTest {
         assertThat(ABSENCE).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, atMostOnce()).save(any(Absence.class));
+        verify(absenceRepository, atMostOnce()).saveAndFlush(any(Absence.class));
 
     }
 
@@ -480,7 +480,7 @@ class AbsenceServiceImplTest {
         assertThat(ABSENCE).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, atMostOnce()).save(any(Absence.class));
+        verify(absenceRepository, atMostOnce()).saveAndFlush(any(Absence.class));
 
     }
 
@@ -552,7 +552,7 @@ class AbsenceServiceImplTest {
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
         Absence absence = AbsenceMapper.MAPPER.toEntity(ABSENCE);
         absence.setVolunteer(USER_WITH_VOLUNTEER.getVolunteer());
-        doReturn(absence).when(absenceRepository).save(any(Absence.class));
+        doReturn(absence).when(absenceRepository).saveAndFlush(any(Absence.class));
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.deleteMyAbsence(mockedToken, -1));
 
@@ -570,7 +570,7 @@ class AbsenceServiceImplTest {
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
         Absence absence = AbsenceMapper.MAPPER.toEntity(ABSENCE);
         absence.setVolunteer(USER_WITH_VOLUNTEER.getVolunteer());
-        doReturn(absence).when(absenceRepository).save(any(Absence.class));
+        doReturn(absence).when(absenceRepository).saveAndFlush(any(Absence.class));
         final int absenceId = USER_WITH_VOLUNTEER.getVolunteer().getAbsences().getFirst().getId();
 
         ResponseEntity<?> response = absenceService.deleteMyAbsence(mockedToken, absenceId);
@@ -582,7 +582,7 @@ class AbsenceServiceImplTest {
         assertEquals(Messages.Info.ABSENCE_DELETED, responseBody.getMessage());
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(volunteerRepository, atMostOnce()).save(any(Volunteer.class));
+        verify(volunteerRepository, atMostOnce()).saveAndFlush(any(Volunteer.class));
         verify(absenceRepository, atMostOnce()).deleteById(anyInt());
 
     }
@@ -952,7 +952,7 @@ class AbsenceServiceImplTest {
         verify(absenceRepository, atMostOnce()).findById(anyInt());
         verify(absenceRepository, atMostOnce()).delete(any(Absence.class));
         verify(volunteerRepository, atMostOnce()).findById(anyInt());
-        verify(volunteerRepository, atMostOnce()).save(any(Volunteer.class));
+        verify(volunteerRepository, atMostOnce()).saveAndFlush(any(Volunteer.class));
 
     }
 

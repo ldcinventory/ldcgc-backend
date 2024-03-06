@@ -12,7 +12,14 @@ import org.ldcgc.backend.util.retrieving.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
@@ -63,7 +70,11 @@ public interface ToolRegisterController {
     ResponseEntity<?> getAllRegisters(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
                                       @RequestParam(required = false, defaultValue = "registerFrom") String sortString,
-                                      @RequestParam(required = false) String filterString);
+                                      @RequestParam(required = false, defaultValue = "true") Boolean descOrder,
+                                      @RequestParam(required = false, defaultValue = "") String status,
+                                      @RequestParam(required = false, defaultValue = "") String volunteer,
+                                      @RequestParam(required = false, defaultValue = "") String tool
+    );
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")
     @ApiResponse(
