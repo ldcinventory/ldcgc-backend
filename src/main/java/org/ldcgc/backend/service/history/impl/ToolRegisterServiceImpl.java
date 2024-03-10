@@ -51,7 +51,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         if (!tool.getStatus().equals(EStatus.AVAILABLE))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
-        ToolRegister register = repository.save(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
+        ToolRegister register = repository.saveAndFlush(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
         toolService.updateToolStatus(register.getTool(), EStatus.NOT_AVAILABLE);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
@@ -60,13 +60,16 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, String status, String volunteer, String tool) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Boolean.TRUE.equals(descOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortString));
 
-        Page<ToolRegisterDto> page = repository.findAllFiltered(status, volunteer, tool, pageable)
+        Page<ToolRegisterDto> pagedToolRegisters = repository.findAllFiltered(status, volunteer, tool, pageable)
                 .map(ToolRegisterMapper.MAPPER::toDto);
+
+        if (pageIndex > pagedToolRegisters.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, org.ldcgc.backend.util.constants.Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
-                Messages.Info.TOOL_REGISTER_LISTED.formatted(page.getTotalElements()),
-                PaginationDetails.fromPaging(pageable, page));
+                Messages.Info.TOOL_REGISTER_LISTED.formatted(pagedToolRegisters.getTotalElements()),
+                PaginationDetails.fromPaging(pageable, pagedToolRegisters));
     }
 
     public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
@@ -79,12 +82,11 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID.formatted(registerDto.getVolunteerBuilderAssistantId()));
 
         ToolRegisterMapper.MAPPER.update(registerDto, register);
-        repository.save(register);
+        register = repository.saveAndFlush(register);
 
         if(Objects.nonNull(register.getRegisterFrom()))
             toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
-
-
+        
         return Constructor.buildResponseMessageObject(
                 HttpStatus.OK,
                 Messages.Info.TOOL_REGISTER_UPDATED,

@@ -90,7 +90,7 @@ public class EulaServiceImpl implements EulaService {
                 else if (user.getAcceptedEULAManager() == null)
                     user.setAcceptedEULAManager(LocalDateTime.now());
 
-                userRepository.save(user);
+                userRepository.saveAndFlush(user);
                 return Constructor.buildResponseMessage(HttpStatus.OK, String.format(Messages.Info.EULA_ACCEPTED, userRole));
             }
 
@@ -110,7 +110,7 @@ public class EulaServiceImpl implements EulaService {
                     // if manager/admin doesn't accept EULA, downgrade to standard user
                     rejectionMessage = Messages.Info.EULA_DOWNGRADE_USER;
                     user.setRole(ROLE_USER);
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
                 }
 
                 return Constructor.buildResponseMessage(HttpStatus.OK, String.format(Messages.Info.EULA_REJECTED, userRole, rejectionMessage));

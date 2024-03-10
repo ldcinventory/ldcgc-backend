@@ -22,12 +22,12 @@ public class ConsumableControllerImpl implements ConsumableController {
         return consumableService.createConsumable(consumableDto);
     }
 
-    public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {
-        return consumableService.updateConsumable(consumableDto, consumableId);
+    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String sortField) {
+        return consumableService.listConsumables(pageIndex, size, category, brand, name, model, description, sortField);
     }
 
-    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer size, String filter, String sortField) {
-        return consumableService.listConsumables(pageIndex, size, filter, sortField);
+    public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {
+        return consumableService.updateConsumable(consumableDto, consumableId);
     }
 
     public ResponseEntity<?> deleteConsumable(Integer consumableId) {

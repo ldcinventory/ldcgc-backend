@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
@@ -10,6 +11,7 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
@@ -87,10 +89,12 @@ public class ToolServiceImpl implements ToolService {
         Page<ToolDto> page = toolRepository.findAllFiltered(brand, model, description, Objects.isNull(status) ? null : EStatus.getStatusByName(status), pageable)
                 .map(ToolMapper.MAPPER::toDto);
 
-        return Constructor.buildResponseMessageObject(
-            HttpStatus.OK,
+        if (pageIndex > page.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.OK,
             String.format(Messages.Info.TOOL_LISTED, page.getTotalElements()),
-            page);
+            PaginationDetails.fromPaging(pageable, page));
     }
 
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
@@ -107,7 +111,7 @@ public class ToolServiceImpl implements ToolService {
     public Tool updateToolStatus(Tool tool, EStatus status){
         tool.setStatus(status);
 
-        return toolRepository.save(tool);
+        return toolRepository.saveAndFlush(tool);
     }
 
 
