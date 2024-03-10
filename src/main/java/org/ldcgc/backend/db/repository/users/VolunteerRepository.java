@@ -14,6 +14,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
 
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
     List<Volunteer> findAllByBuilderAssistantId(String builderAssistantId);
+    List<Volunteer> findAllByBuilderAssistantIdIn(List<String> builderAssistantIds);
 
     @Query("""
             SELECT v FROM Volunteer v

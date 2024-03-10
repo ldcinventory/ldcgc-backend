@@ -84,12 +84,7 @@ public class ToolServiceImpl implements ToolService {
     public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
-        Integer statusId = null;
-
-        if(Objects.nonNull(status))
-            statusId = EStatus.getStatusByName(status).getId();
-
-        Page<ToolDto> page = toolRepository.findAllFiltered(brand, model, description, statusId, pageable)
+        Page<ToolDto> page = toolRepository.findAllFiltered(brand, model, description, Objects.isNull(status) ? null : EStatus.getStatusByName(status), pageable)
                 .map(ToolMapper.MAPPER::toDto);
 
         return Constructor.buildResponseMessageObject(

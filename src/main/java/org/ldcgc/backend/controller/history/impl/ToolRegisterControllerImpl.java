@@ -7,6 +7,8 @@ import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ToolRegisterControllerImpl implements ToolRegisterController {
@@ -31,4 +33,6 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
     public ResponseEntity<?> deleteRegister(Integer registerId) {
         return service.deleteRegister(registerId);
     }
+
+    public ResponseEntity<?> createToolRegisters(List<ToolRegisterDto> toolRegistersDto) { return service.createToolRegisters(toolRegistersDto); }
 }

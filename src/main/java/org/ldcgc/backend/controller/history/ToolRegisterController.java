@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
@@ -128,4 +130,32 @@ public interface ToolRegisterController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteRegister(@PathVariable Integer registerId);
 
+    @Operation(summary = "Create multiple tool registers. Insert inRegistration to null to make an OPEN registration")
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ToolRegisterDto.class)))
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
+                            @ExampleObject(name = "Volunteer not found", value = Messages.Error.VOLUNTEER_NOT_FOUND)
+                    })
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_400,
+            description = SwaggerConfig.HTTP_REASON_400,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Too many volunteers", value = Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS),
+                            @ExampleObject(name = "Incorrect BA id", value = Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID)
+                    })
+    )
+    @PostMapping("/many")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> createToolRegisters(@RequestBody List<ToolRegisterDto> toolRegistersDto);
 }
