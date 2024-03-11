@@ -1,6 +1,6 @@
 package org.ldcgc.backend.util.constants;
 
-public class GoogleConstants {
+public class Google {
 
     public static final String
         DRIVE_IMAGES_URL = "https://drive.google.com/uc?export=view&id=%s",
