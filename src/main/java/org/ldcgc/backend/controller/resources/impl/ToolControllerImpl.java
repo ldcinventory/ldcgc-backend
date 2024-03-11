@@ -26,8 +26,8 @@ public class ToolControllerImpl implements ToolController {
         return toolService.deleteTool(toolId);
     }
 
-    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status) {
-        return toolService.getAllTools(pageIndex, size, sortField, brand, model, description, status);
+    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String status, String sortField) {
+        return toolService.getAllTools(pageIndex, size, category, brand, name, model, description, status, sortField);
     }
 
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) { return toolService.uploadToolsExcel(file); }

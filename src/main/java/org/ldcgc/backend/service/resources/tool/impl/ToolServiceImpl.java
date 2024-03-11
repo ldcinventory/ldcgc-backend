@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Category;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
@@ -83,18 +84,20 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.TOOL_DELETED);
     }
 
-    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status) {
+    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String status, String sortField) {
 
-        Integer statusId = Optional.ofNullable(status)
-            .map(EStatus::getStatusByName)
-            .map(EStatus::getId)
-            .orElse(null);
+        Integer statusId = StringUtils.isNotEmpty(status)
+            ? Optional.ofNullable(status)
+                .map(EStatus::getStatusByName)
+                .map(EStatus::getId)
+                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND))
+            : null;
 
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
-        Page<ToolDto> pagedTools = ObjectUtils.allNull(sortField, brand, model, description, status)
+        Page<ToolDto> pagedTools = ObjectUtils.allNull(category, brand, name, model, description, status)
             ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
-            : toolRepository.findAllFiltered(brand, model, description, statusId, pageable).map(ToolMapper.MAPPER::toDto);
+            : toolRepository.findAllFiltered(category, brand, name, model, description, statusId, pageable).map(ToolMapper.MAPPER::toDto);
 
         if (pageIndex > pagedTools.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);

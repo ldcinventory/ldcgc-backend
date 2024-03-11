@@ -16,7 +16,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.retrieving.Messages;
+import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,9 +171,9 @@ class ToolControllerImplTest {
 
     @Test
     void getAllShouldCallService() {
-        toolController.getAllTools(0, 25, "name", "", "", "", null);
+        toolController.getAllTools(0, 25, "name", "", "", "", "", "", null);
 
-        verify(toolService, times(1)).getAllTools(0, 25, "name", "", "", "", null);
+        verify(toolService, times(1)).getAllTools(0, 25, "name", "", "", "", "", "", null);
     }
 
     @Test
@@ -187,10 +187,10 @@ class ToolControllerImplTest {
     void getAllShouldReturnToolList() {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(toolService).getAllTools(0, 0, "name", "", "", "", null);
-        ResponseEntity<?> response = toolController.getAllTools(0, 0, "name", "", "", "", null);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(toolService).getAllTools(0, 0, "name", "", "", "", "", "", null);
+        ResponseEntity<?> response = toolController.getAllTools(0, 0, "name", "", "", "", "", "", null);
 
-        verify(toolService, times(1)).getAllTools(0, 0, "name", "", "", "", null);
+        verify(toolService, times(1)).getAllTools(0, 0, "name", "", "", "", "", "", null);
         assertEquals(ArrayList.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
         assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).getFirst().getClass());
     }

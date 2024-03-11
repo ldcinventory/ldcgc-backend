@@ -53,6 +53,12 @@ public class Messages {
             CONSUMABLE_REGISTER_UPDATED = "Consumable register updated",
             CONSUMABLE_REGISTER_DELETED = "Consumable register deleted",
 
+            TOOL_REGISTER_CREATED = "Tool register created successfully!",
+            TOOL_REGISTER_UPDATED = "Tool register updated successfully!",
+            TOOL_REGISTER_LISTED = "Found %s tool registers",
+            TOOL_REGISTER_FOUND = "Found tool register",
+            TOOL_REGISTER_DELETED = "Deleted tool register successfully!",
+
             AVAILABILITY_UPDATED = "Availability updated",
             AVAILABILITY_CLEARED = "Availability cleared",
 
@@ -127,6 +133,13 @@ public class Messages {
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
             TOOL_IMAGE_INFORMED_NOT_FOUND = "The image with id '%s' is not registered for this tool",
+            TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
+            TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
+            TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
+            TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers.",
+            TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer.",
+            TOOL_REGISTER_INCORRECT_BARCODE = "The tool's barcode %s is incorrect.",
+            TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found.",
 
             CONSUMABLE_NOT_FOUND = "Consumable with id '%s' not found",
             CONSUMABLE_BARCODE_NOT_FOUND = "Consumable with barcode '%s' not found",

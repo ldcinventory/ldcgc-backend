@@ -52,7 +52,9 @@ public interface ToolController {
 
     @Operation(summary = "Get all tools, paginated and sorted.", description = """
         You can also include 4 filters:
+        - category
         - brand
+        - name
         - model
         - description
         - status
@@ -88,11 +90,13 @@ public interface ToolController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                   @RequestParam(required = false, defaultValue = "25") Integer size,
-                                  @RequestParam(required = false, defaultValue = "name") String sortField,
+                                  @RequestParam(required = false) String category,
                                   @RequestParam(required = false) String brand,
+                                  @RequestParam(required = false) String name,
                                   @RequestParam(required = false) String model,
                                   @RequestParam(required = false) String description,
-                                  @RequestParam(required = false) String status);
+                                  @RequestParam(required = false) String status,
+                                  @RequestParam(required = false, defaultValue = "name") String sortField);
 
     @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
