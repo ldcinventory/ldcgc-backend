@@ -12,14 +12,16 @@ import java.util.Optional;
 
 public interface ConsumableRepository extends JpaRepository<Consumable, Integer> {
 
-    @Query("""
-            SELECT c FROM Consumable c
-            WHERE LOWER(c.category.name) LIKE LOWER(CONCAT('%', :category,'%'))
-            AND LOWER(c.brand) LIKE LOWER(CONCAT('%', :brand,'%'))
-            AND LOWER(c.name) LIKE LOWER(CONCAT('%', :name,'%'))
-            AND LOWER(c.model) LIKE LOWER(CONCAT('%', :model,'%'))
-            AND LOWER(c.description) LIKE LOWER(CONCAT('%', :description,'%'))
-            """)
+    @Query(value = """
+            SELECT c.* FROM consumables c
+            JOIN categories cat on c.category_id = cat.id
+            JOIN categories b on c.brand_id = b.id
+            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :category, '%'))
+              AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
+              AND unaccent(c.name) ILIKE unaccent(CONCAT('%', :name, '%'))
+              AND unaccent(c.model) ILIKE unaccent(CONCAT('%', :model, '%'))
+              AND unaccent(c.description) ILIKE unaccent(CONCAT('%', :description, '%'))
+            """, nativeQuery = true)
     Page<Consumable> findAllFiltered(String category, String brand, String name, String model, String description, Pageable pageable);
 
     @NotNull Page<Consumable> findAll(@NotNull Pageable pageable);

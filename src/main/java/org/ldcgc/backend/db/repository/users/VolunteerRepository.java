@@ -16,19 +16,13 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
     List<Volunteer> findAllByBuilderAssistantId(String builderAssistantId);
     List<Volunteer> findAllByBuilderAssistantIdIn(List<String> builderAssistantIds);
 
-    @Query("""
-            SELECT v FROM Volunteer v
-            WHERE LOWER(v.name) LIKE LOWER(CONCAT('%', :filterString,'%'))
-               OR LOWER(v.lastName) LIKE LOWER(CONCAT('%', :filterString,'%'))
-            """)
+    @Query(value = """
+            SELECT v.* FROM volunteers v
+            WHERE unaccent(v.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+               OR unaccent(v.last_name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+               OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString)
+            """, nativeQuery = true)
     Page<Volunteer> findAllFiltered(String filterString, Pageable pageable);
-
-    @Query("""
-            SELECT v FROM Volunteer v
-            WHERE LOWER(v.name) LIKE LOWER(CONCAT('%', :name,'%'))
-              AND LOWER(v.lastName) LIKE LOWER(CONCAT('%', :lastName,'%'))
-            """)
-    List<Volunteer> findAllByNameAndLastName(String name, String lastName);
 
     boolean existsByBuilderAssistantId(String builderAssistantId);
 

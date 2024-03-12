@@ -10,6 +10,7 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
@@ -50,7 +52,7 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 class ToolServiceImplTest {
 
-    @InjectMocks private ToolServiceImpl service;
+    @InjectMocks private ToolServiceImpl toolService;
     @Mock private ToolRepository toolRepository;
     @Mock private ToolExcelService toolExcelService;
     @Mock private CategoryRepository categoryRepository;
@@ -66,7 +68,7 @@ class ToolServiceImplTest {
 
         doReturn(Optional.of(tool)).when(toolRepository).findById(tool.getId());
 
-        ResponseEntity<?> response = service.getTool(tool.getId());
+        ResponseEntity<?> response = toolService.getTool(tool.getId());
 
         assertNotNull(response);
         verify(toolRepository, times(1)).findById(tool.getId());
@@ -81,7 +83,7 @@ class ToolServiceImplTest {
 
         doReturn(Optional.empty()).when(toolRepository).findById(id);
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.getTool(id));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getTool(id));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
@@ -103,7 +105,7 @@ class ToolServiceImplTest {
         doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
         doReturn(entityTool).when(toolRepository).saveAndFlush(any(Tool.class));
 
-        ResponseEntity<?> response = service.createTool(toolDto);
+        ResponseEntity<?> response = toolService.createTool(toolDto);
 
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
         verify(toolRepository, times(1)).saveAndFlush(any(Tool.class));
@@ -116,7 +118,7 @@ class ToolServiceImplTest {
     void createToolShouldThrowExceptionWhenIdIsPresent(){
         ToolDto toolDto = factory.manufacturePojo(ToolDto.class);
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.createTool(toolDto));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.createTool(toolDto));
 
         assertEquals(HttpStatus.BAD_REQUEST, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(Messages.Error.TOOL_ID_SHOULDNT_BE_PRESENT));
@@ -129,7 +131,7 @@ class ToolServiceImplTest {
 
         doReturn(Optional.of(tool)).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.createTool(toolDto));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.createTool(toolDto));
 
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
         assertEquals(HttpStatus.BAD_REQUEST, requestException.getHttpStatus());
@@ -153,7 +155,7 @@ class ToolServiceImplTest {
         doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
         doReturn(tool).when(toolRepository).saveAndFlush(any(Tool.class));
 
-        ResponseEntity<?> response = service.updateTool(toolDto.getId(), toolDto);
+        ResponseEntity<?> response = toolService.updateTool(toolDto.getId(), toolDto);
 
         verify(toolRepository, times(1)).findById(toolDto.getId());
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
@@ -169,7 +171,7 @@ class ToolServiceImplTest {
         ToolDto toolDto = ToolDto.builder().build();
 
         doReturn(Optional.empty()).when(toolRepository).findById(id);
-        RequestException requestException = assertThrows(RequestException.class, () -> service.updateTool(id, toolDto));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.updateTool(id, toolDto));
 
         verify(toolRepository, times(1)).findById(id);
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
@@ -185,7 +187,7 @@ class ToolServiceImplTest {
         doReturn(Optional.of(tool)).when(toolRepository).findById(id);
         doReturn(Optional.of(repeatedBarcode)).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.updateTool(id, toolDto));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.updateTool(id, toolDto));
 
         verify(toolRepository, times(1)).findById(id);
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
@@ -201,7 +203,7 @@ class ToolServiceImplTest {
 
         doReturn(Optional.of(tool)).when(toolRepository).findById(toolId);
 
-        ResponseEntity<?> response = service.deleteTool(toolId);
+        ResponseEntity<?> response = toolService.deleteTool(toolId);
 
         verify(toolRepository, times(1)).findById(toolId);
         verify(toolRepository, times(1)).delete(tool);
@@ -217,7 +219,7 @@ class ToolServiceImplTest {
 
         doReturn(Optional.empty()).when(toolRepository).findById(id);
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.deleteTool(id));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.deleteTool(id));
 
         verify(toolRepository, times(1)).findById(id);
 
@@ -232,15 +234,15 @@ class ToolServiceImplTest {
 
         Page<Tool> tools = new PageImpl<>(factory.manufacturePojo(List.class, Tool.class));
 
-        doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
-        ResponseEntity<?> response = service.getAllTools(0, 25, sortString, "", "", "", null);
+        ResponseEntity<?> response = toolService.getAllTools(0, 25, "", "", "", "", "", null, sortString);
 
-        verify(toolRepository, times(1)).findAllFiltered(eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        verify(toolRepository, atMostOnce()).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
         assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
-        assertEquals(ToolDto.class, ((Page<ToolDto>) responseBody.getData()).stream().findFirst().get().getClass());
+        assertEquals(ToolDto.class, ((PaginationDetails) responseBody.getData()).getElements().getFirst().getClass());
     }
 
     @Test
@@ -248,7 +250,7 @@ class ToolServiceImplTest {
         String status = "made up status";
         String sorField = "name";
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.getAllTools(0, 25, sorField, "", "", "", status));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(0, 25, "", "", "", "", "", status, sorField));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));
@@ -262,7 +264,7 @@ class ToolServiceImplTest {
         doReturn(tools).when(toolExcelService).excelToTools(file);
         doReturn(toolEntities).when(toolRepository).saveAll(any());
 
-        ResponseEntity<?> response = service.uploadToolsExcel(file);
+        ResponseEntity<?> response = toolService.uploadToolsExcel(file);
 
         verify(toolExcelService, times(1)).excelToTools(any());
         verify(toolRepository, times(1)).saveAll(any());

@@ -616,13 +616,8 @@ public class InitializationData {
                     .acceptedEULA(LocalDateTime.now())
                     .acceptedEULAManager(Integer.parseInt(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
                     .build();
-                Volunteer volunteer = null;
-                if (!StringUtils.isAllBlank(userFields.get(1), userFields.get(2))) {
-                    var volunteerList = volunteerRepository.findAllByNameAndLastName(userFields.get(1), userFields.get(2));
-                    if (!volunteerList.isEmpty())
-                        volunteer = volunteerList.getFirst();
-                    user.setVolunteer(volunteer);
-                }
+                Volunteer volunteer = volunteerRepository.getRandomVolunteer();
+                user.setVolunteer(volunteer);
 
                 userRepository.saveAndFlush(user);
             });

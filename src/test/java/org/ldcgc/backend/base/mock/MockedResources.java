@@ -141,7 +141,7 @@ public class MockedResources {
         return LocalDate.ofEpochDay(randomDay);
     }
 
-    private static <E extends Enum<E>> E getRandomEnum(Class<E> enumType) {
+    public static <E extends Enum<E>> E getRandomEnum(Class<E> enumType) {
         return enumType.getEnumConstants()[getRandomIntegerFromRange(0, enumType.getEnumConstants().length)];
     }
 

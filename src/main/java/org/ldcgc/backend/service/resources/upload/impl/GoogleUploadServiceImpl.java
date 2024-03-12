@@ -24,7 +24,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.upload.GoogleUploadService;
-import org.ldcgc.backend.util.constants.GoogleConstants;
+import org.ldcgc.backend.util.constants.Google;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.process.CompressedMultipartFile;
@@ -75,7 +75,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             cleanFromGDrive(tool.getUrlImages());
 
         // folder LDC -> G8 -> Tools
-        String[] urlImages = uploadToGDrive(images, GoogleConstants.DRIVE_TOOLS_FOLDER_ID);
+        String[] urlImages = uploadToGDrive(images, Google.DRIVE_TOOLS_FOLDER_ID);
         tool.setUrlImages(cleanExisting
             ? urlImages
             : Stream.concat(Stream.of(tool.getUrlImages()), Stream.of(urlImages)).toArray(String[]::new));
@@ -93,7 +93,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             cleanFromGDrive(consumable.getUrlImages());
 
         // folder LDC -> G8 -> Consumables
-        String[] urlImages = uploadToGDrive(images, GoogleConstants.DRIVE_CONSUMABLES_FOLDER_ID);
+        String[] urlImages = uploadToGDrive(images, Google.DRIVE_CONSUMABLES_FOLDER_ID);
         consumable.setUrlImages(cleanExisting
             ? urlImages
             : Stream.concat(Stream.of(ObjectUtils.defaultIfNull(consumable.getUrlImages(), new String[0])), Stream.of(urlImages)).toArray(String[]::new));
