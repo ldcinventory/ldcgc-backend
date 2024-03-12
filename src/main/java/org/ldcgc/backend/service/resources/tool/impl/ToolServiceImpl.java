@@ -86,12 +86,12 @@ public class ToolServiceImpl implements ToolService {
 
     public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String status, String sortField) {
 
-        Integer statusId = StringUtils.isNotEmpty(status)
-            ? Optional.ofNullable(status)
+        Integer statusId = StringUtils.isEmpty(status)
+            ? null
+            : Optional.of(status)
                 .map(EStatus::getStatusByName)
                 .map(EStatus::getId)
-                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND))
-            : null;
+                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
