@@ -31,7 +31,7 @@ public enum EStatus implements EnumMethods {
 
     public static EStatus getStatusByName(String name){
         return Arrays.stream(EStatus.values())
-                .filter(status -> status.getDesc().equals(name))
+                .filter(status -> status.getDesc().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, name)));
     }

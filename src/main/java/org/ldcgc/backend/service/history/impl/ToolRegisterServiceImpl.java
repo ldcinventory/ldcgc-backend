@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.history.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ToolRegister;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
@@ -115,5 +116,38 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
                 HttpStatus.OK,
                 Messages.Info.TOOL_REGISTER_DELETED
         );
+    }
+
+    public ResponseEntity<?> createToolRegisters(List<ToolRegisterDto> toolRegistersDto) {
+        List<String> barcodes = toolRegistersDto.stream()
+                .map(ToolRegisterDto::getToolBarcode)
+                .distinct()
+                .toList();
+        if(barcodes.size() != toolRegistersDto.size())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_REPEATED_TOOLS);
+
+        List<Tool> tools = toolRepository.findAllByBarcodeIn(barcodes);
+        if(tools.size() != barcodes.size())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_NOT_FOUND_BARCODE
+                    .formatted(barcodes.stream().filter(b -> tools.stream().noneMatch(t -> t.getBarcode().equals(b))).findFirst().orElse(StringUtils.EMPTY)));
+
+        List<String> builderAssistantIds = toolRegistersDto.stream()
+                .map(ToolRegisterDto::getVolunteerBuilderAssistantId)
+                .distinct()
+                .toList();
+        List<Volunteer> volunteers = volunteerRepository.findAllByBuilderAssistantIdIn(builderAssistantIds);
+        if(builderAssistantIds.size() != volunteers.size())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.VOLUNTEER_NOT_FOUND_BA_ID
+                    .formatted(builderAssistantIds.stream().filter(b -> volunteers.stream().noneMatch(t -> t.getBuilderAssistantId().equals(b))).findFirst().orElse(StringUtils.EMPTY)));
+
+        List<ToolRegister> registers = toolRegistersDto.stream()
+                .map(ToolRegisterMapper.MAPPER::toMo)
+                .toList();
+
+        repository.saveAllAndFlush(registers);
+        tools.forEach(tool -> tool.setStatus(EStatus.NOT_AVAILABLE));
+        toolRepository.saveAllAndFlush(tools);
+
+        return Constructor.buildResponseObject(HttpStatus.OK, registers);
     }
 }

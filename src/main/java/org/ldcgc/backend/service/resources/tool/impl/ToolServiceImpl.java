@@ -84,24 +84,17 @@ public class ToolServiceImpl implements ToolService {
     }
 
     public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String sortField, String brand, String model, String description, String status) {
-
-        Integer statusId = Optional.ofNullable(status)
-            .map(EStatus::getStatusByName)
-            .map(EStatus::getId)
-            .orElse(null);
-
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
-        Page<ToolDto> pagedTools = ObjectUtils.allNull(sortField, brand, model, description, status)
-            ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
-            : toolRepository.findAllFiltered(brand, model, description, statusId, pageable).map(ToolMapper.MAPPER::toDto);
+        Page<ToolDto> page = toolRepository.findAllFiltered(brand, model, description, Objects.isNull(status) ? null : EStatus.getStatusByName(status), pageable)
+                .map(ToolMapper.MAPPER::toDto);
 
-        if (pageIndex > pagedTools.getTotalPages())
+        if (pageIndex > page.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK,
-            String.format(Messages.Info.TOOL_LISTED, pagedTools.getTotalElements()),
-            PaginationDetails.fromPaging(pageable, pagedTools));
+            String.format(Messages.Info.TOOL_LISTED, page.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, page));
     }
 
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
