@@ -454,17 +454,6 @@ public class InitializationData {
                                 .build());
                     });
 
-            // CHEST REGISTRATION
-
-            List<List<String>> chestRegister = Files.getContentFromCSV(chestRegisterCSV, ',', false);
-
-            // MAINTENANCE ( select m.MaintenanceDate as outRegistration, m.AdditionalInformation as details,
-            //                      m.UrlImage as urlImages, t.Barcode, v.BuilderAssistantId,
-            //                      m.MaintenanceResult as outStatus, m.NextMaintenanceDate
-            //               from Maintenances m, Tools t, Volunteers v
-            //               where m.ToolId = t.ToolId
-            //                 and m.VolunteerId = v.VolunteerId;
-
             List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
 
             maintenance.parallelStream().forEach(mFieldList -> {

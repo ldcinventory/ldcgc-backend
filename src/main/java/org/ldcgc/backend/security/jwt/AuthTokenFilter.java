@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
-import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
@@ -42,7 +41,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtils jwtUtils;
-    private final TokenRepository tokenRepository;
 
     @Value("${jwtExpirationMs}")
     private int jwtExpirationSeconds;
