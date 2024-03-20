@@ -25,6 +25,19 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
               AND t.status = :statusId
             """, nativeQuery = true)
     Page<Tool> findAllFiltered(String category, String brand, String name, String model, String description, Integer statusId, Pageable pageable);
+    @Query(value = """
+            SELECT t.* FROM tools t
+            JOIN categories cat on t.category_id = cat.id
+            JOIN categories b on t.brand_id = b.id
+            WHERE (unaccent(cat.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+              OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+              OR unaccent(t.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+              OR unaccent(t.model) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+              OR unaccent(t.description) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+              OR t.barcode = :filterString)
+              AND t.status = :statusId
+            """, nativeQuery = true)
+    Page<Tool> findAllFiltered(String filterString, Integer statusId, Pageable pageable);
 
     @Query("SELECT t FROM Tool t ORDER BY random() LIMIT 1")
     Tool getRandomTool();

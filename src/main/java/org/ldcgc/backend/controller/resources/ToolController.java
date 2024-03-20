@@ -195,4 +195,50 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);
 
+    @Operation(summary = "Get all tools, paginated and sorted.", description = """
+        Use filterString to filter by any of:
+        - category
+        - brand
+        - name
+        - model
+        - description
+        - barcode
+        
+        Use status to filter by status
+        
+        Valid status:
+        - Disponible -> ```AVAILABLE```
+        - No disponible -> ```NOT_AVAILABLE```
+        - En mantenimiento -> ```IN_MAINTENANCE```
+        - Dañado -> ```DAMAGED```
+        - Nueva -> ```NEW```
+        - En desuso -> ```DEPRECATED```
+        
+        """ + SWAGGER_ROLE_OPERATION_MANAGER)
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_200,
+            description = SwaggerConfig.HTTP_REASON_200,
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)),
+                    examples = {
+                            @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+                    }
+            )
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Status not found", value = Messages.Error.STATUS_NOT_FOUND)
+                    })
+    )
+    @GetMapping("/loose")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> getAllToolsLoose(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+                                  @RequestParam(required = false, defaultValue = "25") Integer size,
+                                  @RequestParam(required = false) String filterString,
+                                  @RequestParam(required = false) String status,
+                                  @RequestParam(required = false, defaultValue = "name") String sortField);
+
 }

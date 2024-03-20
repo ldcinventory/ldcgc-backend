@@ -124,6 +124,29 @@ public class ToolServiceImpl implements ToolService {
         return toolRepository.saveAndFlush(tool);
     }
 
+    @Override
+    public ResponseEntity<?> getAllToolsLoose(Integer pageIndex, Integer size, String filterString, String status, String sortField) {
+        Integer statusId = StringUtils.isEmpty(status)
+                ? null
+                : Optional.of(status)
+                .map(EStatus::getStatusByName)
+                .map(EStatus::getId)
+                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
+
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
+
+        Page<ToolDto> pagedTools = ObjectUtils.allNull(filterString, status)
+                ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+                : toolRepository.findAllFiltered(filterString, statusId, pageable).map(ToolMapper.MAPPER::toDto);
+
+        if (pageIndex > pagedTools.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.OK,
+                String.format(Messages.Info.TOOL_LISTED, pagedTools.getTotalElements()),
+                PaginationDetails.fromPaging(pageable, pagedTools));
+    }
+
 
     private Tool findToolOrElseThrow(Integer toolId) {
         return toolRepository.findById(toolId).orElseThrow(() ->

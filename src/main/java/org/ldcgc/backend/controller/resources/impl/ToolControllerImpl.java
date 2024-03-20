@@ -32,5 +32,10 @@ public class ToolControllerImpl implements ToolController {
 
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) { return toolService.uploadToolsExcel(file); }
 
+    @Override
+    public ResponseEntity<?> getAllToolsLoose(Integer pageIndex, Integer size, String filterString, String status, String sortField) {
+        return toolService.getAllToolsLoose(pageIndex, size, filterString, status, sortField);
+    }
+
 
 }
