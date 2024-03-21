@@ -125,7 +125,7 @@ public class Messages {
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_NOT_FOUND_BA_ID = "The volunteer with Builder Assistant id %s couldn't be found",
-            VOLUNTEER_BARCODE_NOT_FOUND = "The volunteer you're searching for with builder assistant id '%s' couldn't be found",
+            VOLUNTEER_BAID_NOT_FOUND = "The volunteer you're searching for with builder assistant id '%s' couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",

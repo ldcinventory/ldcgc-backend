@@ -108,7 +108,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         validateCreateConsumableRegister(consumableRegisterDto, consumableRegisters, consumable);
 
         Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBAId())
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.VOLUNTEER_BARCODE_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
 
         ConsumableRegister newConsumableRegister = ConsumableRegisterMapper.MAPPER.toEntity(consumableRegisterDto);
 
@@ -202,7 +202,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             ? updateConsumableRegister.getVolunteer()
             : volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBAId())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                    String.format(Messages.Error.VOLUNTEER_BARCODE_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
+                    String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
 
         validateUpdateConsumableRegister(consumableRegisterDto, updateConsumableRegister, consumable);
 
