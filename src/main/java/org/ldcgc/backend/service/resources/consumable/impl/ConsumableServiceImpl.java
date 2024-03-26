@@ -80,6 +80,22 @@ public class ConsumableServiceImpl implements ConsumableService {
             PaginationDetails.fromPaging(pageable, pagedConsumables));
     }
 
+    public ResponseEntity<?> listConsumablesLoose(Integer pageIndex, Integer size, String filterString, String sortField) {
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
+
+        Page<ConsumableDto> pagedConsumables = ObjectUtils.allNull(filterString)
+            ? consumableRepository.findAll(pageable).map(ConsumableMapper.MAPPER::toDto)
+            : consumableRepository.findAllFiltered(filterString, pageable).map(ConsumableMapper.MAPPER::toDto);
+
+        if (pageIndex > pagedConsumables.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.OK,
+            String.format(Messages.Info.CONSUMABLE_LISTED, pagedConsumables.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedConsumables));
+    }
+
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {
         List<Consumable> consumables = consumableRepository.findAllByBarcode(consumableDto.getBarcode());
 

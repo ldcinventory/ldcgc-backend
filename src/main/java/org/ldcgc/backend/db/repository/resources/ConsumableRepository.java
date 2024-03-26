@@ -24,6 +24,18 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             """, nativeQuery = true)
     Page<Consumable> findAllFiltered(String category, String brand, String name, String model, String description, Pageable pageable);
 
+    @Query(value = """
+            SELECT c.* FROM consumables c
+            JOIN categories cat on c.category_id = cat.id
+            JOIN categories b on c.brand_id = b.id
+            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(c.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(c.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(c.description) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+            """, nativeQuery = true)
+    Page<Consumable> findAllFiltered(String filterString, Pageable pageable);
+
     @NotNull Page<Consumable> findAll(@NotNull Pageable pageable);
 
     @NotNull Consumable getById(@NotNull Integer consumableId);

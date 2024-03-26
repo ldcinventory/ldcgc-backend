@@ -17,11 +17,11 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
             SELECT t.* FROM tools t
             JOIN categories cat on t.category_id = cat.id
             JOIN categories b on t.brand_id = b.id
-            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :category,'%'))
-              AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand,'%'))
-              AND unaccent(t.name) ILIKE unaccent(CONCAT('%', :name,'%'))
-              AND unaccent(t.model) ILIKE unaccent(CONCAT('%', :model,'%'))
-              AND unaccent(t.description) ILIKE unaccent(CONCAT('%', :description,'%'))
+            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :category, '%'))
+              AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
+              AND unaccent(t.name) ILIKE unaccent(CONCAT('%', :name, '%'))
+              AND unaccent(t.model) ILIKE unaccent(CONCAT('%', :model, '%'))
+              AND unaccent(t.description) ILIKE unaccent(CONCAT('%', :description, '%'))
               AND t.status = :statusId
             """, nativeQuery = true)
     Page<Tool> findAllFiltered(String category, String brand, String name, String model, String description, Integer statusId, Pageable pageable);
@@ -29,11 +29,11 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
             SELECT t.* FROM tools t
             JOIN categories cat on t.category_id = cat.id
             JOIN categories b on t.brand_id = b.id
-            WHERE (unaccent(cat.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-              OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-              OR unaccent(t.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-              OR unaccent(t.model) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-              OR unaccent(t.description) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+            WHERE (unaccent(cat.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(t.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(t.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR unaccent(t.description) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR t.barcode = :filterString)
               AND t.status = :statusId
             """, nativeQuery = true)

@@ -26,6 +26,10 @@ public class ConsumableControllerImpl implements ConsumableController {
         return consumableService.listConsumables(pageIndex, size, category, brand, name, model, description, sortField);
     }
 
+    public ResponseEntity<?> listConsumablesLoose(Integer pageIndex, Integer size, String filterString, String sortField) {
+        return consumableService.listConsumablesLoose(pageIndex, size, filterString, sortField);
+    }
+
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {
         return consumableService.updateConsumable(consumableDto, consumableId);
     }

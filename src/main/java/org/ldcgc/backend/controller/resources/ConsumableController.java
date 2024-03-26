@@ -122,6 +122,37 @@ public interface ConsumableController {
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
             @RequestParam(required = false, defaultValue = "id") String sortField);
 
+    @Operation(summary = "List consumables", description = """
+        Get all consumables, paginated and sorted. You can also include 5 filters:
+        - category
+        - brand
+        - name
+        - model
+        - description
+        """
+        + SWAGGER_ROLE_OPERATION_MANAGER)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)),
+            examples = {
+                @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+            }
+        )
+    )
+    @GetMapping("/loose")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> listConsumablesLoose(
+        @Parameter(description = "Page index (default = 0)")
+        @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+        @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Filter to search by provided filter string")
+        @RequestParam(required = false) String filterString,
+        @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
+        @RequestParam(required = false, defaultValue = "id") String sortField);
+
     @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
