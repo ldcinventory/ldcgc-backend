@@ -1,11 +1,8 @@
 package org.ldcgc.backend.service.users.impl;
 
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.users.Absence;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
@@ -13,13 +10,17 @@ import org.ldcgc.backend.db.repository.users.AbsenceRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.users.AbsenceDto;
 import org.ldcgc.backend.payload.mapper.users.AbsenceMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AbsenceService;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,11 +59,11 @@ public class AbsenceServiceImpl implements AbsenceService {
         return Constructor.buildResponseObject(HttpStatus.OK, AbsenceMapper.MAPPER.toDto(absence));
     }
 
-    public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo, String sortField) {
+    public ResponseEntity<?> listMyAbsences(String token, Integer pageIndex, Integer size, LocalDate dateFrom, LocalDate dateTo, String sortField) {
         Volunteer volunteer = getVolunteerFromToken(token);
         validateVolunteerHasAbsences(volunteer);
 
-        return listAbsences(dateFrom, dateTo, new String[]{volunteer.getBuilderAssistantId()}, sortField);
+        return listAbsences(pageIndex, size, dateFrom, dateTo, Collections.singletonList(volunteer.getBuilderAssistantId()), sortField, true);
     }
 
     public ResponseEntity<?> createMyAbsence(String token, AbsenceDto absenceDto) {
@@ -123,39 +124,31 @@ public class AbsenceServiceImpl implements AbsenceService {
         return Constructor.buildResponseObject(HttpStatus.OK, AbsenceMapper.MAPPER.toDto(absence));
     }
 
-    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds, String sortField) {
+    public ResponseEntity<?> listAbsences(Integer pageIndex, Integer size, LocalDate dateFrom, LocalDate dateTo, List<String> builderAssistantIds, String sortField, boolean groupedByBAId) {
 
-        List<AbsenceDto> absences = absenceRepository.findAll((Specification<Absence>) (absence, query, cb) -> {
+        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
 
-            List<Predicate> predicates = new ArrayList<>();
+        Page<AbsenceDto> pagedAbsences = ObjectUtils.allNull(dateFrom, dateTo, builderAssistantIds)
+            ? absenceRepository.findAll(pageable).map(AbsenceMapper.MAPPER::toDto)
+            : absenceRepository.findAllFiltered(dateFrom, dateTo, builderAssistantIds, pageable).map(AbsenceMapper.MAPPER::toDto);
 
-            if(dateFrom != null)
-                predicates.add(cb.greaterThanOrEqualTo(absence.get("dateFrom"), dateFrom));
+        if (pageIndex > pagedAbsences.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
-            if(dateTo != null)
-                predicates.add(cb.lessThanOrEqualTo(absence.get("dateTo"), dateTo));
+        if(groupedByBAId) {
+            Map<String, List<AbsenceDto>> absencesDtoMap = pagedAbsences.getContent().stream().collect(Collectors.groupingBy(
+                AbsenceDto::getBuilderAssistantId, Collectors.mapping(Function.identity(), Collectors.toList())
+            ));
 
-            if (builderAssistantIds != null && builderAssistantIds.length > 0) {
-                Join<Volunteer, Absence> volunteerAbsenceJoin = absence.join("volunteer", JoinType.LEFT);
-                Expression<String> builderAssistantIdExpression = volunteerAbsenceJoin.get("builderAssistantId");
-                predicates.add(builderAssistantIdExpression.in(builderAssistantIds));
-            }
+            return Constructor.buildResponseMessageObject(HttpStatus.OK,
+                String.format(Messages.Info.ABSENCES_LISTED, pagedAbsences.getTotalElements()),
+                PaginationDetails.fromPagingGrouped(pageable, pagedAbsences, absencesDtoMap));
+        }
 
-            if (predicates.isEmpty())
-                return null;
+        return Constructor.buildResponseMessageObject(HttpStatus.OK,
+            String.format(Messages.Info.ABSENCES_LISTED, pagedAbsences.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedAbsences));
 
-            query.orderBy(cb.asc(absence.get(sortField)));
-
-            return cb.and(predicates.toArray(new Predicate[0]));
-
-        }).stream().map(AbsenceMapper.MAPPER::toDto).toList();
-
-        Map<String, List<AbsenceDto>> absencesDtoMap = absences.stream().collect(Collectors.groupingBy(
-            AbsenceDto::getBuilderAssistantId,
-            Collectors.mapping(Function.identity(), Collectors.toList())
-        ));
-
-        return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.Info.ABSENCES_FOUND, absences.size()), absencesDtoMap);
     }
 
     public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {

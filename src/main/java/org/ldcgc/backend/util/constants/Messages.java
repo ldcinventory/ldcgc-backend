@@ -62,7 +62,7 @@ public class Messages {
             AVAILABILITY_UPDATED = "Availability updated",
             AVAILABILITY_CLEARED = "Availability cleared",
 
-            ABSENCES_FOUND = "%s absences found",
+            ABSENCES_LISTED = "%s absences found",
             ABSENCE_CREATED = "Absence created",
             ABSENCE_UPDATED = "Absence updated",
             ABSENCE_DELETED = "Absence deleted",
