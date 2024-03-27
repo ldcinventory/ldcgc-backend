@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -73,9 +74,9 @@ public interface ToolRegisterController {
                                       @RequestParam(required = false, defaultValue = "25") Integer size,
                                       @RequestParam(required = false, defaultValue = "registerFrom") String sortString,
                                       @RequestParam(required = false, defaultValue = "true") Boolean descOrder,
-                                      @RequestParam(required = false, defaultValue = "") String status,
-                                      @RequestParam(required = false, defaultValue = "") String volunteer,
-                                      @RequestParam(required = false, defaultValue = "") String tool
+                                      @RequestParam(required = false) ERegisterStatus status,
+                                      @RequestParam(required = false) String volunteer,
+                                      @RequestParam(required = false) String tool
     );
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")

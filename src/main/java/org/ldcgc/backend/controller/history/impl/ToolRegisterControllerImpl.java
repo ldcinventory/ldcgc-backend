@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.history.ToolRegisterController;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
 import org.ldcgc.backend.service.history.ToolRegisterService;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
         return service.createToolRegister(toolRegisterDto);
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, String status, String volunteer, String tool) {
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, ERegisterStatus status, String volunteer, String tool) {
         return service.getAllRegisters(pageIndex, size, sortString, descOrder, status, volunteer, tool);
     }
 

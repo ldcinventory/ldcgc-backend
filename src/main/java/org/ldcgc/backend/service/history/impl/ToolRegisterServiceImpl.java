@@ -14,9 +14,10 @@ import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.common.EStatus;
-import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.constants.Messages;
+import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -57,10 +59,10 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, String status, String volunteer, String tool) {
+    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, ERegisterStatus status, String volunteer, String tool) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Boolean.TRUE.equals(descOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortString));
 
-        Page<ToolRegisterDto> pagedToolRegisters = repository.findAllFiltered(status, volunteer, tool, pageable)
+        Page<ToolRegisterDto> pagedToolRegisters = repository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null), volunteer, tool, pageable)
                 .map(ToolRegisterMapper.MAPPER::toDto);
 
         if (pageIndex > pagedToolRegisters.getTotalPages())

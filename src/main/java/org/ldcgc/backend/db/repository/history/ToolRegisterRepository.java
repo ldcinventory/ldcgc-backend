@@ -9,22 +9,24 @@ import org.springframework.data.jpa.repository.Query;
 public interface ToolRegisterRepository extends JpaRepository<ToolRegister, Integer> {
 
     @Query("""
-            SELECT r FROM ToolRegister r
+        SELECT r FROM ToolRegister r
             JOIN r.volunteer v
             JOIN r.tool t
             WHERE
             (
-                LOWER(:status) LIKE '' OR
-                LOWER(:status) LIKE ('opened') AND r.registerTo IS NULL OR
-                LOWER(:status) LIKE ('closed') AND r.registerTo IS NOT NULL
+                COALESCE(:status, '') = '' OR
+                (COALESCE(:status, '') ILIKE 'opened' AND r.registerTo IS NULL) OR
+                (COALESCE(:status, '') ILIKE 'closed'  AND r.registerTo IS NOT NULL)
             )
             AND (
-                LOWER(CONCAT(v.name, ' ', v.lastName)) LIKE LOWER(CONCAT('%', :volunteer, '%')) OR
-                (LOWER(v.builderAssistantId) LIKE LOWER(:volunteer) AND v.builderAssistantId <> '')
+                COALESCE(:volunteer, '') = '' OR
+                unaccent(CONCAT(v.name, ' ', v.lastName)) ILIKE unaccent(CONCAT('%', :volunteer, '%')) OR
+                v.builderAssistantId ILIKE :volunteer
             )
             AND (
-                LOWER(t.name) LIKE LOWER(CONCAT('%', :tool, '%')) OR
-                (LOWER(t.barcode) LIKE LOWER(:tool) AND t.barcode <> '')
+                COALESCE(:tool, '') = '' OR
+                unaccent(t.name) ILIKE unaccent(CONCAT('%', :tool, '%')) OR
+                t.barcode ILIKE :tool
             )
             """)
     Page<ToolRegister> findAllFiltered(String status, String volunteer, String tool, Pageable pageable);
