@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATI
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
-@RequestMapping("/resources/consumables/register")
+@RequestMapping("/resources/consumables/registers")
 public interface ConsumableRegisterController {
 
     @Operation(summary = "Get consumable register details", description = SWAGGER_ROLE_OPERATION_MANAGER)
@@ -83,15 +84,19 @@ public interface ConsumableRegisterController {
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
-            @RequestParam(required = false) String builderAssistantId,
+            @RequestParam(required = false) String volunteer,
         @Parameter(description = "Volunteer Consumable barcode (ignores the other params)")
-            @RequestParam(required = false) String consumableBarcode,
+            @RequestParam(required = false) String consumable,
         @Parameter(description = "Date 'from' to filter absences")
-            @RequestParam(required = false) LocalDateTime dateFrom,
+            @RequestParam(required = false) LocalDateTime registerFrom,
         @Parameter(description = "Date 'to' to filter absences")
-            @RequestParam(required = false) LocalDateTime dateTo,
-        @Parameter(description = "Sort by any field desired (see fields of ConsumableRegister class)")
-            @RequestParam(required = false, defaultValue = "id") String sortField);
+            @RequestParam(required = false) LocalDateTime registerTo,
+        @Parameter(description = "Status of the register (opened/closed)")
+            @RequestParam(required = false) ERegisterStatus status,
+        @Parameter(description = "Sort by any field desired (see fields of ConsumableRegister class) (default = id)")
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort desc or asc (default = true)")
+            @RequestParam(required = false, defaultValue = "true") boolean descOrder);
 
     @Operation(summary = "Create a consumable register.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

@@ -1,11 +1,7 @@
 package org.ldcgc.backend.service.history.impl;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.users.Volunteer;
@@ -16,24 +12,24 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.ConsumableRegisterMapper;
+import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ConsumableRegisterService;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -50,45 +46,12 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableRegisterMapper.MAPPER.toDto(consumableRegister));
     }
 
-    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String builderAssistantId, String consumableBarcode, LocalDateTime dateFrom, LocalDateTime dateTo, String sortField) {
+    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String volunteer, String consumable, LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, String sortField, boolean descOrder) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
-        Page<ConsumableRegisterDto> pagedConsumableRegisters;
 
-        if (ObjectUtils.allNull(builderAssistantId, consumableBarcode, dateFrom, dateTo))
-            pagedConsumableRegisters = consumableRegisterRepository.findAll(pageable).map(ConsumableRegisterMapper.MAPPER::toDto);
-        else {
-            List<ConsumableRegisterDto> consumableRegisterList = consumableRegisterRepository.findAll((Specification<ConsumableRegister>) (consumableRegister, query, cb) -> {
-                List<Predicate> predicates = new ArrayList<>();
-
-                if (dateFrom != null)
-                    predicates.add(cb.greaterThanOrEqualTo(consumableRegister.get("registrationIn"), dateFrom));
-
-                if (dateTo != null)
-                    predicates.add(cb.lessThanOrEqualTo(consumableRegister.get("registrationOut"), dateTo));
-
-                if (StringUtils.isNotEmpty(builderAssistantId)) {
-                    Join<Volunteer, ConsumableRegister> volunteerConsumableRegisterJoin = consumableRegister.join("volunteer", JoinType.LEFT);
-                    predicates.add(cb.and(cb.like(volunteerConsumableRegisterJoin.get("builderAssistantId"), "%" + builderAssistantId + "%")));
-                }
-
-                if (StringUtils.isNotEmpty(consumableBarcode)) {
-                    Join<Consumable, ConsumableRegister> consumableConsumableRegisterJoin = consumableRegister.join("consumable", JoinType.LEFT);
-                    predicates.add(cb.and(cb.like(consumableConsumableRegisterJoin.get("barcode"), "%" + consumableBarcode + "%")));
-                }
-
-                return cb.and(predicates.toArray(new Predicate[0]));
-            }).stream().map(ConsumableRegisterMapper.MAPPER::toDto).toList();
-
-            int start = (int) pageable.getOffset();
-            int end = Math.min((start + pageable.getPageSize()), consumableRegisterList.size());
-
-            if (start > end)
-                throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
-
-            List<ConsumableRegisterDto> pageContent = consumableRegisterList.subList(start, end);
-
-            pagedConsumableRegisters = new PageImpl<>(pageContent, pageable, consumableRegisterList.size());
-        }
+        Page<ConsumableRegisterDto> pagedConsumableRegisters = ObjectUtils.allNull(volunteer, consumable, registerFrom, registerTo)
+            ? consumableRegisterRepository.findAll(pageable).map(ConsumableRegisterMapper.MAPPER::toDto)
+            : consumableRegisterRepository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null), volunteer, consumable, registerFrom, registerTo, pageable).map(ConsumableRegisterMapper.MAPPER::toDto);
 
         if (pageIndex > pagedConsumableRegisters.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
