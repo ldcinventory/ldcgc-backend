@@ -9,14 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 public interface ToolRegisterRepository extends JpaRepository<ToolRegister, Integer> {
 
     @Query("""
-        SELECT r FROM ToolRegister r
-            JOIN r.volunteer v
-            JOIN r.tool t
+        SELECT tr FROM ToolRegister tr
+            JOIN tr.volunteer v
+            JOIN tr.tool t
             WHERE
             (
                 COALESCE(:status, '') = '' OR
-                (COALESCE(:status, '') ILIKE 'opened' AND r.registerTo IS NULL) OR
-                (COALESCE(:status, '') ILIKE 'closed'  AND r.registerTo IS NOT NULL)
+                (COALESCE(:status, '') ILIKE 'opened' AND tr.registerTo IS NULL) OR
+                (COALESCE(:status, '') ILIKE 'closed'  AND tr.registerTo IS NOT NULL)
             )
             AND (
                 COALESCE(:volunteer, '') = '' OR

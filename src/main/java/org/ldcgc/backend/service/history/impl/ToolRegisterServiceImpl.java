@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.history.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ToolRegister;
 import org.ldcgc.backend.db.model.resources.Tool;
@@ -62,7 +63,9 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
     public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, ERegisterStatus status, String volunteer, String tool) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Boolean.TRUE.equals(descOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortString));
 
-        Page<ToolRegisterDto> pagedToolRegisters = repository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null), volunteer, tool, pageable)
+        Page<ToolRegisterDto> pagedToolRegisters = ObjectUtils.allNull(volunteer, tool, status)
+            ? repository.findAll(pageable).map(ToolRegisterMapper.MAPPER::toDto)
+            : repository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null), volunteer, tool, pageable)
                 .map(ToolRegisterMapper.MAPPER::toDto);
 
         if (pageIndex > pagedToolRegisters.getTotalPages())
