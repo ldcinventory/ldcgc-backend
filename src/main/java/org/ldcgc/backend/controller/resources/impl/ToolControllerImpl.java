@@ -18,10 +18,7 @@ public class ToolControllerImpl implements ToolController {
     public ResponseEntity<?> createTool(ToolDto toolDto) {
         return toolService.createTool(toolDto);
     }
-
-
     public ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto) { return toolService.updateTool(toolId, toolDto); }
-
     public ResponseEntity<?> deleteTool(Integer toolId){
         return toolService.deleteTool(toolId);
     }

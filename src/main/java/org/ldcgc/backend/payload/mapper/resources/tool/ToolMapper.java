@@ -2,7 +2,6 @@ package org.ldcgc.backend.payload.mapper.resources.tool;
 
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.util.constants.Google;
 import org.mapstruct.Mapper;
@@ -15,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.Arrays;
 import java.util.List;
 
-@Mapper(uses = { LocationMapper.class, CategoryMapper.class },
+@Mapper(uses = { LocationMapper.class },
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolMapper {
 

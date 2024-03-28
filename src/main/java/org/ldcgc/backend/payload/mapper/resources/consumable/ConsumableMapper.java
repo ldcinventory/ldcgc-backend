@@ -21,12 +21,8 @@ public interface ConsumableMapper {
     @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "location.locations", ignore = true)
     @Mapping(target = "location.parent.locations", ignore = true)
-    @Mapping(target = "category.locked", ignore = true)
-    @Mapping(target = "category.categories", ignore = true)
-    @Mapping(target = "category.parent.locked", ignore = true)
+    @Mapping(target = "resourceType.locked", ignore = true)
     @Mapping(target = "brand.locked", ignore = true)
-    @Mapping(target = "brand.categories", ignore = true)
-    @Mapping(target = "brand.parent.locked", ignore = true)
     @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapUrlImagesToDto")
     ConsumableDto toDto(Consumable consumable);
 
@@ -40,13 +36,13 @@ public interface ConsumableMapper {
     }
 
     @Mapping(target = "brand", ignore = true)
-    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "resourceType", ignore = true)
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "group", ignore = true)
     Consumable toMo(ConsumableDto consumableDto);
 
     @Mapping(target = "brand", ignore = true)
-    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "resourceType", ignore = true)
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "group", ignore = true)
     void update(ConsumableDto from, @MappingTarget Consumable to);

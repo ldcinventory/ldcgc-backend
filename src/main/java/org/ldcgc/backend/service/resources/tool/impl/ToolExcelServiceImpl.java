@@ -7,16 +7,20 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
+import org.ldcgc.backend.payload.dto.category.BrandDto;
 import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
+import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.excel.ToolExcelMasterDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.payload.mapper.category.BrandMapper;
+import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.category.CategoryService;
 import org.ldcgc.backend.service.groups.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
@@ -41,7 +45,8 @@ import java.util.stream.Collectors;
 public class ToolExcelServiceImpl implements ToolExcelService {
 
     private final ToolRepository toolRepository;
-    private final CategoryService categoryService;
+    private final BrandRepository brandRepository;
+    private final ResourceTypeRepository resourceTypeRepository;
     private final LocationService locationService;
     private final GroupsService groupsService;
 
@@ -52,17 +57,17 @@ public class ToolExcelServiceImpl implements ToolExcelService {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
             ToolExcelMasterDto master = ToolExcelMasterDto.builder()
-                    .tools(toolRepository.findAll().stream().map(ToolMapper.MAPPER::toDto)
-                            .collect(Collectors.toMap(ToolDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                    .brands(categoryService.getCategoryParent(CategoryParentEnum.BRANDS).getCategories().stream()
-                            .collect(Collectors.toMap(CategoryDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                    .categories(categoryService.getCategoryParent(CategoryParentEnum.CATEGORIES).getCategories()
-                            .stream().collect(Collectors.toMap(CategoryDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                    .locations(locationService.getAllLocations()
-                            .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                    .groups(groupsService.getAllGroups()
-                            .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                    .build();
+                .tools(toolRepository.findAll().stream().map(ToolMapper.MAPPER::toDto)
+                    .collect(Collectors.toMap(ToolDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .brands(brandRepository.findAll().stream().map(BrandMapper.MAPPER::toDto)
+                    .collect(Collectors.toMap(BrandDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .resourceTypes(resourceTypeRepository.findAll().stream().map(ResourceTypeMapper.MAPPER::toDto)
+                    .collect(Collectors.toMap(ResourceTypeDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .locations(locationService.getAllLocations()
+                    .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .groups(groupsService.getAllGroups()
+                    .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .build();
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 tools.add(parseRowToTool(sheet.getRow(i), master));
             }
@@ -79,14 +84,14 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         Integer id = Optional.ofNullable(master.getTools().get(barcode)).map(ToolDto::getId).orElse(null);
 
         String brandName = getStringCellValue(row, EExcelToolsPositions.BRAND.getColumnNumber());
-        CategoryDto brand = Optional.ofNullable(master.getBrands().get(brandName))
+        BrandDto brand = Optional.ofNullable(master.getBrands().get(brandName))
                 .orElseThrow(() -> new RequestException(generateExcelErrorMessage(brandName, row.getRowNum(), EExcelToolsPositions.BRAND.getColumnNumber(), Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.getBrands().values().stream().map(CategoryDto::getName).toList().toString()))));
-        String categoryName = getStringCellValue(row, EExcelToolsPositions.CATEGORY.getColumnNumber());
-        CategoryDto category = Optional.ofNullable(master.getCategories().get(categoryName))
-                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(categoryName, row.getRowNum(), EExcelToolsPositions.CATEGORY.getColumnNumber(),
+                        .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.getBrands().values().stream().map(BrandDto::getName).toList().toString()))));
+        String categoryName = getStringCellValue(row, EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber());
+        ResourceTypeDto resourceTypeDto = Optional.ofNullable(master.getResourceTypes().get(categoryName))
+                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(categoryName, row.getRowNum(), EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber(),
                         Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.getCategories().values().stream().map(CategoryDto::getName).toList().toString()))));
+                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.getResourceTypes().values().stream().map(ResourceTypeDto::getName).toList().toString()))));
         EStatus status = EStatus.getStatusByName(getStringCellValue(row, EExcelToolsPositions.STATUS.getColumnNumber()));
         String locationName = row.getCell(EExcelToolsPositions.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
@@ -104,7 +109,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
                 .name(getStringCellValue(row, EExcelToolsPositions.NAME.getColumnNumber()))
                 .brand(brand)
                 .model(getStringCellValue(row, EExcelToolsPositions.MODEL.getColumnNumber()))
-                .category(category)
+                .resourceType(resourceTypeDto)
                 .description(getStringCellValue(row, EExcelToolsPositions.DESCRIPTION.getColumnNumber()))
                 .urlImages(getStringArrayCellValue(row, EExcelToolsPositions.URL_IMAGES.getColumnNumber()))
                 .status(status)

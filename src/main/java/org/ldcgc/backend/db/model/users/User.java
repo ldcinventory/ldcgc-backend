@@ -18,7 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.util.common.ERole;
 
@@ -56,7 +56,7 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "responsibility_id", referencedColumnName = "id")
-    private Category responsibility;
+    private Responsibility responsibility;
 
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "id")

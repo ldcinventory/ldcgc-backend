@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
+import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.util.common.ERole;
 
@@ -20,7 +20,7 @@ public class UserDto {
     private String password;
     private ERole role;
     private VolunteerDto volunteer;
-    private CategoryDto responsibility;
+    private ResponsibilityDto responsibility;
     private GroupDto group;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime tokenExpires;

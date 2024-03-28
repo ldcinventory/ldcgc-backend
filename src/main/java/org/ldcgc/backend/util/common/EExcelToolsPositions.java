@@ -11,7 +11,7 @@ public enum EExcelToolsPositions {
     NAME(1),
     BRAND(2),
     MODEL(3),
-    CATEGORY(4),
+    RESOURCE_TYPE(4),
     DESCRIPTION(5),
     URL_IMAGES(6),
     STATUS(7),

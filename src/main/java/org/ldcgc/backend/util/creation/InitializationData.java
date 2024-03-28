@@ -3,7 +3,9 @@ package org.ldcgc.backend.util.creation;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
+import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.history.Maintenance;
@@ -14,7 +16,9 @@ import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Absence;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
+import org.ldcgc.backend.db.repository.category.ResponsibilityRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.history.ConsumableRegisterRepository;
 import org.ldcgc.backend.db.repository.history.MaintenanceRepository;
@@ -24,22 +28,17 @@ import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
-import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EWeekday;
-import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.process.Files;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -75,7 +74,9 @@ public class InitializationData {
 
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
-    private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
+    private final ResourceTypeRepository resourceTypeRepository;
+    private final ResponsibilityRepository responsibilityRepository;
     private final LocationRepository locationRepository;
     private final ToolRepository toolRepository;
     private final ConsumableRepository consumableRepository;
@@ -97,22 +98,24 @@ public class InitializationData {
     @Value("${TOOLS_REGISTRATION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
     @Value("${CONSUMABLES_REGISTRATION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
 
-    @Value("classpath:chests.csv") Resource chestsCSV;
-    @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;
+    @Value("classpath:chests.csv")
+    org.springframework.core.io.Resource chestsCSV;
+    @Value("classpath:chestRegistration.csv")
+    org.springframework.core.io.Resource chestRegisterCSV;
 
     @Value("classpath:consumables.csv")
-    Resource consumablesCSV;
+    org.springframework.core.io.Resource consumablesCSV;
     @Value("classpath:tools.csv")
-    Resource toolsCSV;
+    org.springframework.core.io.Resource toolsCSV;
     @Value("classpath:maintenance.csv")
-    Resource maintenanceCSV;
+    org.springframework.core.io.Resource maintenanceCSV;
 
     @Value("classpath:users.csv")
-    Resource usersCSV;
+    org.springframework.core.io.Resource usersCSV;
     @Value("classpath:volunteers.csv")
-    Resource volunteersCSV;
+    org.springframework.core.io.Resource volunteersCSV;
     @Value("classpath:tool_register.csv")
-    Resource toolRegisterCSV;
+    org.springframework.core.io.Resource toolRegisterCSV;
 
     @Bean
     @Profile("!pro")
@@ -230,22 +233,14 @@ public class InitializationData {
             // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
 
-            Category resource = Category.builder()
-                    .name("Recursos")
-                    .locked(true)
-                    .build();
-
-            List<Category> resources = resourceNames.stream()
-                    .map(c -> Category.builder()
+            List<ResourceType> resourceTypeList = resourceNames.stream()
+                    .map(c -> ResourceType.builder()
                             .name(c)
-                            .parent(resource)
                             .locked(true)
                             .build())
                     .toList();
 
-            resource.setCategories(resources);
-
-            categoryRepository.saveAndFlush(resource);
+            resourceTypeRepository.saveAllAndFlush(resourceTypeList);
 
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
@@ -283,22 +278,14 @@ public class InitializationData {
 
             List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
-            Category brand = Category.builder()
-                    .name("Marcas")
-                    .locked(true)
-                    .build();
-
-            List<Category> brands = brandNames.stream()
-                    .map(b -> Category.builder()
+            List<Brand> brands = brandNames.stream()
+                    .map(b -> Brand.builder()
                             .name(b)
-                            .parent(brand)
                             .locked(true)
                             .build())
                     .toList();
 
-            brand.setCategories(brands);
-
-            categoryRepository.saveAndFlush(brand);
+            brandRepository.saveAllAndFlush(brands);
 
             // REGISTRATION (TOOLS + CONSUMABLES) init data
             ZoneOffset systemOffset = OffsetDateTime.now().getOffset();
@@ -311,15 +298,11 @@ public class InitializationData {
             //            where t.BrandId = b.BrandId
             //            and t.CategoryId = c.CategoryId;)
 
-            List<Category> brandEntities = categoryRepository.findByName(CategoryParentEnum.BRANDS.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
-                            .formatted(CategoryParentEnum.BRANDS.getName(), CategoryParentEnum.BRANDS.getBbddName())));
-            Map<String, Category> brandsMap = brandEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
+            List<Brand> brandEntities = brandRepository.findAll();
+            Map<String, Brand> brandsMap = brandEntities.stream().collect(Collectors.toMap(Brand::getName, b -> b));
 
-            List<Category> resourceCategoryEntities = categoryRepository.findByName(CategoryParentEnum.RESOURCES.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
-                            .formatted(CategoryParentEnum.RESOURCES.getName(), CategoryParentEnum.RESOURCES.getBbddName())));
-            Map<String, Category> resourceCategoriesMap = resourceCategoryEntities.stream().collect(Collectors.toMap(Category::getName, b -> b));
+            List<ResourceType> resourceTypeEntities = resourceTypeRepository.findAll();
+            Map<String, ResourceType> resourceCategoriesMap = resourceTypeEntities.stream().collect(Collectors.toMap(ResourceType::getName, b -> b));
 
             // TODO check status when final migration
             Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
@@ -339,7 +322,7 @@ public class InitializationData {
                     .description(tFieldList.get(4))
                     .location(location)
                     .group(_8g)
-                    .category(resourceCategoriesMap.get(tFieldList.get(5)))
+                    .resourceType(resourceCategoriesMap.get(tFieldList.get(5)))
                     .status(EStatus.AVAILABLE)
                     .weight(convertToFloat(tFieldList.get(6)))
                     .stockWeightType(EStockType.KILOGRAMS)
@@ -412,7 +395,7 @@ public class InitializationData {
                     .description(cFieldList.get(4))
                     .location(location)
                     .group(_8g)
-                    .category(resourceCategoriesMap.get(cFieldList.get(5)))
+                    .resourceType(resourceCategoriesMap.get(cFieldList.get(5)))
                     .price(convertToFloat2Decimals(cFieldList.get(6)))
                     .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
                     .quantityEachItem(quantityEachItem)
@@ -472,20 +455,17 @@ public class InitializationData {
 
             // USERS
 
-            Category responsibilityCat = Category.builder()
-                    .name("Responsabilidades")
-                    .locked(true)
-                    .build();
+            List<Responsibility> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario")
+                .map(r ->
+                    Responsibility.builder()
+                        .name(r)
+                        .locked(true)
+                        .build())
+                .toList();
 
-            List<Category> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario").map(r -> Category.builder().name(r).locked(true).parent(responsibilityCat).build()).toList();
+            responsibilityRepository.saveAllAndFlush(responsibilities);
 
-            responsibilityCat.setCategories(responsibilities);
-
-            categoryRepository.saveAndFlush(responsibilityCat);
-
-            List<Category> responsibilitiesEntities = categoryRepository.findByName(CategoryParentEnum.RESPONSIBILITIES.getBbddName()).map(Category::getCategories)
-                    .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CATEGORY_PARENT_NOT_FOUND
-                            .formatted(CategoryParentEnum.CATEGORIES.getName(), CategoryParentEnum.CATEGORIES.getBbddName())));
+            List<Responsibility> responsibilitiesEntities = responsibilityRepository.findAll();
 
             userRepository.saveAndFlush(User.builder()
                     .email("admin@admin")

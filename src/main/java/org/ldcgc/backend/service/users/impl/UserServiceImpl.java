@@ -3,17 +3,17 @@ package org.ldcgc.backend.service.users.impl;
 import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.ResponsibilityRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
+import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
-    private final CategoryRepository categoryRepository;
+    private final ResponsibilityRepository responsibilityRepository;
     private final GroupRepository groupRepository;
     private final TokenRepository tokenRepository;
     private final AccountService accountService;
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
 
         // origin objects
         final Optional<Integer> originVolunteerId = Optional.ofNullable(userEntity.getVolunteer()).map(Volunteer::getId);
-        final Optional<Integer> originResponsibilityId = Optional.ofNullable(userEntity.getResponsibility()).map(Category::getId);
+        final Optional<Integer> originResponsibilityId = Optional.ofNullable(userEntity.getResponsibility()).map(Responsibility::getId);
         final Optional<Integer> originGroupId = Optional.ofNullable(userEntity.getGroup()).map(Group::getId);
 
         // map the whole User with password encoded
@@ -149,14 +149,14 @@ public class UserServiceImpl implements UserService {
 
         // responsibility
         // check if dto comes with responsibility
-        if(Optional.ofNullable(userDto.getResponsibility()).map(CategoryDto::getId).isPresent() &&
+        if(Optional.ofNullable(userDto.getResponsibility()).map(ResponsibilityDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
             (originResponsibilityId.isEmpty() ||
                 // check origin (entity) and dto are not the same
                 !originResponsibilityId.get().equals(userDto.getResponsibility().getId()))) {
-            Category category = categoryRepository.findById(userDto.getResponsibility().getId()).orElseThrow(
+            Responsibility responsibility = responsibilityRepository.findById(userDto.getResponsibility().getId()).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId())));
-            userEntity.setResponsibility(category);
+            userEntity.setResponsibility(responsibility);
         }
 
         // group

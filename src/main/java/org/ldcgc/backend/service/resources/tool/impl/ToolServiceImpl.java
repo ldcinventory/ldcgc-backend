@@ -3,11 +3,13 @@ package org.ldcgc.backend.service.resources.tool.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Tool;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -38,7 +40,8 @@ import java.util.Optional;
 public class ToolServiceImpl implements ToolService {
 
     private final ToolRepository toolRepository;
-    private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
+    private final ResourceTypeRepository resourceTypeRepository;
     private final LocationRepository locationRepository;
     private final GroupRepository groupRepository;
     private final ToolExcelService toolExcelService;
@@ -154,11 +157,11 @@ public class ToolServiceImpl implements ToolService {
     }
 
     private void setLinkedEntitiesForConsumable(Tool toolEntity, ToolDto toolDto) {
-        Category brand = categoryRepository.findById(toolDto.getBrand().getId()).orElseThrow(() ->
+        Brand brand = brandRepository.findById(toolDto.getBrand().getId()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.BRAND_NOT_FOUND, toolDto.getBrand())));
 
-        Category consumableCategory = categoryRepository.findById(toolDto.getCategory().getId()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, toolDto.getCategory().getId())));
+        ResourceType consumableCategory = resourceTypeRepository.findById(toolDto.getResourceType().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, toolDto.getResourceType().getId())));
 
         Location location = locationRepository.findById(toolDto.getLocation().getId()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.LOCATION_NOT_FOUND, toolDto.getLocation().getId())));
@@ -167,7 +170,7 @@ public class ToolServiceImpl implements ToolService {
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.GROUP_NOT_FOUND, toolDto.getGroup().getId())));
 
         toolEntity.setBrand(brand);
-        toolEntity.setCategory(consumableCategory);
+        toolEntity.setResourceType(consumableCategory);
         toolEntity.setLocation(location);
         toolEntity.setGroup(group);
 

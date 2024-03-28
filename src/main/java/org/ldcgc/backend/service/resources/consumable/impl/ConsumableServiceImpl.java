@@ -3,11 +3,13 @@ package org.ldcgc.backend.service.resources.consumable.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Consumable;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -37,7 +39,8 @@ import java.util.Objects;
 public class ConsumableServiceImpl implements ConsumableService {
 
     private final ConsumableRepository consumableRepository;
-    private final CategoryRepository categoryRepository;
+    private final BrandRepository brandRepository;
+    private final ResourceTypeRepository resourceTypeRepository;
     private final LocationRepository locationRepository;
     private final GroupRepository groupRepository;
     private final ConsumableExcelService consumableExcelService;
@@ -139,11 +142,11 @@ public class ConsumableServiceImpl implements ConsumableService {
     }
 
     private void setLinkedEntitiesForConsumable(Consumable consumableEntity, ConsumableDto consumableDto) {
-        Category brand = categoryRepository.findById(consumableDto.getBrand().getId()).orElseThrow(() ->
+        Brand brand = brandRepository.findById(consumableDto.getBrand().getId()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.BRAND_NOT_FOUND, consumableDto.getBrand())));
 
-        Category consumableCategory = categoryRepository.findById(consumableDto.getCategory().getId()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, consumableDto.getCategory().getId())));
+        ResourceType resourceType = resourceTypeRepository.findById(consumableDto.getResourceType().getId()).orElseThrow(() ->
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, consumableDto.getResourceType().getId())));
 
         Location location = locationRepository.findById(consumableDto.getLocation().getId()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.LOCATION_NOT_FOUND, consumableDto.getLocation().getId())));
@@ -152,7 +155,7 @@ public class ConsumableServiceImpl implements ConsumableService {
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.GROUP_NOT_FOUND, consumableDto.getGroup().getId())));
 
         consumableEntity.setBrand(brand);
-        consumableEntity.setCategory(consumableCategory);
+        consumableEntity.setResourceType(resourceType);
         consumableEntity.setLocation(location);
         consumableEntity.setGroup(group);
 

@@ -19,7 +19,8 @@ import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.mapper.StockTypeConverter;
 import org.ldcgc.backend.db.mapper.StringArrayConverter;
 import org.ldcgc.backend.db.mapper.TimeUnitConverter;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
@@ -49,12 +50,12 @@ public class Tool {
     private String barcode;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    private Category category;
+    @JoinColumn(name = "resource_type_id", referencedColumnName = "id")
+    private ResourceType resourceType;
 
     @ManyToOne
     @JoinColumn(name = "brand_id", referencedColumnName = "id")
-    private Category brand;
+    private Brand brand;
 
     private String name;
 
