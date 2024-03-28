@@ -92,7 +92,7 @@ public class MockedResources {
             .build();
     }
 
-    private static LocationDto getRandomLocation() {
+    public static LocationDto getRandomLocation() {
         return LocationDto.builder()
             .id(getRandomId())
             .name(new Faker().address().streetName())
@@ -101,7 +101,7 @@ public class MockedResources {
             .build();
     }
 
-    private static GroupDto getRandomGroup() {
+    public static GroupDto getRandomGroup() {
         return GroupDto.builder()
             .id(getRandomId())
             .name(new Faker().cat().name())
@@ -110,7 +110,7 @@ public class MockedResources {
             .build();
     }
 
-    private static ResourceTypeDto getRandomResourceType() {
+    public static ResourceTypeDto getRandomResourceType() {
         return ResourceTypeDto.builder()
             .id(getRandomId())
             .name(new Faker().starWars().character())
@@ -172,7 +172,7 @@ public class MockedResources {
         return min + new Random().nextFloat() * (max - min);
     }
 
-    private static BrandDto getRandomBrand() {
+    public static BrandDto getRandomBrand() {
         return BrandDto.builder()
             .id(getRandomId())
             .name(new Faker().brand().watch())
