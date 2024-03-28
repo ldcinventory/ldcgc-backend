@@ -268,7 +268,7 @@ public class MockedUserVolunteer {
         List<AbsenceDto> absences = new ArrayList<>();
         IntStream.range(0, numAbsences).forEach(x -> {
             int rangeOfDays = new Random().ints(1, 0, 7).iterator().nextInt();
-            LocalDate randomDate = LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(0, 366));
+            LocalDate randomDate = getRandomDate(false);
             AbsenceDto absence = AbsenceDto.builder()
                 .id(new Random().ints(1, 0, 100_000).iterator().nextInt())
                 .dateFrom(randomDate)
@@ -282,6 +282,23 @@ public class MockedUserVolunteer {
         absences.sort(Comparator.comparing(AbsenceDto::getDateFrom));
 
         return absences;
+    }
+
+    private static LocalDate getRandomDate(boolean includeNullValue) {
+        return getRandomDate(includeNullValue,-366, 366);
+    }
+    private static LocalDate getRandomFutureDate(boolean includeNullValue) {
+        return getRandomDate(includeNullValue, 0, 366);
+    }
+
+    private static LocalDate getRandomPastDate(boolean includeNullValue) {
+        return getRandomDate(includeNullValue, -366, 0);
+    }
+
+    private static LocalDate getRandomDate(boolean includeNullValue, int pastDays, int futureDays) {
+        if(includeNullValue && ThreadLocalRandom.current().nextBoolean())
+            return null;
+        return LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(pastDays, futureDays));
     }
 
 }

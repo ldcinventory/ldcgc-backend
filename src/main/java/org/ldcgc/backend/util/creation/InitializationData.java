@@ -276,7 +276,7 @@ public class InitializationData {
 
             // --> BRANDS (select name from brands;)
 
-            List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
+            List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
             List<Brand> brands = brandNames.stream()
                     .map(b -> Brand.builder()
@@ -329,9 +329,9 @@ public class InitializationData {
                     .price(convertToFloat(tFieldList.get(7)))
                     .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
-                    //.lastMaintenance()
-                    //.maintenancePeriod()
                     .maintenanceTime(getRandomEnum(ETimeUnit.class))
+                    .maintenancePeriod(getRandomIntegerFromRange(1,30))
+                    .lastMaintenance(getRandomPastDate(true))
                     .build();
                 toolEntities.put(tool.getBarcode(), tool);
             });
@@ -620,7 +620,7 @@ public class InitializationData {
         List<Absence> absences = new ArrayList<>();
         IntStream.range(0, numAbsences).forEach(x -> {
             int rangeOfDays = new Random().ints(1, 0, 7).iterator().nextInt();
-            LocalDate randomDate = LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(0, 366));
+            LocalDate randomDate = getRandomFutureDate(false);
             Absence absence = Absence.builder()
                 .dateFrom(randomDate)
                 .dateTo(randomDate.plusDays(rangeOfDays))
@@ -645,6 +645,23 @@ public class InitializationData {
 
     private static Float getRandomFloatFromRange(float min, float max) {
         return min + new Random().nextFloat() * (max - min);
+    }
+
+    private static LocalDate getRandomDate(boolean includeNullValue) {
+        return getRandomDate(includeNullValue,-366, 366);
+    }
+    private static LocalDate getRandomFutureDate(boolean includeNullValue) {
+        return getRandomDate(includeNullValue, 0, 366);
+    }
+
+    private static LocalDate getRandomPastDate(boolean includeNullValue) {
+        return getRandomDate(includeNullValue, -366, 0);
+    }
+
+    private static LocalDate getRandomDate(boolean includeNullValue, int pastDays, int futureDays) {
+        if(includeNullValue && ThreadLocalRandom.current().nextBoolean())
+            return null;
+        return LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(pastDays, futureDays));
     }
 
 }
