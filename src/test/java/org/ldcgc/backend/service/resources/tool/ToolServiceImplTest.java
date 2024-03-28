@@ -1,11 +1,13 @@
 package org.ldcgc.backend.service.resources.tool;
 
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Tool;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -55,7 +57,8 @@ class ToolServiceImplTest {
     @InjectMocks private ToolServiceImpl toolService;
     @Mock private ToolRepository toolRepository;
     @Mock private ToolExcelService toolExcelService;
-    @Mock private CategoryRepository categoryRepository;
+    @Mock private BrandRepository brandRepository;
+    @Mock private ResourceTypeRepository resourceTypeRepository;
     @Mock private LocationRepository locationRepository;
     @Mock private GroupRepository groupRepository;
 
@@ -93,14 +96,14 @@ class ToolServiceImplTest {
     void createToolShouldReturnResponseEntity() {
         ToolDto toolDto = getRandomToolDto().toBuilder().id(null).build();
         Tool entityTool = ToolMapper.MAPPER.toMo(toolDto);
-        Category category = factory.manufacturePojo(Category.class);
-        Category consumableCategory = factory.manufacturePojo(Category.class);
+        Brand brand = factory.manufacturePojo(Brand.class);
+        ResourceType resourceType = factory.manufacturePojo(ResourceType.class);
         Location location = factory.manufacturePojo(Location.class);
         Group group = factory.manufacturePojo(Group.class);
 
         doReturn(Optional.empty()).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
-        doReturn(Optional.of(category)).when(categoryRepository).findById(toolDto.getBrand().getId());
-        doReturn(Optional.of(consumableCategory)).when(categoryRepository).findById(toolDto.getCategory().getId());
+        doReturn(Optional.of(brand)).when(brandRepository).findById(toolDto.getBrand().getId());
+        doReturn(Optional.of(resourceType)).when(resourceTypeRepository).findById(toolDto.getResourceType().getId());
         doReturn(Optional.of(location)).when(locationRepository).findById(anyInt());
         doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
         doReturn(entityTool).when(toolRepository).saveAndFlush(any(Tool.class));
@@ -142,15 +145,15 @@ class ToolServiceImplTest {
     void putToolShouldReturnResponseEntity() {
         ToolDto toolDto = factory.manufacturePojo(ToolDto.class);
         Tool tool = ToolMapper.MAPPER.toMo(toolDto);
-        Category category = factory.manufacturePojo(Category.class);
-        Category consumableCategory = factory.manufacturePojo(Category.class);
+        Brand brand = factory.manufacturePojo(Brand.class);
+        ResourceType resourceType = factory.manufacturePojo(ResourceType.class);
         Location location = factory.manufacturePojo(Location.class);
         Group group = factory.manufacturePojo(Group.class);
 
         doReturn(Optional.of(tool)).when(toolRepository).findById(toolDto.getId());
         doReturn(Optional.empty()).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
-        doReturn(Optional.of(category)).when(categoryRepository).findById(toolDto.getBrand().getId());
-        doReturn(Optional.of(consumableCategory)).when(categoryRepository).findById(toolDto.getCategory().getId());
+        doReturn(Optional.of(brand)).when(brandRepository).findById(toolDto.getBrand().getId());
+        doReturn(Optional.of(resourceType)).when(resourceTypeRepository).findById(toolDto.getResourceType().getId());
         doReturn(Optional.of(location)).when(locationRepository).findById(anyInt());
         doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
         doReturn(tool).when(toolRepository).saveAndFlush(any(Tool.class));

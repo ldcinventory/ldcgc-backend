@@ -8,4 +8,10 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 @SuiteDisplayName("LDCGC Test Suite")
 @SelectPackages({"org.ldcgc.backend.controller", "org.ldcgc.backend.service"})
 public class TestSuite {
+
+    /* this is just a piece of code to check content when using mockMvc.perform:
+       mockMvc.perform(postRequest(requestRoot, ERole.ROLE_ADMIN) <<- this line can vary depending on the endpoint called
+            .andReturn().getResponse().getContentAsString()
+     */
+
 }

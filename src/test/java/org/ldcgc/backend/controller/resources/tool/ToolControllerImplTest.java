@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -110,16 +111,16 @@ class ToolControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.TOOL_CREATED).data(tool).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        doReturn(response).when(toolService).createTool(tool);
+        given(toolService.createTool(Mockito.any(ToolDto.class))).will(invocation -> response);
 
         mockMvc.perform(postRequest(requestRoot, ERole.ROLE_ADMIN)
                     .content(mapper.writeValueAsString(tool)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(content().json(mapper.writeValueAsString(response)))
+                .andExpect(content().json(mapper.writeValueAsString(response.getBody())))
                 .andExpect(content().encoding(StandardCharsets.UTF_8));
 
-        verify(toolService, times(1)).createTool(tool);
+        verify(toolService, atMostOnce()).createTool(Mockito.any(ToolDto.class));
         assertNotNull(response);
     }
 

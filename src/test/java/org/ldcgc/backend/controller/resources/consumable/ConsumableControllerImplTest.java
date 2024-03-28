@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
 import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.controller.resources.ConsumableController;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -57,7 +58,8 @@ public class ConsumableControllerImplTest {
     @MockBean private TokenRepository tokenRepository;
     @MockBean private UserRepository userRepository;
     @MockBean private ConsumableRepository consumableRepository;
-    @MockBean private CategoryRepository categoryRepository;
+    @MockBean private BrandRepository brandRepository;
+    @MockBean private ResourceTypeRepository resourceTypeRepository;
     @MockBean private LocationRepository locationRepository;
     @MockBean private GroupRepository groupRepository;
 
@@ -104,7 +106,6 @@ public class ConsumableControllerImplTest {
 
     }
 
-    //TODO: HACER LOS TESTS DEL CONTROLLER CON COBERTURA DE 75% O MÁS
     @Test
     void getConsumable() {
 

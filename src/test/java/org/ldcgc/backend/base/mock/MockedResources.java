@@ -2,7 +2,8 @@ package org.ldcgc.backend.base.mock;
 
 import net.datafaker.Faker;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
+import org.ldcgc.backend.payload.dto.category.BrandDto;
+import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
@@ -17,15 +18,11 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 public class MockedResources {
-
-    private static final List<String> brandNames = Arrays.asList("<empty>", "ABAC MONTECARLO", "Bahco", "Bellota", "Bellota 5894-150", "Blackwire", "bo", "Climaver", "Deltaplus", "Desa", "Dewalt", "Disponible", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Würth", "WERKU", "Wiha", "Xiaomi", "Zosi Smart");
 
     public static ConsumableDto getRandomConsumableDto() {
         return ConsumableDto.builder()
@@ -42,7 +39,7 @@ public class MockedResources {
             .minStock(getRandomFloatFromRange(0,100))
             .purchaseDate(getRandomLocalDateUntilNow())
             .urlImages(getRandomURLs())
-            .category(getRandomCategory())
+            .resourceType(getRandomResourceType())
             .location(getRandomLocation())
             .build();
     }
@@ -60,6 +57,8 @@ public class MockedResources {
 
         return ConsumableRegisterDto.builder()
             .id(getRandomId())
+            .volunteerName(new Faker().name().firstName())
+            .volunteerLastName(new Faker().name().lastName())
             .consumableBardcode(getRandomAlphaNumeric(8))
             .volunteerBAId(getRandomAlphaNumeric(8))
             .registerFrom(timeIn)
@@ -73,8 +72,8 @@ public class MockedResources {
         return ToolDto.builder()
             .id(getRandomId())
             .barcode(getRandomBarcode())
-            .category(getRandomCategory())
             .brand(getRandomBrand())
+            .resourceType(getRandomResourceType())
             .name(getRandomString(getRandomIntegerFromRange(5, 15)))
             .model(getRandomAlphaNumeric(getRandomIntegerFromRange(3, 10)))
             .description(new Faker().text().text())
@@ -111,10 +110,10 @@ public class MockedResources {
             .build();
     }
 
-    private static CategoryDto getRandomCategory() {
-        return CategoryDto.builder()
+    private static ResourceTypeDto getRandomResourceType() {
+        return ResourceTypeDto.builder()
             .id(getRandomId())
-            .name(new Faker().brand().watch())
+            .name(new Faker().starWars().character())
             .build();
     }
 
@@ -173,16 +172,11 @@ public class MockedResources {
         return min + new Random().nextFloat() * (max - min);
     }
 
-    private static CategoryDto getRandomBrand() {
-        return CategoryDto.builder()
+    private static BrandDto getRandomBrand() {
+        return BrandDto.builder()
             .id(getRandomId())
-            .name(brandNames.get(getRandomIntegerFromRange(1, brandNames.size()) - 1))
-            .parent(CategoryDto.builder()
-                .id(0)
-                .name("Marcas")
-                .build())
+            .name(new Faker().brand().watch())
             .build();
     }
-
 
 }

@@ -29,7 +29,7 @@ public class MultipartFileFactory {
                 row.createCell(EExcelToolsPositions.NAME.getColumnNumber()).setCellValue(tool.getName());
                 row.createCell(EExcelToolsPositions.BRAND.getColumnNumber()).setCellValue(tool.getBrand().getName());
                 row.createCell(EExcelToolsPositions.MODEL.getColumnNumber()).setCellValue(tool.getModel());
-                row.createCell(EExcelToolsPositions.CATEGORY.getColumnNumber()).setCellValue(tool.getCategory().getName());
+                row.createCell(EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber()).setCellValue(tool.getResourceType().getName());
                 row.createCell(EExcelToolsPositions.DESCRIPTION.getColumnNumber()).setCellValue(tool.getDescription());
                 row.createCell(EExcelToolsPositions.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", tool.getUrlImages()));
                 row.createCell(EExcelToolsPositions.STATUS.getColumnNumber()).setCellValue(tool.getStatus().getDesc());
@@ -50,8 +50,8 @@ public class MultipartFileFactory {
                             sheet.rowIterator().forEachRemaining(row -> Optional.ofNullable(row.getCell(EExcelToolsPositions.BRAND.getColumnNumber())).ifPresent(cell -> cell.setCellValue("made up brand")));
                     case MODEL ->
                             sheet.rowIterator().forEachRemaining(row -> Optional.ofNullable(row.getCell(EExcelToolsPositions.MODEL.getColumnNumber())).ifPresent(cell -> cell.setCellValue(123456789.0)));
-                    case CATEGORY ->
-                            sheet.rowIterator().forEachRemaining(row -> Optional.ofNullable(row.getCell(EExcelToolsPositions.CATEGORY.getColumnNumber())).ifPresent(cell -> cell.setCellValue("made up category")));
+                    case RESOURCE_TYPE ->
+                            sheet.rowIterator().forEachRemaining(row -> Optional.ofNullable(row.getCell(EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber())).ifPresent(cell -> cell.setCellValue("made up category")));
                     case DESCRIPTION ->
                             sheet.rowIterator().forEachRemaining(row -> Optional.ofNullable(row.getCell(EExcelToolsPositions.DESCRIPTION.getColumnNumber())).ifPresent(cell -> cell.setCellValue(123456789.0)));
                     case URL_IMAGES ->

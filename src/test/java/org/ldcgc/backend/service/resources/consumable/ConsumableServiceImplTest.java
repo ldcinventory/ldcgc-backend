@@ -2,7 +2,8 @@ package org.ldcgc.backend.service.resources.consumable;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
@@ -15,9 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ConsumableServiceImplTest {
 
     // repository
-    @Mock private CategoryRepository categoryRepository;
-    @Mock private ConsumableRepository consumableRepository;
     @Mock private LocationRepository locationRepository;
+    @Mock private BrandRepository brandRepository;
+    @Mock private ResourceTypeRepository resourceTypeRepository;
+    @Mock private ConsumableRepository consumableRepository;
     @Mock private GroupRepository groupRepository;
 
     // service
@@ -26,8 +28,8 @@ class ConsumableServiceImplTest {
 
     @BeforeEach
     void init() {
-        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, categoryRepository, locationRepository, groupRepository);
-        consumableService = new ConsumableServiceImpl(consumableRepository, categoryRepository, locationRepository, groupRepository, consumableExcelService);
+        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository);
+        consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, consumableExcelService);
     }
 
     //TODO: ACABAR LOS TESTS DEL SERVICIO CON COBERTURA DE 75% O MÁS

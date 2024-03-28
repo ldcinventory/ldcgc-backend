@@ -10,6 +10,7 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
@@ -187,10 +188,11 @@ class VolunteerServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        List<VolunteerDto> responseData = (List<VolunteerDto>) responseBody.getData();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseBody);
         assertNotNull(responseBody.getData());
-        assertThat(responseBody.getData()).usingRecursiveComparison().isEqualTo(volunteerExpected);
+        assertThat(responseData.getFirst()).usingRecursiveComparison().isEqualTo(volunteerExpected);
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -208,11 +210,12 @@ class VolunteerServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
-        assertThat(volunteers).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
+        assertThat(responseData.getElements()).usingRecursiveFieldByFieldElementComparator().isEqualTo(volunteers);
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -230,11 +233,12 @@ class VolunteerServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
-        assertThat(volunteers).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
+        assertThat(responseData.getElements()).usingRecursiveFieldByFieldElementComparator().isEqualTo(volunteers);
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }

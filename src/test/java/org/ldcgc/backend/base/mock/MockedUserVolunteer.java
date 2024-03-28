@@ -2,9 +2,8 @@ package org.ldcgc.backend.base.mock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.checkerframework.common.value.qual.MinLen;
 import org.ldcgc.backend.db.model.users.User;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
+import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.users.AbsenceDto;
@@ -26,7 +25,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -48,7 +46,6 @@ import static org.ldcgc.backend.util.common.EWeekday.WEDNESDAY;
 public class MockedUserVolunteer {
 
     private final PasswordEncoder passwordEncoder;
-    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!·$%&/()=|@#?¿´‚ºª'¡`+´ç-.,<>;:_¨Ç^*[]{}";
 
     @Bean
     @Primary
@@ -96,14 +93,7 @@ public class MockedUserVolunteer {
             .id(0)
             .email("test@ymail.com")
             //.password("Admin1234!")
-            .responsibility(CategoryDto.builder()
-                .id(0)
-                .name("Coordinador GC")
-                .categories(Collections.singletonList(CategoryDto.builder()
-                    .id(0)
-                    .name("Responsabilidades")
-                    .build()))
-                .build())
+            .responsibility(getRandomResponsibility())
             .group(GroupDto.builder()
                 .id(0)
                 .name("Grupo 8 - Madrid")
@@ -126,6 +116,14 @@ public class MockedUserVolunteer {
                 .builderAssistantId("233578")
                 .isActive(true)
                 .build())
+            .build();
+    }
+
+    private static ResponsibilityDto getRandomResponsibility() {
+        return ResponsibilityDto.builder()
+            .id(getRandomId())
+            .name(responsibilities.get(new Random().ints(1, 0, responsibilities.size()).iterator().nextInt()))
+            .locked(new Random().ints(1, 0, 1).iterator().nextInt() == 1)
             .build();
     }
 
@@ -175,13 +173,9 @@ public class MockedUserVolunteer {
         return getMockedUser().toBuilder()
             .id(id)
             .email(getRandomElementFromList(EMAILS))
-            .password(getRandomPassword())
+            .password(RandomStringUtils.randomAlphanumeric(8))
             .role(role)
-            .responsibility(CategoryDto.builder()
-                .id(0)
-                .name("Coordinador GC")
-                .category(CategoryDto.builder().id(0).name("Responsabilidades").build())
-                .build())
+            .responsibility(getRandomResponsibility())
             .group(GroupDto.builder().id(0).build())
             .volunteer(VolunteerDto.builder().id(0).build())
             .build();
@@ -191,7 +185,7 @@ public class MockedUserVolunteer {
         UserDto userDto = getRandomMockedUserDto();
         return UserDto.builder()
             .email(userDto.getEmail())
-            .password(getRandomPassword())
+            .password(RandomStringUtils.randomAlphanumeric(8))
             .build();
     }
 
@@ -226,19 +220,6 @@ public class MockedUserVolunteer {
         days.forEach(i -> weekdays.add(EWeekday.values()[i]));
 
         return weekdays;
-    }
-
-    private static String getRandomPassword(@MinLen(8) int length) {
-        StringBuilder sb = new StringBuilder(length);
-
-        for(int i = 0; i < length; i++)
-            sb.append(ALPHABET.charAt(new Random().nextInt(ALPHABET.length())));
-
-        return sb.toString();
-    }
-
-    private static String getRandomPassword() {
-        return getRandomPassword(8);
     }
 
     private static ERole getRandomRole() {

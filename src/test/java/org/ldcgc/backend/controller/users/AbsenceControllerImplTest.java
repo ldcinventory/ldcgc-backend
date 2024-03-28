@@ -18,7 +18,6 @@ import org.ldcgc.backend.service.users.AbsenceService;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,6 +43,12 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -113,7 +118,7 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        given(absenceService.getMyAbsence(Mockito.anyString(), Mockito.anyInt())).willAnswer(
+        given(absenceService.getMyAbsence(anyString(), anyInt())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAbsence)
         );
 
@@ -132,11 +137,11 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        final String message = String.format(Messages.Info.ABSENCES_FOUND, 5);
+        final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listMyAbsences(Mockito.anyString(), Mockito.isNull(), Mockito.isNull(), Mockito.anyString())).willAnswer(
+        given(absenceService.listMyAbsences(anyString(), anyInt(), anyInt(), isNull(), isNull(), anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -155,11 +160,11 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        final String message = String.format(Messages.Info.ABSENCES_FOUND, 5);
+        final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listMyAbsences(Mockito.anyString(), Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.anyString())).willAnswer(
+        given(absenceService.listMyAbsences(anyString(), anyInt(), anyInt(), any(LocalDate.class), any(LocalDate.class), anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -183,7 +188,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_CREATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(absenceService.createMyAbsence(Mockito.anyString(), Mockito.any(AbsenceDto.class)))
+        given(absenceService.createMyAbsence(anyString(), any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
@@ -204,7 +209,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_UPDATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(absenceService.updateMyAbsence(Mockito.anyString(), Mockito.anyInt(), Mockito.any(AbsenceDto.class)))
+        given(absenceService.updateMyAbsence(anyString(), anyInt(), any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN)
@@ -223,7 +228,7 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
 
-        given(absenceService.deleteMyAbsence(Mockito.anyString(), Mockito.anyInt()))
+        given(absenceService.deleteMyAbsence(anyString(), anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.ABSENCE_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_USER, "0"))
@@ -241,7 +246,7 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        given(absenceService.getAbsence(Mockito.anyInt())).willAnswer(
+        given(absenceService.getAbsence(anyInt())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAbsence)
         );
 
@@ -259,11 +264,11 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        final String message = String.format(Messages.Info.ABSENCES_FOUND, 5);
+        final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.isNull(), Mockito.isNull(), Mockito.isNull(), Mockito.anyString())).willAnswer(
+        given(absenceService.listAbsences(anyInt(), anyInt(), isNull(), isNull(), isNull(), anyString(), anyBoolean())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -282,11 +287,11 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        final String message = String.format(Messages.Info.ABSENCES_FOUND, 5);
+        final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.isNull(), Mockito.anyString())).willAnswer(
+        given(absenceService.listAbsences(anyInt(), anyInt(), any(LocalDate.class), any(LocalDate.class), isNull(), anyString(), anyBoolean())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -307,11 +312,11 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        final String message = String.format(Messages.Info.ABSENCES_FOUND, 5);
+        final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.isNull(), Mockito.isNull(), Mockito.any(), Mockito.anyString())).willAnswer(
+        given(absenceService.listAbsences(anyInt(), anyInt(), isNull(), isNull(), anyList(), anyString(), anyBoolean())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -331,11 +336,11 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
 
-        final String message = String.format(Messages.Info.ABSENCES_FOUND, 5);
+        final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(absenceService.listAbsences(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any(), Mockito.anyString())).willAnswer(
+        given(absenceService.listAbsences(anyInt(), anyInt(), any(LocalDate.class), any(LocalDate.class), anyList(), anyString(), anyBoolean())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
@@ -361,7 +366,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_CREATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(absenceService.createAbsence(Mockito.any(AbsenceDto.class)))
+        given(absenceService.createAbsence(any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_MANAGER)
@@ -382,7 +387,7 @@ public class AbsenceControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_UPDATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(absenceService.updateAbsence(Mockito.anyInt(), Mockito.any(AbsenceDto.class)))
+        given(absenceService.updateAbsence(anyInt(), any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_MANAGER)
@@ -401,7 +406,7 @@ public class AbsenceControllerImplTest {
 
         log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
 
-        given(absenceService.deleteAbsence(Mockito.anyInt()))
+        given(absenceService.deleteAbsence(anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.ABSENCE_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_MANAGER, "0"))
