@@ -8,19 +8,20 @@ import lombok.RequiredArgsConstructor;
 public enum EExcelConsumablesPositions {
 
     BRAND(0),
-    CATEGORY(1),
-    GROUP(2),
-    LOCATION(3),
-    MIN_STOCK(4),
-    PRICE(5),
-    PURCHASE_DATE(6),
-    STOCK(7),
-    STOCK_TYPE(8),
-    BARCODE(9),
-    DESCRIPTION(10),
-    MODEL(11),
-    NAME(12),
-    URL_IMAGES(13);
+    RESOURCE_TYPE(1),
+    MIN_STOCK(2),
+    PRICE(3),
+    PURCHASE_DATE(4),
+    STOCK(5),
+    STOCK_TYPE(6),
+    QTY_EACH_ITEM(7),
+    BARCODE(8),
+    DESCRIPTION(8),
+    MODEL(10),
+    NAME(11),
+    URL_IMAGES(12),
+    GROUP(13),
+    LOCATION(14);
 
     private final Integer columnNumber;
 }

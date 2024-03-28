@@ -64,8 +64,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.ldcgc.backend.util.conversion.Convert.convertToFloat;
-import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
+import static org.ldcgc.backend.util.conversion.Convert.toFloat;
+import static org.ldcgc.backend.util.conversion.Convert.toFloat2Decimals;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
 
 @Configuration
@@ -324,9 +324,9 @@ public class InitializationData {
                     .group(_8g)
                     .resourceType(resourceCategoriesMap.get(tFieldList.get(5)))
                     .status(EStatus.AVAILABLE)
-                    .weight(convertToFloat(tFieldList.get(6)))
+                    .weight(toFloat(tFieldList.get(6)))
                     .stockWeightType(EStockType.KILOGRAMS)
-                    .price(convertToFloat(tFieldList.get(7)))
+                    .price(toFloat(tFieldList.get(7)))
                     .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
                     .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                     .maintenanceTime(getRandomEnum(ETimeUnit.class))
@@ -396,7 +396,7 @@ public class InitializationData {
                     .location(location)
                     .group(_8g)
                     .resourceType(resourceCategoriesMap.get(cFieldList.get(5)))
-                    .price(convertToFloat2Decimals(cFieldList.get(6)))
+                    .price(toFloat2Decimals(cFieldList.get(6)))
                     .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
                     .quantityEachItem(quantityEachItem)
                     .stock(stock)

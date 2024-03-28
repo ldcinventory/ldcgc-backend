@@ -3,11 +3,13 @@ package org.ldcgc.backend.payload.dto.resources;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.ldcgc.backend.payload.dto.category.BrandDto;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.util.common.EStockType;
+import org.ldcgc.backend.util.common.EUploadStatus;
 
 import java.time.LocalDate;
 
@@ -32,5 +34,6 @@ public class ConsumableDto {
     private EStockType stockType;
     private LocationDto location;
     private GroupDto group;
+    @Setter private EUploadStatus uploadStatus;
 
 }

@@ -20,6 +20,7 @@ import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EUploadStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +32,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -113,12 +116,27 @@ public class ToolServiceImpl implements ToolService {
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
         List<ToolDto> toolsToSave = toolExcelService.excelToTools(file);
 
-        toolRepository.saveAll(toolsToSave.stream().map(ToolMapper.MAPPER::toMo).toList());
+        // calc inserted and skipped
+        Map<String, ToolDto> toolsToSaveMap = new HashMap<>();
+        for(ToolDto toolDto : toolsToSave) {
+            if (toolsToSaveMap.get(toolDto.getBarcode()) != null
+                || toolRepository.existsByBarcode(toolDto.getBarcode())
+                || toolDto.getId() != null)
+                toolDto.setUploadStatus(EUploadStatus.SKIPPED);
+            else {
+                toolsToSaveMap.put(toolDto.getBarcode(), toolDto);
+                toolDto.setUploadStatus(EUploadStatus.INSERTED);
+            }
+        }
+
+        List<Tool> toolEntities = toolRepository.saveAll(toolsToSaveMap.values().stream().map(ToolMapper.MAPPER::toMo).toList());
+        int toolsInserted = toolsToSaveMap.size();
+        int toolsSkipped = toolsToSave.size() - toolsInserted;
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
-            String.format(Messages.Info.TOOL_UPLOADED, toolsToSave.size()),
-            toolsToSave);
+            String.format(Messages.Info.TOOL_UPLOADED, toolsInserted, toolsSkipped),
+            toolsToSave.stream().map(ToolMapper::cleanProps).toList());
     }
 
     public Tool updateToolStatus(Tool tool, EStatus status){

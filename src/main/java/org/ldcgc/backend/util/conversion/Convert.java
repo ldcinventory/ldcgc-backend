@@ -25,7 +25,7 @@ public class Convert {
         return LocalDate.parse(dbString, DateTimeFormatter.ofPattern(pattern));
     }
 
-    public static Float convertToFloat2Decimals(String number) {
+    public static Float toFloat2Decimals(String number) {
         if(StringUtils.isEmpty(number))
             return null;
 
@@ -35,16 +35,19 @@ public class Convert {
             .floatValue();
     }
 
-    public static Float convertToFloat(String number) {
+    public static Float toFloat(String number) {
         if(StringUtils.isEmpty(number))
             return null;
 
         return Float.parseFloat(number);
     }
 
-    public static LocalDateTime convertDateToLocalDateTime(Date dateToConvert) {
+    public static LocalDateTime dateToLocalDateTime(Date dateToConvert) {
         return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
 
+    public static LocalDate dateToLocalDate(Date dateToConvert) {
+        return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
 }

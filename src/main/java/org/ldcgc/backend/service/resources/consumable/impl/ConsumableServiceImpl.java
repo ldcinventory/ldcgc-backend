@@ -19,6 +19,7 @@ import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
+import org.ldcgc.backend.util.common.EUploadStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -126,14 +129,29 @@ public class ConsumableServiceImpl implements ConsumableService {
     }
 
     public ResponseEntity<?> loadExcel(Integer groupId, MultipartFile file) {
-        List<Consumable> consumablesToSave = consumableExcelService.excelToConsumables(file);
+        List<ConsumableDto> consumablesToSave = consumableExcelService.excelToConsumables(file);
 
-        consumablesToSave = consumableRepository.saveAll(consumablesToSave);
+        // calc inserted and skipped
+        Map<String, ConsumableDto> consumablesToSaveMap = new HashMap<>();
+        for(ConsumableDto consumableDto : consumablesToSave) {
+            if (consumablesToSaveMap.get(consumableDto.getBarcode()) != null
+                || consumableRepository.existsByBarcode(consumableDto.getBarcode())
+                || consumableDto.getId() != null)
+                consumableDto.setUploadStatus(EUploadStatus.SKIPPED);
+            else {
+                consumablesToSaveMap.put(consumableDto.getBarcode(), consumableDto);
+                consumableDto.setUploadStatus(EUploadStatus.INSERTED);
+            }
+        }
+
+        consumableRepository.saveAll(consumablesToSaveMap.values().stream().map(ConsumableMapper.MAPPER::toMo).toList());
+        int toolsInserted = consumablesToSaveMap.size();
+        int toolsSkipped = consumablesToSave.size() - toolsInserted;
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            String.format(Messages.Info.CONSUMABLES_UPLOADED, consumablesToSave.size()),
-            consumablesToSave.stream().map(ConsumableMapper.MAPPER::toDto).toList());
+            String.format(Messages.Info.CONSUMABLES_UPLOADED, toolsInserted, toolsSkipped),
+            consumablesToSave.stream().map(ConsumableMapper::cleanProps).toList());
     }
 
     private Consumable getOrElseThrowNotFound(Integer consumableId) {

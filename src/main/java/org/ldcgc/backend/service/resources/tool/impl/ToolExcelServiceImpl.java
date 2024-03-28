@@ -1,18 +1,17 @@
 package org.ldcgc.backend.service.resources.tool.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.BrandDto;
-import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.excel.ToolExcelMasterDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
@@ -32,13 +31,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getDateCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getIntegerCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringArrayCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringCellValue;
 
 @Component
 @RequiredArgsConstructor
@@ -81,82 +84,59 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
     private ToolDto parseRowToTool(Row row, ToolExcelMasterDto master) {
         String barcode = getStringCellValue(row, EExcelToolsPositions.BARCODE.getColumnNumber());
+
         Integer id = Optional.ofNullable(master.getTools().get(barcode)).map(ToolDto::getId).orElse(null);
 
         String brandName = getStringCellValue(row, EExcelToolsPositions.BRAND.getColumnNumber());
-        BrandDto brand = Optional.ofNullable(master.getBrands().get(brandName))
-                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(brandName, row.getRowNum(), EExcelToolsPositions.BRAND.getColumnNumber(), Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.getBrands().values().stream().map(BrandDto::getName).toList().toString()))));
-        String categoryName = getStringCellValue(row, EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber());
-        ResourceTypeDto resourceTypeDto = Optional.ofNullable(master.getResourceTypes().get(categoryName))
-                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(categoryName, row.getRowNum(), EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber(),
-                        Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), categoryName, CategoryParentEnum.CATEGORIES.getName(), master.getResourceTypes().values().stream().map(ResourceTypeDto::getName).toList().toString()))));
+        if(master.getBrands().get(brandName) == null) {
+            BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
+            Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
+            master.getBrands().put(newBrand.getName(), BrandMapper.MAPPER.toDto(newBrand));
+        }
+        BrandDto brand = master.getBrands().get(brandName);
+
+        String resourceType = getStringCellValue(row, EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber());
+        if(master.getResourceTypes().get(resourceType) == null) {
+            ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
+            ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
+            master.getResourceTypes().put(newResourceType.getName(), ResourceTypeMapper.MAPPER.toDto(newResourceType));
+        }
+        ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
+
         EStatus status = EStatus.getStatusByName(getStringCellValue(row, EExcelToolsPositions.STATUS.getColumnNumber()));
+
         String locationName = row.getCell(EExcelToolsPositions.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
-                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EExcelToolsPositions.LOCATION.getColumnNumber(),
-                        Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EExcelToolsPositions.LOCATION.getColumnNumber(),
+                Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
+
         ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(getStringCellValue(row, EExcelToolsPositions.MAINTENANCE_TIME.getColumnNumber()));
+
         String groupName = getStringCellValue(row, EExcelToolsPositions.GROUP.getColumnNumber());
         GroupDto group = Optional.ofNullable(master.getGroups().get(groupName))
-                .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EExcelToolsPositions.GROUP.getColumnNumber(),
-                        Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(GroupDto::getName).toList()))));
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EExcelToolsPositions.GROUP.getColumnNumber(),
+                Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(GroupDto::getName).toList()))));
 
         return ToolDto.builder()
-                .id(id)
-                .barcode(barcode)
-                .name(getStringCellValue(row, EExcelToolsPositions.NAME.getColumnNumber()))
-                .brand(brand)
-                .model(getStringCellValue(row, EExcelToolsPositions.MODEL.getColumnNumber()))
-                .resourceType(resourceTypeDto)
-                .description(getStringCellValue(row, EExcelToolsPositions.DESCRIPTION.getColumnNumber()))
-                .urlImages(getStringArrayCellValue(row, EExcelToolsPositions.URL_IMAGES.getColumnNumber()))
-                .status(status)
-                .location(location)
-                .maintenancePeriod(getIntegerCellValue(row, EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber()))
-                .maintenanceTime(maintenanceTime)
-                .lastMaintenance(getDateCellValue(row, EExcelToolsPositions.LAST_MAINTENANCE.getColumnNumber()))
-                .group(group)
-                .build();
+            .id(id)
+            .barcode(barcode)
+            .name(getStringCellValue(row, EExcelToolsPositions.NAME.getColumnNumber()))
+            .brand(brand)
+            .model(getStringCellValue(row, EExcelToolsPositions.MODEL.getColumnNumber()))
+            .resourceType(resourceTypeDto)
+            .description(getStringCellValue(row, EExcelToolsPositions.DESCRIPTION.getColumnNumber()))
+            .urlImages(getStringArrayCellValue(row, EExcelToolsPositions.URL_IMAGES.getColumnNumber()))
+            .status(status)
+            .location(location)
+            .maintenancePeriod(getIntegerCellValue(row, EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber()))
+            .maintenanceTime(maintenanceTime)
+            .lastMaintenance(getDateCellValue(row, EExcelToolsPositions.LAST_MAINTENANCE.getColumnNumber()))
+            .group(group)
+            .build();
     }
 
     private String generateExcelErrorMessage(String value, Integer row, Integer column, String message) {
         return Messages.Error.EXCEL_VALUE_INCORRECT.formatted(value, row, column).concat("\n").concat(message);
     }
 
-    private String getStringCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-
-        if (!cellType.equals(CellType.STRING))
-            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
-
-        return cell.getStringCellValue();
-    }
-
-    private String[] getStringArrayCellValue(Row row, Integer columnNumber) {
-        String cellValue = getStringCellValue(row, columnNumber);
-        return cellValue.split(", ?");
-    }
-
-    private Integer getIntegerCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-
-        if (!cellType.equals(CellType.NUMERIC))
-            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.NUMERIC.toString()));
-
-        return (int) cell.getNumericCellValue();
-    }
-
-    private LocalDate getDateCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-
-        if (!cellType.equals(CellType.NUMERIC))
-            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.NUMERIC.toString()));
-
-        return cell.getLocalDateTimeCellValue().toLocalDate();
-    }
 }

@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.processExcelArray;
+
 @Slf4j
 @EnableTransactionManagement
 @SpringBootApplication
@@ -30,6 +32,8 @@ public class GC8InventoryBackend {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GC8InventoryBackend.class, args);
+
+		processExcelArray();
 
 		try {
 			System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8"));

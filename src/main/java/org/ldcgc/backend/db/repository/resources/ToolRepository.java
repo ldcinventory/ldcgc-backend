@@ -13,6 +13,8 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     Optional<Tool> findFirstByBarcode(String barcode);
 
+    boolean existsByBarcode(String barcode);
+
     @Query(value = """
             SELECT t.* FROM tools t
             JOIN categories cat on t.category_id = cat.id

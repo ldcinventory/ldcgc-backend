@@ -3,6 +3,7 @@ package org.ldcgc.backend.payload.dto.location;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class LocationDto {
     private String name;
     private String description;
     private String url;
-    @JsonInclude(NON_NULL)
+    @JsonInclude(NON_NULL) @Setter
     private LocationDto parent;
-    @JsonInclude(NON_EMPTY)
+    @JsonInclude(NON_EMPTY) @Setter
     private List<LocationDto> locations;
 }

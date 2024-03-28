@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
+import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDateTime;
 import static org.ldcgc.backend.util.process.Threads.runInBackground;
 
 @Component
@@ -130,8 +130,8 @@ public class JwtUtils {
             .jwk(Base64.encode(jwk.toJSONString().getBytes()).toString())
             .userId(user.getId())
             .role(user.getRole())
-            .issuedAt(convertDateToLocalDateTime(now))
-            .expiresAt(convertDateToLocalDateTime(expirationTime))
+            .issuedAt(dateToLocalDateTime(now))
+            .expiresAt(dateToLocalDateTime(expirationTime))
             .isRecoveryToken(isRecoveryToken)
             .isRefreshToken(isRefreshToken)
             .refreshTokenId(isRefreshToken ? null : refreshTokenLocalRepository.get(user.getId()).getId())

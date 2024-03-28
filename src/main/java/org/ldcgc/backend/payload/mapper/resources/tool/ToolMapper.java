@@ -14,8 +14,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.Arrays;
 import java.util.List;
 
-@Mapper(uses = { LocationMapper.class },
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(uses = { LocationMapper.class }, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolMapper {
 
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);
@@ -33,6 +32,13 @@ public interface ToolMapper {
         return Arrays.stream(urlImages)
             .map(url -> String.format(Google.DRIVE_IMAGES_URL, url))
             .toArray(String[]::new);
+    }
+
+    static ToolDto cleanProps(ToolDto toolDto) {
+        toolDto.getLocation().setLocations(null);
+        toolDto.getLocation().setParent(null);
+        toolDto.getGroup().getLocation().setLocations(null);
+        return toolDto;
     }
 
     Tool toMo(ToolDto toolDto);

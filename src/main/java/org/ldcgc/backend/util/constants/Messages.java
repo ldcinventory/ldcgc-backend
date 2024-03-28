@@ -37,7 +37,7 @@ public class Messages {
             TOOL_UPDATED = "Tool details updated",
             TOOL_UNTOUCHED = "Tool untouched",
             TOOL_IMAGES_UPDATED = "Tool details for attached images updated",
-            TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
+            TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools. Skipped %s tools",
             TOOL_DELETED = "Tool deleted",
 
             CONSUMABLE_CREATED = "Consumable created successfully!",
@@ -46,7 +46,7 @@ public class Messages {
             CONSUMABLE_IMAGES_UPDATED = "Consumable details for attached images updated",
             CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
-            CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables",
+            CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables. Skipped %s consumables",
 
             CONSUMABLE_REGISTER_CREATED = "Consumable register created",
             CONSUMABLE_REGISTER_LISTED = "Found %s consumable registers",
@@ -198,7 +198,7 @@ public class Messages {
             CSV_PROCESS_ERROR = "Validation error when trying to process CSV with delimiter",
 
             EXCEL_VALUE_INCORRECT = "The value '%s' is incorrect on excel row %s, column %s",
-            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
+            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s(%s) is incorrect. Valid type: %s",
             EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
             EXCEL_EMPTY_CELL = "An empty value is not allowed on excel row %s, column %s",
 

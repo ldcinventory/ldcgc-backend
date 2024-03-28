@@ -1,26 +1,27 @@
 package org.ldcgc.backend.service.resources.consumable.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
-import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.db.model.location.Location;
-import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
-import org.ldcgc.backend.db.repository.group.GroupRepository;
-import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
+import org.ldcgc.backend.payload.dto.category.BrandDto;
+import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.excel.ConsumableExcelMasterDto;
+import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.payload.mapper.category.BrandMapper;
+import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
+import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
+import org.ldcgc.backend.service.groups.GroupsService;
+import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.util.common.EExcelConsumablesPositions;
 import org.ldcgc.backend.util.common.EStockType;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +38,10 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.ldcgc.backend.util.conversion.Convert.convertToFloat2Decimals;
-import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getDateCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getFloatCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringArrayCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringCellValue;
 
 @Component
 @RequiredArgsConstructor
@@ -48,73 +50,75 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
     private final ConsumableRepository consumableRepository;
     private final BrandRepository brandRepository;
     private final ResourceTypeRepository resourceTypeRepository;
-    private final LocationRepository locationRepository;
-    private final GroupRepository groupRepository;
+    private final LocationService locationService;
+    private final GroupsService groupsService;
 
-    public List<Consumable> excelToConsumables(MultipartFile excel) {
-        List<Consumable> consumable = new ArrayList<>();
+    public List<ConsumableDto> excelToConsumables(MultipartFile excel) {
+        List<ConsumableDto> consumables = new ArrayList<>();
 
         try {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
             ConsumableExcelMasterDto master = ConsumableExcelMasterDto.builder()
                 .consumables(consumableRepository.findAll().stream()
-                    .filter(c -> c.getBarcode() != null)
-                    .collect(Collectors.toMap(Consumable::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .brands(brandRepository.findAll().stream()
-                    .collect(Collectors.toMap(Brand::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .resourceTypes(resourceTypeRepository.findAll().stream()
-                    .collect(Collectors.toMap(ResourceType::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .locations(locationRepository.findAll().stream()
-                    .collect(Collectors.toMap(Location::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .groups(groupRepository.findAll().stream()
-                    .collect(Collectors.toMap(Group::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                    .map(ConsumableMapper.MAPPER::toDto)
+                    .collect(Collectors.toMap(ConsumableDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .brands(brandRepository.findAll().stream().map(BrandMapper.MAPPER::toDto)
+                    .collect(Collectors.toMap(BrandDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .resourceTypes(resourceTypeRepository.findAll().stream().map(ResourceTypeMapper.MAPPER::toDto)
+                    .collect(Collectors.toMap(ResourceTypeDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .locations(locationService.getAllLocations()
+                    .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                .groups(groupsService.getAllGroups()
+                    .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .build();
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                consumable.add(parseRowToTool(sheet.getRow(i), master));
+                consumables.add(parseRowToTool(sheet.getRow(i), master));
             }
 
         } catch (IOException e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.EXCEL_PARSE_ERROR);
         }
 
-        return consumable;
+        return consumables;
     }
 
-    private Consumable parseRowToTool(Row row, ConsumableExcelMasterDto master) {
+    private ConsumableDto parseRowToTool(Row row, ConsumableExcelMasterDto master) {
         String barcode = getStringCellValue(row, EExcelConsumablesPositions.BARCODE.getColumnNumber());
-        Integer id = Optional.ofNullable(master.getConsumables().get(barcode)).map(Consumable::getId).orElse(null);
+
+        Integer id = Optional.ofNullable(master.getConsumables().get(barcode)).map(ConsumableDto::getId).orElse(null);
 
         String brandName = getStringCellValue(row, EExcelConsumablesPositions.BRAND.getColumnNumber());
-        Brand brand = Optional.ofNullable(master.getBrands().get(brandName))
-            .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                generateExcelErrorMessage(brandName, row.getRowNum(), EExcelConsumablesPositions.BRAND.getColumnNumber(), Messages.Error.CATEGORY_SON_NOT_FOUND
-                    .formatted(CategoryParentEnum.BRANDS.getName(), brandName, CategoryParentEnum.BRANDS.getName(), master.getBrands().values().stream().map(Brand::getName).toList().toString()))));
+        if(master.getBrands().get(brandName) == null) {
+            BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
+            Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
+            master.getBrands().put(newBrand.getName(), BrandMapper.MAPPER.toDto(newBrand));
+        }
+        BrandDto brand = master.getBrands().get(brandName);
 
-        String resourceTypeName = getStringCellValue(row, EExcelConsumablesPositions.CATEGORY.getColumnNumber());
-        ResourceType resourceType = Optional.ofNullable(master.getResourceTypes().get(resourceTypeName))
-            .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                generateExcelErrorMessage(resourceTypeName, row.getRowNum(), EExcelConsumablesPositions.CATEGORY.getColumnNumber(),
-                    Messages.Error.CATEGORY_SON_NOT_FOUND
-                        .formatted(CategoryParentEnum.CATEGORIES.getName(), resourceTypeName, CategoryParentEnum.CATEGORIES.getName(), master.getResourceTypes().values().stream().map(ResourceType::getName).toList().toString()))));
+        String resourceType = getStringCellValue(row, EExcelConsumablesPositions.RESOURCE_TYPE.getColumnNumber());
+        if(master.getResourceTypes().get(resourceType) == null) {
+            ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
+            ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
+            master.getResourceTypes().put(newResourceType.getName(), ResourceTypeMapper.MAPPER.toDto(newResourceType));
+        }
+        ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
 
         String locationName = row.getCell(EExcelConsumablesPositions.LOCATION.getColumnNumber()).getStringCellValue();
-        Location location = Optional.ofNullable(master.getLocations().get(locationName))
-            .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                generateExcelErrorMessage(locationName, row.getRowNum(), EExcelConsumablesPositions.LOCATION.getColumnNumber(),
-                    Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(Location::getName).toList()))));
+        LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EExcelConsumablesPositions.LOCATION.getColumnNumber(),
+                Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
 
         String groupName = getStringCellValue(row, EExcelConsumablesPositions.GROUP.getColumnNumber());
-        Group group = Optional.ofNullable(master.getGroups().get(groupName))
-            .orElseThrow(() -> new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                generateExcelErrorMessage(groupName, row.getRowNum(), EExcelConsumablesPositions.GROUP.getColumnNumber(),
-                    Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(Group::getName).toList()))));
+        GroupDto group = Optional.ofNullable(master.getGroups().get(groupName))
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EExcelConsumablesPositions.GROUP.getColumnNumber(),
+                Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(GroupDto::getName).toList()))));
 
-        return Consumable.builder()
+        return ConsumableDto.builder()
             .id(id)
             .barcode(barcode)
-            .resourceType(resourceType)
+            .resourceType(resourceTypeDto)
             .brand(brand)
             .name(getStringCellValue(row, EExcelConsumablesPositions.NAME.getColumnNumber()))
             .model(getStringCellValue(row, EExcelConsumablesPositions.MODEL.getColumnNumber()))
@@ -122,6 +126,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
             .price(getFloatCellValue(row, EExcelConsumablesPositions.PRICE.getColumnNumber()))
             .purchaseDate(getDateCellValue(row, EExcelConsumablesPositions.PURCHASE_DATE.getColumnNumber()))
             .urlImages(getStringArrayCellValue(row, EExcelConsumablesPositions.URL_IMAGES.getColumnNumber()))
+            .quantityEachItem(getFloatCellValue(row, EExcelConsumablesPositions.QTY_EACH_ITEM.getColumnNumber()))
             .stock(getFloatCellValue(row, EExcelConsumablesPositions.STOCK.getColumnNumber()))
             .minStock(getFloatCellValue(row, EExcelConsumablesPositions.MIN_STOCK.getColumnNumber()))
             .stockType(EStockType.getStockTypeByName(getStringCellValue(row, EExcelConsumablesPositions.STOCK_TYPE.getColumnNumber())))
@@ -134,52 +139,5 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         return Messages.Error.EXCEL_VALUE_INCORRECT.formatted(value, row, column).concat(". ").concat(message);
     }
 
-    private String getStringCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-
-        if (!cellType.equals(CellType.STRING))
-            return ((XSSFCell) cell).getRawValue();
-
-        return cell.getStringCellValue();
-    }
-
-    private String[] getStringArrayCellValue(Row row, Integer columnNumber) {
-        String cellValue = getStringCellValue(row, columnNumber);
-        return cellValue.split(", ?");
-    }
-
-    private Integer getIntegerCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-
-        if (!cellType.equals(CellType.NUMERIC))
-            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.NUMERIC.toString()));
-
-        return (int) cell.getNumericCellValue();
-    }
-
-    private LocalDate getDateCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-        String cellValue = cell.getStringCellValue();
-
-        if (!cellType.equals(CellType.STRING))
-            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
-
-        return stringToLocalDate(cellValue, "yyyy-MM-dd");//cell.getLocalDateTimeCellValue().toLocalDate();
-    }
-
-    private Float getFloatCellValue(Row row, Integer columnNumber) {
-        Cell cell = row.getCell(columnNumber);
-        CellType cellType = cell.getCellType();
-        if (!cellType.equals(CellType.STRING))
-            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, CellType.STRING.toString()));
-
-        return convertToFloat2Decimals(cell.getStringCellValue());
-    }
 }
 

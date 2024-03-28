@@ -3,6 +3,7 @@ package org.ldcgc.backend.payload.dto.category;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -11,6 +12,6 @@ public class ResourceTypeDto {
 
     private Integer id;
     private String name;
-    private Boolean locked;
+    @Setter Boolean locked;
 
 }
