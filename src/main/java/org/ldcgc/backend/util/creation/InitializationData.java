@@ -49,6 +49,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -210,12 +211,12 @@ public class InitializationData {
 
             chests.forEach(c -> {
                 Location entityFromMap = locationMap.get(c.get(1));
-                entityFromMap.getLocations().add(Location.builder()
+                entityFromMap.setLocations(Collections.singletonList(Location.builder()
                     .name(c.get(0))
                     .parent(entityFromMap)
                     .description(c.get(0))
                     .level(2)
-                    .build());
+                    .build()));
                 locationRepository.saveAndFlush(entityFromMap);
             });
 
@@ -228,7 +229,7 @@ public class InitializationData {
                     .location(ferreteria)
                     .build());
 
-            // CATEGORIES (select name from categories;)
+            // RESOURCE TYPES (select name from categories;)
 
             // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
@@ -337,7 +338,7 @@ public class InitializationData {
             });
             toolRepository.saveAll(toolEntities.values());
 
-            // TOOLS REGISTRATION
+            // --> TOOLS REGISTRATION
             List<Integer> openedToolRegisters = new ArrayList<>();
             if (toolsRegistrationTestData)
                 IntStream.range(0, 3_000)
@@ -408,7 +409,7 @@ public class InitializationData {
             }
             consumableRepository.saveAll(consumableEntities.values());
 
-            // CONSUMABLES REGISTRATION
+            // --> CONSUMABLES REGISTRATION
             List<Integer> openedConsumableRegisters = new ArrayList<>();
             if (consumablesRegistrationTestData)
                 IntStream.range(0, 3_000)
@@ -453,7 +454,7 @@ public class InitializationData {
                     .build());
             });
 
-            // USERS
+            // --> USERS
 
             List<Responsibility> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario")
                 .map(r ->
