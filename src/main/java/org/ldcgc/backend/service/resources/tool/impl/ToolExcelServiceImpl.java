@@ -20,7 +20,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.category.BrandMapper;
 import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.groups.GroupsService;
+import org.ldcgc.backend.service.group.GroupsService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.util.common.EExcelToolsPositions;
@@ -42,6 +42,7 @@ import static org.ldcgc.backend.util.conversion.ExcelFunctions.getDateCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getIntegerCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringArrayCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.processExcelArray;
 
 @Component
 @RequiredArgsConstructor
@@ -54,6 +55,8 @@ public class ToolExcelServiceImpl implements ToolExcelService {
     private final GroupsService groupsService;
 
     public List<ToolDto> excelToTools(MultipartFile excel) {
+        processExcelArray();
+
         List<ToolDto> tools = new ArrayList<>();
 
         try {

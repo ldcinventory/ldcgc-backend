@@ -1,4 +1,4 @@
-package org.ldcgc.backend.service.groups;
+package org.ldcgc.backend.service.group;
 
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.springframework.stereotype.Service;
