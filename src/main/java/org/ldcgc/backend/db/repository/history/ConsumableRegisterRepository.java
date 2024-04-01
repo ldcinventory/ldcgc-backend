@@ -22,7 +22,7 @@ public interface ConsumableRegisterRepository extends JpaRepository<ConsumableRe
             (
                 COALESCE(:status, '') = '' OR
                 (COALESCE(:status, '') ILIKE 'opened' AND cr.registerTo IS NULL) OR
-                (COALESCE(:status, '') ILIKE 'closed'  AND cr.registerTo IS NOT NULL)
+                (COALESCE(:status, '') ILIKE 'closed' AND cr.registerTo IS NOT NULL)
             )
             AND (
                 COALESCE(:volunteer, '') = '' OR

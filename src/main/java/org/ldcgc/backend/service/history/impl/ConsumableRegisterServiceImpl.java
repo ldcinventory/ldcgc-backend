@@ -48,7 +48,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
     public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String volunteer, String consumable, LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, String sortField, boolean descOrder) {
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
 
-        Page<ConsumableRegisterDto> pagedConsumableRegisters = ObjectUtils.allNull(volunteer, consumable, registerFrom, registerTo)
+        Page<ConsumableRegisterDto> pagedConsumableRegisters = ObjectUtils.allNull(volunteer, consumable, registerFrom, registerTo, status)
             ? consumableRegisterRepository.findAll(pageable).map(ConsumableRegisterMapper.MAPPER::toDto)
             : consumableRegisterRepository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null), volunteer, consumable, registerFrom, registerTo, pageable).map(ConsumableRegisterMapper.MAPPER::toDto);
 

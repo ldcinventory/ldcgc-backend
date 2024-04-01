@@ -16,7 +16,7 @@ public interface ToolRegisterRepository extends JpaRepository<ToolRegister, Inte
             (
                 COALESCE(:status, '') = '' OR
                 (COALESCE(:status, '') ILIKE 'opened' AND tr.registerTo IS NULL) OR
-                (COALESCE(:status, '') ILIKE 'closed'  AND tr.registerTo IS NOT NULL)
+                (COALESCE(:status, '') ILIKE 'closed' AND tr.registerTo IS NOT NULL)
             )
             AND (
                 COALESCE(:volunteer, '') = '' OR
