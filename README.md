@@ -1,6 +1,17 @@
 # LDC Inventory Backend
 
 ---
+## Don't care about the details? Let's run this in less than 10 minutes
+
+- Download docker from https://docs.docker.com/engine/install/, install it and run it.
+- Go to https://github.com/settings/tokens/new, create **a classic token**. Give the only permission of _read:packages_ (_Download packages from GitHub Package Registry_). 
+- Copy the generated token. Go to the terminal. Run this command: `docker login ghcr.io -u your_github_user`, and paste the token from GitHub.
+- Put the CSVs into `src/main/resources` folder (ask L for them).
+- Run this:
+  - If you're backend: `./run.sh create`
+  - If you're frontend: `./run.sh create-api`
+  - If you're QA: `./run.sh create-ui` (you'll need both frontend and backend projects in local).
+
 ## Run in Cloud
 
 > (not yet implemented)
