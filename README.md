@@ -7,7 +7,7 @@
 
 ### Login
 
-To perform a login in this API, just go with default credentials for testing purposes:
+To perform a login in this API, just go with default credentials for testing purposes (check others **in EULA section** to temporarily avoid EULA):
 
 > User: `admin@admin` Password: `admin`
 
@@ -34,6 +34,8 @@ Is necessary indicate some values as environment variables:
 
 + `ENVIRONMENT_PROFILE` (mandatory for make it run in cloud and local environment (not docker)): values `dev` or `pro`. Used to select Spring profile to use on startup (default `dev`).
 + `JWT_EXPIRATION`: set value in seconds the time the JWT is valid.
++ `TOOLS_REGISTRATION_TEST_DATA`: a boolean to load test data for tools registration.
++ `CONSUMABLES_REGISTRATION_TEST_DATA`: a boolean to load test data for consumables registration.
 
 **DB**
 
@@ -77,45 +79,51 @@ Paste the token previously copied and that's all. Now docker will be able to dow
 
 ### Initialization
 
-A Docker-based project, you just execute this command to run the multi-container:
+For make-it-easier-for-you purposes, you can run:
 
-`docker-compose up`
+`./run.sh` in MacOS/Linux based system, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
 
-or, for make-it-easier-for-you purposes, you can run:
+You should provide 1 option (it won't run with just `./run.sh`).
 
-`./run.sh` in Mac, which will delete previous `docker` api compilations **only** with this project's compose file, and will start from zero cleaning containers, then images, then volumes, and restarting all dependencies again :) (please notice only API is completely erased, not other official images, like DB or SMTP services).
+#### RUN just API dependencies (i.e. DB + SMTP)
 
-The options used for run the full API are:
+This option is mainly use by the Backend side of the project. The options used for run in this mode are:
 
-- `create`: create the API with CSVs
-- `create-test-data`: create the API with CSVs and test data for consumible and tool registers
+- `create`: create the container dependencies
 - `restart`: just restart the containers
+
+#### RUN API (i.e. API + DB + SMTP)
+
+This option is mainly use by the Frontend side of the project. The options used for run in this mode are:
+
+- `create-api`: create the API with CSVs (you need those inside `src/main/resources`)
+- `create-test-data-api`: create the API with CSVs and test data for consumible and tool registers
+- `restart-api`: just restart the containers
+
+#### RUN UI (i.e. UI + API + DB + SMTP)
+
+This option is mainly use by the QA side of the project. The options used for run in this mode are:
+
+- `create-ui`: create the UI + API with CSVs (you need those inside `src/main/resources`)
+- `create-test-data-ui`: create the UI + API with CSVs and test data for consumible and tool registers
+- `restart-ui`: just restart all the containers
+
+#### PURGE EVERYTHING
+
 - `purge`: clean all the data in Docker (images included!)
 
-All previous environment variables can be changed through command line invocation to docker-compose specifying explicitly **before** the `docker-compose up` command. For example, to change DB_NAME we'd run as follows:
-
-`DB_NAME=myCustomDbName docker-compose up`
-
-For now, it supports changes in **SPRING**, **DB** and **LOGGING** environment variables.
-
-### Dettached mode
-Don't forget that if you run `docker-compose up` as is, the console is attached to the opened window. If you want to dettach it run it with the `-d` flag, as in
-`docker-compose up -d`.
+### How to access to everything
 
 When everything's is OK with DB, you can use this command to test backend healthiness:
 
-`curl -v http://localhost:8080/api/alive`
-
-It should respond with a 200 OK into any terminal.
+- Check API is alive running `curl -v http://localhost:8080/api/alive` or directly putting that url in a web browser (it **should** respond with a 200 OK).
+- Work with API @ http://localhost:8080/api, better from postman 😉
+- Swagger @ https://localhost:8080/api/swagger-ui/index.html"
 
 ### STOP
 To stop and clean, you can shutdown the multi-container with:
 
-`docker-compose down` in case you run in dettached mode, or just pulse `Ctrl`+`C`
-
-And dettach the associated volume with:
-
-`docker-compose down --volumes`
+`./run.sh purge`
 
 ---
 ## DB

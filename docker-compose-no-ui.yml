@@ -65,35 +65,14 @@ services:
     networks:
       - api_db_network
       - api_smtp_network
-      - api_network
-      - ui_network
     ports:
       - "8080:8080"
-    restart: always
-
-  ui:
-    container_name: ldcgc-ui
-    image: ldcgc-ui
-    build:
-      context: ./
-      dockerfile: ../ldcgc-frontend/Dockerfile
-    depends_on:
-      api:
-        condition: service_healthy
-    networks:
-      - api_network
-    ports:
-      - "3000:3000"
     restart: always
 
 networks:
   api_db_network:
     driver: bridge
   api_smtp_network:
-    driver: bridge
-  api_network:
-    driver: bridge
-  ui_network:
     driver: bridge
 
 volumes:

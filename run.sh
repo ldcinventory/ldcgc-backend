@@ -1,7 +1,7 @@
 n=0
 #Open Docker, only if is not running
-if (! docker stats --no-stream ); then
-  read -p 'Docker is not started, do you want for this script to try to start it? [Y/n] ' start_docker
+if (! docker ps ); then
+  read -rp 'Docker is not started, do you want for this script to try to start it? [Y/n] ' start_docker
   start_docker={$start_docker:-yes}
 
   if [[ "$start_docker" =~ [yY].* ]]; then
@@ -27,59 +27,86 @@ if (! docker stats --no-stream ); then
   fi
 fi
 
+if [ -z "$1" ]; then
+  echo ""
+  echo "-- No option selected --"
+  echo "→ To run (no API+no UI) → use: $0 {create|restart}"
+  echo "→ To run (just API) ----→ use: $0 {create-api|create-test-data-api|restart-api}"
+  echo "→ To run (API + UI) ----→ use: $0 {create-ui|create-test-data-ui|restart-ui}"
+  echo "→ To purge everything --→ use: $0 purge"
+  exit 1
+elif [[ "$1" == *-ui ]] && [ ! -f ../ldcgc-frontend/Dockerfile ]; then
+  echo "Dockerfile for UI not found!"
+  exit 1
+fi
+
+if [ ! -f target ]; then
+  rm -rf target
+else
+  echo "it exists"
+fi
+
 git pull
 docker compose down -v
 docker compose rm -f
 docker rm ldcgc-backend -f
 docker rmi ldcgc-backend -f
 
-DB_START_MODE=create
+DB_START_MODE=false
 LOAD_INITIAL_DATA=false
-if [ -z "$1" ]; then
-  echo "No option selected. Use: $0 {create|create-test-data|restart|purge}"
-else
-  case "$1" in
-    create)
-      #docker rmi postgres -f
-      #docker rmi maildev/maildev -f
-      DB_START_MODE=create
-      LOAD_INITIAL_DATA=true
-      ;;
-    create-test-data)
-      #docker rmi postgres -f
-      #docker rmi maildev/maildev -f
-      DB_START_MODE=create
-      LOAD_INITIAL_DATA=true
-      TEST_DATA=true
-      ;;
-    restart)
-      #docker-compose up maildev
-      DB_START_MODE=none
-      LOAD_INITIAL_DATA=false
-      ;;
-    purge)
-      docker compose down
-      docker rmi postgres -f
-      docker rmi maildev/maildev -f
-      rm -rf ./data
-      set -e
-      EXIT_CODE=0
-      docker network rm ldcgc-backend_api_db_network || EXIT_CODE=$?
-      docker network rm ldcgc-backend_api_smtp_network || EXIT_CODE=$?
-      echo "Network rm: " $EXIT_CODE
-      set +e
-      exit 1
-      ;;
-  esac
+TEST_DATA=false
 
-  echo "DB start mode=$DB_START_MODE"
-  echo "Load initial data=$LOAD_INITIAL_DATA"
-  echo "Load test data for tools and consumables=$TEST_DATA"
+case "$1" in
+  create|create-api|create-ui)
+    DB_START_MODE=create
+    LOAD_INITIAL_DATA=true
+    ;;
+  create-test-data-api|create-test-data-ui)
+    DB_START_MODE=create
+    LOAD_INITIAL_DATA=true
+    TEST_DATA=true
+    ;;
+  restart|restart-api|restart-ui)
+    DB_START_MODE=none
+    LOAD_INITIAL_DATA=false
+    ;;
+  purge)
+    docker compose down
+    docker rmi postgres -f
+    docker rmi maildev/maildev -f
+    rm -rf ./data
+    set -e
+    EXIT_CODE=0
+    docker network rm ldcgc-backend_api_db_network || EXIT_CODE=$?
+    docker network rm ldcgc-backend_api_smtp_network || EXIT_CODE=$?
+    docker network rm ldcgc-backend_api_network || EXIT_CODE=$?
+    docker network rm ldcgc-backend_ui_network || EXIT_CODE=$?
+    echo "Network rm: " $EXIT_CODE
+    set +e
+    exit 1
+    ;;
+esac
 
-  DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TEST_DATA=$TEST_DATA docker-compose up -d
+echo "DB start mode = $DB_START_MODE"
+echo "Load initial data = $LOAD_INITIAL_DATA"
+echo "Load test data for tools and consumables = $TEST_DATA"
+echo "Docker initialisation mode = '$1'"
+case "$1" in
+  create|restart)
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-api.yml up -d
+  ;;
+  create-api|create-test-data-api|restart-api)
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-ui.yml up -d
+  ;;
+  create-ui|create-test-data-ui|restart-ui)
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker-compose up -d
+  ;;
+esac
 
-  echo "ready to work with API @ http://localhost:8080/api, better from postman hehe"
-  echo "check api is alive in http://localhost:8080/api/alive"
-  echo "check swagger @ https://localhost:8080/api/swagger-ui/index.html"
-
-fi
+case "$1" in
+  create-api|create-test-data-api|restart-api|create-ui|create-test-data-ui|restart-ui)
+    echo "ready to work with API @ http://localhost:8080/api, better from postman hehe"
+    echo "check api is alive in http://localhost:8080/api/alive"
+    echo "check swagger @ https://localhost:8080/api/swagger-ui/index.html"
+  ;;
+esac
