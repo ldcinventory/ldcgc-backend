@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -65,9 +66,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
 import static org.ldcgc.backend.util.conversion.Convert.toFloat;
 import static org.ldcgc.backend.util.conversion.Convert.toFloat2Decimals;
-import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -90,33 +91,29 @@ public class InitializationData {
 
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${DB_NAME:mydb}")
-    private String dbName;
+    @Value("${DB_NAME:mydb}") private String dbName;
 
-    @Value("${LOAD_INITIAL_DATA:false}")
-    private boolean loadData;
+    @Value("${LOAD_INITIAL_DATA:false}") private boolean loadData;
+
+    // requires LOAD_INITIAL_DATA to true
+    @Value("${VOLUNTEERS_RANDOM_DATA:false}") private boolean volunteersRandomData;
+    @Value("${CHESTS_RANDOM_DATA:false}") private boolean chestsRandomData;
+    @Value("${TOOLS_RANDOM_DATA:false}") private boolean toolsRandomData;
+    @Value("${CONSUMABLES_RANDOM_DATA:false}") private boolean consumablesRandomData;
 
     @Value("${TOOLS_REGISTRATION_TEST_DATA:false}") private boolean toolsRegistrationTestData;
     @Value("${CONSUMABLES_REGISTRATION_TEST_DATA:false}") private boolean consumablesRegistrationTestData;
 
-    @Value("classpath:chests.csv")
-    org.springframework.core.io.Resource chestsCSV;
-    @Value("classpath:chestRegistration.csv")
-    org.springframework.core.io.Resource chestRegisterCSV;
+    @Value("classpath:chests.csv") Resource chestsCSV;
+    @Value("classpath:chestRegistration.csv") Resource chestRegisterCSV;
 
-    @Value("classpath:consumables.csv")
-    org.springframework.core.io.Resource consumablesCSV;
-    @Value("classpath:tools.csv")
-    org.springframework.core.io.Resource toolsCSV;
-    @Value("classpath:maintenance.csv")
-    org.springframework.core.io.Resource maintenanceCSV;
+    @Value("classpath:consumables.csv") Resource consumablesCSV;
+    @Value("classpath:tools.csv") Resource toolsCSV;
+    @Value("classpath:maintenance.csv") Resource maintenanceCSV;
 
-    @Value("classpath:users.csv")
-    org.springframework.core.io.Resource usersCSV;
-    @Value("classpath:volunteers.csv")
-    org.springframework.core.io.Resource volunteersCSV;
-    @Value("classpath:tool_register.csv")
-    org.springframework.core.io.Resource toolRegisterCSV;
+    @Value("classpath:users.csv") Resource usersCSV;
+    @Value("classpath:volunteers.csv") Resource volunteersCSV;
+    @Value("classpath:tool_register.csv") Resource toolRegisterCSV;
 
     @Bean
     @Profile("!pro")
@@ -207,7 +204,9 @@ public class InitializationData {
             // from Chests c, Locations l
             // where c.LocationId = l.LocationId;
 
-            List<List<String>> chests = Files.getContentFromCSV(chestsCSV, ',', false);
+            List<List<String>> chests = chestsRandomData
+                ? null // TODO
+                : Files.getContentFromCSV(chestsCSV, ',', false);
 
             chests.forEach(c -> {
                 Location entityFromMap = locationMap.get(c.get(1));
@@ -245,7 +244,10 @@ public class InitializationData {
 
             // VOLUNTEERS (select builderAssistantId, name, surname, active from volunteers;)
 
-            List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', true);
+            List<List<String>> volunteers = volunteersRandomData
+                ? null // TODO
+                : Files.getContentFromCSV(volunteersCSV, ',', true);
+
             Map<String, Volunteer> volunteerEntities = new HashMap<>();
             volunteers.forEach(vFieldList -> {
                 if(Objects.nonNull(volunteerEntities.get(vFieldList.get(1))))
@@ -308,7 +310,9 @@ public class InitializationData {
             // TODO check status when final migration
             Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
-            List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
+            List<List<String>> tools = toolsRandomData
+                ? null // TODO
+                : Files.getContentFromCSV(toolsCSV, ',', false);
             Map<String, Tool> toolEntities = new HashMap<>();
             tools.forEach(tFieldList -> {
                 Tool tool = Tool.builder()
@@ -369,7 +373,9 @@ public class InitializationData {
             //                  where cn.BrandId = b.BrandId
             //                  and cn.CategoryId = c.CategoryId;)
 
-            List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
+            List<List<String>> consumables = consumablesRandomData
+                ? null
+                : Files.getContentFromCSV(consumablesCSV, ',', false);
             Map<String, Consumable> consumableEntities = new HashMap<>();
             for (List<String> cFieldList : consumables) {
                 int stockInt = getRandomIntegerFromRange(2, 10);
@@ -438,7 +444,9 @@ public class InitializationData {
                                 .build());
                     });
 
-            List<List<String>> maintenance = Files.getContentFromCSV(maintenanceCSV, ',', false);
+            // TODO random maintenance
+            /*
+            List<List<String>> maintenance = null;
 
             maintenance.parallelStream().forEach(mFieldList -> {
                 final Tool tool = toolRepository.findFirstByBarcode(mFieldList.get(3)).orElse(null);
@@ -453,6 +461,7 @@ public class InitializationData {
                     .outStatus(EStatus.AVAILABLE)
                     .build());
             });
+             */
 
             // --> USERS
 
@@ -571,6 +580,8 @@ public class InitializationData {
                     .orElse(null))
                 .build());
 
+            // TODO when in production will be available
+            /*
             List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
             users.forEach(userFields -> {
                 User user = User.builder()
@@ -591,6 +602,7 @@ public class InitializationData {
 
                 userRepository.saveAndFlush(user);
             });
+            */
 
         };
 
