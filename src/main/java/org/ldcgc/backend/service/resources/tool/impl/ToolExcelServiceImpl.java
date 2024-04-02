@@ -20,7 +20,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.category.BrandMapper;
 import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.group.GroupsService;
+import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.util.common.EExcelToolsPositions;
@@ -52,7 +52,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
     private final BrandRepository brandRepository;
     private final ResourceTypeRepository resourceTypeRepository;
     private final LocationService locationService;
-    private final GroupsService groupsService;
+    private final GroupService groupService;
 
     public List<ToolDto> excelToTools(MultipartFile excel) {
         processExcelArray();
@@ -71,7 +71,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
                     .collect(Collectors.toMap(ResourceTypeDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .locations(locationService.getAllLocations()
                     .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .groups(groupsService.getAllGroups()
+                .groups(groupService.getAllGroups()
                     .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .build();
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {

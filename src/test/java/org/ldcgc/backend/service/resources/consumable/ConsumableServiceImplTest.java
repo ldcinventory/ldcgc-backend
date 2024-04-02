@@ -7,8 +7,8 @@ import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
-import org.ldcgc.backend.service.groups.GroupsService;
-import org.ldcgc.backend.service.groups.impl.GroupServiceImpl;
+import org.ldcgc.backend.service.group.GroupService;
+import org.ldcgc.backend.service.group.impl.GroupServiceImpl;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.location.impl.LocationServiceImpl;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableExcelServiceImpl;
@@ -30,13 +30,13 @@ class ConsumableServiceImplTest {
     private ConsumableExcelService consumableExcelService;
     private ConsumableService consumableService;
     private LocationService locationService;
-    private GroupsService groupsService;
+    private GroupService groupService;
 
     @BeforeEach
     void init() {
-        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationService, groupsService);
+        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationService, groupService);
         locationService = new LocationServiceImpl(locationRepository);
-        groupsService = new GroupServiceImpl(groupRepository);
+        groupService = new GroupServiceImpl(groupRepository);
         consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, consumableExcelService);
     }
 

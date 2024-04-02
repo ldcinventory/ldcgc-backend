@@ -36,10 +36,6 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             """, nativeQuery = true)
     Page<Consumable> findAllFiltered(String filterString, Pageable pageable);
 
-    @NotNull Page<Consumable> findAll(@NotNull Pageable pageable);
-
-    @NotNull Consumable getById(@NotNull Integer consumableId);
-
     void deleteById(@NotNull Integer consumableId);
 
     boolean existsByBarcode(String barcode);

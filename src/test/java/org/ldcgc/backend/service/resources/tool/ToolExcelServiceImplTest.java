@@ -16,7 +16,7 @@ import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.groups.GroupsService;
+import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.impl.ToolExcelServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
@@ -47,7 +47,7 @@ class ToolExcelServiceImplTest {
     @Mock private BrandRepository brandRepository;
     @Mock private ResourceTypeRepository resourceTypeRepository;
     @Mock private LocationService locationService;
-    @Mock private GroupsService groupsService;
+    @Mock private GroupService groupService;
 
     private List<Tool> toolsDb;
     private List<ToolDto> tools;
@@ -84,7 +84,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
 
         List<ToolDto> toolsExcelResponse = service.excelToTools(file);
 
@@ -99,7 +99,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, 0, CellType.STRING.toString()), requestException.getMessage());
@@ -112,7 +112,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up brand", 1, EExcelToolsPositions.BRAND.getColumnNumber()).concat("\n").concat(Messages.Error.CATEGORY_SON_NOT_FOUND
@@ -128,7 +128,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up resource type", 1, EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber()).concat("\n").concat(Messages.Error.CATEGORY_SON_NOT_FOUND
@@ -143,7 +143,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up location", 1, EExcelToolsPositions.LOCATION.getColumnNumber()).concat("\n").concat(Messages.Error.LOCATION_NOT_FOUND_EXCEL
@@ -158,7 +158,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up group", 1, EExcelToolsPositions.GROUP.getColumnNumber()).concat("\n").concat(Messages.Error.GROUP_NOT_FOUND_EXCEL
@@ -173,7 +173,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber(), CellType.NUMERIC.toString()),
@@ -187,7 +187,7 @@ class ToolExcelServiceImplTest {
         doReturn(brands).when(brandRepository).findAll();
         doReturn(resourceTypes).when(resourceTypeRepository).findAll();
         doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupsService).getAllGroups();
+        doReturn(groups).when(groupService).getAllGroups();
         RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, EExcelToolsPositions.LAST_MAINTENANCE.getColumnNumber(), CellType.NUMERIC.toString()),

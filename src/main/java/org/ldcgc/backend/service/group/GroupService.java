@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public interface GroupsService {
+public interface GroupService {
 
     List<GroupDto> getAllGroups();
     GroupDto findGroupByName(String groupName);
