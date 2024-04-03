@@ -1,5 +1,7 @@
 # LDC Inventory Backend
 
+> A simple tool to manage volunteers working in LDC department, and manage tools and consumables, along with the registration of these to volunteers.
+
 ---
 ## Don't care about the details? Let's run this in less than 10 minutes
 
