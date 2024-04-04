@@ -24,6 +24,7 @@ public class Messages {
 
             VOLUNTEER_CREATED = "Volunteer created",
             VOLUNTEER_LISTED = "Found %s volunteer/s",
+            VOLUNTEER_FOUND = "Volunteer with builder assistant id %s was found",
             VOLUNTEER_UPDATED = "Volunteer details updated",
             VOLUNTEER_DELETED = "Volunteer deleted",
 
