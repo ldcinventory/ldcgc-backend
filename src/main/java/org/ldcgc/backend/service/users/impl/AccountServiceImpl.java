@@ -130,7 +130,7 @@ public class AccountServiceImpl implements AccountService {
                 new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND)));
 
         if(tokenDto.getExpiresAt().isBefore(LocalDateTime.now()))
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_EXPIRED);
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.TOKEN_EXPIRED);
 
         // check recovery & refresh token
         if (!tokenDto.isRecoveryToken() && !tokenDto.isRefreshToken())
