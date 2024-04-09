@@ -4,6 +4,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.exception.RequestException;
@@ -141,10 +143,15 @@ public class ExcelFunctions {
     }
 
     private static void checkCellFormula(Cell cell) {
-        FormulaEvaluator evaluator = new XSSFWorkbook().getCreationHelper().createFormulaEvaluator();
-        if(evaluator.evaluate(cell).getCellType().equals(ERROR))
-            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(
-                cell.getRowIndex() + 1, cell.getColumnIndex() + 1, getExcelAlphabetColumn(cell.getColumnIndex() + 1)
-            ));
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("Sheet1");
+        Row row = sheet.createRow(0);
+        Cell checkCell = row.createCell(0, cell.getCellType());
+        checkCell.setCellFormula(cell.getCellFormula());
+
+        FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+        if(evaluator.evaluate(checkCell).getCellType().equals(ERROR))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_ERROR.formatted(
+                cell.getRowIndex() + 1, cell.getColumnIndex() + 1, getExcelAlphabetColumn(cell.getColumnIndex())));
     }
 }

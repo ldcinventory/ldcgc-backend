@@ -95,7 +95,7 @@ class ToolExcelServiceImplTest {
 
         RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
 
-        assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, 0, CellType.STRING.toString()), requestException.getMessage());
+        assertEquals(Messages.Error.EXCEL_CELL_TYPE_ERROR.formatted(2, 1, getExcelAlphabetColumn(0)), requestException.getMessage());
     }
 
     @Test
