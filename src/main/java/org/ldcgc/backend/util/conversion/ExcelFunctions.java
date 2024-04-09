@@ -2,8 +2,10 @@ package org.ldcgc.backend.util.conversion;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,9 @@ public class ExcelFunctions {
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     new String[]{STRING.name(), FORMULA.name(), BLANK.name()}));
 
+        if (cellType.equals(FORMULA))
+            checkCellFormula(cell);
+
         if (excelCellNotValid("", cellType))
             return ((XSSFCell) cell).getRawValue();
 
@@ -74,6 +79,9 @@ public class ExcelFunctions {
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()}));
 
+        if (cellType.equals(FORMULA))
+            checkCellFormula(cell);
+
         if (cellType.equals(STRING))
             return Integer.valueOf(cell.getStringCellValue());
 
@@ -89,6 +97,9 @@ public class ExcelFunctions {
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()}));
 
+        if (cellType.equals(FORMULA))
+            checkCellFormula(cell);
+
         if (cellType.equals(STRING))
             return Float.parseFloat(cell.getStringCellValue());
 
@@ -103,6 +114,9 @@ public class ExcelFunctions {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     new String[]{STRING.name(), FORMULA.name(), BLANK.name()}));
+
+        if (cellType.equals(FORMULA))
+            checkCellFormula(cell);
 
         if (cellType.equals(STRING))
             return stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
@@ -124,5 +138,13 @@ public class ExcelFunctions {
         for (Object o : objects)
             if (objectComparing == o) return true;
         return false;
+    }
+
+    private static void checkCellFormula(Cell cell) {
+        FormulaEvaluator evaluator = new XSSFWorkbook().getCreationHelper().createFormulaEvaluator();
+        if(evaluator.evaluate(cell).getCellType().equals(ERROR))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(
+                cell.getRowIndex() + 1, cell.getColumnIndex() + 1, getExcelAlphabetColumn(cell.getColumnIndex() + 1)
+            ));
     }
 }
