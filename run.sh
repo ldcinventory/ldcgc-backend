@@ -35,7 +35,7 @@ if [ -z "$1" ]; then
   echo "→ To run (API + UI) ----→ use: $0 {create-ui|create-test-data-ui|restart-ui}"
   echo "→ To purge everything --→ use: $0 purge"
   exit 1
-elif [[ "$1" == *-ui ]] && [ ! -f ../ldcgc-frontend/Dockerfile ] || [ ! -f ../ldcgc-frontend-elm/Dockerfile ] ; then
+elif [[ "$1" == *-ui && ( ! -f ../ldcgc-frontend/Dockerfile  ||  ! -f ../ldcgc-frontend-elm/Dockerfile ) ]] ; then
   echo "Dockerfile for UI not found!"
   exit 1
 fi
