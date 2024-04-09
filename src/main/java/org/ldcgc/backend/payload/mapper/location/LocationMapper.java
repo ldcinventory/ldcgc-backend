@@ -23,6 +23,8 @@ public interface LocationMapper {
 
     @Named("mapNestedLocationsParentAsNull")
     static List<LocationDto> mapNestedLocationsParentAsNull(List<Location> locations) {
+        if(locations == null) return null;
+
         return locations.stream().map(location -> {
             location.setParent(null);
             return LocationMapper.MAPPER.toDto(location);
