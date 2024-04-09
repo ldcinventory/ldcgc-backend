@@ -1,9 +1,5 @@
 package org.ldcgc.backend.service.users;
 
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +20,6 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.AbsenceServiceImpl;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,7 +51,6 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,10 +63,6 @@ class AbsenceServiceImplTest {
     @Mock VolunteerRepository volunteerRepository;
     @Mock AbsenceRepository absenceRepository;
 
-    @Mock CriteriaQuery<Absence> criteriaQuery;
-    @Mock Root<Absence> rootAbsence;
-    @Mock Join<Volunteer, Absence> joinVolunteerAbsence;
-    @Mock Path<String> builderAssistantIdExpression;
     private String mockedToken;
 
     @BeforeEach
@@ -127,7 +117,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.getMyAbsence(mockedToken, 0));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -224,7 +214,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, null, null, DATE_FROM, DATE_TO, SORT_FIELD));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -345,7 +335,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.createMyAbsence(mockedToken, ABSENCE));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -414,7 +404,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.updateMyAbsence(mockedToken, 0, ABSENCE));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -519,7 +509,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.deleteMyAbsence(mockedToken, 0));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());

@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.resources.tool;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
@@ -21,7 +22,7 @@ import org.ldcgc.backend.strategy.MultipartFileFactory;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ToolServiceImplTest {
 
     @InjectMocks private ToolServiceImpl toolService;
@@ -262,7 +263,7 @@ class ToolServiceImplTest {
     void uploadToolsExcelShouldReturnList() throws IOException {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
         List<Tool> toolEntities = factory.manufacturePojo(ArrayList.class, Tool.class);
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, null);
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(tools, null);
 
         doReturn(tools).when(toolExcelService).excelToTools(file);
         doReturn(toolEntities).when(toolRepository).saveAll(any());

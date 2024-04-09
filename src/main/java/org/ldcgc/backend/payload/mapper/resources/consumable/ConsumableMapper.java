@@ -2,8 +2,6 @@ package org.ldcgc.backend.payload.mapper.resources.consumable;
 
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.util.constants.Google;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

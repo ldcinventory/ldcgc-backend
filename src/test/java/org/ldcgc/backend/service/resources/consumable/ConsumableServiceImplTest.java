@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.consumable;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
@@ -14,9 +15,9 @@ import org.ldcgc.backend.service.location.impl.LocationServiceImpl;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableExcelServiceImpl;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableServiceImpl;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ConsumableServiceImplTest {
 
     // repository
