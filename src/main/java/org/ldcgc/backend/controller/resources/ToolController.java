@@ -187,7 +187,7 @@ public interface ToolController {
             description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json",
                     examples = {
-                            @ExampleObject(name = "Brand not found", value = Messages.Error.CATEGORY_PARENT_NOT_FOUND),
+                            @ExampleObject(name = "Brand not found", value = Messages.Error.RESOURCE_TYPE_PARENT_NOT_FOUND),
                             @ExampleObject(name = "Location not found", value = Messages.Error.LOCATION_NOT_FOUND)
                     })
     )

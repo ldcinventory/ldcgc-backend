@@ -164,7 +164,7 @@ public class ConsumableServiceImpl implements ConsumableService {
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.BRAND_NOT_FOUND, consumableDto.getBrand())));
 
         ResourceType resourceType = resourceTypeRepository.findById(consumableDto.getResourceType().getId()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, consumableDto.getResourceType().getId())));
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, consumableDto.getResourceType().getId())));
 
         Location location = locationRepository.findById(consumableDto.getLocation().getId()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.LOCATION_NOT_FOUND, consumableDto.getLocation().getId())));

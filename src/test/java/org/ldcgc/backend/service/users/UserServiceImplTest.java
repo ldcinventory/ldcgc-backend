@@ -621,7 +621,7 @@ class UserServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), String.format(Messages.Error.CATEGORY_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
+        assertEquals(ex.getMessage(), String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -657,7 +657,7 @@ class UserServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), String.format(Messages.Error.CATEGORY_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
+        assertEquals(ex.getMessage(), String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());

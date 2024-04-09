@@ -234,7 +234,7 @@ public interface ConsumableController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Error parsing consumable", value = Messages.Error.EXCEL_PARSE_ERROR),
-                @ExampleObject(name = "Error parsing consumable (category)", value = Messages.Error.CATEGORY_SON_NOT_FOUND),
+                @ExampleObject(name = "Error parsing consumable (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
                 @ExampleObject(name = "Error parsing consumable (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
                 @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_EXCEL),
                 @ExampleObject(name = "Error parsing consumable (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),
