@@ -16,7 +16,6 @@ import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
 import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDate;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
-import static org.ldcgc.backend.util.conversion.Convert.toFloat2Decimals;
 
 public class ExcelFunctions {
 
@@ -104,7 +103,7 @@ public class ExcelFunctions {
             case String s -> compareObjects(cellType, STRING, FORMULA, BLANK);
             case Integer i -> compareObjects(cellType, NUMERIC, FORMULA);
             case Float f -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
-            case LocalDate l -> compareObjects(cellType, STRING, FORMULA);
+            case LocalDate l -> compareObjects(cellType, STRING, FORMULA, BLANK);
             default -> false;
         };
     }
