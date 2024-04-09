@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EExcelToolsPositions {
+public enum EXlsxToolPos {
 
     BARCODE(0),
     NAME(1),

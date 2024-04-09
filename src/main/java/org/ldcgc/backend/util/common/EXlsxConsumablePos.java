@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EExcelConsumablesPositions {
+public enum EXlsxConsumablePos {
 
     BRAND(0),
     RESOURCE_TYPE(1),
