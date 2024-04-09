@@ -1,7 +1,9 @@
 package org.ldcgc.backend.strategy;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class MultipartFileFactory {
 
     private final static String TOOLS_EXCEL = "tools.xlsx";
@@ -54,10 +57,11 @@ public class MultipartFileFactory {
             switch (wrongPosition) {
                 case BARCODE, NAME, MODEL, DESCRIPTION, URL_IMAGES, MAINTENANCE_TIME ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
-                        .ifPresent(c -> c.setCellValue(RandomStringUtils.randomAlphanumeric(8))));
+                        .ifPresent(c -> c.setCellFormula("1/0")));
                 case BRAND,RESOURCE_TYPE, STATUS, LOCATION, MAINTENANCE_PERIOD, LAST_MAINTENANCE, GROUP ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
                         .ifPresent(c -> c.setCellValue("mocked " + wrongPosition.name().toLowerCase())));
+                case null -> log.info("No wrong position");
             }
 
             try (ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
@@ -75,7 +79,7 @@ public class MultipartFileFactory {
         }
     }
 
-    public static MultipartFile getXLSXFromConsumabless(List<ConsumableDto> consumablesDto, EXlsxConsumablePos wrongPosition) throws IOException {
+    public static MultipartFile getXLSXFromConsumables(List<ConsumableDto> consumablesDto, EXlsxConsumablePos wrongPosition) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Consumables");
 
@@ -86,15 +90,21 @@ public class MultipartFileFactory {
 
             for (ConsumableDto consumableDto : consumablesDto) {
                 row = sheet.createRow(sheet.getLastRowNum() + 1);
-                row.createCell(EXlsxToolPos.BARCODE.getColumnNumber()).setCellValue(consumableDto.getBarcode());
-                row.createCell(EXlsxToolPos.NAME.getColumnNumber()).setCellValue(consumableDto.getName());
-                row.createCell(EXlsxToolPos.BRAND.getColumnNumber()).setCellValue(consumableDto.getBrand().getName());
-                row.createCell(EXlsxToolPos.MODEL.getColumnNumber()).setCellValue(consumableDto.getModel());
-                row.createCell(EXlsxToolPos.RESOURCE_TYPE.getColumnNumber()).setCellValue(consumableDto.getResourceType().getName());
-                row.createCell(EXlsxToolPos.DESCRIPTION.getColumnNumber()).setCellValue(consumableDto.getDescription());
-                row.createCell(EXlsxToolPos.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", consumableDto.getUrlImages()));
-                row.createCell(EXlsxToolPos.LOCATION.getColumnNumber()).setCellValue(consumableDto.getLocation().getName());
-                row.createCell(EXlsxToolPos.GROUP.getColumnNumber()).setCellValue(consumableDto.getGroup().getName());
+                row.createCell(EXlsxConsumablePos.BARCODE.getColumnNumber()).setCellValue(consumableDto.getBarcode());
+                row.createCell(EXlsxConsumablePos.RESOURCE_TYPE.getColumnNumber()).setCellValue(consumableDto.getResourceType().getName());
+                row.createCell(EXlsxConsumablePos.BRAND.getColumnNumber()).setCellValue(consumableDto.getBrand().getName());
+                row.createCell(EXlsxConsumablePos.NAME.getColumnNumber()).setCellValue(consumableDto.getName());
+                row.createCell(EXlsxConsumablePos.MODEL.getColumnNumber()).setCellValue(consumableDto.getModel());
+                row.createCell(EXlsxConsumablePos.DESCRIPTION.getColumnNumber()).setCellValue(consumableDto.getDescription());
+                row.createCell(EXlsxConsumablePos.PRICE.getColumnNumber()).setCellValue(consumableDto.getPrice());
+                row.createCell(EXlsxConsumablePos.PURCHASE_DATE.getColumnNumber()).setCellValue(consumableDto.getPurchaseDate());
+                row.createCell(EXlsxConsumablePos.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", consumableDto.getUrlImages()));
+                row.createCell(EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber()).setCellValue(consumableDto.getQuantityEachItem());
+                row.createCell(EXlsxConsumablePos.STOCK.getColumnNumber()).setCellValue(consumableDto.getStock());
+                row.createCell(EXlsxConsumablePos.MIN_STOCK.getColumnNumber()).setCellValue(consumableDto.getMinStock());
+                row.createCell(EXlsxConsumablePos.STOCK_TYPE.getColumnNumber()).setCellValue(consumableDto.getStockType().name());
+                row.createCell(EXlsxConsumablePos.LOCATION.getColumnNumber()).setCellValue(consumableDto.getLocation().getName());
+                row.createCell(EXlsxConsumablePos.GROUP.getColumnNumber()).setCellValue(consumableDto.getGroup().getName());
             }
 
             switch (wrongPosition) {
