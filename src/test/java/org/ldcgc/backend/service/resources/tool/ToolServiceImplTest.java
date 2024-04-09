@@ -43,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.verify;
 class ToolServiceImplTest {
 
     @InjectMocks private ToolServiceImpl toolService;
+
     @Mock private ToolRepository toolRepository;
     @Mock private ToolExcelService toolExcelService;
     @Mock private BrandRepository brandRepository;
@@ -140,6 +142,21 @@ class ToolServiceImplTest {
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
         assertEquals(HttpStatus.BAD_REQUEST, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, toolDto.getBarcode())));
+    }
+
+    @Test
+    void createToolShouldThrownResourceTypeNotFound() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void createToolShouldThrownLocationNotFound() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void createToolShouldThrownGroupNotFound() {
+        fail("Not yet implemented");
     }
 
     @Test
@@ -259,6 +276,18 @@ class ToolServiceImplTest {
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));
     }
+
+    @Test
+    void getAllToolsUnfilteredShouldReturnPage() {
+        // toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void getAllToolsShouldThrowPageIndexRequestedExceededTotal() {
+        fail("Not yet implemented");
+    }
+
     @Test
     void uploadToolsExcelShouldReturnList() throws IOException {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
@@ -278,4 +307,15 @@ class ToolServiceImplTest {
         assertNotNull(responseBody);
         assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
     }
+
+    @Test
+    void getAllToolsLooseShouldThrowPageIndexRequestedExceededTotal() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void getAllToolsLooseShouldReturnToolsPaged() {
+        fail("Not yet implemented");
+    }
+
 }
