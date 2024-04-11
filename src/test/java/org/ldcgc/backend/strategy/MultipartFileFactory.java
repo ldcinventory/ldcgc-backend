@@ -3,7 +3,6 @@ package org.ldcgc.backend.strategy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,7 +27,7 @@ public class MultipartFileFactory {
     private final static String CONSUMABLES_EXCEL = "consumables.xlsx";
     private final static String CONTENT_TYPE_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-    public static MultipartFile getXLSXFromTools(List<ToolDto> toolsDto, EXlsxToolPos wrongPosition) throws IOException {
+    public static MockMultipartFile getXLSXFromTools(List<ToolDto> toolsDto, EXlsxToolPos wrongPosition) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Tools");
 
@@ -66,7 +65,7 @@ public class MultipartFileFactory {
 
             try (ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
                  FileOutputStream outputStream = new FileOutputStream(TOOLS_EXCEL)) {
-                // download excel
+                // write excel on root folder
                 workbook.write(outputStream);
 
                 workbook.write(bos);

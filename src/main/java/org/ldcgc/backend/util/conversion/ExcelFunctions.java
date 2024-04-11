@@ -56,13 +56,19 @@ public class ExcelFunctions {
         if (cellType.equals(ERROR))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
-                    new String[]{STRING.name(), FORMULA.name(), BLANK.name()}));
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
 
-        if (cellType.equals(FORMULA))
-            checkCellFormula(cell);
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
 
-        if (excelCellNotValid("", cellType))
-            return ((XSSFCell) cell).getRawValue();
+            if (excelCellNotValid("", cellType))
+                return ((XSSFCell) cell).getRawValue();
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
+        }
 
         return cell.getStringCellValue();
     }
@@ -79,13 +85,18 @@ public class ExcelFunctions {
         if (excelCellNotValid(0, cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
-                    new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()}));
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
 
-        if (cellType.equals(FORMULA))
-            checkCellFormula(cell);
-
-        if (cellType.equals(STRING))
-            return Integer.valueOf(cell.getStringCellValue());
+            if (cellType.equals(STRING))
+                return Integer.valueOf(cell.getStringCellValue());
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+        }
 
         return (int) cell.getNumericCellValue();
     }
@@ -97,13 +108,19 @@ public class ExcelFunctions {
         if (excelCellNotValid(0.0f, cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
-                    new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()}));
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
 
-        if (cellType.equals(FORMULA))
-            checkCellFormula(cell);
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
 
-        if (cellType.equals(STRING))
-            return Float.parseFloat(cell.getStringCellValue());
+            if (cellType.equals(STRING))
+                return Float.parseFloat(cell.getStringCellValue());
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+        }
 
         return (float) cell.getNumericCellValue();
     }
@@ -115,23 +132,29 @@ public class ExcelFunctions {
         if (excelCellNotValid(LocalDate.now(), cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
-                    new String[]{STRING.name(), FORMULA.name(), BLANK.name()}));
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
 
-        if (cellType.equals(FORMULA))
-            checkCellFormula(cell);
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
 
-        if (cellType.equals(STRING))
-            return stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
+            if (cellType.equals(STRING))
+                return stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
+        }
 
         return dateToLocalDate(cell.getDateCellValue());
     }
 
     private static boolean excelCellNotValid(Object cellClass, CellType cellType) {
         return !switch (cellClass) {
-            case String s -> compareObjects(cellType, STRING, FORMULA, BLANK);
-            case Integer i -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
-            case Float f -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
-            case LocalDate l -> compareObjects(cellType, STRING, FORMULA, BLANK);
+            case String ignored -> compareObjects(cellType, STRING, FORMULA, BLANK);
+            case Integer ignored -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
+            case Float ignored -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
+            case LocalDate ignored -> compareObjects(cellType, STRING, FORMULA, BLANK);
             default -> false;
         };
     }
