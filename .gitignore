@@ -26,3 +26,4 @@ data/
 *.zip
 
 gdrive_secret.json
+*.xlsx
