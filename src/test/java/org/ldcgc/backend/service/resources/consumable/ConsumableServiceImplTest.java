@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.consumable;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
@@ -14,9 +15,9 @@ import org.ldcgc.backend.service.location.impl.LocationServiceImpl;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableExcelServiceImpl;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableServiceImpl;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ConsumableServiceImplTest {
 
     // repository
@@ -40,7 +41,6 @@ class ConsumableServiceImplTest {
         consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, consumableExcelService);
     }
 
-    //TODO: ACABAR LOS TESTS DEL SERVICIO CON COBERTURA DE 75% O MÁS
     @Test
     void whenGetConsumable_returnConsumableNotFound() {
     }
@@ -58,7 +58,27 @@ class ConsumableServiceImplTest {
     }
 
     @Test
+    void whenCreateConsumable_returnBrandNotFound() {
+    }
+
+    @Test
+    void whenCreateConsumable_returnResourceTypeNotFound() {
+    }
+
+    @Test
+    void whenCreateConsumable_returnLocationNotFound() {
+    }
+
+    @Test
+    void whenCreateConsumable_returnGroupNotFound() {
+    }
+
+    @Test
     void whenCreateConsumable_returnConsumableCreated() {
+    }
+
+    @Test
+    void whenListConsumables_returnPageIndexRequestExceededTotal() {
     }
 
     @Test
@@ -70,7 +90,43 @@ class ConsumableServiceImplTest {
     }
 
     @Test
+    void whenListConsumablesLoose_returnPageIndexRequestExceededTotal() {
+    }
+
+    @Test
+    void whenListConsumablesLooseUnfiltered_returnConsumables() {
+    }
+
+    @Test
+    void whenListConsumablesLooseFiltered_returnConsumables() {
+    }
+
+    @Test
+    void whenUpdateConsumable_returnConsumableBarcodeUsedManyTimes() {
+    }
+
+    @Test
     void whenUpdateConsumable_returnConsumableBarcodeExists() {
+    }
+
+    @Test
+    void whenUpdateConsumable_returnBrandNotFound() {
+    }
+
+    @Test
+    void whenUpdateConsumable_returnResourceTypeNotFound() {
+    }
+
+    @Test
+    void whenUpdateConsumable_returnLocationNotFound() {
+    }
+
+    @Test
+    void whenUpdateConsumable_returnGroupNotFound() {
+    }
+
+    @Test
+    void whenUpdateConsumable_returnConsumableUpdated() {
     }
 
     @Test

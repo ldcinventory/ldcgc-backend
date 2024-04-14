@@ -5,6 +5,7 @@ import com.nimbusds.jwt.SignedJWT;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -21,8 +22,8 @@ import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Email;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.crypto.argon2.Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
 
     private AccountService accountService;
@@ -328,7 +329,7 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
         assertNotNull(ex);
 
-        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_EXPIRED, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());

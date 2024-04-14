@@ -24,6 +24,7 @@ public class Messages {
 
             VOLUNTEER_CREATED = "Volunteer created",
             VOLUNTEER_LISTED = "Found %s volunteer/s",
+            VOLUNTEER_FOUND = "Volunteer with builder assistant id %s was found",
             VOLUNTEER_UPDATED = "Volunteer details updated",
             VOLUNTEER_DELETED = "Volunteer deleted",
 
@@ -176,9 +177,9 @@ public class Messages {
             GROUP_NOT_FOUND = "Group with id/name '%s' not found.",
             GROUP_NOT_FOUND_EXCEL = "Group '%s' not found. Please, fix the excel sheet or add it. Valid groups: %s",
 
-            CATEGORY_PARENT_NOT_FOUND = "%s with id '%s' not found.",
-            CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
-            CATEGORY_NOT_FOUND = "This category '%s' couldn't be found",
+            RESOURCE_TYPE_PARENT_NOT_FOUND = "%s with id '%s' not found.",
+            RESOURCE_TYPE_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
+            RESOURCE_TYPE_NOT_FOUND = "This resource type '%s' couldn't be found",
             BRAND_NOT_FOUND = "This brand '%s' couldn't be found",
 
             STOCK_TYPE_NOT_FOUND = "Stock type '%s' not found",
@@ -198,9 +199,9 @@ public class Messages {
             CSV_PROCESS_ERROR = "Validation error when trying to process CSV with delimiter",
 
             EXCEL_VALUE_INCORRECT = "The value '%s' is incorrect on excel row %s, column %s",
-            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s(%s) is incorrect. Valid type: %s",
+            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s(%s) is incorrect. Valid types are: %s",
             EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
-            EXCEL_EMPTY_CELL = "An empty value is not allowed on excel row %s, column %s",
+            EXCEL_CELL_TYPE_ERROR = "This cell contains a formula error or this cell is invalid, on row %s, column %s(%s)",
 
             PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL = "The index requested is out of bounds of the total pages available.",
 

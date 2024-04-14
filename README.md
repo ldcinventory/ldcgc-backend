@@ -1,5 +1,7 @@
 # LDC Inventory Backend
 
+> A simple tool to manage volunteers working in LDC department, and manage tools and consumables, along with the registration of these to volunteers.
+
 ---
 ## Don't care about the details? Let's run this in less than 10 minutes
 
@@ -20,13 +22,13 @@
 
 To perform a login in this API, just go with default credentials for testing purposes (check others **in EULA section** to temporarily avoid EULA):
 
-> User: `admin@admin` Password: `admin`
-
-> User: `manager@manager` Password: `manager`
-
-> User: `user@user` Password: `user` 
-
-> User: `volunteer@volunteer` Password: `volunteer`. This is an account with user + volunteer associated (_needs the CSV files to test on local_).
+> **ADMIN**. email: `admin@admin` Password: `admin`
+>
+> **MANAGER**. email: `manager@manager` Password: `manager`
+>
+> **USER**. email: `user@user` Password: `user` 
+>
+> **USER+VOLUNTEER**. email: `volunteer@volunteer` Password: `volunteer`. This is an account with user + volunteer associated (_needs the CSV files to test on local_).
 
 Call the api to endpoint `/api/account/login` with the payload:
 

@@ -179,7 +179,7 @@ public class ToolServiceImpl implements ToolService {
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.BRAND_NOT_FOUND, toolDto.getBrand())));
 
         ResourceType consumableCategory = resourceTypeRepository.findById(toolDto.getResourceType().getId()).orElseThrow(() ->
-            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.CATEGORY_NOT_FOUND, toolDto.getResourceType().getId())));
+            new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, toolDto.getResourceType().getId())));
 
         Location location = locationRepository.findById(toolDto.getLocation().getId()).orElseThrow(() ->
             new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.LOCATION_NOT_FOUND, toolDto.getLocation().getId())));

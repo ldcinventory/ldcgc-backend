@@ -110,7 +110,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                 () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_DOESNT_HAVE_VOLUNTEER));
 
         } catch (ParseException ignore) {
-            throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, Messages.Error.TOKEN_NOT_PARSEABLE);
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_PARSEABLE);
         }
 
     }

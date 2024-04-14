@@ -119,7 +119,7 @@ public class MockedResources {
 
     private static String[] getRandomURLs() {
         return IntStream.rangeClosed(1, getRandomIntegerFromRange(2, 4))
-            .mapToObj(x -> new Faker().internet().url())
+            .mapToObj(x -> RandomStringUtils.randomAlphanumeric(44))
             .toArray(String[]::new);
     }
 

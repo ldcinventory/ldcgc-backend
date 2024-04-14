@@ -35,7 +35,7 @@ if [ -z "$1" ]; then
   echo "→ To run (API + UI) ----→ use: $0 {create-ui|create-test-data-ui|restart-ui}"
   echo "→ To purge everything --→ use: $0 purge"
   exit 1
-elif [[ "$1" == *-ui ]] && [ ! -f ../ldcgc-frontend/Dockerfile ]; then
+elif [[ "$1" == *-ui && ( ! -f ../ldcgc-frontend/Dockerfile  ||  ! -f ../ldcgc-frontend-elm/Dockerfile ) ]] ; then
   echo "Dockerfile for UI not found!"
   exit 1
 fi
@@ -55,6 +55,26 @@ docker rmi ldcgc-backend -f
 DB_START_MODE=false
 LOAD_INITIAL_DATA=false
 TEST_DATA=false
+
+UI_DOCKERFILE="../ldcgc-frontend-elm"
+case "$1" in
+  create-ui|create-test-data-ui)
+    regAlp='^[0-9_/a-zA-Z.]+$'
+    echo "What frontend project you're using? [def: frontend-elm]"
+    echo "1. frontend-elm"
+    echo "2. frontend"
+    read -rp "Please choose what frontend project you'regNum using, or the path to that project: " UI_OPTION
+
+    if [[ $UI_OPTION = 2 ]] ; then
+        UI_DOCKERFILE='../ldcgc-frontend'
+    fi
+    UI_DOCKERFILE=$(echo "$UI_DOCKERFILE" | sed "s/\/Dockerfile//g")
+    if [ ! -d "$UI_DOCKERFILE" ] || [ ! -f "$UI_DOCKERFILE/Dockerfile" ] ; then
+      echo "You chose invalid option, or the path you provided doesn't contain Dockerfile, or it doesn't exist"
+      exit 1
+    fi
+  ;;
+esac
 
 case "$1" in
   create|create-api|create-ui)
@@ -90,7 +110,7 @@ esac
 echo "DB start mode = $DB_START_MODE"
 echo "Load initial data = $LOAD_INITIAL_DATA"
 echo "Load test data for tools and consumables = $TEST_DATA"
-echo "Docker initialisation mode = '$1'"
+echo "Docker initialization mode = '$1'"
 case "$1" in
   create|restart)
     DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-api.yml up -d
@@ -99,7 +119,7 @@ case "$1" in
     DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-ui.yml up -d
   ;;
   create-ui|create-test-data-ui|restart-ui)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker-compose up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA UI_DOCKERFILE=$UI_DOCKERFILE docker-compose up -d
   ;;
 esac
 
@@ -108,5 +128,10 @@ case "$1" in
     echo "ready to work with API @ http://localhost:8080/api, better from postman hehe"
     echo "check api is alive in http://localhost:8080/api/alive"
     echo "check swagger @ https://localhost:8080/api/swagger-ui/index.html"
+  ;;
+esac
+case "$1" in
+  create-ui|create-test-data-ui|restart-ui)
+    echo "ready UI @ https://localhost:3000"
   ;;
 esac

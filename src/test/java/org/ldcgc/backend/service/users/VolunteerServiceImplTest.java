@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.users;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
@@ -20,7 +21,7 @@ import org.ldcgc.backend.service.users.impl.VolunteerServiceImpl;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class VolunteerServiceImplTest {
 
     private VolunteerService volunteerService;
@@ -188,11 +189,12 @@ class VolunteerServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        List<VolunteerDto> responseData = (List<VolunteerDto>) responseBody.getData();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseBody);
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertNotNull(responseBody.getData());
-        assertThat(responseData.getFirst()).usingRecursiveComparison().isEqualTo(volunteerExpected);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(String.format(Messages.Info.VOLUNTEER_FOUND, builderAssistantId), responseBody.getMessage());
+        assertThat(responseData.getElements().getFirst()).isEqualToComparingFieldByFieldRecursively(volunteerExpected);
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -202,9 +204,9 @@ class VolunteerServiceImplTest {
         final List<VolunteerDto> volunteers = MockedUserVolunteer.getListOfMockedVolunteers(5);
         final List<Volunteer> volunteersEntities = volunteers.stream().map(VolunteerMapper.MAPPER::toEntity).toList();
 
-        Page<Volunteer> userPage = new PageImpl<>(volunteersEntities);
+        Page<Volunteer> volunteerPage = new PageImpl<>(volunteersEntities);
 
-        doReturn(userPage).when(volunteerRepository).findAll(any(Pageable.class));
+        doReturn(volunteerPage).when(volunteerRepository).findAll(any(Pageable.class));
 
         ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, null, null, "builderAssistantId");
         assertNotNull(response);
@@ -225,9 +227,9 @@ class VolunteerServiceImplTest {
         final List<VolunteerDto> volunteers = MockedUserVolunteer.getListOfMockedVolunteers(5);
         final List<Volunteer> volunteersEntities = volunteers.stream().map(VolunteerMapper.MAPPER::toEntity).toList();
 
-        Page<Volunteer> userPage = new PageImpl<>(volunteersEntities);
+        Page<Volunteer> volunteerPage = new PageImpl<>(volunteersEntities);
 
-        doReturn(userPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
+        doReturn(volunteerPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
 
         ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, "x", null, "builderAssistantId");
         assertNotNull(response);

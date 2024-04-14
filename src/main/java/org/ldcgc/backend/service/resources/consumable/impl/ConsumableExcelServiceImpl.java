@@ -23,8 +23,8 @@ import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
-import org.ldcgc.backend.util.common.EExcelConsumablesPositions;
 import org.ldcgc.backend.util.common.EStockType;
+import org.ldcgc.backend.util.common.EXlsxConsumablePos;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -54,6 +54,8 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
     private final LocationService locationService;
     private final GroupService groupService;
 
+    private ConsumableExcelMasterDto master;
+
     public List<ConsumableDto> excelToConsumables(MultipartFile excel) {
         processExcelArray();
 
@@ -62,7 +64,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         try {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
-            ConsumableExcelMasterDto master = ConsumableExcelMasterDto.builder()
+            master = ConsumableExcelMasterDto.builder()
                 .consumables(consumableRepository.findAll().stream()
                     .map(ConsumableMapper.MAPPER::toDto)
                     .collect(Collectors.toMap(ConsumableDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
@@ -77,7 +79,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
                 .build();
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                consumables.add(parseRowToTool(sheet.getRow(i), master));
+                consumables.add(parseRowToTool(sheet.getRow(i)));
             }
 
         } catch (IOException e) {
@@ -87,12 +89,12 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         return consumables;
     }
 
-    private ConsumableDto parseRowToTool(Row row, ConsumableExcelMasterDto master) {
-        String barcode = getStringCellValue(row, EExcelConsumablesPositions.BARCODE.getColumnNumber());
+    private ConsumableDto parseRowToTool(Row row) {
+        String barcode = getStringCellValue(row, EXlsxConsumablePos.BARCODE.getColumnNumber());
 
         Integer id = Optional.ofNullable(master.getConsumables().get(barcode)).map(ConsumableDto::getId).orElse(null);
 
-        String brandName = getStringCellValue(row, EExcelConsumablesPositions.BRAND.getColumnNumber());
+        String brandName = getStringCellValue(row, EXlsxConsumablePos.BRAND.getColumnNumber());
         if(master.getBrands().get(brandName) == null) {
             BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
             Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
@@ -100,7 +102,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         }
         BrandDto brand = master.getBrands().get(brandName);
 
-        String resourceType = getStringCellValue(row, EExcelConsumablesPositions.RESOURCE_TYPE.getColumnNumber());
+        String resourceType = getStringCellValue(row, EXlsxConsumablePos.RESOURCE_TYPE.getColumnNumber());
         if(master.getResourceTypes().get(resourceType) == null) {
             ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
             ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
@@ -108,14 +110,14 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         }
         ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
 
-        String locationName = row.getCell(EExcelConsumablesPositions.LOCATION.getColumnNumber()).getStringCellValue();
+        String locationName = row.getCell(EXlsxConsumablePos.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
-            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EExcelConsumablesPositions.LOCATION.getColumnNumber(),
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EXlsxConsumablePos.LOCATION.getColumnNumber(),
                 Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
 
-        String groupName = getStringCellValue(row, EExcelConsumablesPositions.GROUP.getColumnNumber());
+        String groupName = getStringCellValue(row, EXlsxConsumablePos.GROUP.getColumnNumber());
         GroupDto group = Optional.ofNullable(master.getGroups().get(groupName))
-            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EExcelConsumablesPositions.GROUP.getColumnNumber(),
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EXlsxConsumablePos.GROUP.getColumnNumber(),
                 Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(GroupDto::getName).toList()))));
 
         return ConsumableDto.builder()
@@ -123,16 +125,16 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
             .barcode(barcode)
             .resourceType(resourceTypeDto)
             .brand(brand)
-            .name(getStringCellValue(row, EExcelConsumablesPositions.NAME.getColumnNumber()))
-            .model(getStringCellValue(row, EExcelConsumablesPositions.MODEL.getColumnNumber()))
-            .description(getStringCellValue(row, EExcelConsumablesPositions.DESCRIPTION.getColumnNumber()))
-            .price(getFloatCellValue(row, EExcelConsumablesPositions.PRICE.getColumnNumber()))
-            .purchaseDate(getDateCellValue(row, EExcelConsumablesPositions.PURCHASE_DATE.getColumnNumber()))
-            .urlImages(getStringArrayCellValue(row, EExcelConsumablesPositions.URL_IMAGES.getColumnNumber()))
-            .quantityEachItem(getFloatCellValue(row, EExcelConsumablesPositions.QTY_EACH_ITEM.getColumnNumber()))
-            .stock(getFloatCellValue(row, EExcelConsumablesPositions.STOCK.getColumnNumber()))
-            .minStock(getFloatCellValue(row, EExcelConsumablesPositions.MIN_STOCK.getColumnNumber()))
-            .stockType(EStockType.getStockTypeByName(getStringCellValue(row, EExcelConsumablesPositions.STOCK_TYPE.getColumnNumber())))
+            .name(getStringCellValue(row, EXlsxConsumablePos.NAME.getColumnNumber()))
+            .model(getStringCellValue(row, EXlsxConsumablePos.MODEL.getColumnNumber()))
+            .description(getStringCellValue(row, EXlsxConsumablePos.DESCRIPTION.getColumnNumber()))
+            .price(getFloatCellValue(row, EXlsxConsumablePos.PRICE.getColumnNumber()))
+            .purchaseDate(getDateCellValue(row, EXlsxConsumablePos.PURCHASE_DATE.getColumnNumber()))
+            .urlImages(getStringArrayCellValue(row, EXlsxConsumablePos.URL_IMAGES.getColumnNumber()))
+            .quantityEachItem(getFloatCellValue(row, EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber()))
+            .stock(getFloatCellValue(row, EXlsxConsumablePos.STOCK.getColumnNumber()))
+            .minStock(getFloatCellValue(row, EXlsxConsumablePos.MIN_STOCK.getColumnNumber()))
+            .stockType(EStockType.getStockTypeByName(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber())))
             .location(location)
             .group(group)
             .build();

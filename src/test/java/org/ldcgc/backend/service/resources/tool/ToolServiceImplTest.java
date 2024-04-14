@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.resources.tool;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
@@ -21,7 +22,7 @@ import org.ldcgc.backend.strategy.MultipartFileFactory;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
@@ -51,10 +53,11 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ToolServiceImplTest {
 
     @InjectMocks private ToolServiceImpl toolService;
+
     @Mock private ToolRepository toolRepository;
     @Mock private ToolExcelService toolExcelService;
     @Mock private BrandRepository brandRepository;
@@ -139,6 +142,21 @@ class ToolServiceImplTest {
         verify(toolRepository, times(1)).findFirstByBarcode(toolDto.getBarcode());
         assertEquals(HttpStatus.BAD_REQUEST, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_BARCODE_ALREADY_EXISTS, toolDto.getBarcode())));
+    }
+
+    @Test
+    void createToolShouldThrownResourceTypeNotFound() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void createToolShouldThrownLocationNotFound() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void createToolShouldThrownGroupNotFound() {
+        fail("Not yet implemented");
     }
 
     @Test
@@ -258,11 +276,23 @@ class ToolServiceImplTest {
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));
     }
+
+    @Test
+    void getAllToolsUnfilteredShouldReturnPage() {
+        // toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void getAllToolsShouldThrowPageIndexRequestedExceededTotal() {
+        fail("Not yet implemented");
+    }
+
     @Test
     void uploadToolsExcelShouldReturnList() throws IOException {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
         List<Tool> toolEntities = factory.manufacturePojo(ArrayList.class, Tool.class);
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, null);
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(tools, null);
 
         doReturn(tools).when(toolExcelService).excelToTools(file);
         doReturn(toolEntities).when(toolRepository).saveAll(any());
@@ -277,4 +307,15 @@ class ToolServiceImplTest {
         assertNotNull(responseBody);
         assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
     }
+
+    @Test
+    void getAllToolsLooseShouldThrowPageIndexRequestedExceededTotal() {
+        fail("Not yet implemented");
+    }
+
+    @Test
+    void getAllToolsLooseShouldReturnToolsPaged() {
+        fail("Not yet implemented");
+    }
+
 }

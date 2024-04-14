@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL, uses = LocationMapper.class)
+@Mapper(uses = LocationMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
 public interface GroupMapper {
 
     GroupMapper MAPPER = Mappers.getMapper(GroupMapper.class);

@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 
 public class Convert {
 
@@ -22,7 +23,9 @@ public class Convert {
     }
 
     public static LocalDate stringToLocalDate(String dbString, String pattern) {
-        return LocalDate.parse(dbString, DateTimeFormatter.ofPattern(pattern));
+        return dbString.matches(pattern)
+            ? LocalDate.parse(dbString, DateTimeFormatter.ofPattern(pattern))
+            : null;
     }
 
     public static Float toFloat2Decimals(String number) {
@@ -43,11 +46,15 @@ public class Convert {
     }
 
     public static LocalDateTime dateToLocalDateTime(Date dateToConvert) {
-        return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return Optional.ofNullable(dateToConvert)
+            .map(d -> d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+            .orElse(null);
     }
 
     public static LocalDate dateToLocalDate(Date dateToConvert) {
-        return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return Optional.ofNullable(dateToConvert)
+            .map(d -> d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+            .orElse(null);
     }
 
 }

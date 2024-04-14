@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,8 +72,10 @@ public class VolunteerServiceImpl implements VolunteerService {
     public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField) {
 
         if (builderAssistantId != null)
-            return Constructor.buildResponseObject(HttpStatus.OK,
-                Collections.singletonList(VolunteerMapper.MAPPER.toDto(getVolunteerFromDB(builderAssistantId))));
+            return Constructor.buildResponseMessageObject(
+                HttpStatus.OK,
+                String.format(Messages.Info.VOLUNTEER_FOUND, builderAssistantId),
+                PaginationDetails.pagingOneObject(VolunteerMapper.MAPPER.toDto(getVolunteerFromDB(builderAssistantId))));
 
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
         Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) ?

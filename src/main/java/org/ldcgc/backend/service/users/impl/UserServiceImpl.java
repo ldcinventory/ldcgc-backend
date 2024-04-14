@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService {
                 // check origin (entity) and dto are not the same
                 !originResponsibilityId.get().equals(userDto.getResponsibility().getId()))) {
             Responsibility responsibility = responsibilityRepository.findById(userDto.getResponsibility().getId()).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CATEGORY_NOT_FOUND, userDto.getResponsibility().getId())));
+                () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, userDto.getResponsibility().getId())));
             userEntity.setResponsibility(responsibility);
         }
 

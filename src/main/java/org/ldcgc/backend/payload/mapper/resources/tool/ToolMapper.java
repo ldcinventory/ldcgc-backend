@@ -14,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.Arrays;
 import java.util.List;
 
-@Mapper(uses = { LocationMapper.class }, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(uses = LocationMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolMapper {
 
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);

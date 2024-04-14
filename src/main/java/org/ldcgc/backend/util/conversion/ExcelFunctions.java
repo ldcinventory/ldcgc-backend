@@ -2,8 +2,12 @@ package org.ldcgc.backend.util.conversion;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
@@ -11,12 +15,12 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 
 import static org.apache.poi.ss.usermodel.CellType.BLANK;
+import static org.apache.poi.ss.usermodel.CellType.ERROR;
 import static org.apache.poi.ss.usermodel.CellType.FORMULA;
 import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
 import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDate;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
-import static org.ldcgc.backend.util.conversion.Convert.toFloat2Decimals;
 
 public class ExcelFunctions {
 
@@ -49,8 +53,22 @@ public class ExcelFunctions {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
 
-        if (excelCellNotValid("", cellType))
-            return ((XSSFCell) cell).getRawValue();
+        if (cellType.equals(ERROR))
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
+
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
+
+            if (excelCellNotValid("", cellType))
+                return ((XSSFCell) cell).getRawValue();
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
+        }
 
         return cell.getStringCellValue();
     }
@@ -66,10 +84,19 @@ public class ExcelFunctions {
 
         if (excelCellNotValid(0, cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber), NUMERIC.toString()));
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
 
-        if (cellType.equals(STRING))
-            return Integer.valueOf(cell.getStringCellValue());
+            if (cellType.equals(STRING))
+                return Integer.valueOf(cell.getStringCellValue());
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+        }
 
         return (int) cell.getNumericCellValue();
     }
@@ -77,11 +104,23 @@ public class ExcelFunctions {
     public static Float getFloatCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
+
         if (excelCellNotValid(0.0f, cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber), STRING.toString()));
-        if (cellType.equals(STRING))
-            return Float.parseFloat(cell.getStringCellValue());
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
+
+            if (cellType.equals(STRING))
+                return Float.parseFloat(cell.getStringCellValue());
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
+        }
 
         return (float) cell.getNumericCellValue();
     }
@@ -92,19 +131,30 @@ public class ExcelFunctions {
 
         if (excelCellNotValid(LocalDate.now(), cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber), STRING.toString()));
-        if (cellType.equals(STRING))
-            return stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
+
+        try {
+            if (cellType.equals(FORMULA))
+                checkCellFormula(cell);
+
+            if (cellType.equals(STRING))
+                return stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
+        } catch (Exception e) {
+            throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                    String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
+        }
 
         return dateToLocalDate(cell.getDateCellValue());
     }
 
     private static boolean excelCellNotValid(Object cellClass, CellType cellType) {
         return !switch (cellClass) {
-            case String s -> compareObjects(cellType, STRING, FORMULA, BLANK);
-            case Integer i -> compareObjects(cellType, NUMERIC, FORMULA);
-            case Float f -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
-            case LocalDate l -> compareObjects(cellType, STRING, FORMULA);
+            case String ignored -> compareObjects(cellType, STRING, FORMULA, BLANK);
+            case Integer ignored -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
+            case Float ignored -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
+            case LocalDate ignored -> compareObjects(cellType, STRING, FORMULA, BLANK);
             default -> false;
         };
     }
@@ -113,5 +163,18 @@ public class ExcelFunctions {
         for (Object o : objects)
             if (objectComparing == o) return true;
         return false;
+    }
+
+    private static void checkCellFormula(Cell cell) {
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("Sheet1");
+        Row row = sheet.createRow(0);
+        Cell checkCell = row.createCell(0, cell.getCellType());
+        checkCell.setCellFormula(cell.getCellFormula());
+
+        FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+        if(evaluator.evaluate(checkCell).getCellType().equals(ERROR))
+            throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_ERROR.formatted(
+                cell.getRowIndex() + 1, cell.getColumnIndex() + 1, getExcelAlphabetColumn(cell.getColumnIndex())));
     }
 }

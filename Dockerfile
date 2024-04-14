@@ -8,7 +8,7 @@ COPY . /build
 RUN mvn package -DskipTests
 
 #java
-FROM ghcr.io/graalvm/graalvm-community:21 as backend
+FROM ghcr.io/graalvm/jdk-community:21 as backend
 ENV JAVA_OPTS "-XX:MaxRAMPercentage=60 -Djava.security.egd=file:/dev/./urandom"
 ARG JAR_FILE=gc8inventory-backend.jar
 

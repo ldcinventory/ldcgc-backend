@@ -1,47 +1,62 @@
 package org.ldcgc.backend.service.resources.tool;
 
-import org.apache.poi.ss.usermodel.CellType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.base.mock.MockedResources;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.BrandDto;
-import org.ldcgc.backend.payload.dto.category.CategoryParentEnum;
-import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.payload.mapper.category.BrandMapper;
+import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
+import org.ldcgc.backend.payload.mapper.group.GroupMapper;
+import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.impl.ToolExcelServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
-import org.ldcgc.backend.util.common.EExcelToolsPositions;
+import org.ldcgc.backend.util.common.EXlsxToolPos;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.apache.poi.ss.usermodel.CellType.BLANK;
+import static org.apache.poi.ss.usermodel.CellType.FORMULA;
+import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.ldcgc.backend.base.mock.MockedResources.getRandomBrand;
+import static org.ldcgc.backend.base.mock.MockedResources.getRandomResourceType;
+import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getExcelAlphabetColumn;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.spy;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ToolExcelServiceImplTest {
 
-    @InjectMocks private ToolExcelServiceImpl service;
+    @InjectMocks private ToolExcelServiceImpl toolExcelService;
 
     @Mock private ToolRepository toolRepository;
     @Mock private BrandRepository brandRepository;
@@ -49,159 +64,140 @@ class ToolExcelServiceImplTest {
     @Mock private LocationService locationService;
     @Mock private GroupService groupService;
 
-    private List<Tool> toolsDb;
-    private List<ToolDto> tools;
-    private List<BrandDto> brands;
-    private List<ResourceTypeDto> resourceTypes;
-    private List<LocationDto> locations;
-    private List<GroupDto> groups;
+    private List<ToolDto> toolsDto;
+    private List<LocationDto> locationsDto;
+    private List<GroupDto> groupsDto;
 
     @BeforeEach
     void init() {
-        toolsDb.addAll(IntStream.range(0, 10).boxed()
-            .map(x -> ToolMapper.MAPPER.toMo(MockedResources.getRandomToolDto()))
-            .toList());
-        brands.addAll(IntStream.range(0, 10).boxed()
-            .map(x -> MockedResources.getRandomBrand())
-            .toList());
-        resourceTypes.addAll(IntStream.range(0, 10).boxed()
-            .map(x -> MockedResources.getRandomResourceType())
-            .toList());
-        locations.addAll(IntStream.range(0, 10).boxed()
-            .map(x -> MockedResources.getRandomLocation())
-            .toList());
-        groups.addAll(IntStream.range(0, 10).boxed()
-            .map(x -> MockedResources.getRandomGroup())
-            .toList());
-        tools = toolsDb.stream().map(ToolMapper.MAPPER::toDto).toList();
+        toolsDto = IntStream.range(0, 10).boxed().map(x ->
+            getRandomToolDto()).toList();
+
+        List<Tool> toolsDB = toolsDto.stream().map(ToolMapper.MAPPER::toMo).toList();
+        List<Brand> brandsDB = toolsDB.stream().map(Tool::getBrand).toList();
+        List<ResourceType> resourceTypesDB = toolsDB.stream().map(Tool::getResourceType).toList();
+
+        groupsDto = toolsDB.stream().map(Tool::getGroup).map(GroupMapper.MAPPER::toDto).toList();
+        locationsDto = toolsDB.stream().map(Tool::getLocation).map(LocationMapper.MAPPER::toDto).toList();
+
+        lenient().doReturn(toolsDB).when(toolRepository).findAll();
+        lenient().doReturn(brandsDB).when(brandRepository).findAll();
+        lenient().doReturn(resourceTypesDB).when(resourceTypeRepository).findAll();
+        lenient().doReturn(locationsDto).when(locationService).getAllLocations();
+        lenient().doReturn(groupsDto).when(groupService).getAllGroups();
+
     }
 
     @Test
-    void excelToToolsShouldTransform() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, null);
+    void excelToToolsShouldReturnTools() throws IOException {
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, null);
 
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
+        List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
 
-        List<ToolDto> toolsExcelResponse = service.excelToTools(file);
-
-        assertEquals(tools.size(), toolsExcelResponse.size());
+        assertEquals(toolsDto.size(), toolsExcelResponse.size());
     }
 
     @Test
-    void excelToToolsShouldIndicateWhatCellIsWrong() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.BARCODE);
+    void excelToToolsShouldReturnWhatCellIsWrong() throws IOException {
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.BARCODE);
 
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
 
-        assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, 0, CellType.STRING.toString()), requestException.getMessage());
-    }
-    @Test
-    void excelToToolsShouldIndicateBrandNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.BRAND);
+        String expectedMessage = Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1,
+            EXlsxToolPos.BARCODE.getColumnNumber(),
+            getExcelAlphabetColumn(EXlsxToolPos.BARCODE.getColumnNumber()),
+            String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()}));
 
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
-
-        assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up brand", 1, EExcelToolsPositions.BRAND.getColumnNumber()).concat("\n").concat(Messages.Error.CATEGORY_SON_NOT_FOUND
-                .formatted(CategoryParentEnum.BRANDS.getName(), "made up brand", CategoryParentEnum.BRANDS.getName(), brands.stream().sorted(Comparator.comparing(BrandDto::getName)).map(BrandDto::getName).toList().toString())),
-                requestException.getMessage());
-    }
-    @Test
-    void excelToToolsShouldIndicateCategoryNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.RESOURCE_TYPE);
-
-
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
-
-        assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up resource type", 1, EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber()).concat("\n").concat(Messages.Error.CATEGORY_SON_NOT_FOUND
-                .formatted(CategoryParentEnum.CATEGORIES.getName(), "made up resource type", CategoryParentEnum.CATEGORIES.getName(), resourceTypes.stream().sorted(Comparator.comparing(ResourceTypeDto::getName)).map(ResourceTypeDto::getName).toList().toString())),
-                requestException.getMessage());
-    }
-    @Test
-    void excelToToolsShouldIndicateLocationNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.LOCATION);
-
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
-
-        assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up location", 1, EExcelToolsPositions.LOCATION.getColumnNumber()).concat("\n").concat(Messages.Error.LOCATION_NOT_FOUND_EXCEL
-                .formatted("made up location", locations.stream().sorted(Comparator.comparing(LocationDto::getName)).map(LocationDto::getName).toList().toString())),
-                requestException.getMessage());
-    }
-    @Test
-    void excelToToolsShouldIndicateGroupNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.GROUP);
-
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
-
-        assertEquals(Messages.Error.EXCEL_VALUE_INCORRECT.formatted("made up group", 1, EExcelToolsPositions.GROUP.getColumnNumber()).concat("\n").concat(Messages.Error.GROUP_NOT_FOUND_EXCEL
-                .formatted("made up group", groups.stream().sorted(Comparator.comparing(GroupDto::getName)).map(GroupDto::getName).toList().toString())),
-                requestException.getMessage());
-    }
-    @Test
-    void excelToToolsShouldIndicateMaintenancePeriodNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.MAINTENANCE_PERIOD);
-
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
-
-        assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber(), CellType.NUMERIC.toString()),
-                requestException.getMessage());
-    }
-    @Test
-    void excelToToolsShouldIndicateLastMaintenanceNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, EExcelToolsPositions.LAST_MAINTENANCE);
-
-        doReturn(toolsDb).when(toolRepository).findAll();
-        doReturn(brands).when(brandRepository).findAll();
-        doReturn(resourceTypes).when(resourceTypeRepository).findAll();
-        doReturn(locations).when(locationService).getAllLocations();
-        doReturn(groups).when(groupService).getAllGroups();
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(file));
-
-        assertEquals(Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1, EExcelToolsPositions.LAST_MAINTENANCE.getColumnNumber(), CellType.NUMERIC.toString()),
-                requestException.getMessage());
+        assertEquals(expectedMessage, requestException.getMessage());
     }
 
     @Test
-    void whenIOException_shouldThrowRequestException() throws IOException {
-        MultipartFile mockExcel = mock(MultipartFile.class);
+    void excelToToolsShouldThrowLocationNotFound() throws IOException {
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.LOCATION);
 
-        doThrow(new IOException()).when(mockExcel).getInputStream();
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
 
-        RequestException requestException = assertThrows(RequestException.class, () -> service.excelToTools(mockExcel));
+        String expectedMessage = Messages.Error.EXCEL_VALUE_INCORRECT.formatted("mocked location", 1, EXlsxToolPos.LOCATION.getColumnNumber())
+            .concat("\n")
+            .concat(Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted("mocked location", locationsDto.stream()
+                .sorted(Comparator.comparing(LocationDto::getName))
+                .map(LocationDto::getName)
+                .toList()
+                .toString()));
+
+        assertEquals(expectedMessage, requestException.getMessage());
+    }
+
+    @Test
+    void excelToToolsShouldThrowGroupNotFound() throws IOException {
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.GROUP);
+
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
+
+        String expectedMessage = Messages.Error.EXCEL_VALUE_INCORRECT.formatted("mocked group", 1, EXlsxToolPos.GROUP.getColumnNumber())
+            .concat("\n")
+            .concat(Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted("mocked group", groupsDto.stream()
+                .sorted(Comparator.comparing(GroupDto::getName))
+                .map(GroupDto::getName)
+                .collect(Collectors.toCollection(TreeSet::new))
+                .toString()));
+
+        assertEquals(expectedMessage, requestException.getMessage());
+    }
+
+    @Test
+    void excelToToolsShouldThrowMaintenancePeriodNotFound() throws IOException {
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_PERIOD);
+
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
+
+        String expectedMessage = Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1,
+            EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber(),
+            getExcelAlphabetColumn(EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()),
+            String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()}));
+
+        assertEquals(expectedMessage, requestException.getMessage());
+    }
+
+    @Test
+    void excelToToolsShouldThrowExcelParseException() throws IOException {
+        MockMultipartFile file = spy(MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_PERIOD));
+
+        doThrow(new IOException()).when(file).getInputStream();
+
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
 
         assertEquals(Messages.Error.EXCEL_PARSE_ERROR, requestException.getMessage());
     }
+
+    @Test
+    void excelToToolsShouldThrowCreateNewBrand() throws IOException {
+        List<ToolDto> toolsDto = this.toolsDto.stream()
+            .map(t -> t.toBuilder().brand(t.getBrand().toBuilder().name(t.getBrand().getName() + "-").build()).build())
+            .toList();
+
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, null);
+
+        doReturn(BrandMapper.MAPPER.toEntity(getRandomBrand())).when(brandRepository).saveAndFlush(any(Brand.class));
+
+        List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
+
+        assertEquals(toolsDto.size(), toolsExcelResponse.size());
+    }
+
+    @Test
+    void excelToToolsShouldThrowCreateNewResourceType() throws IOException {
+        List<ToolDto> toolsDto = this.toolsDto.stream()
+            .map(t -> t.toBuilder().resourceType(t.getResourceType().toBuilder().name(t.getBrand().getName() + "-").build()).build())
+            .toList();
+
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, null);
+
+        doReturn(ResourceTypeMapper.MAPPER.toEntity(getRandomResourceType())).when(resourceTypeRepository).saveAndFlush(any(ResourceType.class));
+
+        List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
+
+        assertEquals(toolsDto.size(), toolsExcelResponse.size());
+    }
+
 }

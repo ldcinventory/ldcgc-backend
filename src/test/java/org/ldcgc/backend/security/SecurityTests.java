@@ -1,8 +1,9 @@
 package org.ldcgc.backend.security;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class SecurityTests {
 
     // check https://stackoverflow.com/a/22534668/4978689

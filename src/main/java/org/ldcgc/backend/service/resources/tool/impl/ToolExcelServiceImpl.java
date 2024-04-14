@@ -23,9 +23,9 @@ import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
-import org.ldcgc.backend.util.common.EExcelToolsPositions;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EXlsxToolPos;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +54,8 @@ public class ToolExcelServiceImpl implements ToolExcelService {
     private final LocationService locationService;
     private final GroupService groupService;
 
+    private ToolExcelMasterDto master;
+
     public List<ToolDto> excelToTools(MultipartFile excel) {
         processExcelArray();
 
@@ -62,7 +64,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         try {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
             Sheet sheet = workbook.getSheetAt(0);
-            ToolExcelMasterDto master = ToolExcelMasterDto.builder()
+            master = ToolExcelMasterDto.builder()
                 .tools(toolRepository.findAll().stream().map(ToolMapper.MAPPER::toDto)
                     .collect(Collectors.toMap(ToolDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .brands(brandRepository.findAll().stream().map(BrandMapper.MAPPER::toDto)
@@ -74,9 +76,9 @@ public class ToolExcelServiceImpl implements ToolExcelService {
                 .groups(groupService.getAllGroups()
                     .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
                 .build();
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                tools.add(parseRowToTool(sheet.getRow(i), master));
-            }
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++)
+                tools.add(parseRowToTool(sheet.getRow(i)));
 
         } catch (IOException e) {
             throw new RequestException(Messages.Error.EXCEL_PARSE_ERROR);
@@ -85,12 +87,12 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         return tools;
     }
 
-    private ToolDto parseRowToTool(Row row, ToolExcelMasterDto master) {
-        String barcode = getStringCellValue(row, EExcelToolsPositions.BARCODE.getColumnNumber());
+    private ToolDto parseRowToTool(Row row) {
+        String barcode = getStringCellValue(row, EXlsxToolPos.BARCODE.getColumnNumber());
 
         Integer id = Optional.ofNullable(master.getTools().get(barcode)).map(ToolDto::getId).orElse(null);
 
-        String brandName = getStringCellValue(row, EExcelToolsPositions.BRAND.getColumnNumber());
+        String brandName = getStringCellValue(row, EXlsxToolPos.BRAND.getColumnNumber());
         if(master.getBrands().get(brandName) == null) {
             BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
             Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
@@ -98,7 +100,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         }
         BrandDto brand = master.getBrands().get(brandName);
 
-        String resourceType = getStringCellValue(row, EExcelToolsPositions.RESOURCE_TYPE.getColumnNumber());
+        String resourceType = getStringCellValue(row, EXlsxToolPos.RESOURCE_TYPE.getColumnNumber());
         if(master.getResourceTypes().get(resourceType) == null) {
             ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
             ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
@@ -106,34 +108,34 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         }
         ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
 
-        EStatus status = EStatus.getStatusByName(getStringCellValue(row, EExcelToolsPositions.STATUS.getColumnNumber()));
+        EStatus status = EStatus.getStatusByName(getStringCellValue(row, EXlsxToolPos.STATUS.getColumnNumber()));
 
-        String locationName = row.getCell(EExcelToolsPositions.LOCATION.getColumnNumber()).getStringCellValue();
+        String locationName = row.getCell(EXlsxToolPos.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
-            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EExcelToolsPositions.LOCATION.getColumnNumber(),
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EXlsxToolPos.LOCATION.getColumnNumber(),
                 Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
 
-        ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(getStringCellValue(row, EExcelToolsPositions.MAINTENANCE_TIME.getColumnNumber()));
+        ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(getStringCellValue(row, EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()));
 
-        String groupName = getStringCellValue(row, EExcelToolsPositions.GROUP.getColumnNumber());
+        String groupName = getStringCellValue(row, EXlsxToolPos.GROUP.getColumnNumber());
         GroupDto group = Optional.ofNullable(master.getGroups().get(groupName))
-            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EExcelToolsPositions.GROUP.getColumnNumber(),
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EXlsxToolPos.GROUP.getColumnNumber(),
                 Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(GroupDto::getName).toList()))));
 
         return ToolDto.builder()
             .id(id)
             .barcode(barcode)
-            .name(getStringCellValue(row, EExcelToolsPositions.NAME.getColumnNumber()))
+            .name(getStringCellValue(row, EXlsxToolPos.NAME.getColumnNumber()))
             .brand(brand)
-            .model(getStringCellValue(row, EExcelToolsPositions.MODEL.getColumnNumber()))
+            .model(getStringCellValue(row, EXlsxToolPos.MODEL.getColumnNumber()))
             .resourceType(resourceTypeDto)
-            .description(getStringCellValue(row, EExcelToolsPositions.DESCRIPTION.getColumnNumber()))
-            .urlImages(getStringArrayCellValue(row, EExcelToolsPositions.URL_IMAGES.getColumnNumber()))
+            .description(getStringCellValue(row, EXlsxToolPos.DESCRIPTION.getColumnNumber()))
+            .urlImages(getStringArrayCellValue(row, EXlsxToolPos.URL_IMAGES.getColumnNumber()))
             .status(status)
             .location(location)
-            .maintenancePeriod(getIntegerCellValue(row, EExcelToolsPositions.MAINTENANCE_PERIOD.getColumnNumber()))
+            .maintenancePeriod(getIntegerCellValue(row, EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()))
             .maintenanceTime(maintenanceTime)
-            .lastMaintenance(getDateCellValue(row, EExcelToolsPositions.LAST_MAINTENANCE.getColumnNumber()))
+            .lastMaintenance(getDateCellValue(row, EXlsxToolPos.LAST_MAINTENANCE.getColumnNumber()))
             .group(group)
             .build();
     }

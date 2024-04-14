@@ -75,15 +75,14 @@ services:
     container_name: ldcgc-ui
     image: ldcgc-ui
     build:
-      context: ./
-      dockerfile: ../ldcgc-frontend/Dockerfile
+      context: ${UI_DOCKERFILE:-../ldcgc-frontend-elm}
+      dockerfile: ${UI_DOCKERFILE:-../ldcgc-frontend-elm}/Dockerfile
     depends_on:
-      api:
-        condition: service_healthy
+      - api
     networks:
       - api_network
     ports:
-      - "3000:3000"
+      - "3000:1234"
     restart: always
 
 networks:
