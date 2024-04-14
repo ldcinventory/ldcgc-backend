@@ -17,21 +17,21 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     @Query(value = """
             SELECT t.* FROM tools t
-            JOIN categories cat on t.category_id = cat.id
-            JOIN categories b on t.brand_id = b.id
-            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :category, '%'))
+            JOIN resource_types res on t.resource-type_id = res.id
+            JOIN brands b on t.brand_id = b.id
+            WHERE unaccent(res.name) ILIKE unaccent(CONCAT('%', :resourceType, '%'))
               AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
               AND unaccent(t.name) ILIKE unaccent(CONCAT('%', :name, '%'))
               AND unaccent(t.model) ILIKE unaccent(CONCAT('%', :model, '%'))
               AND unaccent(t.description) ILIKE unaccent(CONCAT('%', :description, '%'))
               AND t.status = :statusId
             """, nativeQuery = true)
-    Page<Tool> findAllFiltered(String category, String brand, String name, String model, String description, Integer statusId, Pageable pageable);
+    Page<Tool> findAllFiltered(String resourceType, String brand, String name, String model, String description, Integer statusId, Pageable pageable);
     @Query(value = """
             SELECT t.* FROM tools t
-            JOIN categories cat on t.category_id = cat.id
-            JOIN categories b on t.brand_id = b.id
-            WHERE (unaccent(cat.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+            JOIN resource_types res on t.resource_type_id = res.id
+            JOIN brands b on t.brand_id = b.id
+            WHERE (unaccent(res.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(t.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(t.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))

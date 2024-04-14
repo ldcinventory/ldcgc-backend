@@ -14,21 +14,21 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
 
     @Query(value = """
             SELECT c.* FROM consumables c
-            JOIN categories cat on c.category_id = cat.id
-            JOIN categories b on c.brand_id = b.id
-            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :category, '%'))
+            JOIN resource_types res on c.resource_type_id = res.id
+            JOIN brands b on c.brand_id = b.id
+            WHERE unaccent(res.name) ILIKE unaccent(CONCAT('%', :resourceType, '%'))
               AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
               AND unaccent(c.name) ILIKE unaccent(CONCAT('%', :name, '%'))
               AND unaccent(c.model) ILIKE unaccent(CONCAT('%', :model, '%'))
               AND unaccent(c.description) ILIKE unaccent(CONCAT('%', :description, '%'))
             """, nativeQuery = true)
-    Page<Consumable> findAllFiltered(String category, String brand, String name, String model, String description, Pageable pageable);
+    Page<Consumable> findAllFiltered(String resourceType, String brand, String name, String model, String description, Pageable pageable);
 
     @Query(value = """
             SELECT c.* FROM consumables c
-            JOIN categories cat on c.category_id = cat.id
-            JOIN categories b on c.brand_id = b.id
-            WHERE unaccent(cat.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+            JOIN c.resourceType res
+            JOIN c.brand b
+            WHERE unaccent(res.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))
