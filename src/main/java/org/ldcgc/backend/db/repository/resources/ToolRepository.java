@@ -19,7 +19,7 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
             SELECT t.* FROM tools t
             JOIN "resource-types" r on t.resource_type_id = r.id
             JOIN brands b on t.brand_id = b.id
-            WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :category, '%'))
+            WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :resourceType, '%'))
               AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
               AND unaccent(t.name) ILIKE unaccent(CONCAT('%', :name, '%'))
               AND unaccent(t.model) ILIKE unaccent(CONCAT('%', :model, '%'))
