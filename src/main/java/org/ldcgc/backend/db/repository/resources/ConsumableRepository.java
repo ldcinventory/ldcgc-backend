@@ -14,9 +14,9 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
 
     @Query(value = """
             SELECT c.* FROM consumables c
-            JOIN "resourceTypes" r on c.resource_type_id = r.id
+            JOIN "resource-types" r on c.resource_type_id = r.id
             JOIN brands b on c.brand_id = b.id
-            WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :category, '%'))
+            WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :resourceType, '%'))
               AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
               AND unaccent(c.name) ILIKE unaccent(CONCAT('%', :name, '%'))
               AND unaccent(c.model) ILIKE unaccent(CONCAT('%', :model, '%'))
@@ -26,7 +26,7 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
 
     @Query(value = """
             SELECT c.* FROM consumables c
-            JOIN "resourceTypes" r on c.resource_type_id = r.id
+            JOIN "resource-types" r on c.resource_type_id = r.id
             JOIN brands b on c.brand_id = b.id
             WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))

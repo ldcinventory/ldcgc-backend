@@ -17,7 +17,7 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     @Query(value = """
             SELECT t.* FROM tools t
-            JOIN "resourceTypes" r on t.resource_type_id = r.id
+            JOIN "resource_types" r on t.resource_type_id = r.id
             JOIN brands b on t.brand_id = b.id
             WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :category, '%'))
               AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
@@ -29,7 +29,7 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
     Page<Tool> findAllFiltered(String resourceType, String brand, String name, String model, String description, Integer statusId, Pageable pageable);
     @Query(value = """
             SELECT t.* FROM tools t
-            JOIN "resourceTypes" r on t.resource_type_id = r.id
+            JOIN "resource_types" r on t.resource_type_id = r.id
             JOIN brands b on t.brand_id = b.id
             WHERE (unaccent(r.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
