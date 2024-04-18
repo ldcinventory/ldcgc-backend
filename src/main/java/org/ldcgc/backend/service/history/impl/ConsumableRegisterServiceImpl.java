@@ -244,4 +244,19 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_REGISTER_DELETED);
     }
+
+    public ResponseEntity<?> createMultipleConsumableRegisters(List<ConsumableRegisterDto> consumableRegistersDto) {
+        int registers = 0;
+
+        try {
+            for (ConsumableRegisterDto consumableRegisterDto : consumableRegistersDto) {
+                createConsumableRegister(consumableRegisterDto);
+                registers++;
+            }
+        } catch (RequestException ignore) {}
+
+        if(registers == 0) return Constructor.buildResponseMessage(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_NOT_CREATED);
+
+        return Constructor.buildResponseObject(HttpStatus.CREATED, String.format(Messages.Info.CONSUMABLE_REGISTERS_CREATED, registers, consumableRegistersDto.size() - registers));
+    }
 }

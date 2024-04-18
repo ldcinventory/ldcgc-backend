@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public interface ConsumableRegisterService {
@@ -15,5 +16,6 @@ public interface ConsumableRegisterService {
     ResponseEntity<?> createConsumableRegister(ConsumableRegisterDto consumableRegisterDto);
     ResponseEntity<?> updateConsumableRegister(Integer registerId, ConsumableRegisterDto consumableRegisterDto);
     ResponseEntity<?> deleteConsumableRegister(Integer registerId, boolean undoStockChanges);
+    ResponseEntity<?> createMultipleConsumableRegisters(List<ConsumableRegisterDto> consumableRegistersDto);
 
 }

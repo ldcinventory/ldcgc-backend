@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,5 +35,9 @@ public class ConsumableRegisterControllerImpl implements ConsumableRegisterContr
 
     public ResponseEntity<?> deleteConsumableRegister(Integer registerId, boolean undoStockChanges) {
         return consumableRegisterService.deleteConsumableRegister(registerId, undoStockChanges);
+    }
+
+    public ResponseEntity<?> createMultipleConsumableRegisters(List<ConsumableRegisterDto> consumableRegistersDto) {
+        return consumableRegisterService.createMultipleConsumableRegisters(consumableRegistersDto);
     }
 }
