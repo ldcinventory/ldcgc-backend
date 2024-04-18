@@ -20,21 +20,21 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
         return service.createToolRegister(toolRegisterDto);
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, ERegisterStatus status, String volunteer, String tool) {
-        return service.getAllRegisters(pageIndex, size, sortString, descOrder, status, volunteer, tool);
+    public ResponseEntity<?> getAllToolRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, ERegisterStatus status, String volunteer, String tool) {
+        return service.getAllToolRegisters(pageIndex, size, sortString, descOrder, status, volunteer, tool);
     }
 
-    public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
-        return service.updateRegister(registerId, registerDto);
+    public ResponseEntity<?> updateToolRegister(Integer registerId, ToolRegisterDto registerDto) {
+        return service.updateToolRegister(registerId, registerDto);
     }
 
-    public ResponseEntity<?> getRegister(Integer registerId) {
-        return service.getRegister(registerId);
+    public ResponseEntity<?> getToolRegister(Integer registerId) {
+        return service.getToolRegister(registerId);
     }
 
-    public ResponseEntity<?> deleteRegister(Integer registerId) {
-        return service.deleteRegister(registerId);
+    public ResponseEntity<?> deleteToolRegister(Integer registerId) {
+        return service.deleteToolRegister(registerId);
     }
 
-    public ResponseEntity<?> createToolRegisters(List<ToolRegisterDto> toolRegistersDto) { return service.createToolRegisters(toolRegistersDto); }
+    public ResponseEntity<?> createMultipleToolRegisters(List<ToolRegisterDto> toolRegistersDto) { return service.createMultipleToolRegisters(toolRegistersDto); }
 }

@@ -45,4 +45,5 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
     Tool getRandomTool();
 
     List<Tool> findAllByBarcodeIn(List<String> barcodes);
+
 }
