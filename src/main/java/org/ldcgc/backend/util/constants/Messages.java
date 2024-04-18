@@ -68,7 +68,11 @@ public class Messages {
             ABSENCE_UPDATED = "Absence updated",
             ABSENCE_DELETED = "Absence deleted",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers."
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
+
+            TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
+            TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
+            TEST_ACCESS_WITH_ADMIN_CREDENTIALS = "Everything OK with admin credentials!"
 
             ;
 

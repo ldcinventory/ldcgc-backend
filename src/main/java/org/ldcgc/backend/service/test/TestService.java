@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 public interface TestService {
 
     ResponseEntity<?> testAccessWithCredentials();
-
+    ResponseEntity<?> testAccessWithManagerCredentials();
     ResponseEntity<?> testAccessWithAdminCredentials();
+
 }
