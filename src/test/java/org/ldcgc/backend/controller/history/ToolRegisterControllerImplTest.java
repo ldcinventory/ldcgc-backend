@@ -44,7 +44,9 @@ import java.text.ParseException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomConsumableDto;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
@@ -69,7 +71,7 @@ public class ToolRegisterControllerImplTest {
     // repositories
     @MockBean private TokenRepository tokenRepository;
     @MockBean private UserRepository userRepository;
-    @MockBean private ToolRegisterRepository repository;
+    @MockBean private ToolRegisterRepository toolRegisterRepository;
     @MockBean private VolunteerRepository volunteerRepository;
     @MockBean private ToolRepository toolRepository;
 
@@ -82,7 +84,6 @@ public class ToolRegisterControllerImplTest {
 
     // mapper
     @Autowired private ObjectMapper mapper;
-
 
     private final String requestRoot = "/resources/tools/registers";
 
@@ -129,6 +130,37 @@ public class ToolRegisterControllerImplTest {
 
         verify(service, atMostOnce()).createToolRegister(toolRegisterDto);
         assertEquals(ToolRegisterDto.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
+    }
+
+
+    @Test
+    void createToolRegister() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void getAllToolRegisters() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void updateToolRegister() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void getToolRegister() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void deleteToolRegister() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void createMultipleToolRegisters() {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
 }
