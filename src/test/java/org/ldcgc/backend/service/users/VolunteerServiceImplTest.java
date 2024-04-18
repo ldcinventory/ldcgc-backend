@@ -289,7 +289,6 @@ class VolunteerServiceImplTest {
         String builderAssistantId = VOLUNTEER_2.getBuilderAssistantId();
 
         doReturn(Optional.of(VOLUNTEER_2)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
-        doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
         doReturn(VOLUNTEER_2).when(volunteerRepository).saveAndFlush(any(Volunteer.class));
 
         ResponseEntity<?> response = volunteerService.updateVolunteer(builderAssistantId, volunteerDto);

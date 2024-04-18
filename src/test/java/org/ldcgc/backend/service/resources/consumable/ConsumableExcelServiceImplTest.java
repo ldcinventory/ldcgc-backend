@@ -18,7 +18,6 @@ import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -31,7 +30,7 @@ import static org.mockito.Mockito.doReturn;
 @ExtendWith(MockitoExtension.class)
 class ConsumableExcelServiceImplTest {
 
-    @InjectMocks private ConsumableExcelService consumableExcelService;
+    @Mock private ConsumableExcelService consumableExcelService;
 
     @Mock private ConsumableRepository consumableRepository;
     @Mock private BrandRepository brandRepository;
