@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
-import static org.ldcgc.backend.base.Constants.apiRoot;
+import static org.ldcgc.backend.base.Constants.API_ROOT;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
@@ -106,7 +106,7 @@ public class AvailabilityControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(availabilityService.getMyAvailability(Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAvailability)
@@ -125,7 +125,7 @@ public class AvailabilityControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.AVAILABILITY_UPDATED).data(mockedAvailability).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -147,7 +147,7 @@ public class AvailabilityControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.AVAILABILITY_CLEARED).data(Collections.emptyList()).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -170,7 +170,7 @@ public class AvailabilityControllerImplTest {
 
         final String request = requestRoot + "/12345";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(availabilityService.getAvailability(Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAvailability)
@@ -189,7 +189,7 @@ public class AvailabilityControllerImplTest {
 
         final String request = requestRoot + "/12345";
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.AVAILABILITY_UPDATED).data(mockedAvailability).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -211,7 +211,7 @@ public class AvailabilityControllerImplTest {
 
         final String request = requestRoot + "/12345";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.AVAILABILITY_CLEARED).data(Collections.emptyList()).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);

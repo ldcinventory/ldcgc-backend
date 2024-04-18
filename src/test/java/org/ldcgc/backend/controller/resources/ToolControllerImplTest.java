@@ -1,4 +1,4 @@
-package org.ldcgc.backend.controller.resources.tool;
+package org.ldcgc.backend.controller.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.base.annotation.TestConstrainValidationFactory;
 import org.ldcgc.backend.configuration.ContextConstants;
-import org.ldcgc.backend.controller.resources.ToolController;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.payload.dto.other.Response;

@@ -38,7 +38,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
-import static org.ldcgc.backend.base.Constants.apiRoot;
+import static org.ldcgc.backend.base.Constants.API_ROOT;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
@@ -116,7 +116,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/me/12345";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(absenceService.getMyAbsence(anyString(), anyInt())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAbsence)
@@ -135,7 +135,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
@@ -158,7 +158,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
@@ -183,7 +183,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_CREATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -204,7 +204,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/me/12345";
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_UPDATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -226,7 +226,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/me/12345";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         given(absenceService.deleteMyAbsence(anyString(), anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.ABSENCE_DELETED));
@@ -244,7 +244,7 @@ public class AbsenceControllerImplTest {
     public void getAbsence() throws Exception {
         final String request = requestRoot + "/12345";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(absenceService.getAbsence(anyInt())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAbsence)
@@ -262,7 +262,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
@@ -285,7 +285,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
@@ -310,7 +310,7 @@ public class AbsenceControllerImplTest {
     public void listAbsencesFilteredByVolunteers() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
@@ -334,7 +334,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String message = String.format(Messages.Info.ABSENCES_LISTED, 5);
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(mockedAbsences).build();
@@ -361,7 +361,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot;
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_CREATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -382,7 +382,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/12345";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.ABSENCE_UPDATED).data(mockedAbsence).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -404,7 +404,7 @@ public class AbsenceControllerImplTest {
 
         final String request = requestRoot + "/12345";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         given(absenceService.deleteAbsence(anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.ABSENCE_DELETED));
