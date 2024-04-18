@@ -23,7 +23,7 @@ public class ConsumableRegisterDto {
     private LocalDateTime registerTo;
     @NotNull private Float stockAmountRequest;
     private Float stockAmountReturn;
-    private ConsumableDto consumable;
+    private String consumableName;
     private VolunteerDto volunteer;
     private Boolean closedRegister;
     private boolean processingStockChanges;
