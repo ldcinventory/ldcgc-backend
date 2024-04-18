@@ -19,6 +19,7 @@ import lombok.Setter;
 import org.ldcgc.backend.db.model.users.User;
 
 import java.text.ParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.UUID;
 public class MockedToken {
 
     private static final String ISSUER_URL = "https://gc8inventory.es";
+    @Setter private static Boolean isRecoveryToken = false;
     @Setter private static Boolean isRefreshToken = false;
 
 
@@ -46,13 +48,16 @@ public class MockedToken {
         {{
             put("email", user.getEmail());
             put("role", user.getRole().getRoleName());
-            if(isRefreshToken)
-                put("refresh-token", "true");
+            if(isRefreshToken) put("refresh-token", "true");
+            if(isRecoveryToken) put("recovery-token", "true");
         }};
 
         Date now = new Date();
         // expiration time is set by parameter (default: 24 hours -> 86400 seconds)
         Date expirationTime = new Date(now.toInstant().plusSeconds(86400).toEpochMilli());
+
+        if(isRefreshToken)
+            expirationTime = new Date(expirationTime.toInstant().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         // Prepare JWT with claims set
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
@@ -99,6 +104,22 @@ public class MockedToken {
     public static SignedJWT generateRefreshToken(User user) throws ParseException, JOSEException {
         setIsRefreshToken(true);
         return generateNewToken(user);
+    }
+
+    public static String getHeaderFromToken(SignedJWT signedJWT) {
+        return signedJWT.getParsedParts()[0].toString();
+    }
+
+    public static String getPayloadFromToken(SignedJWT signedJWT) {
+        return signedJWT.getParsedParts()[1].toString();
+    }
+
+    public static String getSignatureFromToken(SignedJWT signedJWT) {
+        return signedJWT.getParsedParts()[2].toString();
+    }
+
+    public static String getHeaderPayloadFromToken(SignedJWT signedJWT) {
+        return String.format("%s.%s", getHeaderFromToken(signedJWT), getPayloadFromToken(signedJWT));
     }
 
 }

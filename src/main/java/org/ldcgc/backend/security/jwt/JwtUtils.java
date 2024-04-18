@@ -84,10 +84,8 @@ public class JwtUtils {
         {{
             put("email", user.getEmail());
             put("role", user.getRole().getRoleName());
-            if(isRefreshToken)
-                put("refresh-token", "true");
-            if(isRecoveryToken)
-                put("recovery-token", "true");
+            if(isRefreshToken) put("refresh-token", "true");
+            if(isRecoveryToken) put("recovery-token", "true");
         }};
 
         Date now = new Date();

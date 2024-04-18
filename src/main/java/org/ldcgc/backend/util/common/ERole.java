@@ -26,4 +26,13 @@ public enum ERole implements EnumMethods {
         return null;
     }
 
+    public static ERole getEnumFromAuthority(String authority) {
+        for(ERole role : ERole.values()) {
+            if(role.name().equalsIgnoreCase(authority))
+                return role;
+        }
+
+        return null;
+    }
+
 }
