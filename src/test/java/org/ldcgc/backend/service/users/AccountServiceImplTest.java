@@ -3,6 +3,8 @@ package org.ldcgc.backend.service.users;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.mail.internet.MimeMessage;
+import net.datafaker.Faker;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IContext;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
@@ -67,8 +70,8 @@ class AccountServiceImplTest {
     @Mock private UserRepository userRepository;
     @Mock private TokenRepository tokenRepository;
     // email
-    @Autowired private TemplateEngine templateEngine;
-    @MockBean private JavaMailSender sender;
+    @Mock private TemplateEngine templateEngine;
+    @Mock private JavaMailSender sender;
 
     private final PasswordEncoder passwordEncoder = defaultsForSpringSecurity_v5_8();
     private final PodamFactory factory = new PodamFactoryImpl();
@@ -230,6 +233,8 @@ class AccountServiceImplTest {
         Email.setINSTANCE(email);
         MimeMessage mimeMessage = mock(MimeMessage.class);
         doReturn(mimeMessage).when(sender).createMimeMessage();
+        String randomLorem = new Faker().lorem().sentence();
+        doReturn(randomLorem).when(email.getTemplateEngine()).process(Mockito.anyString(), Mockito.any(IContext.class));
 
         given(Email.sendRecoveringCredentials(user.getEmail(), mockedToken)).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(Messages.Info.CREDENTIALS_EMAIL_SENT));
@@ -323,8 +328,6 @@ class AccountServiceImplTest {
         doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
 
         Integer userIdFromTokenString = mockedTokenEntity.getUserId();
-        doReturn(userIdFromTokenString).when(jwtUtils).getUserIdFromJwtToken(mockedSignedToken);
-        doReturn(Optional.empty()).when(userRepository).findById(userIdFromTokenString);
 
         RequestException ex = assertThrows(RequestException.class, () -> accountService.validateToken(mockedToken));
         assertNotNull(ex);
