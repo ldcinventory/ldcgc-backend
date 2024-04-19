@@ -13,7 +13,9 @@ import java.util.Optional;
 public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, JpaSpecificationExecutor<Volunteer> {
 
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
+
     List<Volunteer> findAllByBuilderAssistantId(String builderAssistantId);
+
     List<Volunteer> findAllByBuilderAssistantIdIn(List<String> builderAssistantIds);
 
     @Query(value = """

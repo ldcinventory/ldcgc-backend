@@ -439,7 +439,6 @@ class UserServiceImplTest {
         final UserDto userDtoUpdating = MANAGER_USER;
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
-        doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
         doReturn(Optional.of(userEntityUpdating)).when(userRepository).findById(userId);
         doReturn(Optional.of(checkUserUpdating)).when(userRepository).findByEmail(userDtoUpdating.getEmail());
 
@@ -465,7 +464,6 @@ class UserServiceImplTest {
         final UserDto userDtoUpdating = MANAGER_USER.toBuilder().role(ERole.ROLE_ADMIN).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
-        doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
         doReturn(Optional.of(userEntityUpdating)).when(userRepository).findById(userId);
         doReturn(Optional.of(checkUserUpdating)).when(userRepository).findByEmail(userDtoUpdating.getEmail());
 

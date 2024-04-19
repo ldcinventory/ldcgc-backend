@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
@@ -168,5 +169,33 @@ public interface ConsumableRegisterController {
             @PathVariable Integer registerId,
         @Parameter(description = "When deleting a register, undo also stock changes")
             @RequestParam(required = false) boolean undoStockChanges);
+
+    @Operation(summary = "Create multiple consumable registers. Insert inRegistration to null to make an OPEN registration")
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_204,
+        description = SwaggerConfig.HTTP_REASON_204,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ConsumableRegisterDto.class)))
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Consumable not available", value = Messages.Error.CONSUMABLE_REGISTER_CONSUMABLE_NOT_AVAILABLE)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Consumable not found barcode", value = Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND),
+                @ExampleObject(name = "Volunteer BA id not found", value = Messages.Error.VOLUNTEER_BAID_NOT_FOUND)
+            })
+    )
+    @PostMapping("/many")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> createMultipleConsumableRegisters(@RequestBody List<ConsumableRegisterDto> consumableRegistersDto);
 
 }

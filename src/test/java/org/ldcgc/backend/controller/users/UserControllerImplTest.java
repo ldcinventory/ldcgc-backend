@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
-import static org.ldcgc.backend.base.Constants.apiRoot;
+import static org.ldcgc.backend.base.Constants.API_ROOT;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
@@ -115,7 +115,7 @@ public class UserControllerImplTest {
 
         final String request = requestRoot + "/me";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(userService.getMyUser(Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
@@ -132,7 +132,7 @@ public class UserControllerImplTest {
     public void updateMyUser() throws Exception {
         final String request = requestRoot + "/me";
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_USER);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
@@ -153,7 +153,7 @@ public class UserControllerImplTest {
     public void deleteMyUser() throws Exception {
         final String request = requestRoot + "/me";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         given(userService.deleteMyUser(Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
@@ -171,7 +171,7 @@ public class UserControllerImplTest {
     public void createUser() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         UserDto mockedUser = getRandomMockedUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
@@ -192,7 +192,7 @@ public class UserControllerImplTest {
     public void getUser() throws Exception {
         final String request = requestRoot + "/{userId}";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(userService.getUser(Mockito.anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
@@ -209,7 +209,7 @@ public class UserControllerImplTest {
     public void listUsers() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         var users = getListOfMockedUsers(5);
 
@@ -236,7 +236,7 @@ public class UserControllerImplTest {
     public void updateUser() throws Exception {
         final String request = requestRoot + "/{userId}";
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
@@ -256,7 +256,7 @@ public class UserControllerImplTest {
     public void deleteUser() throws Exception {
         final String request = requestRoot + "/{userId}";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         given(userService.deleteUser(Mockito.anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));

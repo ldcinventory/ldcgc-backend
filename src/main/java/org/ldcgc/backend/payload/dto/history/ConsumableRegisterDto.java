@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ public class ConsumableRegisterDto {
     private LocalDateTime registerTo;
     @NotNull private Float stockAmountRequest;
     private Float stockAmountReturn;
-    private ConsumableDto consumable;
+    private String consumableName;
     private VolunteerDto volunteer;
     private Boolean closedRegister;
     private boolean processingStockChanges;

@@ -1,5 +1,5 @@
 n=0
-#Open Docker, only if is not running
+# Open Docker, only if is not running
 if (! docker ps ); then
   read -rp 'Docker is not started, do you want for this script to try to start it? [Y/n] ' start_docker
   start_docker={$start_docker:-yes}
@@ -35,7 +35,7 @@ if [ -z "$1" ]; then
   echo "→ To run (API + UI) ----→ use: $0 {create-ui|create-test-data-ui|restart-ui}"
   echo "→ To purge everything --→ use: $0 purge"
   exit 1
-elif [[ "$1" == *-ui && ( ! -f ../ldcgc-frontend/Dockerfile  ||  ! -f ../ldcgc-frontend-elm/Dockerfile ) ]] ; then
+elif [[ "$1" == *-ui && ( ! -f ../ldcgc-frontend/Dockerfile || ! -f ../ldcgc-frontend-elm/Dockerfile ) ]] ; then
   echo "Dockerfile for UI not found!"
   exit 1
 fi
@@ -113,13 +113,13 @@ echo "Load test data for tools and consumables = $TEST_DATA"
 echo "Docker initialization mode = '$1'"
 case "$1" in
   create|restart)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-api.yml up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA RANDOM_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-api.yml up -d
   ;;
   create-api|create-test-data-api|restart-api)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-ui.yml up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA RANDOM_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-ui.yml up -d
   ;;
   create-ui|create-test-data-ui|restart-ui)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TOOLS_REGISTRATION_TEST_DATA=$TEST_DATA CONSUMABLES_REGISTRATION_TEST_DATA=$TEST_DATA UI_DOCKERFILE=$UI_DOCKERFILE docker-compose up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA RANDOM_TEST_DATA=$TEST_DATA UI_DOCKERFILE=$UI_DOCKERFILE docker-compose up -d
   ;;
 esac
 

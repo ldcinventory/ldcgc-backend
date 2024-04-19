@@ -71,7 +71,7 @@ public interface ToolRegisterController {
     )
     @GetMapping
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> getAllRegisters(
+    ResponseEntity<?> getAllToolRegisters(
         @Parameter(description = "Page index (default = 0)")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
@@ -105,7 +105,7 @@ public interface ToolRegisterController {
     )
     @PutMapping("/{registerId}")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> updateRegister(@PathVariable Integer registerId, @RequestBody ToolRegisterDto registerDto);
+    ResponseEntity<?> updateToolRegister(@PathVariable Integer registerId, @RequestBody ToolRegisterDto registerDto);
 
 
     @Operation(summary = "Get a specific register")
@@ -125,7 +125,7 @@ public interface ToolRegisterController {
     )
     @GetMapping("/{registerId}")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> getRegister(@PathVariable Integer registerId);
+    ResponseEntity<?> getToolRegister(@PathVariable Integer registerId);
 
 
     @Operation(summary = "Delete a tool register")
@@ -145,34 +145,35 @@ public interface ToolRegisterController {
     )
     @DeleteMapping("/{registerId}")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> deleteRegister(@PathVariable Integer registerId);
+    ResponseEntity<?> deleteToolRegister(@PathVariable Integer registerId);
 
     @Operation(summary = "Create multiple tool registers. Insert inRegistration to null to make an OPEN registration")
     @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
+            responseCode = SwaggerConfig.HTTP_204,
+            description = SwaggerConfig.HTTP_REASON_204,
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = ToolRegisterDto.class)))
-    )
-    @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_404,
-            description = SwaggerConfig.HTTP_REASON_404,
-            content = @Content(mediaType = "application/json",
-                    examples = {
-                            @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
-                            @ExampleObject(name = "Volunteer not found", value = Messages.Error.VOLUNTEER_NOT_FOUND)
-                    })
     )
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_400,
             description = SwaggerConfig.HTTP_REASON_400,
             content = @Content(mediaType = "application/json",
                     examples = {
-                            @ExampleObject(name = "Too many volunteers", value = Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS),
-                            @ExampleObject(name = "Incorrect BA id", value = Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID)
+                            @ExampleObject(name = "Tool register repeated tools", value = Messages.Error.TOOL_REGISTER_REPEATED_TOOLS),
+                            @ExampleObject(name = "Tool register tool not available", value = Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE)
+                    })
+    )
+    @ApiResponse(
+            responseCode = SwaggerConfig.HTTP_404,
+            description = SwaggerConfig.HTTP_REASON_404,
+            content = @Content(mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(name = "Tool not found barcode", value = Messages.Error.TOOL_NOT_FOUND_BARCODE),
+                            @ExampleObject(name = "Volunteer BA id not found", value = Messages.Error.VOLUNTEER_BAID_NOT_FOUND)
                     })
     )
     @PostMapping("/many")
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> createToolRegisters(@RequestBody List<ToolRegisterDto> toolRegistersDto);
+    ResponseEntity<?> createMultipleToolRegisters(@RequestBody List<ToolRegisterDto> toolRegistersDto);
+
 }

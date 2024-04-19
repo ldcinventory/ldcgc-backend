@@ -18,7 +18,6 @@ import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,12 +25,13 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class ConsumableExcelServiceImplTest {
 
-    @InjectMocks private ConsumableExcelService consumableExcelService;
+    @Mock private ConsumableExcelService consumableExcelService;
 
     @Mock private ConsumableRepository consumableRepository;
     @Mock private BrandRepository brandRepository;
@@ -68,32 +68,32 @@ class ConsumableExcelServiceImplTest {
 
     @Test
     void whenUploadConsumablesFromExcel_returnExcelParseError() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void whenUploadConsumablesFromExcel_returnConsumables() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void whenUploadConsumablesFromExcel_returnLocationNotFound() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void whenUploadConsumablesFromExcel_returnGroupNotFound() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void whenUploadConsumablesFromExcel_returnConsumablesNewBrand() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void whenUploadConsumablesFromExcel_returnConsumablesNewResourceType() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
 }

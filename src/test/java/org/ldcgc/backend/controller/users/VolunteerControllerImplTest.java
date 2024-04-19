@@ -41,7 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
-import static org.ldcgc.backend.base.Constants.apiRoot;
+import static org.ldcgc.backend.base.Constants.API_ROOT;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postMultipartRequest;
@@ -111,7 +111,7 @@ public class VolunteerControllerImplTest {
     public void getMyVolunteer() throws Exception {
         final String request = requestRoot + "/me";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser.getVolunteer()).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
@@ -130,7 +130,7 @@ public class VolunteerControllerImplTest {
     public void getVolunteer() throws Exception {
         final String request = requestRoot + "/{volunteerId}";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser.getVolunteer()).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
@@ -149,7 +149,7 @@ public class VolunteerControllerImplTest {
     public void createVolunteer() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         VolunteerDto mockedVolunteer = MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_ADMIN).getVolunteer();
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.VOLUNTEER_CREATED).data(mockedVolunteer).build();
@@ -170,7 +170,7 @@ public class VolunteerControllerImplTest {
     public void listVolunteers() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         var volunteers = getListOfMockedUsers(5).stream().map(UserDto::getVolunteer).toList();
 
@@ -197,7 +197,7 @@ public class VolunteerControllerImplTest {
     public void updateVolunteer() throws Exception {
         final String request = requestRoot + "/{volunteerId}";
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
@@ -217,7 +217,7 @@ public class VolunteerControllerImplTest {
     public void deleteVolunteer() throws Exception {
         final String request = requestRoot + "/{volunteerId}";
 
-        log.info("Testing a DELETE Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
         given(volunteerService.deleteVolunteer(Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
@@ -233,7 +233,7 @@ public class VolunteerControllerImplTest {
     public void uploadVolunteers() throws Exception {
         final String request = requestRoot + "/upload";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         given(volunteerService.uploadVolunteers(Mockito.anyInt(), Mockito.any(MultipartFile.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 10)));

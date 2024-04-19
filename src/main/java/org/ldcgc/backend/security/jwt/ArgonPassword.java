@@ -13,7 +13,7 @@ public class ArgonPassword {
 
     @Value("${spring.security.crypto.password.argon2.salt-length}")
     private Integer argonSaltLength;
-    @Value("${spring.security.crypto.password.argon2.hash-length}")
+    @Value("${spring.security.crypto.password.argon2.hash-length:64}")
     private Integer argonHashLength;
     @Value("${spring.security.crypto.password.argon2.parallelism}")
     private Integer argonThreads;

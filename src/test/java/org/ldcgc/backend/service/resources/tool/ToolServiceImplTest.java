@@ -44,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
@@ -146,17 +147,17 @@ class ToolServiceImplTest {
 
     @Test
     void createToolShouldThrownResourceTypeNotFound() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void createToolShouldThrownLocationNotFound() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void createToolShouldThrownGroupNotFound() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
@@ -280,12 +281,12 @@ class ToolServiceImplTest {
     @Test
     void getAllToolsUnfilteredShouldReturnPage() {
         // toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void getAllToolsShouldThrowPageIndexRequestedExceededTotal() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
@@ -310,12 +311,12 @@ class ToolServiceImplTest {
 
     @Test
     void getAllToolsLooseShouldThrowPageIndexRequestedExceededTotal() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test
     void getAllToolsLooseShouldReturnToolsPaged() {
-        fail("Not yet implemented");
+        fail(NOT_YET_IMPLEMENTED);
     }
 
 }

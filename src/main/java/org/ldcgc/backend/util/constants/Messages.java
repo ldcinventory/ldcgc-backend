@@ -50,6 +50,7 @@ public class Messages {
             CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables. Skipped %s consumables",
 
             CONSUMABLE_REGISTER_CREATED = "Consumable register created",
+            CONSUMABLE_REGISTERS_CREATED = "Consumable registers created. There were created %s, and %s were skipped",
             CONSUMABLE_REGISTER_LISTED = "Found %s consumable registers",
             CONSUMABLE_REGISTER_UPDATED = "Consumable register updated",
             CONSUMABLE_REGISTER_DELETED = "Consumable register deleted",
@@ -68,7 +69,11 @@ public class Messages {
             ABSENCE_UPDATED = "Absence updated",
             ABSENCE_DELETED = "Absence deleted",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers."
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
+
+            TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
+            TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
+            TEST_ACCESS_WITH_ADMIN_CREDENTIALS = "Everything OK with admin credentials!"
 
             ;
 
@@ -125,8 +130,7 @@ public class Messages {
             VOLUNTEER_NOT_INFORMED = "Volunter is not informed in the payload",
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
-            VOLUNTEER_NOT_FOUND_BA_ID = "The volunteer with Builder Assistant id %s couldn't be found",
-            VOLUNTEER_BAID_NOT_FOUND = "The volunteer you're searching for with builder assistant id '%s' couldn't be found",
+            VOLUNTEER_BAID_NOT_FOUND = "The volunteer with Builder Assistant id %s couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
@@ -163,6 +167,8 @@ public class Messages {
             CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date and time",
             CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
             CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE = "The data for closing the consumible lacks any of the required fields: registrationOut, stockAmountOut",
+            CONSUMABLE_REGISTER_CONSUMABLE_NOT_AVAILABLE = "The consumable you are trying to register is not available due to lack of stock.",
+            CONSUMABLE_REGISTERS_NOT_CREATED = "These multiple registers were not created",
 
             UPLOAD_IMAGES_TOO_FEW_ARGUMENTS = "There are few arguments defined for this operation. Inform a tool or a consumable at least",
 

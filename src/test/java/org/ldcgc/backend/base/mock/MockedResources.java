@@ -37,6 +37,7 @@ public class MockedResources {
             .stock(getRandomFloatFromRange(1,100))
             .stockType(getRandomEnum(EStockType.class))
             .minStock(getRandomFloatFromRange(0,100))
+            .quantityEachItem(getRandomFloatFromRange(1,100))
             .purchaseDate(getRandomLocalDateUntilNow())
             .urlImages(getRandomURLs())
             .resourceType(getRandomResourceType())
