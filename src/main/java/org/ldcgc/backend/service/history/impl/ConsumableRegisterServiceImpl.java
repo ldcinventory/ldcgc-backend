@@ -255,6 +255,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             }
         } catch (RequestException ignore) {}
 
+        //TODO: Dar más pistas sobre qué registros no fueron creados y por qué
         if(registers == 0) return Constructor.buildResponseMessage(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_NOT_CREATED);
 
         return Constructor.buildResponseObject(HttpStatus.CREATED, String.format(Messages.Info.CONSUMABLE_REGISTERS_CREATED, registers, consumableRegistersDto.size() - registers));

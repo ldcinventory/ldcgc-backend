@@ -20,7 +20,7 @@ public interface ConsumableRegisterMapper {
 
     ConsumableRegisterMapper MAPPER = Mappers.getMapper(ConsumableRegisterMapper.class);
 
-    @Mapping(target = "consumableBardcode", source = "consumable.barcode")
+    @Mapping(target = "consumableBarcode", source = "consumable.barcode")
     @Mapping(target = "volunteerBAId", source = "volunteer.builderAssistantId")
     @Mapping(target = "volunteerName", source = "volunteer.name")
     @Mapping(target = "volunteerLastName", source = "volunteer.lastName")
@@ -30,8 +30,6 @@ public interface ConsumableRegisterMapper {
     @Mapping(target = "consumableStockType", source = "consumable.stockType")
     ConsumableRegisterDto toDto(ConsumableRegister consumableRegister);
 
-    @Mapping(target = "consumable", ignore = true)
-    @Mapping(target = "volunteer", ignore = true)
     @Mapping(target = "registerFrom", source = "registerFrom", qualifiedByName = "mapRegistrationIn")
     @Mapping(target = "closedRegister", source = "closedRegister", qualifiedByName = "mapClosedRegister")
     ConsumableRegister toEntity(ConsumableRegisterDto consumableRegisterDto);
@@ -46,8 +44,6 @@ public interface ConsumableRegisterMapper {
         return ObjectUtils.defaultIfNull(closedRegister, Boolean.FALSE);
     }
 
-    @Mapping(target = "consumable", ignore = true)
-    @Mapping(target = "volunteer", ignore = true)
     void update(ConsumableRegisterDto from, @MappingTarget ConsumableRegister to);
 
 }
