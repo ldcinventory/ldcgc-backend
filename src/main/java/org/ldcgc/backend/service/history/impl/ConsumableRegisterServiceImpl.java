@@ -45,8 +45,10 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableRegisterMapper.MAPPER.toDto(consumableRegister));
     }
 
-    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String volunteer, String consumable,
-                                                    LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, String sortField, boolean descOrder) {
+    public ResponseEntity<?> listConsumableRegister(
+            Integer pageIndex, Integer size, String volunteer, String consumable,
+            LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status,
+            String sortField, boolean descOrder) {
         Pageable pageable = PageRequest.of(pageIndex, size, descOrder ? Sort.by(sortField).descending() : Sort.by(sortField).ascending());
 
         Page<ConsumableRegisterDto> pagedConsumableRegisters = ObjectUtils.allNull(volunteer, consumable, registerFrom, registerTo, status)

@@ -41,8 +41,7 @@ public interface ConsumableRegisterRepository extends JpaRepository<ConsumableRe
             AND (
                 COALESCE(:dateTo, '') = '' OR
                 cr.registerTo <= :dateTo
-            )
-            """)
+            )""")
     Page<ConsumableRegister> findAllFiltered(String status, String volunteer, String consumable, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
 }

@@ -58,12 +58,12 @@ public interface ConsumableRegisterController {
             @PathVariable Integer registerId);
 
     @Operation(summary = "List consumable registers", description = """
-        Get all registers from consumable registers, paginated and sorted. You can also include 4 filters:
-        - volunteer builder assistant id
-        - consumable barcode
-        - date from
-        - date to
-             
+        Get all registers from consumable registers, paginated and sorted. You can also include 5 filters:
+        - volunteer builder assistant id (as "volunteer")
+        - consumable barcode (as "consumable")
+        - date from (as "registerFrom")
+        - date to (as "registerTo")
+        - status (as "status", check the posible ENUM values)
         """
         + SWAGGER_ROLE_OPERATION_MANAGER)
 
