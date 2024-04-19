@@ -60,7 +60,7 @@ public class MockedResources {
             .id(getRandomId())
             .volunteerName(new Faker().name().firstName())
             .volunteerLastName(new Faker().name().lastName())
-            .consumableBardcode(getRandomAlphaNumeric(8))
+            .consumableBarcode(getRandomAlphaNumeric(8))
             .volunteerBAId(getRandomAlphaNumeric(8))
             .registerFrom(timeIn)
             .registerTo(timeOut)

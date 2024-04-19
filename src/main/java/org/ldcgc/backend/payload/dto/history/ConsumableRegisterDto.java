@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 public class ConsumableRegisterDto {
 
     private Integer id;
-    @NotNull private String consumableBardcode;
+    @NotNull private String consumableBarcode;
     @NotNull private String volunteerBAId;
     @NotNull private String volunteerName;
     @NotNull private String volunteerLastName;
@@ -23,7 +22,7 @@ public class ConsumableRegisterDto {
     @NotNull private Float stockAmountRequest;
     private Float stockAmountReturn;
     private String consumableName;
-    private VolunteerDto volunteer;
+    private String consumableStockType;
     private Boolean closedRegister;
     private boolean processingStockChanges;
 

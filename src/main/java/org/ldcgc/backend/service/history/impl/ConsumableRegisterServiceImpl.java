@@ -64,10 +64,10 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
     public ResponseEntity<?> createConsumableRegister(ConsumableRegisterDto consumableRegisterDto) {
         List<ConsumableRegister> consumableRegisters = consumableRegisterRepository
-            .findAllByConsumable_Barcode(consumableRegisterDto.getConsumableBardcode());
+            .findAllByConsumable_Barcode(consumableRegisterDto.getConsumableBarcode());
 
-        Consumable consumable = consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBardcode())
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBardcode())));
+        Consumable consumable = consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBarcode())
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBarcode())));
 
         validateCreateConsumableRegister(consumableRegisterDto, consumableRegisters, consumable);
 
@@ -155,11 +155,11 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_REGISTER_NOT_FOUND, registerId)));
 
         Consumable consumable =
-            consumableRegisterDto.getConsumableBardcode().equals(updateConsumableRegister.getConsumable().getBarcode())
+            consumableRegisterDto.getConsumableBarcode().equals(updateConsumableRegister.getConsumable().getBarcode())
             ? updateConsumableRegister.getConsumable()
-            : consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBardcode())
+            : consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBarcode())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                    String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBardcode())));
+                    String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBarcode())));
 
         Volunteer volunteer =
             consumableRegisterDto.getVolunteerBAId().equals(updateConsumableRegister.getVolunteer().getBuilderAssistantId())
@@ -204,7 +204,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         if (updateConsumableRegister.getClosedRegister() &&
            ((ObjectUtils.allNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountReturn())) ||
            (Boolean.FALSE.equals(consumableRegisterDto.getClosedRegister()) ||
-            !consumableRegisterDto.getConsumableBardcode().equals(updateConsumableRegister.getConsumable().getBarcode()) ||
+            !consumableRegisterDto.getConsumableBarcode().equals(updateConsumableRegister.getConsumable().getBarcode()) ||
             !consumableRegisterDto.getStockAmountRequest().equals(updateConsumableRegister.getStockAmountRequest()) ||
             !consumableRegisterDto.getRegisterFrom().equals(updateConsumableRegister.getRegisterFrom()))))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_CLOSED_FOR_MODIFICATIONS);
