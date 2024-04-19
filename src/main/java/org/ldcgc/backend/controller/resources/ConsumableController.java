@@ -119,16 +119,21 @@ public interface ConsumableController {
             @RequestParam(required = false) String model,
         @Parameter(description = "Filter to search by description")
             @RequestParam(required = false) String description,
+        @Parameter(description = "If there's stock left")
+            @RequestParam(required = false) Boolean hasStock,
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
-            @RequestParam(required = false, defaultValue = "id") String sortField);
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort desc or asc (default = true is asc)")
+            @RequestParam(required = false, defaultValue = "true") boolean descOrder);
 
     @Operation(summary = "List consumables", description = """
-        Get all consumables, paginated and sorted. You can also include 5 filters:
+        Get all consumables, paginated and sorted. You can also include 6 filters:
         - category
         - brand
         - name
         - model
         - description
+        - stock (true/false)
         """
         + SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
@@ -153,7 +158,7 @@ public interface ConsumableController {
         @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
         @RequestParam(required = false, defaultValue = "id") String sortField);
 
-    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "List consumable registers and filter by just a filterString", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
