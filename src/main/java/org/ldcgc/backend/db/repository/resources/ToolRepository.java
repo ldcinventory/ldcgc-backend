@@ -24,7 +24,7 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
               AND unaccent(t.name) ILIKE unaccent(CONCAT('%', :name, '%'))
               AND unaccent(t.model) ILIKE unaccent(CONCAT('%', :model, '%'))
               AND unaccent(t.description) ILIKE unaccent(CONCAT('%', :description, '%'))
-              AND t.status = :statusId
+              AND (:statusId IS NULL OR t.status = :statusId)
             """, nativeQuery = true)
     Page<Tool> findAllFiltered(String resourceType, String brand, String name, String model, String description, Integer statusId, Pageable pageable);
     @Query(value = """

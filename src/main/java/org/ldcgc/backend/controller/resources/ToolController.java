@@ -90,11 +90,11 @@ public interface ToolController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getAllTools(@RequestParam(required = false, defaultValue = "0") Integer pageIndex,
                                   @RequestParam(required = false, defaultValue = "25") Integer size,
-                                  @RequestParam(required = false) String category,
-                                  @RequestParam(required = false) String brand,
-                                  @RequestParam(required = false) String name,
-                                  @RequestParam(required = false) String model,
-                                  @RequestParam(required = false) String description,
+                                  @RequestParam(required = false, defaultValue = "") String category,
+                                  @RequestParam(required = false, defaultValue = "") String brand,
+                                  @RequestParam(required = false, defaultValue = "") String name,
+                                  @RequestParam(required = false, defaultValue = "") String model,
+                                  @RequestParam(required = false, defaultValue = "") String description,
                                   @RequestParam(required = false) String status,
                                   @RequestParam(required = false, defaultValue = "name") String sortField);
 
