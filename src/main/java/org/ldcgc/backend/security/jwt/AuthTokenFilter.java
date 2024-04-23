@@ -2,13 +2,12 @@ package org.ldcgc.backend.security.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
-import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
@@ -52,9 +51,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         final String jwtSignature = request.getHeader("x-signature-token");
 
         String jwt = null;
-        if(Objects.nonNull(refreshJwt) && request.getMethod().equals("POST") && request.getRequestURI().equals("/api/accounts/refresh-token"))
+        if(StringUtils.isBlank(refreshJwt) && request.getMethod().equals("POST") && request.getRequestURI().equals("/api/accounts/refresh-token"))
             jwt = String.format("Bearer %s", refreshJwt);
-        else if(ObjectUtils.allNotNull(jwtHeaderPayload, jwtSignature))
+        else if(StringUtils.isNoneBlank(jwtHeaderPayload, jwtSignature))
             jwt = String.format("Bearer %s.%s", jwtHeaderPayload, jwtSignature);
 
         final boolean authIsNotPresent = Objects.isNull(jwt);
@@ -64,9 +63,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-        if(StringUtils.isBlank(jwt))
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND_HEADERS);
 
         SignedJWT decodedJWT = jwtUtils.getDecodedJwt(jwt);
 
@@ -78,7 +74,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-            // skip eula if header or exempted endpoint (i.e.: get/accept eula)
+            // skip eula if header or exempted endpoint (i.e.: GET/PUT '/api/eula')
             if(notExemptedEndpoint(request.getMethod(), request.getRequestURI())) {
 
                 // get eula details (standard user)

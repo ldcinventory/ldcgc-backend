@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -111,11 +112,15 @@ public class MockedUserVolunteer {
             .build();
     }
 
-    public static UserDetailsImpl getMockedUserDetailsImpl(ERole userRole, boolean acceptedEULA) {
+    public static UserDetailsImpl getMockedUserDetailsImpl(ERole userRole, boolean acceptEULAs) {
+        return getMockedUserDetailsImpl(userRole, acceptEULAs, acceptEULAs);
+    }
+
+    public static UserDetailsImpl getMockedUserDetailsImpl(ERole userRole, boolean acceptStandardEULA, boolean accceptManagerEULA) {
         String role = userRole == null ? getRandomEnum(ERole.class).getRoleName().toUpperCase() : userRole.getRoleName().toUpperCase();
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(userRole.name()));
+        authorities.add(new SimpleGrantedAuthority(Objects.requireNonNull(userRole).name()));
 
         UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
             .username(new Faker().internet().emailAddress())
@@ -124,11 +129,11 @@ public class MockedUserVolunteer {
             .authorities(authorities)
             .build();
 
-        LocalDateTime acceptedEULAMoment = acceptedEULA
-            ? LocalDateTime.now()
-            : null;
+        LocalDateTime acceptedEULAMoment = LocalDateTime.now();
 
-        return new UserDetailsImpl(userDetails, getRandomId(), acceptedEULAMoment, acceptedEULAMoment);
+        return new UserDetailsImpl(userDetails, getRandomId(),
+            acceptStandardEULA ? acceptedEULAMoment : null,
+            accceptManagerEULA ? acceptedEULAMoment : null);
     }
 
     private static ResponsibilityDto getRandomResponsibility() {
