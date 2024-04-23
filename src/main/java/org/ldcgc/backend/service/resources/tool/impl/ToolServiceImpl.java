@@ -90,8 +90,7 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.TOOL_DELETED);
     }
 
-    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String status, String sortField) {
-
+    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String barcode, String location, String status, String sortField) {
         Integer statusId = StringUtils.isEmpty(status)
             ? null
             : Optional.of(status)
@@ -101,9 +100,8 @@ public class ToolServiceImpl implements ToolService {
 
         Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
 
-        Page<ToolDto> pagedTools = ObjectUtils.allNull(category, brand, name, model, description, status)
-            ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
-            : toolRepository.findAllFiltered(category, brand, name, model, description, statusId, pageable).map(ToolMapper.MAPPER::toDto);
+        Page<ToolDto> pagedTools = toolRepository.findAllFiltered(category, brand, name, model, description, barcode, location, statusId, pageable)
+                .map(ToolMapper.MAPPER::toDto);
 
         if (pageIndex > pagedTools.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);

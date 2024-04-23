@@ -51,13 +51,15 @@ public interface ToolController {
     ResponseEntity<?> getTool(@PathVariable Integer toolId);
 
     @Operation(summary = "Get all tools, paginated and sorted.", description = """
-        You can also include 4 filters:
+        You can also include some filters:
         - category
         - brand
         - name
         - model
         - description
         - status
+        - barcode
+        - location
         
         Valid status:
         - Disponible -> ```AVAILABLE```
@@ -95,6 +97,8 @@ public interface ToolController {
                                   @RequestParam(required = false, defaultValue = "") String name,
                                   @RequestParam(required = false, defaultValue = "") String model,
                                   @RequestParam(required = false, defaultValue = "") String description,
+                                  @RequestParam(required = false, defaultValue = "") String barcode,
+                                  @RequestParam(required = false, defaultValue = "") String location,
                                   @RequestParam(required = false) String status,
                                   @RequestParam(required = false, defaultValue = "name") String sortField);
 

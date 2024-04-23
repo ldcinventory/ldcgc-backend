@@ -256,11 +256,11 @@ class ToolServiceImplTest {
 
         Page<Tool> tools = new PageImpl<>(factory.manufacturePojo(List.class, Tool.class));
 
-        doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
-        ResponseEntity<?> response = toolService.getAllTools(0, 25, "", "", "", "", "", null, sortString);
+        ResponseEntity<?> response = toolService.getAllTools(0, 25, "", "", "", "", "", "", "", null, sortString);
 
-        verify(toolRepository, atMostOnce()).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        verify(toolRepository, atMostOnce()).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
         assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
@@ -272,7 +272,7 @@ class ToolServiceImplTest {
         String status = "made up status";
         String sorField = "name";
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(0, 25, "", "", "", "", "", status, sorField));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(0, 25, "", "", "", "", "", "", "", status, sorField));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));

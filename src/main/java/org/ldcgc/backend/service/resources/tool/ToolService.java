@@ -13,7 +13,7 @@ public interface ToolService {
     ResponseEntity<?> createTool(ToolDto toolDto);
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
-    ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String status, String sortField);
+    ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String barcode, String location, String status, String sortField);
     ResponseEntity<?> uploadToolsExcel(MultipartFile file);
     Tool updateToolStatus(Tool tool, EStatus status);
 
