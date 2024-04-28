@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +46,7 @@ public interface ConsumableController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @GetMapping("/{consumableId}")
@@ -105,10 +106,8 @@ public interface ConsumableController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumables(
-        @Parameter(description = "Page index (default = 0)")
-            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @Parameter(description = "Size of every page (default = 25)")
-            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Filter to search by barcode (ignores other fields)")
+            @RequestParam(required = false) String barcode,
         @Parameter(description = "Filter to search by category")
             @RequestParam(required = false) String category,
         @Parameter(description = "Filter to search by brand")
@@ -121,10 +120,14 @@ public interface ConsumableController {
             @RequestParam(required = false) String description,
         @Parameter(description = "If there's stock left")
             @RequestParam(required = false) Boolean hasStock,
-        @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Sort by any field from Consumable class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
-        @Parameter(description = "Sort desc or asc (default = true is asc)")
-            @RequestParam(required = false, defaultValue = "true") boolean descOrder);
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "List consumables", description = """
         Get all consumables, paginated and sorted. You can also include 6 filters:
@@ -149,14 +152,18 @@ public interface ConsumableController {
     @GetMapping("/loose")
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumablesLoose(
-        @Parameter(description = "Page index (default = 0)")
-        @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @Parameter(description = "Size of every page (default = 25)")
-        @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Filter to search by provided filter string")
-        @RequestParam(required = false) String filterString,
-        @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
-        @RequestParam(required = false, defaultValue = "id") String sortField);
+            @RequestParam(required = false) String filterString,
+        @Parameter(description = "If there's stock left")
+            @RequestParam(required = false) Boolean hasStock,
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Sort by any field from Consumable class (default = id)")
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "List consumable registers and filter by just a filterString", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
@@ -186,7 +193,7 @@ public interface ConsumableController {
         description = SwaggerConfig.HTTP_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Consumable doesn't exist", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Consumable doesn't exist", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @PutMapping("/{consumableId}")
@@ -212,7 +219,7 @@ public interface ConsumableController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @DeleteMapping("/{consumableId}")

@@ -13,6 +13,7 @@ import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.ConsumableRegisterMapper;
 import org.ldcgc.backend.service.history.ConsumableRegisterService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -45,12 +46,11 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableRegisterMapper.MAPPER.toDto(consumableRegister));
     }
 
-    public ResponseEntity<?> listConsumableRegister(
-            Integer pageIndex, Integer size, String volunteer, String consumable,
-            LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status,
-            String sortField, boolean descOrder) {
-        Pageable pageable = PageRequest.of(pageIndex, size, descOrder ? Sort.by(sortField).descending() : Sort.by(sortField).ascending());
+    public ResponseEntity<?> listConsumableRegister(String volunteer, String consumable, LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, Integer pageIndex, Integer size, String sortField, EOrder order) {
 
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
         Page<ConsumableRegisterDto> pagedConsumableRegisters = ObjectUtils.allNull(volunteer, consumable, registerFrom, registerTo, status)
             ? consumableRegisterRepository.findAll(pageable).map(ConsumableRegisterMapper.MAPPER::toDto)
             : consumableRegisterRepository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null),

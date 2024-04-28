@@ -19,6 +19,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EUploadStatus;
 import org.ldcgc.backend.util.constants.Messages;
@@ -90,7 +91,7 @@ public class ToolServiceImpl implements ToolService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.TOOL_DELETED);
     }
 
-    public ResponseEntity<?> getAllTools(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, String barcode, String location, String status, String sortField) {
+    public ResponseEntity<?> getAllTools(String resourceType, String brand, String name, String model, String description, String barcode, String location, String status, Integer pageIndex, Integer size, String sortField, EOrder order) {
         Integer statusId = StringUtils.isEmpty(status)
             ? null
             : Optional.of(status)
@@ -98,10 +99,36 @@ public class ToolServiceImpl implements ToolService {
                 .map(EStatus::getId)
                 .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
 
-        Page<ToolDto> pagedTools = toolRepository.findAllFiltered(category, brand, name, model, description, barcode, location, statusId, pageable)
+        Page<ToolDto> pagedTools = toolRepository.findAllFiltered(resourceType, brand, name, model, description, barcode, location, statusId, pageable)
                 .map(ToolMapper.MAPPER::toDto);
+
+        if (pageIndex > pagedTools.getTotalPages())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
+
+        return Constructor.buildResponseMessageObject(HttpStatus.OK,
+            String.format(Messages.Info.TOOL_LISTED, pagedTools.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedTools));
+    }
+
+    public ResponseEntity<?> getAllToolsLoose(String filterString, String status, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        Integer statusId = StringUtils.isEmpty(status)
+            ? null
+            : Optional.of(status)
+            .map(EStatus::getStatusByName)
+            .map(EStatus::getId)
+            .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
+
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
+
+        Page<ToolDto> pagedTools = ObjectUtils.allNull(filterString, status)
+            ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+            : toolRepository.findAllFiltered(filterString, statusId, pageable).map(ToolMapper.MAPPER::toDto);
 
         if (pageIndex > pagedTools.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
@@ -143,33 +170,9 @@ public class ToolServiceImpl implements ToolService {
         return toolRepository.saveAndFlush(tool);
     }
 
-    @Override
-    public ResponseEntity<?> getAllToolsLoose(Integer pageIndex, Integer size, String filterString, String status, String sortField) {
-        Integer statusId = StringUtils.isEmpty(status)
-                ? null
-                : Optional.of(status)
-                .map(EStatus::getStatusByName)
-                .map(EStatus::getId)
-                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
-
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
-
-        Page<ToolDto> pagedTools = ObjectUtils.allNull(filterString, status)
-                ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
-                : toolRepository.findAllFiltered(filterString, statusId, pageable).map(ToolMapper.MAPPER::toDto);
-
-        if (pageIndex > pagedTools.getTotalPages())
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
-
-        return Constructor.buildResponseMessageObject(HttpStatus.OK,
-                String.format(Messages.Info.TOOL_LISTED, pagedTools.getTotalElements()),
-                PaginationDetails.fromPaging(pageable, pagedTools));
-    }
-
-
     private Tool findToolOrElseThrow(Integer toolId) {
         return toolRepository.findById(toolId).orElseThrow(() ->
-                new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_NOT_FOUND, toolId)));
+                new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TOOL_ID_NOT_FOUND, toolId)));
     }
 
     private void setLinkedEntitiesForConsumable(Tool toolEntity, ToolDto toolDto) {

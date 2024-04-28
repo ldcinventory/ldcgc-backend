@@ -135,7 +135,7 @@ public class Messages {
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
 
-            TOOL_NOT_FOUND = "Tool with id '%s' not found",
+            TOOL_ID_NOT_FOUND = "Tool with id '%s' not found",
             TOOL_NOT_FOUND_BARCODE = "Tool with barcode %s not found",
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
@@ -150,7 +150,7 @@ public class Messages {
             TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found.",
             TOOL_REGISTER_REPEATED_TOOLS = "You can't assign the same tool more than one time!",
 
-            CONSUMABLE_NOT_FOUND = "Consumable with id '%s' not found",
+            CONSUMABLE_ID_NOT_FOUND = "Consumable with id '%s' not found",
             CONSUMABLE_BARCODE_NOT_FOUND = "Consumable with barcode '%s' not found",
             CONSUMABLE_BARCODE_ALREADY_EXISTS = "There is another consumable with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             CONSUMABLE_BARCODE_USED_MANY_TIMES = "The barcode '%s' is used by more than one consumable. Please report to admin",

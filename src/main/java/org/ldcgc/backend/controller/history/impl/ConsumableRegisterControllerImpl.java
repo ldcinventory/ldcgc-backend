@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.history.ConsumableRegisterController;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.service.history.ConsumableRegisterService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +22,8 @@ public class ConsumableRegisterControllerImpl implements ConsumableRegisterContr
         return consumableRegisterService.getConsumableRegister(registerId);
     }
 
-    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String volunteer, String consumable, LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, String sortField, boolean descOrder) {
-        return consumableRegisterService.listConsumableRegister(pageIndex, size, volunteer, consumable, registerFrom, registerTo, status, sortField, descOrder);
+    public ResponseEntity<?> listConsumableRegister(String volunteer, String consumable, LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return consumableRegisterService.listConsumableRegister(volunteer, consumable, registerFrom, registerTo, status, pageIndex, size, sortField, order);
     }
 
     public ResponseEntity<?> createConsumableRegister(ConsumableRegisterDto consumableRegisterDto) {

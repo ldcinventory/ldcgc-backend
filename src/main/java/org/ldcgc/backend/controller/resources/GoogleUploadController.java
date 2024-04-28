@@ -45,8 +45,8 @@ public interface GoogleUploadController {
         description = SwaggerConfig.HTTP_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_ID_NOT_FOUND),
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @ApiResponse(
@@ -98,9 +98,9 @@ public interface GoogleUploadController {
         description = SwaggerConfig.HTTP_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
+                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_ID_NOT_FOUND),
                 @ExampleObject(name = "Tool image not found", value = Messages.Error.TOOL_IMAGE_INFORMED_NOT_FOUND),
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND),
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND),
                 @ExampleObject(name = "Consumable image not found", value = Messages.Error.CONSUMABLE_IMAGE_INFORMED_NOT_FOUND)
             })
     )

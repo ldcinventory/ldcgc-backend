@@ -42,8 +42,17 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
               OR unaccent(c.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.description) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              AND (
+                  CASE WHEN :hasStock IS NOT NULL THEN
+                    CASE
+                        WHEN :hasStock = TRUE THEN c.stock > 0.0
+                        ELSE c.stock = 0.0
+                    END
+                  ELSE TRUE
+                  END
+              )
             """, nativeQuery = true)
-    Page<Consumable> findAllFiltered(String filterString, Pageable pageable);
+    Page<Consumable> findAllFiltered(String filterString, Boolean hasStock, Pageable pageable);
 
     void deleteById(@NotNull Integer consumableId);
 

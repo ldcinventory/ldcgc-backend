@@ -15,6 +15,7 @@ import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.constants.Messages;
@@ -60,9 +61,11 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
     }
 
-    public ResponseEntity<?> getAllToolRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, ERegisterStatus status, String volunteer, String tool) {
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Boolean.TRUE.equals(descOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, sortString));
+    public ResponseEntity<?> getAllToolRegisters(ERegisterStatus status, String volunteer, String tool, Integer pageIndex, Integer size, String sortString, EOrder order) {
 
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.Direction.DESC
+            : Sort.Direction.ASC, sortString);
         Page<ToolRegisterDto> pagedToolRegisters = ObjectUtils.allNull(volunteer, tool, status)
             ? toolRegisterRepository.findAll(pageable).map(ToolRegisterMapper.MAPPER::toDto)
             : toolRegisterRepository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null), volunteer, tool, pageable)

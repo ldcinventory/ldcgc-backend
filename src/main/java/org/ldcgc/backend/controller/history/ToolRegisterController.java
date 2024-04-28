@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public interface ToolRegisterController {
             description = SwaggerConfig.HTTP_REASON_404,
             content = @Content(mediaType = "application/json",
                     examples = {
-                        @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
+                        @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_ID_NOT_FOUND),
                         @ExampleObject(name = "Volunteer not found", value = Messages.Error.VOLUNTEER_NOT_FOUND)
                     })
     )
@@ -72,20 +73,20 @@ public interface ToolRegisterController {
     @GetMapping
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> getAllToolRegisters(
+        @Parameter(description = "Status of the register (opened/closed)")
+            @RequestParam(required = false) ERegisterStatus status,
+        @Parameter(description = "Filter by volunteer name, last name or both (with the same input string)")
+            @RequestParam(required = false) String volunteer,
+        @Parameter(description = "Filter by tool name or barcode")
+            @RequestParam(required = false) String tool,
         @Parameter(description = "Page index (default = 0)")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Sort by any field desired (see fields of ToolRegister class) (default = registerFrom)")
             @RequestParam(required = false, defaultValue = "registerFrom") String sortString,
-        @Parameter(description = "Sort desc or asc (default = true)")
-            @RequestParam(required = false, defaultValue = "true") Boolean descOrder,
-        @Parameter(description = "Status of the register (opened/closed)")
-            @RequestParam(required = false) ERegisterStatus status,
-        @Parameter(description = "Filter by volunteer name, last name or both (with the same input string)")
-            @RequestParam(required = false) String volunteer,
-        @Parameter(description = "Filter by tool name or barcode")
-            @RequestParam(required = false) String tool
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order
     );
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")

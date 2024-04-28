@@ -69,7 +69,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
 
     public ResponseEntity<?> uploadToolImages(String toolBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException {
         Tool tool = toolRepository.findFirstByBarcode(toolBarcode).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_NOT_FOUND));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_ID_NOT_FOUND));
 
         if(cleanExisting)
             cleanFromGDrive(tool.getUrlImages());
@@ -87,7 +87,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
 
     public ResponseEntity<?> uploadConsumableImages(String consumableBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException {
         Consumable consumable = consumableRepository.findByBarcode(consumableBarcode).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CONSUMABLE_NOT_FOUND));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CONSUMABLE_ID_NOT_FOUND));
 
         if(cleanExisting)
             cleanFromGDrive(consumable.getUrlImages());
@@ -105,7 +105,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
 
     public ResponseEntity<?> cleanToolImages(String toolBarcode, String[] imageIds) throws GeneralSecurityException {
         Tool tool = toolRepository.findFirstByBarcode(toolBarcode).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_NOT_FOUND));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_ID_NOT_FOUND));
 
         if (tool.getUrlImages() == null)
             return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.TOOL_UNTOUCHED, ToolMapper.MAPPER.toDto(tool));
@@ -125,7 +125,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
 
     public ResponseEntity<?> cleanConsumableImages(String consumableBarcode, String[] imageIds) throws GeneralSecurityException {
         Consumable consumable = consumableRepository.findByBarcode(consumableBarcode).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CONSUMABLE_NOT_FOUND));
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.CONSUMABLE_ID_NOT_FOUND));
 
         if (consumable.getUrlImages() == null)
             return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.CONSUMABLE_UNTOUCHED, ConsumableMapper.MAPPER.toDto(consumable));

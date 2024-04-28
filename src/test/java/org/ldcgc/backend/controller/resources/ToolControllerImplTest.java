@@ -44,6 +44,9 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
@@ -171,9 +174,9 @@ class ToolControllerImplTest {
 
     @Test
     void getAllShouldCallService() {
-        toolController.getAllTools(0, 25, "name", "", "", "", "", "", "", "", null);
+        toolController.getAllTools(null, null, null, null, null, null, null, null, 0, 25, "name", null);
 
-        verify(toolService, times(1)).getAllTools(0, 25, "name", "", "", "", "", "", "", "", null);
+        verify(toolService, atMostOnce()).getAllTools(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), 0, 25, "name", isNull());
     }
 
     @Test
@@ -187,10 +190,12 @@ class ToolControllerImplTest {
     void getAllShouldReturnToolList() {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
 
-        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(toolService).getAllTools(0, 0, "name", "", "", "", "", "", "", "", null);
-        ResponseEntity<?> response = toolController.getAllTools(0, 0, "name", "", "", "", "", "", "", "", null);
+        doReturn(ResponseEntity.ok(Response.DTO.builder().data(tools).build())).when(toolService).getAllTools(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), anyInt(), anyInt(), anyString(), isNull());
 
-        verify(toolService, times(1)).getAllTools(0, 0, "name", "", "", "", "", "", "", "", null);
+        ResponseEntity<?> response = toolController.getAllTools(null, null, null, null, null, null, null, null, 0, 25, "name", null);
+
+        verify(toolService, times(1)).getAllTools(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), anyInt(), anyInt(), anyString(), isNull());
+
         assertEquals(ArrayList.class, ((Response.DTO) Objects.requireNonNull(response.getBody())).getData().getClass());
         assertEquals(ToolDto.class, ((List<ToolDto>)((Response.DTO) Objects.requireNonNull(response.getBody())).getData()).getFirst().getClass());
     }

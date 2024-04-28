@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.MediaType;
@@ -80,10 +81,6 @@ public interface ConsumableRegisterController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumableRegister(
-        @Parameter(description = "Page index (default = 0)")
-            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @Parameter(description = "Size of every page (default = 25)")
-            @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
             @RequestParam(required = false) String volunteer,
         @Parameter(description = "Volunteer Consumable barcode (ignores the other params)")
@@ -94,10 +91,14 @@ public interface ConsumableRegisterController {
             @RequestParam(required = false) LocalDateTime registerTo,
         @Parameter(description = "Status of the register (opened/closed)")
             @RequestParam(required = false) ERegisterStatus status,
-        @Parameter(description = "Sort by any field desired (see fields of ConsumableRegister class) (default = id)")
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Sort by any field from ConsumableRegister class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
-        @Parameter(description = "Sort desc or asc (default = true)")
-            @RequestParam(required = false, defaultValue = "true") boolean descOrder);
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Create a consumable register.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

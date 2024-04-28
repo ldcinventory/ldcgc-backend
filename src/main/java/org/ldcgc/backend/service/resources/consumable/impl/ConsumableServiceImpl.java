@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.resources.consumable.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
@@ -19,6 +20,7 @@ import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.EUploadStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -70,9 +72,14 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     }
 
-    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, Boolean hasStock, String sortField, boolean descOrder) {
-        Pageable pageable = PageRequest.of(pageIndex, size, descOrder ? Sort.by(sortField).descending() : Sort.by(sortField).ascending());
+    public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        if(StringUtils.isNotBlank(barcode))
+            return Constructor.buildResponseObject(HttpStatus.OK,
+                ConsumableMapper.MAPPER.toDto(getOrElseThrowNotFound(barcode)));
 
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
         Page<ConsumableDto> pagedConsumables = ObjectUtils.allNull(category, brand, name, model, description, hasStock)
             ? consumableRepository.findAll(pageable).map(ConsumableMapper.MAPPER::toDto)
             : consumableRepository.findAllFiltered(category, brand, name, model, description, hasStock, pageable).map(ConsumableMapper.MAPPER::toDto);
@@ -86,12 +93,14 @@ public class ConsumableServiceImpl implements ConsumableService {
             PaginationDetails.fromPaging(pageable, pagedConsumables));
     }
 
-    public ResponseEntity<?> listConsumablesLoose(Integer pageIndex, Integer size, String filterString, String sortField) {
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField));
+    public ResponseEntity<?> listConsumablesLoose(String filterString, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
 
         Page<ConsumableDto> pagedConsumables = ObjectUtils.allNull(filterString)
             ? consumableRepository.findAll(pageable).map(ConsumableMapper.MAPPER::toDto)
-            : consumableRepository.findAllFiltered(filterString, pageable).map(ConsumableMapper.MAPPER::toDto);
+            : consumableRepository.findAllFiltered(filterString, hasStock, pageable).map(ConsumableMapper.MAPPER::toDto);
 
         if (pageIndex > pagedConsumables.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
@@ -156,7 +165,12 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     private Consumable getOrElseThrowNotFound(Integer consumableId) {
         return consumableRepository.findById(consumableId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_NOT_FOUND, consumableId)));
+            new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_ID_NOT_FOUND, consumableId)));
+    }
+
+    private Consumable getOrElseThrowNotFound(String consumableBarcode) {
+        return consumableRepository.findByBarcode(consumableBarcode).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableBarcode)));
     }
 
     private void setLinkedEntitiesForConsumable(Consumable consumableEntity, ConsumableDto consumableDto) {

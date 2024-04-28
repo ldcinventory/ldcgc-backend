@@ -93,7 +93,7 @@ class ToolServiceImplTest {
         RequestException requestException = assertThrows(RequestException.class, () -> toolService.getTool(id));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
-        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
+        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_ID_NOT_FOUND, id)));
     }
 
     @Test
@@ -197,7 +197,7 @@ class ToolServiceImplTest {
 
         verify(toolRepository, times(1)).findById(id);
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
-        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
+        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_ID_NOT_FOUND, id)));
     }
     @Test
     void putToolShouldThrowExceptionWhenBarcodeAlreadyExist(){
@@ -246,19 +246,19 @@ class ToolServiceImplTest {
         verify(toolRepository, times(1)).findById(id);
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
-        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
+        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_ID_NOT_FOUND, id)));
     }
 
 
     @Test
     void getAllToolsShouldReturnPage() {
-        String sortString = "name";
+        String sortField = "name";
 
         Page<Tool> tools = new PageImpl<>(factory.manufacturePojo(List.class, Tool.class));
 
         doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
-        ResponseEntity<?> response = toolService.getAllTools(0, 25, "", "", "", "", "", "", "", null, sortString);
+        ResponseEntity<?> response = toolService.getAllTools(null, null, null, null, null, null, null, null, 0, 25, sortField, null);
 
         verify(toolRepository, atMostOnce()).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
 
@@ -270,9 +270,9 @@ class ToolServiceImplTest {
     @Test
     void getAllToolsShouldThrowExceptionWhenStatusNotFound(){
         String status = "made up status";
-        String sorField = "name";
+        String sortField = "name";
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(0, 25, "", "", "", "", "", "", "", status, sorField));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(null, null, null, null, null, null, null, status, 0, 25, sortField, null));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));

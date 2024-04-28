@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.resources.ConsumableController;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,12 +23,12 @@ public class ConsumableControllerImpl implements ConsumableController {
         return consumableService.createConsumable(consumableDto);
     }
 
-    public ResponseEntity<?> listConsumables(Integer pageIndex, Integer size, String category, String brand, String name, String model, String description, Boolean hasStock, String sortField, boolean descOrder) {
-        return consumableService.listConsumables(pageIndex, size, category, brand, name, model, description, hasStock, sortField, descOrder);
+    public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return consumableService.listConsumables(barcode, category, brand, name, model, description, hasStock, pageIndex, size, sortField, order);
     }
 
-    public ResponseEntity<?> listConsumablesLoose(Integer pageIndex, Integer size, String filterString, String sortField) {
-        return consumableService.listConsumablesLoose(pageIndex, size, filterString, sortField);
+    public ResponseEntity<?> listConsumablesLoose(String filterString, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return consumableService.listConsumablesLoose(filterString, hasStock, pageIndex, size, sortField, order);
     }
 
     public ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId) {
