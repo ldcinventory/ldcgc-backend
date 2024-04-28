@@ -129,6 +129,9 @@ public class InitializationData {
             // set accent-insensitive on searches
             jdbcTemplate.execute("CREATE EXTENSION IF NOT EXISTS unaccent;");
 
+            // null user, tool, consumable for when some registers are not permanently deleted (just deactivated)
+            createNullRegisters();
+
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
             locationRepository.saveAndFlush(Location.builder()
                     .name("Guadalajara SR")
@@ -194,8 +197,6 @@ public class InitializationData {
                     new Location("Arcón-medio 2", ferreteria, 1)
             ));
             ferreteria = locationRepository.saveAndFlush(ferreteria);
-
-            Map<String, Location> locationMap = locationRepository.findAllByLevel(0).stream().collect(Collectors.toMap(Location::getName, l -> l));
 
             // GROUP
             group = groupRepository.saveAndFlush(Group.builder()
@@ -756,6 +757,32 @@ public class InitializationData {
 
             userRepository.saveAndFlush(user);
         });
+    }
+
+    private void createNullRegisters() {
+        userRepository.saveAndFlush(User.builder()
+            .email("[ null user ]")
+            .password(passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(20)))
+            .role(ERole.ROLE_NULL)
+            .enabled(false)
+            .build());
+
+        volunteerRepository.saveAndFlush(Volunteer.builder()
+            .isActive(false)
+            .build());
+
+        toolRepository.saveAndFlush(Tool.builder()
+            .barcode("null")
+            .enabled(false)
+            .build());
+
+        consumableRepository.saveAndFlush(Consumable.builder()
+            .barcode("null")
+            .quantityEachItem(0.0f)
+            .stock(0.0f)
+            .enabled(false)
+            .build());
+
     }
 
 }

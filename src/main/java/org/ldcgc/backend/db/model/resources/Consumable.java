@@ -84,4 +84,6 @@ public class Consumable {
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
+     private boolean enabled = true;
+
 }

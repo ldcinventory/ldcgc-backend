@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ERole implements EnumMethods {
 
+    @JsonProperty("null")
+    ROLE_NULL("null"),
     @JsonProperty("user")
     ROLE_USER("USER"),
     @JsonProperty("manager")
