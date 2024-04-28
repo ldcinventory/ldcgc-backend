@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +95,14 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
 
         Integer id = Optional.ofNullable(master.getConsumables().get(barcode)).map(ConsumableDto::getId).orElse(null);
 
+        String resourceType = getStringCellValue(row, EXlsxConsumablePos.RESOURCE_TYPE.getColumnNumber());
+        if(master.getResourceTypes().get(resourceType) == null) {
+            ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
+            ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
+            master.getResourceTypes().put(newResourceType.getName(), ResourceTypeMapper.MAPPER.toDto(newResourceType));
+        }
+        ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
+
         String brandName = getStringCellValue(row, EXlsxConsumablePos.BRAND.getColumnNumber());
         if(master.getBrands().get(brandName) == null) {
             BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
@@ -102,13 +111,25 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
         }
         BrandDto brand = master.getBrands().get(brandName);
 
-        String resourceType = getStringCellValue(row, EXlsxConsumablePos.RESOURCE_TYPE.getColumnNumber());
-        if(master.getResourceTypes().get(resourceType) == null) {
-            ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
-            ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
-            master.getResourceTypes().put(newResourceType.getName(), ResourceTypeMapper.MAPPER.toDto(newResourceType));
-        }
-        ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
+        String name = getStringCellValue(row, EXlsxConsumablePos.NAME.getColumnNumber());
+
+        String model = getStringCellValue(row, EXlsxConsumablePos.MODEL.getColumnNumber());
+
+        String description = getStringCellValue(row, EXlsxConsumablePos.DESCRIPTION.getColumnNumber());
+
+        Float price = getFloatCellValue(row, EXlsxConsumablePos.PRICE.getColumnNumber());
+
+        LocalDate purchaseDate = getDateCellValue(row, EXlsxConsumablePos.PURCHASE_DATE.getColumnNumber());
+
+        String[] urlImages = getStringArrayCellValue(row, EXlsxConsumablePos.URL_IMAGES.getColumnNumber());
+
+        Float quantityEachItem = getFloatCellValue(row, EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber());
+
+        Float stock = getFloatCellValue(row, EXlsxConsumablePos.STOCK.getColumnNumber());
+
+        Float minStock = getFloatCellValue(row, EXlsxConsumablePos.MIN_STOCK.getColumnNumber());
+
+        EStockType stockType = EStockType.getStockTypeByName(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber()));
 
         String locationName = row.getCell(EXlsxConsumablePos.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
@@ -125,16 +146,16 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
             .barcode(barcode)
             .resourceType(resourceTypeDto)
             .brand(brand)
-            .name(getStringCellValue(row, EXlsxConsumablePos.NAME.getColumnNumber()))
-            .model(getStringCellValue(row, EXlsxConsumablePos.MODEL.getColumnNumber()))
-            .description(getStringCellValue(row, EXlsxConsumablePos.DESCRIPTION.getColumnNumber()))
-            .price(getFloatCellValue(row, EXlsxConsumablePos.PRICE.getColumnNumber()))
-            .purchaseDate(getDateCellValue(row, EXlsxConsumablePos.PURCHASE_DATE.getColumnNumber()))
-            .urlImages(getStringArrayCellValue(row, EXlsxConsumablePos.URL_IMAGES.getColumnNumber()))
-            .quantityEachItem(getFloatCellValue(row, EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber()))
-            .stock(getFloatCellValue(row, EXlsxConsumablePos.STOCK.getColumnNumber()))
-            .minStock(getFloatCellValue(row, EXlsxConsumablePos.MIN_STOCK.getColumnNumber()))
-            .stockType(EStockType.getStockTypeByName(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber())))
+            .name(name)
+            .model(model)
+            .description(description)
+            .price(price)
+            .purchaseDate(purchaseDate)
+            .urlImages(urlImages)
+            .quantityEachItem(quantityEachItem)
+            .stock(stock)
+            .minStock(minStock)
+            .stockType(stockType)
             .location(location)
             .group(group)
             .build();

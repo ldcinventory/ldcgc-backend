@@ -24,6 +24,7 @@ import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EXlsxToolPos;
 import org.ldcgc.backend.util.constants.Messages;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getDateCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getFloatCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getIntegerCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringArrayCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringCellValue;
@@ -92,14 +95,6 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
         Integer id = Optional.ofNullable(master.getTools().get(barcode)).map(ToolDto::getId).orElse(null);
 
-        String brandName = getStringCellValue(row, EXlsxToolPos.BRAND.getColumnNumber());
-        if(master.getBrands().get(brandName) == null) {
-            BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
-            Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
-            master.getBrands().put(newBrand.getName(), BrandMapper.MAPPER.toDto(newBrand));
-        }
-        BrandDto brand = master.getBrands().get(brandName);
-
         String resourceType = getStringCellValue(row, EXlsxToolPos.RESOURCE_TYPE.getColumnNumber());
         if(master.getResourceTypes().get(resourceType) == null) {
             ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
@@ -108,14 +103,44 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         }
         ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
 
+        String brandName = getStringCellValue(row, EXlsxToolPos.BRAND.getColumnNumber());
+        if(master.getBrands().get(brandName) == null) {
+            BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
+            Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
+            master.getBrands().put(newBrand.getName(), BrandMapper.MAPPER.toDto(newBrand));
+        }
+        BrandDto brand = master.getBrands().get(brandName);
+
+        String name = getStringCellValue(row, EXlsxToolPos.NAME.getColumnNumber());
+
+        String model = getStringCellValue(row, EXlsxToolPos.MODEL.getColumnNumber());
+
+        String description = getStringCellValue(row, EXlsxToolPos.DESCRIPTION.getColumnNumber());
+
+        Float weight = getFloatCellValue(row, EXlsxToolPos.WEIGHT.getColumnNumber());
+
+        EStockType stockWeightType = EStockType.getStockTypeByName(getStringCellValue(row, EXlsxToolPos.STOCK_WEIGHT_TYPE.getColumnNumber()));
+
+        Float price = getFloatCellValue(row, EXlsxToolPos.PRICE.getColumnNumber());
+
+        LocalDate purchaseDate = getDateCellValue(row, EXlsxToolPos.PURCHASE_DATE.getColumnNumber());
+
+        String[] urlImages = getStringArrayCellValue(row, EXlsxToolPos.URL_IMAGES.getColumnNumber());
+
+        Integer maintenancePeriod = getIntegerCellValue(row, EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber());
+
+        ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(getStringCellValue(row, EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()));
+
+        LocalDate lastMaintenance = getDateCellValue(row, EXlsxToolPos.LAST_MAINTENANCE.getColumnNumber());
+
+        LocalDate nextMaintenance = getDateCellValue(row, EXlsxToolPos.NEXT_MAINTENANCE.getColumnNumber());
+
         EStatus status = EStatus.getStatusByName(getStringCellValue(row, EXlsxToolPos.STATUS.getColumnNumber()));
 
         String locationName = row.getCell(EXlsxToolPos.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
             .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EXlsxToolPos.LOCATION.getColumnNumber(),
                 Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
-
-        ETimeUnit maintenanceTime = ETimeUnit.getTimeUnitByName(getStringCellValue(row, EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()));
 
         String groupName = getStringCellValue(row, EXlsxToolPos.GROUP.getColumnNumber());
         GroupDto group = Optional.ofNullable(master.getGroups().get(groupName))
@@ -125,17 +150,22 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         return ToolDto.builder()
             .id(id)
             .barcode(barcode)
-            .name(getStringCellValue(row, EXlsxToolPos.NAME.getColumnNumber()))
+            .name(name)
             .brand(brand)
-            .model(getStringCellValue(row, EXlsxToolPos.MODEL.getColumnNumber()))
+            .model(model)
             .resourceType(resourceTypeDto)
-            .description(getStringCellValue(row, EXlsxToolPos.DESCRIPTION.getColumnNumber()))
-            .urlImages(getStringArrayCellValue(row, EXlsxToolPos.URL_IMAGES.getColumnNumber()))
+            .description(description)
+            .weight(weight)
+            .stockWeightType(stockWeightType)
+            .price(price)
+            .purchaseDate(purchaseDate)
+            .urlImages(urlImages)
+            .maintenancePeriod(maintenancePeriod)
+            .maintenanceTime(maintenanceTime)
+            .lastMaintenance(lastMaintenance)
+            .nextMaintenance(nextMaintenance)
             .status(status)
             .location(location)
-            .maintenancePeriod(getIntegerCellValue(row, EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()))
-            .maintenanceTime(maintenanceTime)
-            .lastMaintenance(getDateCellValue(row, EXlsxToolPos.LAST_MAINTENANCE.getColumnNumber()))
             .group(group)
             .build();
     }

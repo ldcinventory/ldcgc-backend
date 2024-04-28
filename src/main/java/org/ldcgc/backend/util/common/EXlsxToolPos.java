@@ -8,18 +8,23 @@ import lombok.RequiredArgsConstructor;
 public enum EXlsxToolPos {
 
     BARCODE(0),
-    NAME(1),
+    RESOURCE_TYPE(1),
     BRAND(2),
-    MODEL(3),
-    RESOURCE_TYPE(4),
+    NAME(3),
+    MODEL(4),
     DESCRIPTION(5),
-    URL_IMAGES(6),
-    STATUS(7),
-    LOCATION(8),
-    MAINTENANCE_PERIOD(9),
-    MAINTENANCE_TIME(10),
-    LAST_MAINTENANCE(11),
-    GROUP(12);
+    WEIGHT(6),
+    STOCK_WEIGHT_TYPE(7),
+    PRICE(8),
+    PURCHASE_DATE(9),
+    URL_IMAGES(10),
+    MAINTENANCE_PERIOD(11),
+    MAINTENANCE_TIME(12),
+    LAST_MAINTENANCE(13),
+    NEXT_MAINTENANCE(14),
+    STATUS(15),
+    LOCATION(16),
+    GROUP(17);
 
     private final Integer columnNumber;
 }

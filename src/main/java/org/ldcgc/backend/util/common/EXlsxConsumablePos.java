@@ -7,21 +7,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum EXlsxConsumablePos {
 
-    BRAND(0),
+    BARCODE(0),
     RESOURCE_TYPE(1),
-    MIN_STOCK(2),
-    PRICE(3),
-    PURCHASE_DATE(4),
-    STOCK(5),
-    STOCK_TYPE(6),
-    QTY_EACH_ITEM(7),
-    BARCODE(8),
-    DESCRIPTION(8),
-    MODEL(10),
-    NAME(11),
-    URL_IMAGES(12),
-    GROUP(13),
-    LOCATION(14);
+    BRAND(2),
+    NAME(3),
+    MODEL(4),
+    DESCRIPTION(5),
+    PRICE(6),
+    PURCHASE_DATE(7),
+    URL_IMAGES(8),
+    QTY_EACH_ITEM(9),
+    STOCK(10),
+    MIN_STOCK(11),
+    STOCK_TYPE(12),
+    LOCATION(13),
+    GROUP(14);
 
     private final Integer columnNumber;
 }
