@@ -23,12 +23,14 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.service.users.UserService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -96,10 +98,12 @@ public class UserServiceImpl implements UserService {
         return Constructor.buildResponseObject(HttpStatus.OK, UserMapper.MAPPER.toDTO(user));
     }
 
-    public ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId) {
+    public ResponseEntity<?> listUsers(String filterString, Integer userId, Integer pageIndex, Integer size, String sortField, EOrder order) {
         if (userId != null) return getUser(userId);
 
-        Pageable pageable = PageRequest.of(pageIndex, size);
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
         Page<UserDto> pagedUsers = StringUtils.isBlank(filterString) ?
             userRepository.findAll(pageable).map(UserMapper.MAPPER::toDTO) :
             userRepository.findAllFiltered(filterString, pageable).map(UserMapper.MAPPER::toDTO);

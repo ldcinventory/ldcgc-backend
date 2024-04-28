@@ -18,7 +18,6 @@ import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -45,6 +44,10 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -117,7 +120,7 @@ public class UserControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(userService.getMyUser(Mockito.anyString())).willAnswer(
+        given(userService.getMyUser(anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
         );
 
@@ -138,7 +141,7 @@ public class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(userService.updateMyUser(Mockito.anyString(), Mockito.any(UserDto.class))).will(
+        given(userService.updateMyUser(anyString(), any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_USER)
@@ -155,7 +158,7 @@ public class UserControllerImplTest {
 
         log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(userService.deleteMyUser(Mockito.anyString()))
+        given(userService.deleteMyUser(anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_USER))
@@ -177,7 +180,7 @@ public class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(userService.createUser(Mockito.anyString(), Mockito.any(UserDto.class)))
+        given(userService.createUser(anyString(), any(UserDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
@@ -194,7 +197,7 @@ public class UserControllerImplTest {
 
         log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(userService.getUser(Mockito.anyInt()))
+        given(userService.getUser(anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
         );
 
@@ -217,9 +220,10 @@ public class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(users).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(userService.listUsers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull()))
+        given(userService.listUsers(anyString(), anyInt(), anyInt(), anyInt(), anyString(), isNull()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
+        // TODO
         mockMvc.perform(getRequest(request, ERole.ROLE_USER)
                 .param("pageIndex", "0")
                 .param("size", "5")
@@ -241,7 +245,7 @@ public class UserControllerImplTest {
         UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
-        given(userService.updateUser(Mockito.anyString(), Mockito.anyInt(), Mockito.any(UserDto.class))).will(
+        given(userService.updateUser(anyString(), anyInt(), any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")
@@ -258,7 +262,7 @@ public class UserControllerImplTest {
 
         log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(userService.deleteUser(Mockito.anyInt()))
+        given(userService.deleteUser(anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_USER, "0"))

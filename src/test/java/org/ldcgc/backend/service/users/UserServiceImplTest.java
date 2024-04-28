@@ -31,6 +31,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.UserServiceImpl;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -57,7 +58,9 @@ import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -323,7 +326,7 @@ class UserServiceImplTest {
 
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
-        ResponseEntity<?> response = userService.listUsers(null, null, null, user.getId());
+        ResponseEntity<?> response = userService.listUsers(null, user.getId(), null, null, null, null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -347,7 +350,7 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers(0, 5, null, null);
+        ResponseEntity<?> response = userService.listUsers(null, null, 0, 5, null, null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -373,7 +376,7 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers(0, 5, "x", null);
+        ResponseEntity<?> response = userService.listUsers("x", null,0, 5, null, null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
