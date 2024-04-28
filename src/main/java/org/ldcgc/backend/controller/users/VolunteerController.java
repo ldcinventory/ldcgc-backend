@@ -134,7 +134,7 @@ public interface VolunteerController {
         @Parameter(description = "Sort by any field from Volunteer class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "desc") EOrder order);
+            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
 
     @Operation(summary = "Update any volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

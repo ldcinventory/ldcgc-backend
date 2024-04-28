@@ -116,7 +116,7 @@ public interface ToolController {
         @Parameter(description = "Sort by any field of Tool class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "desc") EOrder order);
+            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
 
     @Operation(summary = "Get all tools, paginated and sorted.", description = """
         Use filterString to filter by any of:
@@ -170,7 +170,7 @@ public interface ToolController {
         @Parameter(description = "Sort by any field of the Tool class (default = id")
         @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-        @RequestParam(required = false, defaultValue = "desc") EOrder order);
+        @RequestParam(required = false, defaultValue = "DESC") EOrder order);
 
     @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

@@ -127,7 +127,7 @@ public interface ConsumableController {
         @Parameter(description = "Sort by any field from Consumable class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "desc") EOrder order);
+            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
 
     @Operation(summary = "List consumables", description = """
         Get all consumables, paginated and sorted. You can also include 6 filters:
@@ -163,7 +163,7 @@ public interface ConsumableController {
         @Parameter(description = "Sort by any field from Consumable class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "desc") EOrder order);
+            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
 
     @Operation(summary = "List consumable registers and filter by just a filterString", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
