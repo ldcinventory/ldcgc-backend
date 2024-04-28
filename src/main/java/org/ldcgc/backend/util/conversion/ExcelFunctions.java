@@ -1,5 +1,6 @@
 package org.ldcgc.backend.util.conversion;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -128,6 +129,8 @@ public class ExcelFunctions {
     public static LocalDate getDateCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
+
+        if (StringUtils.isBlank(cell.getStringCellValue())) return null;
 
         if (excelCellNotValid(LocalDate.now(), cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
