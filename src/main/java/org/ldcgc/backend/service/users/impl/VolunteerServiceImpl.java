@@ -15,6 +15,7 @@ import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -69,7 +70,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField) {
+    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, Boolean isActive, Integer pageIndex, Integer size, String sortField, EOrder order) {
 
         if (builderAssistantId != null)
             return Constructor.buildResponseMessageObject(
@@ -77,7 +78,9 @@ public class VolunteerServiceImpl implements VolunteerService {
                 String.format(Messages.Info.VOLUNTEER_FOUND, builderAssistantId),
                 PaginationDetails.pagingOneObject(VolunteerMapper.MAPPER.toDto(getVolunteerFromDB(builderAssistantId))));
 
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
         Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) ?
             volunteerRepository.findAll(pageable).map(VolunteerMapper.MAPPER::toDto) :
             volunteerRepository.findAllFiltered(filterString, pageable).map(VolunteerMapper.MAPPER::toDto);

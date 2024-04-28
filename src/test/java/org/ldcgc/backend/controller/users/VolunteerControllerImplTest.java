@@ -49,6 +49,10 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -178,9 +182,11 @@ public class VolunteerControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(volunteers).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(volunteerService.listVolunteers(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.isNull(), Mockito.anyString()))
+        // String builderAssistantId, String filterString, Boolean isActive, Integer size, Integer pageIndex, String sortField, EOrder order
+        given(volunteerService.listVolunteers(anyString(), anyString(), anyBoolean(), anyInt(), anyInt(), anyString(), isNull()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
+        // TODO
         mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER)
                 .param("pageIndex", "0")
                 .param("size", "5")
@@ -235,7 +241,7 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(volunteerService.uploadVolunteers(Mockito.anyInt(), Mockito.any(MultipartFile.class)))
+        given(volunteerService.uploadVolunteers(anyInt(), Mockito.any(MultipartFile.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 10)));
 
         MockMultipartFile file = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());

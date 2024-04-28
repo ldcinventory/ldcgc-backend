@@ -185,7 +185,7 @@ class VolunteerServiceImplTest {
 
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, builderAssistantId, "builderAssistantId");
+        ResponseEntity<?> response = volunteerService.listVolunteers(builderAssistantId, null, null, null, null, "builderAssistantId", null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -208,7 +208,7 @@ class VolunteerServiceImplTest {
 
         doReturn(volunteerPage).when(volunteerRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, null, null, "builderAssistantId");
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, 0, 5, "builderAssistantId", null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -231,7 +231,7 @@ class VolunteerServiceImplTest {
 
         doReturn(volunteerPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, "x", null, "builderAssistantId");
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, "x", null, 0, 5, "builderAssistantId", null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();

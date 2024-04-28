@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.VolunteerController;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.service.users.VolunteerService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +25,16 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.getVolunteer(builderAssistantId);
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField) {
-        return volunteerService.listVolunteers(pageIndex, size, filterString, builderAssistantId, sortField);
-    }
-
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto) {
         return volunteerService.createVolunteer(volunteerDto);
     }
 
-    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto vovolunteerDto) {
-        return volunteerService.updateVolunteer(builderAssistantId, vovolunteerDto);
+    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, Boolean isActive, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return volunteerService.listVolunteers(builderAssistantId, filterString, isActive, pageIndex, size, sortField, order);
+    }
+
+    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteerDto) {
+        return volunteerService.updateVolunteer(builderAssistantId, volunteerDto);
     }
 
     public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
