@@ -400,7 +400,7 @@ public class InitializationData {
             .price(new Faker().random().nextFloat())
             .purchaseDate(getRandomDate(false))
             .urlImages(getRandomURLs())
-            .stock(getRandomFloatFromRange(1,100))
+            .stock(new Random().nextBoolean() ? getRandomFloatFromRange(1,100) : 0.0f)
             .stockType(getRandomEnum(EStockType.class))
             .minStock(getRandomFloatFromRange(0,100))
             .quantityEachItem(getRandomFloatFromRange(1,100))
@@ -761,6 +761,7 @@ public class InitializationData {
         });
     }
 
+    // null registers
     private void createNullRegisters() {
         userRepository.saveAndFlush(User.builder()
             .email("[ null user ]")
