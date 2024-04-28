@@ -415,6 +415,8 @@ public class InitializationData {
             .lastName(String.format("%s %s", new Faker().name().lastName(), new Faker().name().lastName()))
             .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
             .availability(getRandomAvailability())
+            .isActive(new Random().nextBoolean())
+            .group(groupRepository.getRandomGroup())
             .build();
     }
 
