@@ -39,25 +39,30 @@ public class MultipartFileFactory {
             for (ToolDto toolDto : toolsDto) {
                 row = sheet.createRow(sheet.getLastRowNum() + 1);
                 row.createCell(EXlsxToolPos.BARCODE.getColumnNumber()).setCellValue(toolDto.getBarcode());
-                row.createCell(EXlsxToolPos.NAME.getColumnNumber()).setCellValue(toolDto.getName());
-                row.createCell(EXlsxToolPos.BRAND.getColumnNumber()).setCellValue(toolDto.getBrand().getName());
-                row.createCell(EXlsxToolPos.MODEL.getColumnNumber()).setCellValue(toolDto.getModel());
                 row.createCell(EXlsxToolPos.RESOURCE_TYPE.getColumnNumber()).setCellValue(toolDto.getResourceType().getName());
+                row.createCell(EXlsxToolPos.BRAND.getColumnNumber()).setCellValue(toolDto.getBrand().getName());
+                row.createCell(EXlsxToolPos.NAME.getColumnNumber()).setCellValue(toolDto.getName());
+                row.createCell(EXlsxToolPos.MODEL.getColumnNumber()).setCellValue(toolDto.getModel());
                 row.createCell(EXlsxToolPos.DESCRIPTION.getColumnNumber()).setCellValue(toolDto.getDescription());
+                row.createCell(EXlsxToolPos.WEIGHT.getColumnNumber()).setCellValue(toolDto.getWeight());
+                row.createCell(EXlsxToolPos.STOCK_WEIGHT_TYPE.getColumnNumber()).setCellValue(toolDto.getStockWeightType().name());
+                row.createCell(EXlsxToolPos.PRICE.getColumnNumber()).setCellValue(toolDto.getPrice());
+                row.createCell(EXlsxToolPos.PURCHASE_DATE.getColumnNumber()).setCellValue(toolDto.getPurchaseDate());
                 row.createCell(EXlsxToolPos.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", toolDto.getUrlImages()));
-                row.createCell(EXlsxToolPos.STATUS.getColumnNumber()).setCellValue(toolDto.getStatus().getDesc());
-                row.createCell(EXlsxToolPos.LOCATION.getColumnNumber()).setCellValue(toolDto.getLocation().getName());
                 row.createCell(EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(toolDto.getMaintenancePeriod());
                 row.createCell(EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()).setCellValue(toolDto.getMaintenanceTime().getDesc());
                 row.createCell(EXlsxToolPos.LAST_MAINTENANCE.getColumnNumber()).setCellValue(toolDto.getLastMaintenance());
+                row.createCell(EXlsxToolPos.NEXT_MAINTENANCE.getColumnNumber()).setCellValue(toolDto.getNextMaintenance());
+                row.createCell(EXlsxToolPos.STATUS.getColumnNumber()).setCellValue(toolDto.getStatus().getDesc());
+                row.createCell(EXlsxToolPos.LOCATION.getColumnNumber()).setCellValue(toolDto.getLocation().getName());
                 row.createCell(EXlsxToolPos.GROUP.getColumnNumber()).setCellValue(toolDto.getGroup().getName());
             }
 
             switch (wrongPosition) {
-                case BARCODE, NAME, MODEL, DESCRIPTION, URL_IMAGES, MAINTENANCE_TIME ->
+                case BARCODE, NAME, MODEL, DESCRIPTION, WEIGHT, PRICE, URL_IMAGES, MAINTENANCE_TIME ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
                         .ifPresent(c -> c.setCellFormula("1/0")));
-                case BRAND,RESOURCE_TYPE, STATUS, LOCATION, MAINTENANCE_PERIOD, LAST_MAINTENANCE, GROUP ->
+                case RESOURCE_TYPE, BRAND, STOCK_WEIGHT_TYPE, PURCHASE_DATE, MAINTENANCE_PERIOD, LAST_MAINTENANCE, NEXT_MAINTENANCE, STATUS, LOCATION, GROUP ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
                         .ifPresent(c -> c.setCellValue("mocked " + wrongPosition.name().toLowerCase())));
                 case null -> log.info("No wrong position");
