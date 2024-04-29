@@ -1,10 +1,12 @@
 package org.ldcgc.backend.service.resources.tool;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
@@ -19,6 +21,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.impl.ToolServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import uk.co.jemos.podam.api.DefaultClassInfoStrategy;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
@@ -47,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
@@ -67,6 +73,16 @@ class ToolServiceImplTest {
     @Mock private GroupRepository groupRepository;
 
     private final PodamFactory factory = new PodamFactoryImpl();
+
+    @BeforeEach
+    void setup() {
+        DefaultClassInfoStrategy classInfoStrategy = DefaultClassInfoStrategy.getInstance();
+        classInfoStrategy.addExcludedField(Tool.class, "location");
+        classInfoStrategy.addExcludedField(Group.class, "location");
+        classInfoStrategy.addExcludedField(Maintenance.class, "tool");
+        classInfoStrategy.addExcludedField(Maintenance.class, "volunteer");
+        factory.setClassStrategy(classInfoStrategy);
+    }
 
     @Test
     void getToolShouldReturnResponseEntity() {
@@ -252,19 +268,18 @@ class ToolServiceImplTest {
 
     @Test
     void getAllToolsShouldReturnPage() {
-        String sortField = "name";
-
         Page<Tool> tools = new PageImpl<>(factory.manufacturePojo(List.class, Tool.class));
 
-        doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        doReturn(tools).when(toolRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = toolService.getAllTools(null, null, null, null, null, null, null, null, 0, 25, sortField, null);
+        ResponseEntity<?> response = toolService.getAllTools(null, null, null, null, null, null, null, null, 0, 25, "name", EOrder.DESC);
 
-        verify(toolRepository, atMostOnce()).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        verify(toolRepository, atMostOnce()).findAll(any(Pageable.class));
 
         assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, ((PaginationDetails) responseBody.getData()).getElements().getFirst().getClass());
+
     }
 
     @Test

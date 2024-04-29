@@ -40,7 +40,7 @@ public enum EStockType implements EnumMethods {
 
     public static EStockType getStockTypeByName(String name) {
         return Arrays.stream(EStockType.values())
-            .filter(eStockType -> eStockType.getDesc().equals(name))
+            .filter(eStockType -> eStockType.name().equals(name))
             .findFirst()
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, name)));
     }

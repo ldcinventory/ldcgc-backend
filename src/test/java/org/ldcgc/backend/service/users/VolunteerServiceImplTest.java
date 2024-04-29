@@ -18,6 +18,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.VolunteerServiceImpl;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
@@ -208,7 +209,7 @@ class VolunteerServiceImplTest {
 
         doReturn(volunteerPage).when(volunteerRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, 0, 5, "builderAssistantId", null);
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, 0, 5, "builderAssistantId", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -231,7 +232,7 @@ class VolunteerServiceImplTest {
 
         doReturn(volunteerPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(null, "x", null, 0, 5, "builderAssistantId", null);
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, "x", null, 0, 5, "builderAssistantId", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();

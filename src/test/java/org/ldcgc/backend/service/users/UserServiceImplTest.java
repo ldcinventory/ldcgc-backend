@@ -31,6 +31,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.UserServiceImpl;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -347,7 +348,7 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers(null, null, 0, 5, null, null);
+        ResponseEntity<?> response = userService.listUsers(null, null, 0, 5, "id", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -373,7 +374,7 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers("x", null,0, 5, null, null);
+        ResponseEntity<?> response = userService.listUsers("x", null,0, 5, "id", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();

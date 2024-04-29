@@ -102,9 +102,9 @@ public class ToolServiceImpl implements ToolService {
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
             ? Sort.by(sortField).descending()
             : Sort.by(sortField).ascending());
-
-        Page<ToolDto> pagedTools = toolRepository.findAllFiltered(resourceType, brand, name, model, description, barcode, location, statusId, pageable)
-                .map(ToolMapper.MAPPER::toDto);
+        Page<ToolDto> pagedTools = ObjectUtils.allNull(resourceType, brand, name, model, description, barcode, location, statusId)
+            ? toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+            : toolRepository.findAllFiltered(resourceType, brand, name, model, description, barcode, location, statusId, pageable).map(ToolMapper.MAPPER::toDto);
 
         if (pageIndex > pagedTools.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);

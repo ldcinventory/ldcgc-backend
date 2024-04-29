@@ -16,6 +16,7 @@ import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.VolunteerService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
@@ -49,6 +50,7 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -159,7 +161,7 @@ public class VolunteerControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.VOLUNTEER_CREATED).data(mockedVolunteer).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
-        given(volunteerService.createVolunteer(Mockito.any(VolunteerDto.class)))
+        given(volunteerService.createVolunteer(any(VolunteerDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
         mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
@@ -182,16 +184,15 @@ public class VolunteerControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(volunteers).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        // String builderAssistantId, String filterString, Boolean isActive, Integer size, Integer pageIndex, String sortField, EOrder order
-        given(volunteerService.listVolunteers(anyString(), anyString(), anyBoolean(), anyInt(), anyInt(), anyString(), isNull()))
+        given(volunteerService.listVolunteers(isNull(), anyString(), isNull(), anyInt(), anyInt(), anyString(), any(EOrder.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        // TODO
         mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER)
+                .param("filterString", "ad")
                 .param("pageIndex", "0")
                 .param("size", "5")
-                .param("filterString", "ad")
-                .param("volunteerId", "")
+                .param("sortField", "id")
+                .param("order", "DESC")
             )
             .andDo(print())
             .andExpect(status().isOk())
@@ -208,7 +209,7 @@ public class VolunteerControllerImplTest {
         UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
-        given(volunteerService.updateVolunteer(Mockito.anyString(), Mockito.any(VolunteerDto.class))).will(
+        given(volunteerService.updateVolunteer(Mockito.anyString(), any(VolunteerDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
         mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")
@@ -241,7 +242,7 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(volunteerService.uploadVolunteers(anyInt(), Mockito.any(MultipartFile.class)))
+        given(volunteerService.uploadVolunteers(anyInt(), any(MultipartFile.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 10)));
 
         MockMultipartFile file = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());

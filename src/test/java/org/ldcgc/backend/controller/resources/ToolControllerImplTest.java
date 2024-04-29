@@ -176,7 +176,7 @@ class ToolControllerImplTest {
     void getAllShouldCallService() {
         toolController.getAllTools(null, null, null, null, null, null, null, null, 0, 25, "name", null);
 
-        verify(toolService, atMostOnce()).getAllTools(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), 0, 25, "name", isNull());
+        verify(toolService, atMostOnce()).getAllTools(null, null, null, null, null, null, null, null, 0, 25, "name", null);
     }
 
     @Test
