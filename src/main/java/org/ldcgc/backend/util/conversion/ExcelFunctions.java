@@ -1,6 +1,5 @@
 package org.ldcgc.backend.util.conversion;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -60,18 +59,19 @@ public class ExcelFunctions {
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
 
         try {
-            if (cellType.equals(FORMULA))
-                checkCellFormula(cell);
-
             if (excelCellNotValid("", cellType))
                 return ((XSSFCell) cell).getRawValue();
+
+            return switch (cellType) {
+                case FORMULA -> { checkCellFormula(cell); yield cell.getStringCellValue(); }
+                default -> cell.getStringCellValue();
+            };
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
         }
 
-        return cell.getStringCellValue();
     }
 
     public static String[] getStringArrayCellValue(Row row, Integer columnNumber) {
@@ -88,18 +88,19 @@ public class ExcelFunctions {
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
         try {
-            if (cellType.equals(FORMULA))
-                checkCellFormula(cell);
+            return switch (cellType) {
+                case STRING  -> Integer.parseInt(cell.getStringCellValue());
+                case NUMERIC -> (int) cell.getNumericCellValue();
+                case FORMULA -> { checkCellFormula(cell); yield (int) cell.getNumericCellValue(); }
+                default -> null;
+            };
 
-            if (cellType.equals(STRING))
-                return Integer.valueOf(cell.getStringCellValue());
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
         }
 
-        return (int) cell.getNumericCellValue();
     }
 
     public static Float getFloatCellValue(Row row, Integer columnNumber) {
@@ -112,25 +113,23 @@ public class ExcelFunctions {
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
 
         try {
-            if (cellType.equals(FORMULA))
-                checkCellFormula(cell);
-
-            if (cellType.equals(STRING))
-                return Float.parseFloat(cell.getStringCellValue());
+            return switch (cellType) {
+                case STRING  -> Float.parseFloat(cell.getStringCellValue());
+                case NUMERIC -> (float) cell.getNumericCellValue();
+                case FORMULA -> { checkCellFormula(cell); yield (float) cell.getNumericCellValue(); }
+                default -> null;
+            };
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
         }
 
-        return (float) cell.getNumericCellValue();
     }
 
     public static LocalDate getDateCellValue(Row row, Integer columnNumber) {
         Cell cell = row.getCell(columnNumber);
         CellType cellType = cell.getCellType();
-
-        if (StringUtils.isBlank(cell.getStringCellValue())) return null;
 
         if (excelCellNotValid(LocalDate.now(), cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
@@ -138,26 +137,26 @@ public class ExcelFunctions {
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
 
         try {
-            if (cellType.equals(FORMULA))
-                checkCellFormula(cell);
-
-            if (cellType.equals(STRING))
-                return stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
+            return switch (cellType) {
+                case STRING  -> stringToLocalDate(cell.getStringCellValue(), "yyyy-MM-dd");
+                case NUMERIC -> dateToLocalDate(cell.getDateCellValue());
+                case FORMULA -> { checkCellFormula(cell); yield dateToLocalDate(cell.getDateCellValue()); }
+                default -> null;
+            };
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
                 Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
         }
 
-        return dateToLocalDate(cell.getDateCellValue());
     }
 
     private static boolean excelCellNotValid(Object cellClass, CellType cellType) {
         return !switch (cellClass) {
-            case String ignored -> compareObjects(cellType, STRING, FORMULA, BLANK);
-            case Integer ignored -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
-            case Float ignored -> compareObjects(cellType, NUMERIC, STRING, FORMULA);
-            case LocalDate ignored -> compareObjects(cellType, STRING, FORMULA, BLANK);
+            case String ignored    -> compareObjects(cellType, STRING, FORMULA, BLANK);
+            case Integer ignored   -> compareObjects(cellType, NUMERIC, STRING, FORMULA, BLANK);
+            case Float ignored     -> compareObjects(cellType, NUMERIC, STRING, FORMULA, BLANK);
+            case LocalDate ignored -> compareObjects(cellType, STRING, NUMERIC, FORMULA, BLANK);
             default -> false;
         };
     }
