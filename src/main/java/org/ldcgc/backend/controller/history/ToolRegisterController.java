@@ -86,7 +86,7 @@ public interface ToolRegisterController {
         @Parameter(description = "Sort by any field desired (see fields of ToolRegister class) (default = registerFrom)")
             @RequestParam(required = false, defaultValue = "registerFrom") String sortString,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "DESC") EOrder order
+            @RequestParam(required = false, defaultValue = "desc") EOrder order
     );
 
     @Operation(summary = "Update a register. Insert inRegistration to not null to CLOSE a registration (if it was opened)")

@@ -98,7 +98,7 @@ public interface ConsumableRegisterController {
         @Parameter(description = "Sort by any field from ConsumableRegister class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Create a consumable register.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

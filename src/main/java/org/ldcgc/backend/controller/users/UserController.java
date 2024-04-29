@@ -182,7 +182,7 @@ public interface UserController {
         @Parameter(description = "Sort by any field desired from User class")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Update any user (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

@@ -116,7 +116,7 @@ public interface ToolController {
         @Parameter(description = "Sort by any field of Tool class (default = id)")
             @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-            @RequestParam(required = false, defaultValue = "DESC") EOrder order);
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Get all tools, paginated and sorted.", description = """
         Use filterString to filter by any of:
@@ -160,17 +160,17 @@ public interface ToolController {
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> getAllToolsLoose(
         @Parameter(description = "A string that filters by any field of the Tool class")
-        @RequestParam(required = false) String filterString,
+            @RequestParam(required = false) String filterString,
         @Parameter(description = "Status of the tool")
-        @RequestParam(required = false) String status,
+            @RequestParam(required = false) String status,
         @Parameter(description = "Page index (default = 0)")
-        @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
-        @RequestParam(required = false, defaultValue = "25") Integer size,
+            @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Sort by any field of the Tool class (default = id")
-        @RequestParam(required = false, defaultValue = "id") String sortField,
+            @RequestParam(required = false, defaultValue = "id") String sortField,
         @Parameter(description = "Sort asc desc (default = desc)")
-        @RequestParam(required = false, defaultValue = "DESC") EOrder order);
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Create a new tool", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
