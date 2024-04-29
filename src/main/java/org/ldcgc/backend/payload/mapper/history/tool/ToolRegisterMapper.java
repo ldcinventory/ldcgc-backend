@@ -16,6 +16,9 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
+import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
+import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
+
 
 @Mapper(uses = ToolMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolRegisterMapper {
@@ -23,7 +26,7 @@ public interface ToolRegisterMapper {
 
     @Mapping(target = "toolName", source = "tool.name")
     @Mapping(target = "toolBarcode", source = "tool.barcode")
-    @Mapping(target = "toolUrlImages", source = "tool.urlImages")
+    @Mapping(target = "toolUrlImages", source = "tool", qualifiedByName = "mapToolRegisterUrlImagesToDto")
     @Mapping(target = "volunteerName", source = "volunteer.name")
     @Mapping(target = "volunteerLastName", source = "volunteer.lastName")
     @Mapping(target = "volunteerBuilderAssistantId", source = "volunteer.builderAssistantId")
@@ -54,4 +57,10 @@ public interface ToolRegisterMapper {
                 .builderAssistantId(volunteerBuilderAssistantId)
                 .build();
     }
+
+    @Named("mapToolRegisterUrlImagesToDto")
+    static String[] mapToolRegisterUrlImagesToDto(Tool tool){
+        return mapStringArrayWithPrefix(tool.getUrlImages(), DRIVE_IMAGES_URL);
+    }
+
 }

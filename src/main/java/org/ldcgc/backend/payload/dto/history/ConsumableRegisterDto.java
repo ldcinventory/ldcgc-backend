@@ -14,15 +14,16 @@ public class ConsumableRegisterDto {
 
     private Integer id;
     @NotNull private String consumableBarcode;
-    @NotNull private String volunteerBAId;
+    private String consumableName;
+    private String[] consumableUrlImages;
+    @NotNull private String volunteerBuilderAssistantId;
     @NotNull private String volunteerName;
     @NotNull private String volunteerLastName;
-    private LocalDateTime registerFrom;
-    private LocalDateTime registerTo;
     @NotNull private Float stockAmountRequest;
     private Float stockAmountReturn;
-    private String consumableName;
     private String consumableStockType;
+    @NotNull private LocalDateTime registerFrom;
+    private LocalDateTime registerTo;
     private Boolean closedRegister;
     private boolean processingStockChanges;
 

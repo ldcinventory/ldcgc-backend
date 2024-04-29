@@ -61,7 +61,7 @@ public class MockedResources {
             .volunteerName(new Faker().name().firstName())
             .volunteerLastName(new Faker().name().lastName())
             .consumableBarcode(getRandomAlphaNumeric(8))
-            .volunteerBAId(getRandomAlphaNumeric(8))
+            .volunteerBuilderAssistantId(getRandomAlphaNumeric(8))
             .registerFrom(timeIn)
             .registerTo(timeOut)
             .stockAmountRequest(amountRequest)

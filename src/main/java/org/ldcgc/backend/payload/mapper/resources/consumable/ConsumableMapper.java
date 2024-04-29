@@ -22,17 +22,8 @@ public interface ConsumableMapper {
     @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "resourceType.locked", ignore = true)
     @Mapping(target = "brand.locked", qualifiedByName = "mapBooleanToNull")
-    @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapUrlImagesToDto")
+    @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapConsumableUrlImagesToDto")
     ConsumableDto toDto(Consumable consumable);
-
-    @Named("mapUrlImagesToDto")
-    static String[] mapUrlImagesToDto(String[] urlImages){
-        if(urlImages == null) return null;
-
-        return Arrays.stream(urlImages)
-            .map(url -> String.format(Google.DRIVE_IMAGES_URL, url))
-            .toArray(String[]::new);
-    }
 
     @Named("mapBooleanToNull")
     static Boolean mapBooleanToNull(Boolean prop) {
@@ -59,5 +50,14 @@ public interface ConsumableMapper {
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "group", ignore = true)
     void update(ConsumableDto from, @MappingTarget Consumable to);
+
+    @Named("mapConsumableUrlImagesToDto")
+    static String[] mapConsumableUrlImagesToDto(String[] urlImages){
+        if(urlImages == null) return null;
+
+        return Arrays.stream(urlImages)
+            .map(url -> String.format(Google.DRIVE_IMAGES_URL, url))
+            .toArray(String[]::new);
+    }
 
 }

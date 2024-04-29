@@ -3,7 +3,6 @@ package org.ldcgc.backend.payload.mapper.resources.tool;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
-import org.ldcgc.backend.util.constants.Google;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -11,8 +10,10 @@ import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
+import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
 
 @Mapper(uses = LocationMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ToolMapper {
@@ -22,16 +23,12 @@ public interface ToolMapper {
     @Mapping(target = "location.locations", ignore = true)
     @Mapping(target = "location.parent.locations", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
-    @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapUrlImagesToDto")
+    @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapToolUrlImagesToDto")
     ToolDto toDto(Tool tool);
 
-    @Named("mapUrlImagesToDto")
-    static String[] mapUrlImagesToDto(String[] urlImages){
-        if(urlImages == null) return null;
-
-        return Arrays.stream(urlImages)
-            .map(url -> String.format(Google.DRIVE_IMAGES_URL, url))
-            .toArray(String[]::new);
+    @Named("mapToolUrlImagesToDto")
+    static String[] mapToolUrlImagesToDto(String[] urlImages){
+        return mapStringArrayWithPrefix(urlImages, DRIVE_IMAGES_URL);
     }
 
     static ToolDto cleanProps(ToolDto toolDto) {

@@ -73,8 +73,8 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
         validateCreateConsumableRegister(consumableRegisterDto, consumableRegisters, consumable);
 
-        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBAId())
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
+        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBuilderAssistantId())
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBuilderAssistantId())));
 
         ConsumableRegister newConsumableRegister = ConsumableRegisterMapper.MAPPER.toEntity(consumableRegisterDto);
 
@@ -108,7 +108,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         if(!CollectionUtils.isEmpty(consumableRegisters) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(),
                                 consumableRegisterDto.getStockAmountReturn())) {
-            if (consumableRegisters.stream().anyMatch(cr -> cr.getVolunteer().getBuilderAssistantId().equals(consumableRegisterDto.getVolunteerBAId())))
+            if (consumableRegisters.stream().anyMatch(cr -> cr.getVolunteer().getBuilderAssistantId().equals(consumableRegisterDto.getVolunteerBuilderAssistantId())))
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED);
 
             // check
@@ -164,11 +164,11 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
                     String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBarcode())));
 
         Volunteer volunteer =
-            consumableRegisterDto.getVolunteerBAId().equals(updateConsumableRegister.getVolunteer().getBuilderAssistantId())
+            consumableRegisterDto.getVolunteerBuilderAssistantId().equals(updateConsumableRegister.getVolunteer().getBuilderAssistantId())
             ? updateConsumableRegister.getVolunteer()
-            : volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBAId())
+            : volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBuilderAssistantId())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                    String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
+                    String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBuilderAssistantId())));
 
         validateUpdateConsumableRegister(consumableRegisterDto, updateConsumableRegister, consumable);
 

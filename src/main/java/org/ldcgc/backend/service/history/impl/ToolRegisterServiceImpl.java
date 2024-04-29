@@ -49,8 +49,8 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         else if (volunteers.size() > 1)
             throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS, builderAssistantId));
 
-        Tool tool = toolRepository.findFirstByBarcode(toolRegisterDto.getToolBarcode())
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_TOOL_NOT_FOUND));
+        Tool tool = toolRepository.findFirstByBarcode(toolRegisterDto.getToolBarcode()).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_TOOL_NOT_FOUND));
 
         if (!tool.getStatus().equals(EStatus.AVAILABLE))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
@@ -72,20 +72,21 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
                 .map(ToolRegisterMapper.MAPPER::toDto);
 
         if (pageIndex > pagedToolRegisters.getTotalPages())
-            throw new RequestException(HttpStatus.BAD_REQUEST, org.ldcgc.backend.util.constants.Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
 
         return Constructor.buildResponseMessageObject(
-                HttpStatus.OK,
-                Messages.Info.TOOL_REGISTER_LISTED.formatted(pagedToolRegisters.getTotalElements()),
-                PaginationDetails.fromPaging(pageable, pagedToolRegisters));
+            HttpStatus.OK,
+            Messages.Info.TOOL_REGISTER_LISTED.formatted(pagedToolRegisters.getTotalElements()),
+            PaginationDetails.fromPaging(pageable, pagedToolRegisters));
     }
 
     public ResponseEntity<?> updateToolRegister(Integer registerId, ToolRegisterDto registerDto) {
-        ToolRegister register = toolRegisterRepository.findById(registerId)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+        ToolRegister register = toolRegisterRepository.findById(registerId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
 
         if (!register.getTool().getBarcode().equals(registerDto.getToolBarcode()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BARCODE.formatted(registerDto.getToolBarcode()));
+
         if (!register.getVolunteer().getBuilderAssistantId().equals(registerDto.getVolunteerBuilderAssistantId()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID.formatted(registerDto.getVolunteerBuilderAssistantId()));
 
@@ -96,66 +97,74 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
 
         return Constructor.buildResponseMessageObject(
-                HttpStatus.OK,
-                Messages.Info.TOOL_REGISTER_UPDATED,
-                registerDto
+            HttpStatus.OK,
+            Messages.Info.TOOL_REGISTER_UPDATED,
+            ToolRegisterMapper.MAPPER.toDto(register)
         );
     }
 
     public ResponseEntity<?> getToolRegister(Integer registerId) {
-        ToolRegister register = toolRegisterRepository.findById(registerId)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+        ToolRegister register = toolRegisterRepository.findById(registerId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
 
         return Constructor.buildResponseMessageObject(
-                HttpStatus.OK,
-                Messages.Info.TOOL_REGISTER_FOUND,
-                register
+            HttpStatus.OK,
+            Messages.Info.TOOL_REGISTER_FOUND,
+            ToolRegisterMapper.MAPPER.toDto(register)
         );
     }
 
     public ResponseEntity<?> deleteToolRegister(Integer registerId) {
-        ToolRegister register = toolRegisterRepository.findById(registerId)
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
+        ToolRegister register = toolRegisterRepository.findById(registerId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
 
         toolRegisterRepository.delete(register);
         toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
 
         return Constructor.buildResponseMessage(
-                HttpStatus.OK,
-                Messages.Info.TOOL_REGISTER_DELETED
+            HttpStatus.OK,
+            Messages.Info.TOOL_REGISTER_DELETED
         );
     }
 
     public ResponseEntity<?> createMultipleToolRegisters(List<ToolRegisterDto> toolRegistersDto) {
         List<String> barcodes = toolRegistersDto.stream()
-                .map(ToolRegisterDto::getToolBarcode)
-                .distinct()
-                .toList();
+            .map(ToolRegisterDto::getToolBarcode)
+            .distinct()
+            .toList();
         if (barcodes.size() != toolRegistersDto.size())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_REPEATED_TOOLS);
 
         List<Tool> tools = toolRepository.findAllByBarcodeIn(barcodes);
         if (tools.size() != barcodes.size())
-            throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_NOT_FOUND_BARCODE
-                    .formatted(barcodes.stream().filter(b -> tools.stream().noneMatch(t -> t.getBarcode().equals(b))).findFirst().orElse(StringUtils.EMPTY)));
+            throw new RequestException(HttpStatus.NOT_FOUND,
+                Messages.Error.TOOL_NOT_FOUND_BARCODE.formatted(barcodes.stream()
+                    .filter(b -> tools.stream().noneMatch(t -> t.getBarcode().equals(b)))
+                    .findFirst()
+                    .orElse(StringUtils.EMPTY)
+                ));
 
         if (tools.stream().anyMatch(tool -> !tool.getStatus().equals(EStatus.AVAILABLE)))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
         List<String> builderAssistantIds = toolRegistersDto.stream()
-                .map(ToolRegisterDto::getVolunteerBuilderAssistantId)
-                .distinct()
-                .toList();
+            .map(ToolRegisterDto::getVolunteerBuilderAssistantId)
+            .distinct()
+            .toList();
         List<Volunteer> volunteers = volunteerRepository.findAllByBuilderAssistantIdIn(builderAssistantIds);
         if (builderAssistantIds.size() != volunteers.size())
-            throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_BAID_NOT_FOUND
-                    .formatted(builderAssistantIds.stream().filter(b -> volunteers.stream().noneMatch(t -> t.getBuilderAssistantId().equals(b))).findFirst().orElse(StringUtils.EMPTY)));
+            throw new RequestException(HttpStatus.NOT_FOUND,
+                Messages.Error.VOLUNTEER_BAID_NOT_FOUND.formatted(builderAssistantIds.stream()
+                    .filter(b -> volunteers.stream().noneMatch(t -> t.getBuilderAssistantId().equals(b)))
+                    .findFirst()
+                    .orElse(StringUtils.EMPTY)
+                ));
 
         List<ToolRegister> registers = toolRegistersDto.stream()
-                .map(ToolRegisterMapper.MAPPER::toMo)
-                .map(toolRegister -> addTool(toolRegister, tools))
-                .map(toolRegister -> addVolunteer(toolRegister, volunteers))
-                .toList();
+            .map(ToolRegisterMapper.MAPPER::toMo)
+            .map(toolRegister -> addTool(toolRegister, tools))
+            .map(toolRegister -> addVolunteer(toolRegister, volunteers))
+            .toList();
 
         toolRegisterRepository.saveAllAndFlush(registers);
         tools.forEach(tool -> tool.setStatus(EStatus.NOT_AVAILABLE));
@@ -166,22 +175,23 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
 
     private static ToolRegister addTool(ToolRegister toolRegister, List<Tool> tools) {
         return toolRegister.toBuilder()
-                .tool(tools.stream()
-                        .filter(tool -> tool.getBarcode().equals(toolRegister.getTool().getBarcode()))
-                        .findFirst()
-                        .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_NOT_FOUND_BARCODE
-                                .formatted(toolRegister.getTool().getBarcode()))
-                        ))
-                .build();
+            .tool(tools.stream()
+                .filter(tool -> tool.getBarcode().equals(toolRegister.getTool().getBarcode()))
+                .findFirst()
+                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST,
+                    Messages.Error.TOOL_NOT_FOUND_BARCODE.formatted(toolRegister.getTool().getBarcode()))
+                ))
+            .build();
     }
+
     private static ToolRegister addVolunteer(ToolRegister toolRegister, List<Volunteer> volunteers) {
         return toolRegister.toBuilder()
-                .volunteer(volunteers.stream()
-                        .filter(volunteer -> volunteer.getBuilderAssistantId().equals(toolRegister.getVolunteer().getBuilderAssistantId()))
-                        .findFirst()
-                        .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.VOLUNTEER_BAID_NOT_FOUND
-                                .formatted(toolRegister.getVolunteer().getBuilderAssistantId()))
-                        ))
-                .build();
+            .volunteer(volunteers.stream()
+                .filter(volunteer -> volunteer.getBuilderAssistantId().equals(toolRegister.getVolunteer().getBuilderAssistantId()))
+                .findFirst()
+                .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST,
+                    Messages.Error.VOLUNTEER_BAID_NOT_FOUND.formatted(toolRegister.getVolunteer().getBuilderAssistantId()))
+                ))
+            .build();
     }
 }

@@ -2,6 +2,7 @@ package org.ldcgc.backend.payload.mapper.history;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
+import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
@@ -14,6 +15,9 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
+import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
+import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
+
 @Mapper(uses = { ConsumableMapper.class, VolunteerMapper.class },
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ConsumableRegisterMapper {
@@ -21,12 +25,13 @@ public interface ConsumableRegisterMapper {
     ConsumableRegisterMapper MAPPER = Mappers.getMapper(ConsumableRegisterMapper.class);
 
     @Mapping(target = "consumableBarcode", source = "consumable.barcode")
-    @Mapping(target = "volunteerBAId", source = "volunteer.builderAssistantId")
+    @Mapping(target = "consumableName", source = "consumable.name")
+    @Mapping(target = "consumableUrlImages", source = "consumable", qualifiedByName = "mapConsumableRegisterUrlImagesToDto")
+    @Mapping(target = "volunteerBuilderAssistantId", source = "volunteer.builderAssistantId")
     @Mapping(target = "volunteerName", source = "volunteer.name")
     @Mapping(target = "volunteerLastName", source = "volunteer.lastName")
-    @Mapping(target = "processingStockChanges", ignore = true)
-    @Mapping(target = "consumableName", source = "consumable.name")
     @Mapping(target = "consumableStockType", source = "consumable.stockType")
+    @Mapping(target = "processingStockChanges", ignore = true)
     ConsumableRegisterDto toDto(ConsumableRegister consumableRegister);
 
     @Mapping(target = "registerFrom", source = "registerFrom", qualifiedByName = "mapRegistrationIn")
@@ -44,5 +49,10 @@ public interface ConsumableRegisterMapper {
     }
 
     void update(ConsumableRegisterDto from, @MappingTarget ConsumableRegister to);
+
+    @Named("mapConsumableRegisterUrlImagesToDto")
+    static String[] mapConsumableRegisterUrlImagesToDto(Consumable consumable){
+        return mapStringArrayWithPrefix(consumable.getUrlImages(), DRIVE_IMAGES_URL);
+    }
 
 }
