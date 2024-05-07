@@ -140,6 +140,7 @@ public class Messages {
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
             TOOL_IMAGE_INFORMED_NOT_FOUND = "The image with id '%s' is not registered for this tool",
+            TOOL_REGISTERS_ASSOCIATED = "Could not delete tool. There are registers still associated with it.",
 
             TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
             TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
