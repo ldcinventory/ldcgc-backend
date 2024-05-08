@@ -26,10 +26,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -118,8 +121,8 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
                 .reduce(0.0f, Float::sum) + consumableRegisterDto.getStockAmountRequest() > consumable.getStock())
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE);
 
-            if (consumableRegisterDto.getRegisterFrom() != null &&
-                consumableRegisterDto.getRegisterFrom().isBefore(LocalDateTime.now()))
+            if(Objects.nonNull(consumableRegisterDto.getRegisterFrom()) &&
+                consumableRegisterDto.getRegisterFrom().toLocalDate().isBefore(LocalDate.now()))
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_ALLOCATE_DATE_BEFORE_TODAY);
         }
 
@@ -140,7 +143,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             consumableRegisterDto.getStockAmountReturn() != null)
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE);
 
-        if (Boolean.FALSE.equals(consumableRegisterDto.getClosedRegister()) &&
+        if (Boolean.TRUE.equals(consumableRegisterDto.getClosedRegister()) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegisterFrom(),
                                 consumableRegisterDto.getRegisterTo(),
                                 consumableRegisterDto.getStockAmountReturn()))
@@ -249,17 +252,26 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
     public ResponseEntity<?> createMultipleConsumableRegisters(List<ConsumableRegisterDto> consumableRegistersDto) {
         int registers = 0;
+        List<String> errors = new ArrayList<>();
 
-        try {
-            for (ConsumableRegisterDto consumableRegisterDto : consumableRegistersDto) {
-                createConsumableRegister(consumableRegisterDto);
-                registers++;
+        for (ConsumableRegisterDto consumableRegisterDto : consumableRegistersDto) {
+            try {
+            createConsumableRegister(consumableRegisterDto);
+            registers++;
             }
-        } catch (RequestException ignore) {}
+            catch (RequestException e) {
+                errors.add(consumableRegistersDto.get(registers).getConsumableName() + " - " + e.getMessage());
+            }
+        }
 
-        //TODO: Dar más pistas sobre qué registros no fueron creados y por qué
-        if(registers == 0) return Constructor.buildResponseMessage(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_NOT_CREATED);
+        if(registers == 0)
+            return Constructor.buildResponseMessage(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_NOT_CREATED
+                .formatted(String.join("\n", errors)));
 
-        return Constructor.buildResponseObject(HttpStatus.CREATED, String.format(Messages.Info.CONSUMABLE_REGISTERS_CREATED, registers, consumableRegistersDto.size() - registers));
+        if(!errors.isEmpty())
+            return Constructor.buildResponseObject(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_CREATED_PARTIALLY
+                    .formatted(String.join("\n", errors)));
+
+        return Constructor.buildResponseObject(HttpStatus.CREATED, String.format(Messages.Info.CONSUMABLE_REGISTERS_CREATED));
     }
 }
