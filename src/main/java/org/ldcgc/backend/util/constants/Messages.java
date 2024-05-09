@@ -33,6 +33,10 @@ public class Messages {
 
             LOGOUT_SUCCESSFUL = "Logout successful",
 
+            RESOURCE_TYPE_FOUND = "Found %s resource types",
+            RESOURCE_TYPE_CREATED = "Resource type created successfully!",
+            RESOURCE_TYPE_DELETED = "Resource type with id %s deleted",
+
             TOOL_CREATED = "Tool created successfully!",
             TOOL_LISTED = "Found %s tool/s",
             TOOL_UPDATED = "Tool details updated",
@@ -187,7 +191,10 @@ public class Messages {
 
             RESOURCE_TYPE_PARENT_NOT_FOUND = "%s with id '%s' not found.",
             RESOURCE_TYPE_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
-            RESOURCE_TYPE_NOT_FOUND = "This resource type '%s' couldn't be found",
+            RESOURCE_TYPE_NOT_FOUND = "Resource type with id '%s' couldn't be found",
+            RESOURCE_TYPE_EXISTS = "This resource type already exists",
+            RESOURCE_TYPE_LOCKED = "Resource type with id '%s' is locked",
+
             BRAND_NOT_FOUND = "This brand '%s' couldn't be found",
 
             STOCK_TYPE_NOT_FOUND = "Stock type '%s' not found",

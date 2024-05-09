@@ -12,6 +12,6 @@ public class ResourceTypeDto {
 
     private Integer id;
     private String name;
-    @Setter Boolean locked;
+    @Setter private Boolean locked;
 
 }
