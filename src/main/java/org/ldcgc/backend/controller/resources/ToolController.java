@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.util.common.EOrder;
@@ -31,6 +32,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/tools")
+@Tag(name = "Tool", description = "Tool methods with CRUD functions and load from Excel")
 public interface ToolController {
 
     @Operation(summary = "Get any tool by providing its id", description = SWAGGER_ROLE_OPERATION_MANAGER)

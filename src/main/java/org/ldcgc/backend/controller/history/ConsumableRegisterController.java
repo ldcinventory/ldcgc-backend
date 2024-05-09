@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
@@ -35,6 +36,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables/registers")
+@Tag(name = "Consumable Register", description = "Consumable register methods with CRUD functions")
 public interface ConsumableRegisterController {
 
     @Operation(summary = "Get consumable register details", description = SWAGGER_ROLE_OPERATION_MANAGER)

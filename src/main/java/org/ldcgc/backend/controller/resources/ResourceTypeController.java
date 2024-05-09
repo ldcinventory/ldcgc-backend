@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
@@ -28,6 +29,7 @@ import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/types")
+@Tag(name = "Resource type", description = "Resource type methods with CRD functions")
 public interface ResourceTypeController {
 
     @Operation(summary = "Get all resource types", description = SWAGGER_ROLE_OPERATION_USER)
@@ -48,7 +50,7 @@ public interface ResourceTypeController {
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(oneOf = { ToolDto.class, ResourceTypeDto.class }),
+            schema = @Schema(implementation = ResourceTypeDto.class),
             examples = {
                 @ExampleObject(name = "Resource type updated", value = Messages.Info.RESOURCE_TYPE_CREATED)
             }
@@ -74,7 +76,7 @@ public interface ResourceTypeController {
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(oneOf = { ToolDto.class, ResourceTypeDto.class }),
+            schema = @Schema(implementation = ResourceTypeDto.class),
             examples = {
                 @ExampleObject(name = "Resource type deleted", value = Messages.Info.RESOURCE_TYPE_DELETED)
             }

@@ -1,5 +1,6 @@
 package org.ldcgc.backend.controller.location;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/locations")
+@Tag(name = "Locations", description = "Locations methods with CRUD functions")
 public interface LocationController {
 
     // TODO

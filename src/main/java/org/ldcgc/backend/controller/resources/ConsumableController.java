@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.util.common.EOrder;
@@ -32,6 +33,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables")
+@Tag(name = "Consumable", description = "Consumables methods with CRUD functions and load from Excel")
 public interface ConsumableController {
 
     @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_MANAGER)
