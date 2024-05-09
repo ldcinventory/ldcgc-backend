@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.4</version>
+		<version>3.2.5</version>
 		<relativePath/>
 	</parent>
 
@@ -21,24 +21,24 @@
 		<postgresql.version>42.7.3</postgresql.version>
 		<maven.compiler.release>21</maven.compiler.release>
 		<maven-compiler.version>3.13.0</maven-compiler.version>
-		<spring-boot.version>3.2.4</spring-boot.version>
-		<guava.version>33.1.0-jre</guava.version>
+		<spring-boot.version>3.2.5</spring-boot.version>
+		<guava.version>33.2.0-jre</guava.version>
 		<snake-yaml.version>2.2</snake-yaml.version>
 		<apache-poi.version>5.2.5</apache-poi.version>
 		<commons-compress.version>1.26.1</commons-compress.version>
 		<nimbus.version>9.37.3</nimbus.version>
 		<tink.version>1.13.0</tink.version>
 		<openapi.version>2.5.0</openapi.version>
-		<simple-java-mail.version>8.8.3</simple-java-mail.version>
+		<simple-java-mail.version>8.10.1</simple-java-mail.version>
 		<lombok.version>1.18.32</lombok.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
-		<bouncy.castle.version>1.78</bouncy.castle.version>
+		<bouncy.castle.version>1.78.1</bouncy.castle.version>
 		<google-oauth.version>1.35.0</google-oauth.version>
 		<google-auth.version>1.23.0</google-auth.version>
 		<slf4j.version>2.0.13</slf4j.version>
 		<junit-platform-suite.version>1.10.2</junit-platform-suite.version>
-		<datafaker.version>2.1.0</datafaker.version>
+		<datafaker.version>2.2.2</datafaker.version>
 		<json-path.version>2.9.0</json-path.version>
 	</properties>
 
