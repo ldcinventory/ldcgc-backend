@@ -129,7 +129,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
 
         Float minStock = getFloatCellValue(row, EXlsxConsumablePos.MIN_STOCK.getColumnNumber());
 
-        EStockType stockType = EStockType.getStockTypeByName(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber()));
+        EStockType stockType = EStockType.getStockTypeByDesc(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber()));
 
         String locationName = row.getCell(EXlsxConsumablePos.LOCATION.getColumnNumber()).getStringCellValue();
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))

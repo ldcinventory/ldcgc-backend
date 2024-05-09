@@ -38,10 +38,10 @@ public enum EStockType implements EnumMethods {
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, id)));
     }
 
-    public static EStockType getStockTypeByName(String name) {
+    public static EStockType getStockTypeByDesc(String desc) {
         return Arrays.stream(EStockType.values())
-            .filter(eStockType -> eStockType.name().equals(name))
+            .filter(eStockType -> eStockType.desc.equals(desc))
             .findFirst()
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, name)));
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, desc)));
     }
 }

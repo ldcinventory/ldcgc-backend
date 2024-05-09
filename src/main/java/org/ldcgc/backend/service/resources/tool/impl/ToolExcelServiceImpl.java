@@ -119,7 +119,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
         Float weight = getFloatCellValue(row, EXlsxToolPos.WEIGHT.getColumnNumber());
 
-        EStockType stockWeightType = EStockType.getStockTypeByName(getStringCellValue(row, EXlsxToolPos.STOCK_WEIGHT_TYPE.getColumnNumber()));
+        EStockType stockWeightType = EStockType.getStockTypeByDesc(getStringCellValue(row, EXlsxToolPos.STOCK_WEIGHT_TYPE.getColumnNumber()));
 
         Float price = getFloatCellValue(row, EXlsxToolPos.PRICE.getColumnNumber());
 
