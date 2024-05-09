@@ -132,7 +132,9 @@ public class JwtUtils {
             .expiresAt(dateToLocalDateTime(expirationTime))
             .isRecoveryToken(isRecoveryToken)
             .isRefreshToken(isRefreshToken)
-            .refreshTokenId(isRefreshToken ? null : refreshTokenLocalRepository.get(user.getId()).getId())
+            .refreshTokenId(isRefreshToken // attach refresh token only when regular token
+                ? null
+                : refreshTokenLocalRepository.get(user.getId()).getId())
             .signedJWT(signedJWT)
             .build();
         token = tokenRepository.saveAndFlush(token);

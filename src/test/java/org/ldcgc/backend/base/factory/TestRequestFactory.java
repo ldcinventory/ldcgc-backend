@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUser;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -35,7 +35,7 @@ public class TestRequestFactory {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding(StandardCharsets.UTF_8)
-            .requestAttr(AUTHORIZATION_HEADER, Objects.requireNonNull(generateNewStringToken(getRandomMockedUser(tokenUserRole))))
+            .requestAttr(AUTHORIZATION_HEADER, Objects.requireNonNull(generateSignedStringToken(getRandomMockedUser(tokenUserRole))))
             .with(user(tokenUserRole.getRoleName().toLowerCase()).roles(tokenUserRole.getRoleName()));
     }
 

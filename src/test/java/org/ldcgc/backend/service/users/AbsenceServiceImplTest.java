@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.ldcgc.backend.base.mock.MockedPagination.mockPagination;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomBuilderAssistantId;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -68,7 +68,7 @@ class AbsenceServiceImplTest {
     @BeforeEach
     public void init() {
         absenceService = new AbsenceServiceImpl(jwtUtils, userRepository, volunteerRepository, absenceRepository);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
 
     }
 

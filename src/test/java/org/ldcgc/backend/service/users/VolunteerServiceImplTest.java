@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -71,7 +71,7 @@ class VolunteerServiceImplTest {
     //get my volunteer
     @Test
     public void whenGetMyVolunteer_returnVolunteerNotFound() throws ParseException {
-        final String mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
 
         doReturn(USER_WITHOUT_VOLUNTEER.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.empty()).when(userRepository).findById(USER_WITHOUT_VOLUNTEER.getId());
@@ -87,7 +87,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenGetMyVolunteer_returnMyVolunteer() throws ParseException {
-        final String mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
 
         doReturn(VOLUNTEER.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(VOLUNTEER.getId());

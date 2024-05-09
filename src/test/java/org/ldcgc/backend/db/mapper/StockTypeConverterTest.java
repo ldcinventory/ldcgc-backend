@@ -1,20 +1,42 @@
 package org.ldcgc.backend.db.mapper;
 
 import org.junit.jupiter.api.Test;
+import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.util.common.EStockType;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
 public class StockTypeConverterTest {
 
+    private final StockTypeConverter stockTypeConverter = new StockTypeConverter();
+
     @Test
-    void convertToDatabaseColumn() {
-        fail(NOT_YET_IMPLEMENTED);
+    void convertToDatabaseColumnNull() {
+        assertNull(stockTypeConverter.convertToDatabaseColumn(null));
     }
 
     @Test
-    void convertToEntityAttribute() {
-        fail(NOT_YET_IMPLEMENTED);
+    void convertToDatabaseColumnValid() {
+        assertNotNull(stockTypeConverter.convertToDatabaseColumn(EStockType.KILOGRAMS));
+    }
+
+    @Test
+    void convertToEntityAttributeNull() {
+        assertNull(stockTypeConverter.convertToEntityAttribute(null));
+    }
+
+    @Test
+    void convertToEntityAttributeException() {
+        assertThrows(RequestException.class, () -> stockTypeConverter.convertToEntityAttribute(100));
+    }
+
+    @Test
+    void convertToEntityAttributeValid() {
+        assertNotNull(stockTypeConverter.convertToEntityAttribute(0));
     }
 
 }

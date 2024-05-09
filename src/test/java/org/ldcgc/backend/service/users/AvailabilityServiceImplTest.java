@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.ldcgc.backend.base.mock.MockedAbsencesAvailability.getRandomAvailabilityList;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,7 +55,7 @@ class AvailabilityServiceImplTest {
     @BeforeEach
     public void init() {
         availabilityService = new AvailabilityServiceImpl(jwtUtils, userRepository, volunteerRepository);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
     }
 
     private final User USER_WITHOUT_VOLUNTEER = UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDtoWithoutVolunteer());

@@ -223,12 +223,12 @@ public class UserControllerImplTest {
         given(userService.listUsers(anyString(), anyInt(), anyInt(), anyInt(), anyString(), isNull()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        // TODO
         mockMvc.perform(getRequest(request, ERole.ROLE_USER)
+                .param("filterString", "ad")
                 .param("pageIndex", "0")
                 .param("size", "5")
-                .param("filterString", "ad")
-                .param("userId", "")
+                .param("sortField", "id")
+                .param("order", "DESC")
             )
             .andDo(print())
             .andExpect(status().isOk())

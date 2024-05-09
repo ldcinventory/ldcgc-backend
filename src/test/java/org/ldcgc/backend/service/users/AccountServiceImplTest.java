@@ -45,9 +45,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
-import static org.ldcgc.backend.base.mock.MockedToken.generateRefreshToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedRefreshToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atMostOnce;
@@ -77,7 +77,7 @@ class AccountServiceImplTest {
     @BeforeEach
     public void init() {
         accountService = new AccountServiceImpl(authenticationManager, jwtUtils, userRepository, tokenRepository, passwordEncoder);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
     }
 
     // mocked users
@@ -124,8 +124,8 @@ class AccountServiceImplTest {
         final User user = USER_NOT_EULA_STANDARD.toBuilder().password(encodedPassword).build();
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
-        doReturn(generateNewToken(user)).when(jwtUtils).generateNewToken(user);
-        doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
+        doReturn(generateSignedToken(user)).when(jwtUtils).generateNewToken(user);
+        doReturn(generateSignedRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
         assertNotNull(response);
@@ -147,8 +147,8 @@ class AccountServiceImplTest {
         final User user = USER_NOT_EULA_MANAGER.toBuilder().password(encodedPassword).build();
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
-        doReturn(generateNewToken(user)).when(jwtUtils).generateNewToken(user);
-        doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
+        doReturn(generateSignedToken(user)).when(jwtUtils).generateNewToken(user);
+        doReturn(generateSignedRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
         assertNotNull(response);
@@ -170,8 +170,8 @@ class AccountServiceImplTest {
         final User user = USER_STANDARD.toBuilder().password(encodedPassword).build();
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
-        doReturn(generateNewToken(user)).when(jwtUtils).generateNewToken(user);
-        doReturn(generateRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
+        doReturn(generateSignedToken(user)).when(jwtUtils).generateNewToken(user);
+        doReturn(generateSignedRefreshToken(user)).when(jwtUtils).generateRefreshToken(user);
 
         ResponseEntity<?> response = accountService.login(userCredentials);
         assertNotNull(response);
@@ -189,7 +189,7 @@ class AccountServiceImplTest {
     public void whenLogoutUser_returnOK() throws ParseException, JOSEException {
         String encodedPassword = encodePassword(USER_STANDARD.getPassword());
         final User user = USER_STANDARD.toBuilder().password(encodedPassword).build();
-        SignedJWT mockedSignedToken = generateNewToken(user);
+        SignedJWT mockedSignedToken = generateSignedToken(user);
         doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
         doReturn(1).when(jwtUtils).getUserIdFromJwtToken(mockedSignedToken);
 
@@ -224,7 +224,7 @@ class AccountServiceImplTest {
         final User user = USER_STANDARD;
 
         doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
-        doReturn(generateNewToken(user)).when(jwtUtils).generateNewRecoveryToken(user);
+        doReturn(generateSignedToken(user)).when(jwtUtils).generateNewRecoveryToken(user);
 
         Email email = new Email(templateEngine, sender);
         Email.setINSTANCE(email);
@@ -250,7 +250,7 @@ class AccountServiceImplTest {
     // -> validate token
     @Test
     public void whenValidatingToken_returnRecoveryTokenNotValidNotFound() throws ParseException, JOSEException {
-        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        SignedJWT mockedSignedToken = generateSignedToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(false);
 
@@ -269,7 +269,7 @@ class AccountServiceImplTest {
 
     @Test
     public void whenValidatingToken_returnJWTNotForRecovery() throws ParseException, JOSEException {
-        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        SignedJWT mockedSignedToken = generateSignedToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(false);
         mockedTokenEntity.setIssuedAt(LocalDateTime.now());
@@ -289,7 +289,7 @@ class AccountServiceImplTest {
 
     @Test
     public void whenValidatingToken_returnUserNotFoundToken() throws ParseException, JOSEException {
-        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        SignedJWT mockedSignedToken = generateSignedToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(true);
         mockedTokenEntity.setIssuedAt(LocalDateTime.now());
@@ -315,7 +315,7 @@ class AccountServiceImplTest {
 
     @Test
     public void whenValidatingToken_returnTokenExpired() throws ParseException, JOSEException {
-        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        SignedJWT mockedSignedToken = generateSignedToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(true);
         mockedTokenEntity.setIssuedAt(LocalDateTime.now().minusDays(1).minusMinutes(1));
@@ -339,7 +339,7 @@ class AccountServiceImplTest {
 
     @Test
     public void whenValidatingToken_returnRecoveryTokenValid() throws ParseException, JOSEException {
-        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        SignedJWT mockedSignedToken = generateSignedToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRecoveryToken(true);
         mockedTokenEntity.setIssuedAt(LocalDateTime.now());
@@ -426,7 +426,7 @@ class AccountServiceImplTest {
 
     @Test
     public void whenRefreshingToken_returnRefreshToken() throws ParseException, JOSEException {
-        SignedJWT mockedSignedToken = generateNewToken(USER_STANDARD);
+        SignedJWT mockedSignedToken = generateSignedToken(USER_STANDARD);
         Token mockedTokenEntity = factory.manufacturePojo(Token.class);
         mockedTokenEntity.setRefreshToken(true);
         mockedTokenEntity.setIssuedAt(LocalDateTime.now());

@@ -68,7 +68,7 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
 
@@ -90,8 +90,8 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
-        SignedJWT signedRefreshJWT = MockedToken.generateRefreshToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
+        SignedJWT signedRefreshJWT = MockedToken.generateSignedRefreshToken(user);
         request.addHeader("x-refresh-token", signedRefreshJWT.getParsedString());
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
@@ -124,8 +124,8 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
-        SignedJWT signedRefreshJWT = MockedToken.generateRefreshToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
+        SignedJWT signedRefreshJWT = MockedToken.generateSignedRefreshToken(user);
         request.addHeader("x-refresh-token", signedRefreshJWT.getParsedString());
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
@@ -158,8 +158,8 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
-        SignedJWT signedRefreshJWT = MockedToken.generateRefreshToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
+        SignedJWT signedRefreshJWT = MockedToken.generateSignedRefreshToken(user);
         request.addHeader("x-refresh-token", signedRefreshJWT.getParsedString());
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
@@ -185,8 +185,8 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
-        SignedJWT signedRefreshJWT = MockedToken.generateRefreshToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
+        SignedJWT signedRefreshJWT = MockedToken.generateSignedRefreshToken(user);
         request.addHeader("x-refresh-token", signedRefreshJWT.getParsedString());
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
@@ -212,8 +212,8 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
-        SignedJWT signedRefreshJWT = MockedToken.generateRefreshToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
+        SignedJWT signedRefreshJWT = MockedToken.generateSignedRefreshToken(user);
         request.addHeader("x-refresh-token", signedRefreshJWT.getParsedString());
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
@@ -239,7 +239,7 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
 
@@ -262,7 +262,7 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
 
@@ -285,7 +285,7 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
 
@@ -308,7 +308,7 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = MockedToken.generateNewToken(user);
+        SignedJWT signedJWT = MockedToken.generateSignedToken(user);
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));
 
@@ -331,8 +331,8 @@ public class AuthTokenFilterTests {
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
-        SignedJWT signedJWT = spy(MockedToken.generateNewToken(user));
-        SignedJWT signedRefreshJWT = MockedToken.generateRefreshToken(user);
+        SignedJWT signedJWT = spy(MockedToken.generateSignedToken(user));
+        SignedJWT signedRefreshJWT = MockedToken.generateSignedRefreshToken(user);
         request.addHeader("x-refresh-token", signedRefreshJWT.getParsedString());
         request.addHeader("x-header-payload-token", getHeaderPayloadFromToken(signedJWT));
         request.addHeader("x-signature-token", getSignatureFromToken(signedJWT));

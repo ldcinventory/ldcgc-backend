@@ -238,7 +238,7 @@ public class AccountControllerImplTest {
 
         User user = UserMapper.MAPPER.toEntity(mockedUser);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-refresh-token", MockedToken.generateRefreshToken(user).getParsedString());
+        headers.add("x-refresh-token", MockedToken.generateSignedRefreshToken(user).getParsedString());
 
         UserDto userDto = UserDto.builder()
             .tokenExpires(LocalDateTime.now().plusDays(1))

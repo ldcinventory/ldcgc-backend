@@ -54,8 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -229,8 +229,8 @@ class UserServiceImplTest {
 
     private void configureToken() {
         try {
-            mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
-            mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+            mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+            mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
         } catch (ParseException | JOSEException e) {
             log.error("Error generating mockedSignedJWT");
             throw new RuntimeException(e.getMessage());
@@ -772,7 +772,7 @@ class UserServiceImplTest {
         // group
         doReturn(Optional.of(group)).when(groupRepository).findById(userDtoUpdating.getGroup().getId());
 
-        mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
 
         HttpHeaders headers = new HttpHeaders();
         final String headerPayLoad = String.format("%s.%s", mockedSignedJWT.getParsedParts()[0], mockedSignedJWT.getParsedParts()[1]);
