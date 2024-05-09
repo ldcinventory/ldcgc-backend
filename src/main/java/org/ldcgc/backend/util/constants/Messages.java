@@ -37,6 +37,10 @@ public class Messages {
             RESOURCE_TYPE_CREATED = "Resource type created successfully!",
             RESOURCE_TYPE_DELETED = "Resource type with id %s deleted",
 
+            BRAND_FOUND = "Found %s brands",
+            BRAND_CREATED = "Brand created successfully!",
+            BRAND_DELETED = "Brand with id %s deleted",
+
             TOOL_CREATED = "Tool created successfully!",
             TOOL_LISTED = "Found %s tool/s",
             TOOL_UPDATED = "Tool details updated",
@@ -196,6 +200,8 @@ public class Messages {
             RESOURCE_TYPE_LOCKED = "Resource type with id '%s' is locked",
 
             BRAND_NOT_FOUND = "This brand '%s' couldn't be found",
+            BRAND_EXISTS = "This brand already exists",
+            BRAND_LOCKED = "Brand with id '%s' is locked",
 
             STOCK_TYPE_NOT_FOUND = "Stock type '%s' not found",
             TIME_UNIT_NOT_FOUND = "Time unit '%s' not found",

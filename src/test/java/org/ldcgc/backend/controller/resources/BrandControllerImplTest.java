@@ -16,6 +16,7 @@ import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
+import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.common.ResourceTypeService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.validator.UserValidation;
@@ -40,15 +41,15 @@ import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
 @Slf4j
-@WebMvcTest(controllers = ResourceTypeController.class)
+@WebMvcTest(controllers = BrandController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ResourceTypeControllerImplTest {
+public class BrandControllerImplTest {
 
     // controller
-    @Autowired private ResourceTypeController resourceTypeController;
+    @Autowired private BrandController brandController;
 
     // services
-    @MockBean private ResourceTypeService resourceTypeService;
+    @MockBean private BrandService brandService;
     @MockBean private UserDetailsServiceImpl userDetailsService;
     @MockBean private JwtUtils jwtUtils;
     @MockBean private ConsumableExcelService consumableExcelService;
@@ -58,7 +59,6 @@ public class ResourceTypeControllerImplTest {
     @MockBean private UserRepository userRepository;
     @MockBean private ConsumableRepository consumableRepository;
     @MockBean private BrandRepository brandRepository;
-    @MockBean private ResourceTypeRepository resourceTypeRepository;
     @MockBean private LocationRepository locationRepository;
     @MockBean private GroupRepository groupRepository;
 
@@ -72,7 +72,7 @@ public class ResourceTypeControllerImplTest {
     // mapper
     @Autowired private ObjectMapper mapper;
 
-    private final String requestRoot = "/resources/types";
+    private final String requestRoot = "/resources/brands";
 
     private MockMvc mockMvc;
 
@@ -92,7 +92,7 @@ public class ResourceTypeControllerImplTest {
         validatorFactoryBean.afterPropertiesSet();
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(resourceTypeController)
+            .standaloneSetup(brandController)
             .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
             .setValidator(validatorFactoryBean)
             .setHandlerExceptionResolvers()
@@ -103,19 +103,19 @@ public class ResourceTypeControllerImplTest {
     }
 
     @Test
-    void getResourceTypes() {
+    void getBrands() {
         fail(NOT_YET_IMPLEMENTED);
 
     }
 
     @Test
-    void createResourceType() {
+    void createBrand() {
         fail(NOT_YET_IMPLEMENTED);
 
     }
 
     @Test
-    void deleteResourceType() {
+    void deleteBrand() {
         fail(NOT_YET_IMPLEMENTED);
 
     }
