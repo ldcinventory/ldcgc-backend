@@ -24,6 +24,7 @@ import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EUploadStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -86,7 +87,12 @@ public class ToolServiceImpl implements ToolService {
 
     public ResponseEntity<?> deleteTool(Integer toolId) {
         Tool tool = findToolOrElseThrow(toolId);
-        toolRepository.delete(tool);
+
+        try {
+            toolRepository.delete(tool);
+        }catch (DataIntegrityViolationException e){
+            throw new RequestException(HttpStatus.CONFLICT, Messages.Error.TOOL_REGISTERS_ASSOCIATED);
+        }
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.TOOL_DELETED);
     }

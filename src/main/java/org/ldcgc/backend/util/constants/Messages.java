@@ -50,7 +50,7 @@ public class Messages {
             CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables. Skipped %s consumables",
 
             CONSUMABLE_REGISTER_CREATED = "Consumable register created",
-            CONSUMABLE_REGISTERS_CREATED = "Consumable registers created. There were created %s, and %s were skipped",
+            CONSUMABLE_REGISTERS_CREATED = "Consumable registers created.",
             CONSUMABLE_REGISTER_LISTED = "Found %s consumable registers",
             CONSUMABLE_REGISTER_UPDATED = "Consumable register updated",
             CONSUMABLE_REGISTER_DELETED = "Consumable register deleted",
@@ -140,6 +140,7 @@ public class Messages {
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
             TOOL_IMAGE_INFORMED_NOT_FOUND = "The image with id '%s' is not registered for this tool",
+            TOOL_REGISTERS_ASSOCIATED = "Could not delete tool. There are registers still associated with it.",
 
             TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
             TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
@@ -168,7 +169,8 @@ public class Messages {
             CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
             CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE = "The data for closing the consumible lacks any of the required fields: registrationOut, stockAmountOut",
             CONSUMABLE_REGISTER_CONSUMABLE_NOT_AVAILABLE = "The consumable you are trying to register is not available due to lack of stock.",
-            CONSUMABLE_REGISTERS_NOT_CREATED = "These multiple registers were not created",
+            CONSUMABLE_REGISTERS_NOT_CREATED = "No registers were created. Reasons: \n %s",
+            CONSUMABLE_REGISTERS_CREATED_PARTIALLY = "Some registers were created, but others failed. Errors: \n %s",
 
             UPLOAD_IMAGES_TOO_FEW_ARGUMENTS = "There are few arguments defined for this operation. Inform a tool or a consumable at least",
 
