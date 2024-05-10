@@ -5,6 +5,7 @@ import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
+import org.ldcgc.backend.payload.dto.other.NonPaged;
 import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
 import org.ldcgc.backend.service.resources.common.ResourceTypeService;
 import org.ldcgc.backend.util.constants.Messages;
@@ -29,8 +30,7 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
             String.format(Messages.Info.RESOURCE_TYPE_FOUND, resourceTypes.size()),
-            resourceTypes);
-
+            NonPaged.of(resourceTypes));
     }
 
     public ResponseEntity<?> createResourceType(ResourceTypeDto resourceTypeDto) {

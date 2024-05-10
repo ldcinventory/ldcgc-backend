@@ -5,6 +5,7 @@ import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.BrandDto;
+import org.ldcgc.backend.payload.dto.other.NonPaged;
 import org.ldcgc.backend.payload.mapper.category.BrandMapper;
 import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.util.constants.Messages;
@@ -29,7 +30,7 @@ public class BrandServiceImpl implements BrandService {
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
             String.format(Messages.Info.BRAND_FOUND, brands.size()),
-            brands);
+            NonPaged.of(brands));
 
     }
 
