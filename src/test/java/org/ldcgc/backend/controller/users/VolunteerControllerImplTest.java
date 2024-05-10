@@ -51,7 +51,6 @@ import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getListOfMockedUsers;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;

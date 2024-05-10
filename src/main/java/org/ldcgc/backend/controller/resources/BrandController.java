@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.category.BrandDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +49,7 @@ public interface BrandController {
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(oneOf = { ToolDto.class, BrandDto.class }),
+            schema = @Schema(implementation = BrandDto.class),
             examples = {
                 @ExampleObject(name = "Brand updated", value = Messages.Info.BRAND_CREATED)
             }
@@ -76,15 +75,14 @@ public interface BrandController {
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(oneOf = { ToolDto.class, BrandDto.class }),
             examples = {
                 @ExampleObject(name = "Brand deleted", value = Messages.Info.BRAND_DELETED)
             }
         )
     )
     @ApiResponse(
-        responseCode = SwaggerConfig.HTTP_403,
-        description = SwaggerConfig.HTTP_403,
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_400,
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Brand locked", value = Messages.Error.BRAND_LOCKED)

@@ -18,7 +18,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.platform.commons.util.StringUtils;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 
@@ -29,8 +28,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDateTime;
 
 public class MockedToken {
 

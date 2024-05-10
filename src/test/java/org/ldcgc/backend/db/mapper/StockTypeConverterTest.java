@@ -7,8 +7,6 @@ import org.ldcgc.backend.util.common.EStockType;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
 public class StockTypeConverterTest {
 

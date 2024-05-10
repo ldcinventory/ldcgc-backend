@@ -9,11 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
 @ExtendWith(MockitoExtension.class)
 public class AvailabililtyConverterTest {

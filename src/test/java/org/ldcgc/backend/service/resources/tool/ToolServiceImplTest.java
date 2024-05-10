@@ -51,12 +51,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 

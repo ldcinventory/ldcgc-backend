@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,15 +75,14 @@ public interface ResourceTypeController {
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
         content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = ResourceTypeDto.class),
             examples = {
                 @ExampleObject(name = "Resource type deleted", value = Messages.Info.RESOURCE_TYPE_DELETED)
             }
         )
     )
     @ApiResponse(
-        responseCode = SwaggerConfig.HTTP_403,
-        description = SwaggerConfig.HTTP_403,
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_400,
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Resource type locked", value = Messages.Error.RESOURCE_TYPE_LOCKED)
