@@ -1,5 +1,6 @@
 package org.ldcgc.backend.payload.mapper.resources.consumable;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.util.constants.Google;
@@ -11,6 +12,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Arrays;
+
+import static org.apache.poi.util.StringUtil.isBlank;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ConsumableMapper {
@@ -37,12 +40,21 @@ public interface ConsumableMapper {
         return consumableDto;
     }
 
+    @Mapping(target = "barcode", source = "barcode", qualifiedByName = "mapConsumableBarcode")
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "resourceType", ignore = true)
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "group", ignore = true)
     Consumable toMo(ConsumableDto consumableDto);
 
+    @Named("mapConsumableBarcode")
+    static String mapBarcode(String barcodeDto) {
+        return isBlank(barcodeDto)
+            ? RandomStringUtils.randomAlphanumeric(10)
+            : barcodeDto;
+    }
+
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "resourceType", ignore = true)
     @Mapping(target = "location", ignore = true)

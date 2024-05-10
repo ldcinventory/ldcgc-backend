@@ -1,5 +1,6 @@
 package org.ldcgc.backend.payload.mapper.resources.tool;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
@@ -12,6 +13,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+import static org.apache.poi.util.StringUtil.isBlank;
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
 import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
 
@@ -36,10 +38,19 @@ public interface ToolMapper {
         return toolDto;
     }
 
+    @Mapping(target = "barcode", source = "barcode", qualifiedByName = "mapToolBarcode")
     Tool toMo(ToolDto toolDto);
+
+    @Named("mapToolBarcode")
+    static String mapBarcode(String barcodeDto) {
+        return isBlank(barcodeDto)
+            ? RandomStringUtils.randomAlphanumeric(10)
+            : barcodeDto;
+    }
 
     List<Tool> toMo(List<ToolDto> tools);
 
+    @Mapping(target = "id", ignore = true)
     void update(ToolDto from, @MappingTarget Tool to);
 
 }
