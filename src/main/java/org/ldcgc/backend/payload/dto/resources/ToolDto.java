@@ -36,6 +36,7 @@ public class ToolDto {
     private ETimeUnit maintenanceTime;
     private LocalDate lastMaintenance;
     private LocalDate nextMaintenance;
+    private boolean modifyNextMaintenance;
     private EStatus status;
     private LocationDto location;
     private GroupDto group;

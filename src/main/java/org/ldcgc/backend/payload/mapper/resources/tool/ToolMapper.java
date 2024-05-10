@@ -11,6 +11,7 @@ import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.apache.poi.util.StringUtil.isBlank;
@@ -39,6 +40,7 @@ public interface ToolMapper {
     }
 
     @Mapping(target = "barcode", source = "barcode", qualifiedByName = "mapToolBarcode")
+    @Mapping(target = "nextMaintenance", source = ".", qualifiedByName = "calculateNextMaintenance")
     Tool toMo(ToolDto toolDto);
 
     @Named("mapToolBarcode")
@@ -48,9 +50,27 @@ public interface ToolMapper {
             : barcodeDto;
     }
 
+    @Named("calculateNextMaintenance")
+    static LocalDate calculateNextMaintenance(ToolDto toolDto) {
+        return switch (toolDto.getMaintenanceTime()) {
+            case DAYS   -> LocalDate.now().plusDays(toolDto.getMaintenancePeriod());
+            case WEEKS  -> LocalDate.now().plusWeeks(toolDto.getMaintenancePeriod());
+            case MONTHS -> LocalDate.now().plusMonths(toolDto.getMaintenancePeriod());
+            case YEARS  -> LocalDate.now().plusYears(toolDto.getMaintenancePeriod());
+        };
+    }
+
     List<Tool> toMo(List<ToolDto> tools);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "nextMaintenance", source = ".", qualifiedByName = "calculateNextMaintenanceWhenTrue")
     void update(ToolDto from, @MappingTarget Tool to);
+
+    @Named("calculateNextMaintenanceWhenTrue")
+    static LocalDate calculateNextMaintenanceWhenTrue(ToolDto toolDto) {
+        return toolDto.isModifyNextMaintenance()
+            ? ToolMapper.calculateNextMaintenance(toolDto)
+            : toolDto.getNextMaintenance();
+    }
 
 }

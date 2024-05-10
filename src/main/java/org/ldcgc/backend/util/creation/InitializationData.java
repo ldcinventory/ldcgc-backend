@@ -2,6 +2,7 @@ package org.ldcgc.backend.util.creation;
 
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Brand;
@@ -356,6 +357,7 @@ public class InitializationData {
     private LocalDate getRandomDate(boolean includeNullValue) {
         return getRandomDate(includeNullValue,-366, 366);
     }
+
     private LocalDate getRandomFutureDate(boolean includeNullValue) {
         return getRandomDate(includeNullValue, 0, 366);
     }
@@ -370,6 +372,16 @@ public class InitializationData {
         return LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(pastDays, futureDays));
     }
 
+    private LocalDate calculateNextMaintenance(ETimeUnit timeUnit, Integer period, LocalDate fromDate) {
+        LocalDate date = ObjectUtils.defaultIfNull(fromDate, LocalDate.now());
+        return switch (timeUnit) {
+            case DAYS   -> date.plusDays(period);
+            case WEEKS  -> date.plusWeeks(period);
+            case MONTHS -> date.plusMonths(period);
+            case YEARS  -> date.plusYears(period);
+        };
+    }
+
     private String[] getRandomURLs() {
         return IntStream.rangeClosed(1, getRandomIntegerFromRange(2, 4))
             .mapToObj(x -> RandomStringUtils.randomAlphanumeric(44))
@@ -377,22 +389,27 @@ public class InitializationData {
     }
 
     private Tool getRandomTool() {
+        int maintenancePeriod = getRandomIntegerFromRange(0,10);
+        ETimeUnit maintenanceTime = getRandomEnum(ETimeUnit.class);
+        LocalDate lastMaintenanceDate = getRandomPastDate(true);
+        LocalDate nextMaintenance = calculateNextMaintenance(maintenanceTime, maintenancePeriod, lastMaintenanceDate);
+
         return Tool.builder()
             .barcode(RandomStringUtils.randomAlphanumeric(10))
             .brand(brandEntities.get(getRandomIntegerFromRange(0, brandEntities.size() - 1)))
             .resourceType(resourceTypeEntities.get(getRandomIntegerFromRange(0, resourceTypeEntities.size() - 1)))
-            .name(new Faker().funnyName().name())
-            .model(new Faker().coffee().variety())
+            .name(new Random().nextBoolean() ? new Faker().appliance().brand() : new Faker().brand().watch())
+            .model(String.format("%s %s", new Faker().coffee().variety(), new Faker().ancient().titan()))
             .description(new Faker().lorem().sentence())
             .weight(getRandomFloatFromRange(1,100))
             .stockWeightType(getRandomEnum(EStockType.class))
             .price(new Faker().random().nextFloat())
             .purchaseDate(getRandomDate(false))
             .urlImages(getRandomURLs())
-            .maintenancePeriod(getRandomIntegerFromRange(0,10))
-            .maintenanceTime(getRandomEnum(ETimeUnit.class))
-            .lastMaintenance(null)
-            .nextMaintenance(getRandomFutureDate(false))
+            .maintenancePeriod(maintenancePeriod)
+            .maintenanceTime(maintenanceTime)
+            .lastMaintenance(lastMaintenanceDate)
+            .nextMaintenance(nextMaintenance)
             .status(getRandomEnum(EStatus.class))
             .location(locationRepository.getRandomLocation())
             .group(groupRepository.getRandomGroup())
