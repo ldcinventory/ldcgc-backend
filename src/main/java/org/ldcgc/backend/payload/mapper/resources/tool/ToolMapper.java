@@ -21,7 +21,6 @@ public interface ToolMapper {
     ToolMapper MAPPER = Mappers.getMapper(ToolMapper.class);
 
     @Mapping(target = "location.locations", ignore = true)
-    @Mapping(target = "location.parent.locations", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapToolUrlImagesToDto")
     ToolDto toDto(Tool tool);
@@ -33,7 +32,6 @@ public interface ToolMapper {
 
     static ToolDto cleanProps(ToolDto toolDto) {
         toolDto.getLocation().setLocations(null);
-        toolDto.getLocation().setParent(null);
         toolDto.getGroup().getLocation().setLocations(null);
         return toolDto;
     }

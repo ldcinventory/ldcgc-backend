@@ -31,6 +31,11 @@ public class Messages {
             CREDENTIALS_EMAIL_SENT = "Credentials email sent",
             EMAIL_SENT = "Email sent",
 
+            LOCATION_FOUND = "Found %s locations",
+            LOCATION_CREATED = "Location created successfully!",
+            LOCATION_UPDATED = "Location with id %s was updated",
+            LOCATION_DELETED = "Location with id %s was deleted",
+
             LOGOUT_SUCCESSFUL = "Logout successful",
 
             RESOURCE_TYPE_FOUND = "Found %s resource types",
@@ -189,6 +194,8 @@ public class Messages {
 
             LOCATION_NOT_FOUND = "Location with id/name '%s' not found.",
             LOCATION_NOT_FOUND_EXCEL = "Location '%s' not found. Please, fix the excel sheet or add it. Valid locations: %s",
+            LOCATION_EXISTS = "Location with id '%s' already exists.",
+            LOCATION_MAIN_GROUP = "This location is the main location assigned to a group",
 
             GROUP_NOT_FOUND = "Group with id/name '%s' not found.",
             GROUP_NOT_FOUND_EXCEL = "Group '%s' not found. Please, fix the excel sheet or add it. Valid groups: %s",

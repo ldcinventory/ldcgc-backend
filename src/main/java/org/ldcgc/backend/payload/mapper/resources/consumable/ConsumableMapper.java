@@ -18,7 +18,6 @@ public interface ConsumableMapper {
     ConsumableMapper MAPPER = Mappers.getMapper(ConsumableMapper.class);
 
     @Mapping(target = "location.locations", ignore = true)
-    @Mapping(target = "location.parent.locations", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "resourceType.locked", ignore = true)
     @Mapping(target = "brand.locked", qualifiedByName = "mapBooleanToNull")
@@ -32,7 +31,6 @@ public interface ConsumableMapper {
 
     static ConsumableDto cleanProps(ConsumableDto consumableDto) {
         consumableDto.getLocation().setLocations(null);
-        consumableDto.getLocation().setParent(null);
         consumableDto.getGroup().getLocation().setLocations(null);
         consumableDto.getBrand().setLocked(null);
         consumableDto.getResourceType().setLocked(null);

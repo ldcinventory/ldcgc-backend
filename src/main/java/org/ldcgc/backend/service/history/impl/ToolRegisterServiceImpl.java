@@ -12,7 +12,7 @@ import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
-import org.ldcgc.backend.payload.mapper.history.tool.ToolRegisterMapper;
+import org.ldcgc.backend.payload.mapper.history.ToolRegisterMapper;
 import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EOrder;

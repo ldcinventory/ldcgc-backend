@@ -101,13 +101,11 @@ public class InitializationData {
 
     @Value("classpath:consumables.csv") private Resource consumablesCSV;
     @Value("classpath:tools.csv") private Resource toolsCSV;
-    @Value("classpath:maintenance.csv") private Resource maintenanceCSV;
 
     @Value("classpath:users.csv") private Resource usersCSV;
     @Value("classpath:volunteers.csv") private Resource volunteersCSV;
-    @Value("classpath:tool_register.csv") private Resource toolRegisterCSV;
 
-    private Group group;
+    private Group group8;
     private List<Brand> brandEntities;
     private Map<String, Brand> brandsMap;
     private List<ResourceType> resourceTypeEntities;
@@ -132,12 +130,38 @@ public class InitializationData {
             // null user, tool, consumable for when some registers are not permanently deleted (just deactivated)
             createNullRegisters();
 
+            // Ferretería (no es necesario indicar dirección)
+            // ==> "Arcón" o "Estantería" estará ubicado en Ferreteria
+            // GROUP
+            group8 = Group.builder()
+                .name("Grupo 8 de Construcción")
+                .phoneNumber("+34630480855")
+                .build();
+            group8 = groupRepository.saveAndFlush(group8);
+
+            Location ferreteria = new Location("Ferretería", 0, group8.getId());
+            ferreteria.setLocations(List.of(
+                new Location("Estantería 1", ferreteria, 1, group8.getId()),
+                new Location("Estantería 2", ferreteria, 1, group8.getId()),
+                new Location("Arcón-suelo 1", ferreteria, 1, group8.getId()),
+                new Location("Arcón-suelo 2", ferreteria, 1, group8.getId()),
+                new Location("Arcón-medio 1", ferreteria, 1, group8.getId()),
+                new Location("Arcón-medio 2", ferreteria, 1, group8.getId())
+            ));
+
+            ferreteria.setGroupId(group8.getId());
+            ferreteria = locationRepository.saveAndFlush(ferreteria);
+
+            group8.setLocation(ferreteria);
+            group8 = groupRepository.saveAndFlush(group8);
+
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
             locationRepository.saveAndFlush(Location.builder()
                     .name("Guadalajara SR")
                     .description("Calle León Felipe, 6, bajo derecha")
                     .url("https://maps.app.goo.gl/cfp7UVDjD3dumBRp7")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // Leganés SR Maestro (Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés)
             locationRepository.saveAndFlush(Location.builder()
@@ -145,6 +169,7 @@ public class InitializationData {
                     .description("Sótano del Salón del Reino situado en Calle del Maestro, 13 Leganés")
                     .url("https://maps.app.goo.gl/c2tn7Pzwb62SwyVNA")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // Parla SR Zurbarán (Salón del Reino situado en Calle Zurbarán 1 posterior Parla)
             locationRepository.saveAndFlush(Location.builder()
@@ -152,18 +177,21 @@ public class InitializationData {
                     .description("Salón del Reino situado en Calle Zurbarán 1 posterior Parla")
                     .url("https://maps.app.goo.gl/7yvYEgCqbqeS3Jsm8")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // Local/Almacén Cristopher
             locationRepository.saveAndFlush(Location.builder()
                     .name("Local/Almacén Cristopher")
                     .description("Local/Almacén Cristopher")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // Local/Almacén Geñi
             locationRepository.saveAndFlush(Location.builder()
                     .name("Local/Almacén Geñi")
                     .description("Local/Almacén Geñi")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // Betel
             locationRepository.saveAndFlush(Location.builder()
@@ -171,6 +199,7 @@ public class InitializationData {
                     .description("Sede Nacional, M-108, Km. 5, 28864 Ajalvir, Madrid")
                     .url("https://maps.app.goo.gl/Zv9CVjCPqNW6sbZs6")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // SA Ajalvir
             locationRepository.saveAndFlush(Location.builder()
@@ -178,48 +207,29 @@ public class InitializationData {
                     .description("Salón de Asambleas de los Testigos Cristianos de Jehová")
                     .url("https://maps.app.goo.gl/bM7CcMEqNygdwhVC9")
                     .level(0)
+                    .groupId(group8.getId())
                     .build());
             // Oficina (no es necesario indicar dirección)
             locationRepository.saveAndFlush(Location.builder()
                     .name("Oficina")
                     .description("Oficina")
                     .level(0)
-                    .build());
-            // Ferretería (no es necesario indicar dirección)
-            // ==> "Arcón" o "Estantería" estará ubicado en Ferreteria
-            Location ferreteria = new Location("Ferretería", 0);
-            ferreteria.setLocations(List.of(
-                    new Location("Estantería 1", ferreteria, 1),
-                    new Location("Estantería 2", ferreteria, 1),
-                    new Location("Arcón-suelo 1", ferreteria, 1),
-                    new Location("Arcón-suelo 2", ferreteria, 1),
-                    new Location("Arcón-medio 1", ferreteria, 1),
-                    new Location("Arcón-medio 2", ferreteria, 1)
-            ));
-            ferreteria = locationRepository.saveAndFlush(ferreteria);
-
-            // GROUP
-            group = groupRepository.saveAndFlush(Group.builder()
-                    .name("Grupo 8 de Construcción")
-                    .phoneNumber("+34630480855")
-                    .location(ferreteria)
+                    .groupId(group8.getId())
                     .build());
 
             // RESOURCE TYPES (select name from categories;)
             // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
 
-            List<ResourceType> resourceTypeList = resourceNames.stream()
-                    .map(c -> ResourceType.builder()
-                            .name(c)
-                            .locked(true)
-                            .build())
-                    .toList();
-
-            resourceTypeRepository.saveAllAndFlush(resourceTypeList);
+            resourceNames.stream()
+                .map(c -> ResourceType.builder()
+                    .name(c)
+                    .locked(true)
+                    .build())
+                .forEach(resourceTypeRepository::saveAndFlush);
 
             // VOLUNTEERS
-            if(loadFromCSV) loadVolunteersCSV(group);
+            if(loadFromCSV) loadVolunteersCSV(group8);
             else loadVolunteers();
 
             // CONSUMABLES + TOOLS
@@ -284,7 +294,7 @@ public class InitializationData {
 
             List<Responsibility> responsibilitiesEntities = responsibilityRepository.findAll();
 
-            if(createTestUsers) createTestUsers(group, responsibilitiesEntities);
+            if(createTestUsers) createTestUsers(group8, responsibilitiesEntities);
             else loadUsersCSV();
 
         };
@@ -671,7 +681,7 @@ public class InitializationData {
                 .name(tFieldList.get(3))
                 .description(tFieldList.get(4))
                 .location(location)
-                .group(group)
+                .group(group8)
                 .resourceType(resourceTypeMap.get(tFieldList.get(5)))
                 .status(EStatus.AVAILABLE)
                 .weight(toFloat(tFieldList.get(6)))
@@ -725,7 +735,7 @@ public class InitializationData {
                 .name(cFieldList.get(3))
                 .description(cFieldList.get(4))
                 .location(location)
-                .group(group)
+                .group(group8)
                 .resourceType(resourceTypeMap.get(cFieldList.get(5)))
                 .price(toFloat2Decimals(cFieldList.get(6)))
                 .purchaseDate(stringToLocalDate(cFieldList.get(7).substring(0, 10), "yyyy-MM-dd"))
@@ -750,7 +760,7 @@ public class InitializationData {
                     Integer.parseInt(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
                         ERole.ROLE_USER)
                 .responsibility(responsibilityRepository.findByName("Voluntario").orElse(null))
-                .group(group)
+                .group(group8)
                 .acceptedEULA(LocalDateTime.now())
                 .acceptedEULAManager(Integer.parseInt(userFields.get(6)) > 1 ? LocalDateTime.now() : null)
                 .build();

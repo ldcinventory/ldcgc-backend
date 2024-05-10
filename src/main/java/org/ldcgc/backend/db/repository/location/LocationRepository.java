@@ -9,11 +9,13 @@ import java.util.Optional;
 
 public interface LocationRepository extends JpaRepository<Location, Integer> {
 
-    List<Location> findAllByLevel(Integer level);
-
     Optional<Location> getLocationByName(String name);
+
+    List<Location> findAllByGroupId(Integer groupId);
 
     @Query("SELECT l FROM Location l ORDER BY random() LIMIT 1")
     Location getRandomLocation();
+
+    boolean existsByName(String name);
 
 }

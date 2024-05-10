@@ -13,4 +13,6 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
     @Query("SELECT g FROM Group g ORDER BY random() LIMIT 1")
     Group getRandomGroup();
 
+    boolean existsByLocation_Id(Integer locationId);
+
 }

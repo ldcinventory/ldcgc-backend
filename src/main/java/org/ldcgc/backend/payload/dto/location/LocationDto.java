@@ -19,8 +19,8 @@ public class LocationDto {
     private String name;
     private String description;
     private String url;
-    @JsonInclude(NON_NULL) @Setter
-    private LocationDto parent;
+    private Integer parentLocationId;
     @JsonInclude(NON_EMPTY) @Setter
     private List<LocationDto> locations;
+    private Integer groupId;
 }

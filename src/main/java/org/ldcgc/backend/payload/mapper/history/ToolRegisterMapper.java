@@ -1,5 +1,4 @@
-package org.ldcgc.backend.payload.mapper.history.tool;
-
+package org.ldcgc.backend.payload.mapper.history;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.history.ToolRegister;

@@ -195,7 +195,7 @@ class VolunteerServiceImplTest {
         assertNotNull(responseBody.getData());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertEquals(String.format(Messages.Info.VOLUNTEER_FOUND, builderAssistantId), responseBody.getMessage());
-        assertThat(responseData.getElements().getFirst()).isEqualToComparingFieldByFieldRecursively(volunteerExpected);
+        assertThat(responseData.getElements().getFirst()).usingRecursiveComparison().isEqualTo(volunteerExpected);
 
         verify(userRepository, atMostOnce()).findById(any());
     }

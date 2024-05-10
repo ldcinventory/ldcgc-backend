@@ -39,7 +39,7 @@ class ConsumableServiceImplTest {
     @BeforeEach
     void init() {
         consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationService, groupService);
-        locationService = new LocationServiceImpl(locationRepository);
+        locationService = new LocationServiceImpl(locationRepository, groupRepository);
         groupService = new GroupServiceImpl(groupRepository);
         consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, consumableExcelService);
     }

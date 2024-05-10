@@ -22,7 +22,6 @@ public interface UserMapper {
     User toEntity(UserDto userRequest);
 
     @Mapping(target = "password", ignore = true)
-    @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "volunteer.absences", ignore = true)
     UserDto toDTO(User user);
 
