@@ -213,7 +213,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
     }
 
     private MultipartFile compressAndResizeImage(MultipartFile mpImage) throws IOException {
-        if(Range.of(0.0f, 1.0f).contains(IMAGE_QUALITY))
+        if(Boolean.FALSE.equals(Range.of(0.0f, 1.0f).contains(IMAGE_QUALITY)))
             throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, Messages.Error.IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE);
 
         byte[] imageBytes = mpImage.getBytes();
