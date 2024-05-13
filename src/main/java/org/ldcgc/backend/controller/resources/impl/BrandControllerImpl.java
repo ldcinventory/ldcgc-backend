@@ -13,15 +13,15 @@ public class BrandControllerImpl implements BrandController {
 
     private final BrandService brandService;
 
-    public ResponseEntity<?> getResourceTypes() {
-        return brandService.getResourceTypes();
+    public ResponseEntity<?> getBrands() {
+        return brandService.getBrands();
     }
 
-    public ResponseEntity<?> createResourceType(BrandDto brandDto) {
-        return brandService.createResourceType(brandDto);
+    public ResponseEntity<?> createBrand(BrandDto brandDto) {
+        return brandService.createBrand(brandDto);
     }
 
-    public ResponseEntity<?> deleteResourceType(Integer brandId) {
-        return brandService.deleteResourceType(brandId);
+    public ResponseEntity<?> deleteBrand(Integer brandId) {
+        return brandService.deleteBrand(brandId);
     }
 }

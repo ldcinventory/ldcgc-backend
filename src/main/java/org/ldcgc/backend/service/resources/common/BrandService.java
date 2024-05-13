@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public interface BrandService {
 
-    ResponseEntity<?> getResourceTypes();
+    ResponseEntity<?> getBrands();
 
-    ResponseEntity<?> createResourceType(BrandDto brandDto);
+    ResponseEntity<?> createBrand(BrandDto brandDto);
 
-    ResponseEntity<?> deleteResourceType(Integer brandId);
+    ResponseEntity<?> deleteBrand(Integer brandId);
 
 }

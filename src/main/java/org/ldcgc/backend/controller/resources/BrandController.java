@@ -42,7 +42,7 @@ public interface BrandController {
     )
     @GetMapping
     @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> getResourceTypes();
+    ResponseEntity<?> getBrands();
 
     @Operation(summary = "Create a new brand", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -65,7 +65,7 @@ public interface BrandController {
     )
     @PostMapping
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> createResourceType(
+    ResponseEntity<?> createBrand(
         @Parameter(description = "Brand to create")
             @RequestBody(required = false) BrandDto brandDto
     );
@@ -98,7 +98,7 @@ public interface BrandController {
     )
     @DeleteMapping("/{brandId}")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> deleteResourceType(
+    ResponseEntity<?> deleteBrand(
         @Parameter(description = "Brand to delete")
             @PathVariable(required = false) Integer brandId
     );
