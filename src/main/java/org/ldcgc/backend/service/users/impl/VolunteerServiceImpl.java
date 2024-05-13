@@ -15,6 +15,7 @@ import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -46,7 +47,6 @@ public class VolunteerServiceImpl implements VolunteerService {
     private final GroupRepository groupRepository;
 
     public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
-
         Integer userId = jwtUtils.getUserIdFromStringToken(token);
         Volunteer volunteer = userRepository.findById(userId).map(User::getVolunteer).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_TOKEN_NOT_EXIST));
@@ -54,16 +54,12 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteer));
     }
 
-    public ResponseEntity<?> getVolunteer(String volunteerId) {
-
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
-
-        return Constructor.buildResponseObject(HttpStatus.OK, VolunteerMapper.MAPPER.toDto(volunteerEntity));
+    public ResponseEntity<?> getVolunteer(String builderAssistantId) {
+        return Constructor.buildResponseObject(HttpStatus.OK,
+            VolunteerMapper.MAPPER.toDto(getVolunteerFromDB(builderAssistantId)));
     }
 
     public ResponseEntity<?> createVolunteer(VolunteerDto volunteer) {
-
         if(volunteerRepository.findByBuilderAssistantId(volunteer.getBuilderAssistantId()).isPresent())
             throw new RequestException(HttpStatus.CONFLICT, String.format(Messages.Error.VOLUNTEER_ALREADY_EXIST, volunteer.getBuilderAssistantId()));
 
@@ -74,11 +70,17 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> listVolunteers(Integer pageIndex, Integer size, String filterString, String builderAssistantId, String sortField) {
+    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, Boolean isActive, Integer pageIndex, Integer size, String sortField, EOrder order) {
 
-        if (builderAssistantId != null) return getVolunteer(builderAssistantId);
+        if (builderAssistantId != null)
+            return Constructor.buildResponseMessageObject(
+                HttpStatus.OK,
+                String.format(Messages.Info.VOLUNTEER_FOUND, builderAssistantId),
+                PaginationDetails.pagingOneObject(VolunteerMapper.MAPPER.toDto(getVolunteerFromDB(builderAssistantId))));
 
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
         Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) ?
             volunteerRepository.findAll(pageable).map(VolunteerMapper.MAPPER::toDto) :
             volunteerRepository.findAllFiltered(filterString, pageable).map(VolunteerMapper.MAPPER::toDto);
@@ -92,10 +94,8 @@ public class VolunteerServiceImpl implements VolunteerService {
             PaginationDetails.fromPaging(pageable, pagedVolunteers));
     }
 
-    public ResponseEntity<?> updateVolunteer(String volunteerId, VolunteerDto volunteerDto) {
-
-        Volunteer volunteerEntity = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+    public ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteerDto) {
+        Volunteer volunteerEntity = getVolunteerFromDB(builderAssistantId);
 
         boolean builderAssistantExists = volunteerRepository.existsByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
 
@@ -109,11 +109,8 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> deleteVolunteer(String volunteerId) {
-        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(volunteerId).orElseThrow(() ->
-            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
-
-        volunteerRepository.delete(volunteer);
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
+        volunteerRepository.delete(getVolunteerFromDB(builderAssistantId));
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
     }
@@ -143,6 +140,11 @@ public class VolunteerServiceImpl implements VolunteerService {
         });
 
         return Constructor.buildResponseMessage(HttpStatus.CREATED, String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, volunteers));
+    }
+
+    private Volunteer getVolunteerFromDB(String builderAssistantId) {
+        return volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
     }
 
     private Set<EWeekday> getAvailabilityFromCSVData(List<String> availabilityDays) {

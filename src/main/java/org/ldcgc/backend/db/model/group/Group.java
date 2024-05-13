@@ -40,5 +40,4 @@ public class Group {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-
 }

@@ -23,7 +23,7 @@ public interface VolunteerMapper {
 
     Volunteer toEntity(VolunteerDto volunteerRequest);
 
-    @Mapping(target= "availability", qualifiedByName = "mapAvailability")
+    @Mapping(target = "availability", qualifiedByName = "mapAvailability")
     @Mapping(target = "absences", ignore = true)
     VolunteerDto toDto(Volunteer volunteer);
 

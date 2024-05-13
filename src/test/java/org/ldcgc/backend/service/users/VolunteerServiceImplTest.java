@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.users;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
@@ -10,16 +11,18 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.VolunteerServiceImpl;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -45,7 +48,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class VolunteerServiceImplTest {
 
     private VolunteerService volunteerService;
@@ -68,7 +71,7 @@ class VolunteerServiceImplTest {
     //get my volunteer
     @Test
     public void whenGetMyVolunteer_returnVolunteerNotFound() throws ParseException {
-        final String mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
 
         doReturn(USER_WITHOUT_VOLUNTEER.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.empty()).when(userRepository).findById(USER_WITHOUT_VOLUNTEER.getId());
@@ -84,7 +87,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenGetMyVolunteer_returnMyVolunteer() throws ParseException {
-        final String mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
 
         doReturn(VOLUNTEER.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(VOLUNTEER.getId());
@@ -183,14 +186,16 @@ class VolunteerServiceImplTest {
 
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, builderAssistantId, "builderAssistantId");
+        ResponseEntity<?> response = volunteerService.listVolunteers(builderAssistantId, null, null, null, null, "builderAssistantId", null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseBody);
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertNotNull(responseBody.getData());
-        assertThat(responseBody.getData()).usingRecursiveComparison().isEqualTo(volunteerExpected);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(String.format(Messages.Info.VOLUNTEER_FOUND, builderAssistantId), responseBody.getMessage());
+        assertThat(responseData.getElements().getFirst()).usingRecursiveComparison().isEqualTo(volunteerExpected);
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -200,19 +205,20 @@ class VolunteerServiceImplTest {
         final List<VolunteerDto> volunteers = MockedUserVolunteer.getListOfMockedVolunteers(5);
         final List<Volunteer> volunteersEntities = volunteers.stream().map(VolunteerMapper.MAPPER::toEntity).toList();
 
-        Page<Volunteer> userPage = new PageImpl<>(volunteersEntities);
+        Page<Volunteer> volunteerPage = new PageImpl<>(volunteersEntities);
 
-        doReturn(userPage).when(volunteerRepository).findAll(any(Pageable.class));
+        doReturn(volunteerPage).when(volunteerRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, null, null, "builderAssistantId");
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, null, null, 0, 5, "builderAssistantId", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
-        assertThat(volunteers).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
+        assertThat(responseData.getElements()).usingRecursiveFieldByFieldElementComparator().isEqualTo(volunteers);
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -222,19 +228,20 @@ class VolunteerServiceImplTest {
         final List<VolunteerDto> volunteers = MockedUserVolunteer.getListOfMockedVolunteers(5);
         final List<Volunteer> volunteersEntities = volunteers.stream().map(VolunteerMapper.MAPPER::toEntity).toList();
 
-        Page<Volunteer> userPage = new PageImpl<>(volunteersEntities);
+        Page<Volunteer> volunteerPage = new PageImpl<>(volunteersEntities);
 
-        doReturn(userPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
+        doReturn(volunteerPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = volunteerService.listVolunteers(0, 5, "x", null, "builderAssistantId");
+        ResponseEntity<?> response = volunteerService.listVolunteers(null, "x", null, 0, 5, "builderAssistantId", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
         assertEquals(String.format(Messages.Info.VOLUNTEER_LISTED, 5), responseBody.getMessage());
-        assertThat(volunteers).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
+        assertThat(responseData.getElements()).usingRecursiveFieldByFieldElementComparator().isEqualTo(volunteers);
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -283,7 +290,6 @@ class VolunteerServiceImplTest {
         String builderAssistantId = VOLUNTEER_2.getBuilderAssistantId();
 
         doReturn(Optional.of(VOLUNTEER_2)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
-        doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(volunteerDto.getBuilderAssistantId());
         doReturn(VOLUNTEER_2).when(volunteerRepository).saveAndFlush(any(Volunteer.class));
 
         ResponseEntity<?> response = volunteerService.updateVolunteer(builderAssistantId, volunteerDto);

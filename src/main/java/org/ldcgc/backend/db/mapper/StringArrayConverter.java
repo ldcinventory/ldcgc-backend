@@ -6,7 +6,12 @@ import org.apache.commons.lang3.StringUtils;
 public class StringArrayConverter implements AttributeConverter<String[], String> {
 
     public String convertToDatabaseColumn(String[] s) {
-        return s.length > 1 || StringUtils.isNotEmpty(s[0]) ? String.join(", ", s) : null;
+        if(s == null || s.length == 0) // no elements
+            return null;
+        else if (s.length == 1) // just 1 element, no joinin delimiter required
+            return s[0];
+
+        return String.join(", ", s);
     }
 
     public String[] convertToEntityAttribute(String s) {

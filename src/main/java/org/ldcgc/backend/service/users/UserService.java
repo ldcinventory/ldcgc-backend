@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.users;
 
 import com.nimbusds.jose.JOSEException;
 import org.ldcgc.backend.payload.dto.users.UserDto;
+import org.ldcgc.backend.util.common.EOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public interface UserService {
 
     ResponseEntity<?> getUser(Integer userId);
 
-    ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId);
+    ResponseEntity<?> listUsers(String filterString, Integer userId, Integer pageIndex, Integer size, String sortField, EOrder order);
 
     ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException;
 

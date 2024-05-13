@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.UserController;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.service.users.UserService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,8 +37,8 @@ public class UserControllerImpl implements UserController {
         return userService.getUser(userId);
     }
 
-    public ResponseEntity<?> listUsers(Integer pageIndex, Integer size, String filterString, Integer userId) {
-        return userService.listUsers(pageIndex, size, filterString, userId);
+    public ResponseEntity<?> listUsers(String filterString, Integer userId, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return userService.listUsers(filterString, userId, pageIndex, size, sortField, order);
     }
 
     public ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException {

@@ -31,7 +31,7 @@ import static org.ldcgc.backend.util.process.Threads.runInBackground;
 @Component
 public class Email {
 
-    private final TemplateEngine templateEngine;
+    @Getter private final TemplateEngine templateEngine;
     private final JavaMailSender sender;
     @Setter private static Email INSTANCE;
 
@@ -68,7 +68,7 @@ public class Email {
         message.setTo(email);
         message.setSubject(Messages.App.CREDENTIALS_RECOVERY_SUBJECT);
 
-        String processedEmail = Email.INSTANCE.templateEngine.process(Messages.App.CREDENTIALS_EMAIL_TEMPLATE, context);
+        String processedEmail = Email.INSTANCE.getTemplateEngine().process(Messages.App.CREDENTIALS_EMAIL_TEMPLATE, context);
 
         message.setText(processedEmail, true);
 

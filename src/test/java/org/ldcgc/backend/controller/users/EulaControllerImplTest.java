@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
-import static org.ldcgc.backend.base.Constants.apiRoot;
+import static org.ldcgc.backend.base.Constants.API_ROOT;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.putRequest;
 import static org.mockito.BDDMockito.given;
@@ -96,7 +96,7 @@ public class EulaControllerImplTest {
     public void getEula() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         final String url = "example.org";
 
@@ -114,7 +114,7 @@ public class EulaControllerImplTest {
     public void putEula() throws Exception {
         final String request = requestRoot;
 
-        log.info("Testing a PUT Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
         given(eulaService.putEULA(Mockito.anyString(), Mockito.any(EEULAStatus.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Error.EULA_ACTION_INVALID));

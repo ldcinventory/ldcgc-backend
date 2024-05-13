@@ -1,5 +1,3 @@
-version: '3.8'
-
 # this docker script loads every dependency backend (api) has, to run and test in local
 
 services:

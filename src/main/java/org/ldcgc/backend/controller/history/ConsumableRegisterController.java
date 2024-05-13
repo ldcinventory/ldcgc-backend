@@ -7,9 +7,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +28,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
 import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
-@RequestMapping("/resources/consumables/register")
+@RequestMapping("/resources/consumables/registers")
+@Tag(name = "Consumable Register", description = "Consumable register methods with CRUD functions")
 public interface ConsumableRegisterController {
 
     @Operation(summary = "Get consumable register details", description = SWAGGER_ROLE_OPERATION_MANAGER)
@@ -56,12 +61,12 @@ public interface ConsumableRegisterController {
             @PathVariable Integer registerId);
 
     @Operation(summary = "List consumable registers", description = """
-        Get all registers from consumable registers, paginated and sorted. You can also include 4 filters:
-        - volunteer builder assistant id
-        - consumable barcode
-        - date from
-        - date to
-             
+        Get all registers from consumable registers, paginated and sorted. You can also include 5 filters:
+        - volunteer builder assistant id (as "volunteer")
+        - consumable barcode (as "consumable")
+        - date from (as "registerFrom")
+        - date to (as "registerTo")
+        - status (as "status", check the posible ENUM values)
         """
         + SWAGGER_ROLE_OPERATION_MANAGER)
 
@@ -78,20 +83,24 @@ public interface ConsumableRegisterController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumableRegister(
+        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
+            @RequestParam(required = false) String volunteer,
+        @Parameter(description = "Volunteer Consumable barcode (ignores the other params)")
+            @RequestParam(required = false) String consumable,
+        @Parameter(description = "Date 'from' to filter absences")
+            @RequestParam(required = false) LocalDateTime registerFrom,
+        @Parameter(description = "Date 'to' to filter absences")
+            @RequestParam(required = false) LocalDateTime registerTo,
+        @Parameter(description = "Status of the register (opened/closed)")
+            @RequestParam(required = false) ERegisterStatus status,
         @Parameter(description = "Page index (default = 0)")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
-        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
-            @RequestParam(required = false) String builderAssistantId,
-        @Parameter(description = "Volunteer Consumable barcode (ignores the other params)")
-            @RequestParam(required = false) String consumableBarcode,
-        @Parameter(description = "Date 'from' to filter absences")
-            @RequestParam(required = false) LocalDateTime dateFrom,
-        @Parameter(description = "Date 'to' to filter absences")
-            @RequestParam(required = false) LocalDateTime dateTo,
-        @Parameter(description = "Sort by any field desired (see fields of ConsumableRegister class)")
-            @RequestParam(required = false, defaultValue = "id") String sortField);
+        @Parameter(description = "Sort by any field from ConsumableRegister class (default = id)")
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Create a consumable register.", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
@@ -163,5 +172,33 @@ public interface ConsumableRegisterController {
             @PathVariable Integer registerId,
         @Parameter(description = "When deleting a register, undo also stock changes")
             @RequestParam(required = false) boolean undoStockChanges);
+
+    @Operation(summary = "Create multiple consumable registers. Insert inRegistration to null to make an OPEN registration")
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_204,
+        description = SwaggerConfig.HTTP_REASON_204,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ConsumableRegisterDto.class)))
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Consumable not available", value = Messages.Error.CONSUMABLE_REGISTER_CONSUMABLE_NOT_AVAILABLE)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Consumable not found barcode", value = Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND),
+                @ExampleObject(name = "Volunteer BA id not found", value = Messages.Error.VOLUNTEER_BAID_NOT_FOUND)
+            })
+    )
+    @PostMapping("/many")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> createMultipleConsumableRegisters(@RequestBody List<ConsumableRegisterDto> consumableRegistersDto);
 
 }

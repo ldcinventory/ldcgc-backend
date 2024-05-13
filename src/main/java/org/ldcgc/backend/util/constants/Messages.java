@@ -24,20 +24,34 @@ public class Messages {
 
             VOLUNTEER_CREATED = "Volunteer created",
             VOLUNTEER_LISTED = "Found %s volunteer/s",
+            VOLUNTEER_FOUND = "Volunteer with builder assistant id %s was found",
             VOLUNTEER_UPDATED = "Volunteer details updated",
             VOLUNTEER_DELETED = "Volunteer deleted",
 
             CREDENTIALS_EMAIL_SENT = "Credentials email sent",
             EMAIL_SENT = "Email sent",
 
+            LOCATION_FOUND = "Found %s locations",
+            LOCATION_CREATED = "Location created successfully!",
+            LOCATION_UPDATED = "Location with id %s was updated",
+            LOCATION_DELETED = "Location with id %s was deleted",
+
             LOGOUT_SUCCESSFUL = "Logout successful",
+
+            RESOURCE_TYPE_FOUND = "Found %s resource types",
+            RESOURCE_TYPE_CREATED = "Resource type created successfully!",
+            RESOURCE_TYPE_DELETED = "Resource type with id %s deleted",
+
+            BRAND_FOUND = "Found %s brands",
+            BRAND_CREATED = "Brand created successfully!",
+            BRAND_DELETED = "Brand with id %s deleted",
 
             TOOL_CREATED = "Tool created successfully!",
             TOOL_LISTED = "Found %s tool/s",
             TOOL_UPDATED = "Tool details updated",
             TOOL_UNTOUCHED = "Tool untouched",
             TOOL_IMAGES_UPDATED = "Tool details for attached images updated",
-            TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools",
+            TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools. Skipped %s tools",
             TOOL_DELETED = "Tool deleted",
 
             CONSUMABLE_CREATED = "Consumable created successfully!",
@@ -46,9 +60,10 @@ public class Messages {
             CONSUMABLE_IMAGES_UPDATED = "Consumable details for attached images updated",
             CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
-            CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables",
+            CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables. Skipped %s consumables",
 
             CONSUMABLE_REGISTER_CREATED = "Consumable register created",
+            CONSUMABLE_REGISTERS_CREATED = "Consumable registers created.",
             CONSUMABLE_REGISTER_LISTED = "Found %s consumable registers",
             CONSUMABLE_REGISTER_UPDATED = "Consumable register updated",
             CONSUMABLE_REGISTER_DELETED = "Consumable register deleted",
@@ -62,12 +77,16 @@ public class Messages {
             AVAILABILITY_UPDATED = "Availability updated",
             AVAILABILITY_CLEARED = "Availability cleared",
 
-            ABSENCES_FOUND = "%s absences found",
+            ABSENCES_LISTED = "%s absences found",
             ABSENCE_CREATED = "Absence created",
             ABSENCE_UPDATED = "Absence updated",
             ABSENCE_DELETED = "Absence deleted",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers."
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
+
+            TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
+            TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
+            TEST_ACCESS_WITH_ADMIN_CREDENTIALS = "Everything OK with admin credentials!"
 
             ;
 
@@ -124,17 +143,17 @@ public class Messages {
             VOLUNTEER_NOT_INFORMED = "Volunter is not informed in the payload",
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
-            VOLUNTEER_NOT_FOUND_BA_ID = "The volunteer with Builder Assistant id %s couldn't be found",
-            VOLUNTEER_BARCODE_NOT_FOUND = "The volunteer you're searching for with builder assistant id '%s' couldn't be found",
+            VOLUNTEER_BAID_NOT_FOUND = "The volunteer with Builder Assistant id %s couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
 
-            TOOL_NOT_FOUND = "Tool with id '%s' not found",
+            TOOL_ID_NOT_FOUND = "Tool with id '%s' not found",
             TOOL_NOT_FOUND_BARCODE = "Tool with barcode %s not found",
             TOOL_BARCODE_ALREADY_EXISTS = "There is another tool with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             TOOL_ID_SHOULDNT_BE_PRESENT = "The request shouldn't include an id. Please, make sure that the tool id is null",
             TOOL_IMAGE_INFORMED_NOT_FOUND = "The image with id '%s' is not registered for this tool",
+            TOOL_REGISTERS_ASSOCIATED = "Could not delete tool. There are registers still associated with it.",
 
             TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
             TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
@@ -145,7 +164,7 @@ public class Messages {
             TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found.",
             TOOL_REGISTER_REPEATED_TOOLS = "You can't assign the same tool more than one time!",
 
-            CONSUMABLE_NOT_FOUND = "Consumable with id '%s' not found",
+            CONSUMABLE_ID_NOT_FOUND = "Consumable with id '%s' not found",
             CONSUMABLE_BARCODE_NOT_FOUND = "Consumable with barcode '%s' not found",
             CONSUMABLE_BARCODE_ALREADY_EXISTS = "There is another consumable with the same barcode '%s' in the database. Please make sure that the barcode is unique",
             CONSUMABLE_BARCODE_USED_MANY_TIMES = "The barcode '%s' is used by more than one consumable. Please report to admin",
@@ -162,6 +181,9 @@ public class Messages {
             CONSUMABLE_REGISTER_RETURN_DATE_AFTER_TODAY = "The date of returning the consumable is after the actual date and time",
             CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE = "The data of returning the consumible lacks of the date or the amount",
             CONSUMABLE_REGISTER_DATA_CLOSING_NOT_COMPLETE = "The data for closing the consumible lacks any of the required fields: registrationOut, stockAmountOut",
+            CONSUMABLE_REGISTER_CONSUMABLE_NOT_AVAILABLE = "The consumable you are trying to register is not available due to lack of stock.",
+            CONSUMABLE_REGISTERS_NOT_CREATED = "No registers were created. Reasons: \n %s",
+            CONSUMABLE_REGISTERS_CREATED_PARTIALLY = "Some registers were created, but others failed. Errors: \n %s",
 
             UPLOAD_IMAGES_TOO_FEW_ARGUMENTS = "There are few arguments defined for this operation. Inform a tool or a consumable at least",
 
@@ -172,14 +194,21 @@ public class Messages {
 
             LOCATION_NOT_FOUND = "Location with id/name '%s' not found.",
             LOCATION_NOT_FOUND_EXCEL = "Location '%s' not found. Please, fix the excel sheet or add it. Valid locations: %s",
+            LOCATION_EXISTS = "Location with id '%s' already exists.",
+            LOCATION_MAIN_GROUP = "This location is the main location assigned to a group",
 
             GROUP_NOT_FOUND = "Group with id/name '%s' not found.",
             GROUP_NOT_FOUND_EXCEL = "Group '%s' not found. Please, fix the excel sheet or add it. Valid groups: %s",
 
-            CATEGORY_PARENT_NOT_FOUND = "%s with id '%s' not found.",
-            CATEGORY_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
-            CATEGORY_NOT_FOUND = "This category '%s' couldn't be found",
+            RESOURCE_TYPE_PARENT_NOT_FOUND = "%s with id '%s' not found.",
+            RESOURCE_TYPE_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",
+            RESOURCE_TYPE_NOT_FOUND = "Resource type with id '%s' couldn't be found",
+            RESOURCE_TYPE_EXISTS = "This resource type already exists",
+            RESOURCE_TYPE_LOCKED = "Resource type with id '%s' is locked",
+
             BRAND_NOT_FOUND = "This brand '%s' couldn't be found",
+            BRAND_EXISTS = "This brand already exists",
+            BRAND_LOCKED = "Brand with id '%s' is locked",
 
             STOCK_TYPE_NOT_FOUND = "Stock type '%s' not found",
             TIME_UNIT_NOT_FOUND = "Time unit '%s' not found",
@@ -198,13 +227,13 @@ public class Messages {
             CSV_PROCESS_ERROR = "Validation error when trying to process CSV with delimiter",
 
             EXCEL_VALUE_INCORRECT = "The value '%s' is incorrect on excel row %s, column %s",
-            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s is incorrect. Valid type: %s",
+            EXCEL_CELL_TYPE_INCORRECT = "The type of cell on row %s, column %s(%s) is incorrect. Valid types are: %s",
             EXCEL_PARSE_ERROR = "There has been an error while parsing Excel file, please check that the template is correct and all the values are filled out and have a correct type.",
-            EXCEL_EMPTY_CELL = "An empty value is not allowed on excel row %s, column %s",
+            EXCEL_CELL_TYPE_ERROR = "This cell contains a formula error or this cell is invalid, on row %s, column %s(%s)",
 
             PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL = "The index requested is out of bounds of the total pages available.",
 
-            IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE = "The value of image quality to compress is between 0.0 and 1.0",
+            IMAGE_QUALITY_DEFINITION_OUT_OF_RANGE = "The value of image quality to compress must be between 0.0 and 1.0",
             UNEXPECTED_ERROR = "Unexpected error ocurred, or uncontrolled exception had been thrown."
 
         ;

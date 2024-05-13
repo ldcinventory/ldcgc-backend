@@ -38,6 +38,7 @@ public class Maintenance {
 
     private LocalDate outRegistration;
 
+    @Column(columnDefinition = "text")
     private String details;
 
     private String urlImages;

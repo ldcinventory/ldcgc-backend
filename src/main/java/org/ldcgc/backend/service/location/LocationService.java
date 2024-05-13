@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.location;
 
 import org.ldcgc.backend.payload.dto.location.LocationDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,6 +10,15 @@ import java.util.List;
 public interface LocationService {
 
     List<LocationDto> getAllLocations();
-    LocationDto findLocationByName(String location);
+
+    ResponseEntity<?> getLocations(Integer groupId);
+
+    ResponseEntity<?> getLocation(Integer locationId, boolean detailed);
+
+    ResponseEntity<?> createLocation(LocationDto locationDto);
+
+    ResponseEntity<?> updateLocation(Integer locationId, LocationDto locationDto);
+
+    ResponseEntity<?> deleteLocation(Integer locationId);
 
 }

@@ -23,7 +23,7 @@ springdoc:
       paths-to-match:
         - /resources/consumables/registers/**
         - /resources/tools/registers/**
-      display-name:
+      display-name: Register
     - group: maintenance
       paths-to-match: /maintenance/**
       display-name: Maintenance
@@ -37,16 +37,21 @@ springdoc:
       paths-to-exclude:
         - /resources/consumables/registers/**
         - /resources/import/**
-      display-name: Consumables
-    - group: google-upload
-      paths-to-match: /resources/google-upload/**
-      display-name: Google-Upload
+      display-name: Resources-Consumables
     - group: tools
       paths-to-match: /resources/tools/**
       paths-to-exclude:
         - /resources/tools/registers/**
         - /resources/import/**
-      display-name: Tools
+      display-name: Resources-Tools
+    - group: resources-common
+      paths-to-match:
+        - /resources/types/**
+        - /resources/brands/**
+      display-name: Resources-Common
+    - group: google-upload
+      paths-to-match: /resources/google-upload/**
+      display-name: Google-Upload
     # search
     - group: search
       paths-to-match: /search/**

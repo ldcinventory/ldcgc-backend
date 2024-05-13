@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
@@ -26,6 +27,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/google-upload")
+@Tag(name = "Google Upload", description = "Manage upload of images associated to Tools/Consumables to Google Drive")
 public interface GoogleUploadController {
 
     @Operation(summary = "Google Upload. Update a tool or consumable uploading images for any of them.", description = SWAGGER_ROLE_OPERATION_MANAGER)
@@ -45,8 +47,8 @@ public interface GoogleUploadController {
         description = SwaggerConfig.HTTP_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_ID_NOT_FOUND),
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @ApiResponse(
@@ -98,9 +100,9 @@ public interface GoogleUploadController {
         description = SwaggerConfig.HTTP_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_NOT_FOUND),
+                @ExampleObject(name = "Tool not found", value = Messages.Error.TOOL_ID_NOT_FOUND),
                 @ExampleObject(name = "Tool image not found", value = Messages.Error.TOOL_IMAGE_INFORMED_NOT_FOUND),
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND),
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND),
                 @ExampleObject(name = "Consumable image not found", value = Messages.Error.CONSUMABLE_IMAGE_INFORMED_NOT_FOUND)
             })
     )

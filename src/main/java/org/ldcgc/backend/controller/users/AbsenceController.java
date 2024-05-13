@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
@@ -85,6 +86,10 @@ public interface AbsenceController {
     ResponseEntity<?> listMyAbsences(
         @Parameter(description = "Valid JWT of the user to get absence", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Date 'from' to filter absences")
             @RequestParam(required = false) LocalDate dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
@@ -213,14 +218,20 @@ public interface AbsenceController {
     @GetMapping
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> listAbsences(
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
         @Parameter(description = "Date 'from' to filter absences")
             @RequestParam(required = false) LocalDate dateFrom,
         @Parameter(description = "Date 'to' to filter absences")
             @RequestParam(required = false) LocalDate dateTo,
         @Parameter(description = "Builder Assistant Ids (array of one or more ids)")
-            @RequestParam(required = false) String[] builderAssistantIds,
+            @RequestParam(required = false) List<String> builderAssistantIds,
         @Parameter(description = "Sort by any field desired (see fields of Absence class)")
-            @RequestParam(required = false, defaultValue = "id") String sortField);
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Groups the results by volunteer bulder assistant id")
+            @RequestParam(required = false, defaultValue = "true") boolean groupedByBAId);
 
     @Operation(summary = "Create user absence", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

@@ -6,35 +6,38 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
-import org.ldcgc.backend.db.model.category.Category;
+import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.ResponsibilityRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.CategoryDto;
+import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
-import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
+import org.ldcgc.backend.payload.mapper.category.ResponsibilityMapper;
 import org.ldcgc.backend.payload.mapper.group.GroupMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.UserServiceImpl;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -51,8 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -62,7 +65,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @Slf4j
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
     private UserService userService;
@@ -71,7 +74,7 @@ class UserServiceImplTest {
     @Mock private SignedJWT signedJWT;
     @Mock private UserRepository userRepository;
     @Mock private VolunteerRepository volunteerRepository;
-    @Mock private CategoryRepository categoryRepository;
+    @Mock private ResponsibilityRepository responsibilityRepository;
     @Mock private GroupRepository groupRepository;
     @Mock private TokenRepository tokenRepository;
     @Mock private AccountService accountService;
@@ -81,7 +84,7 @@ class UserServiceImplTest {
 
     @BeforeEach
     public void init() {
-        userService = new UserServiceImpl(userRepository, volunteerRepository, categoryRepository, groupRepository, tokenRepository, accountService, jwtUtils);
+        userService = new UserServiceImpl(userRepository, volunteerRepository, responsibilityRepository, groupRepository, tokenRepository, accountService, jwtUtils);
 
     }
     private final UserDto NOT_FOUND_USER = UserDto.builder().id(-1).build();
@@ -226,8 +229,8 @@ class UserServiceImplTest {
 
     private void configureToken() {
         try {
-            mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
-            mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+            mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+            mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
         } catch (ParseException | JOSEException e) {
             log.error("Error generating mockedSignedJWT");
             throw new RuntimeException(e.getMessage());
@@ -321,7 +324,7 @@ class UserServiceImplTest {
 
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
-        ResponseEntity<?> response = userService.listUsers(null, null, null, user.getId());
+        ResponseEntity<?> response = userService.listUsers(null, user.getId(), null, null, null, null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -345,13 +348,14 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers(0, 5, null, null);
+        ResponseEntity<?> response = userService.listUsers(null, null, 0, 5, "id", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
-        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
+        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseData.getElements());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -370,13 +374,14 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAllFiltered(anyString(), any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers(0, 5, "x", null);
+        ResponseEntity<?> response = userService.listUsers("x", null,0, 5, "id", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
-        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseBody.getData());
+        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseData.getElements());
 
         verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
     }
@@ -435,7 +440,6 @@ class UserServiceImplTest {
         final UserDto userDtoUpdating = MANAGER_USER;
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
-        doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
         doReturn(Optional.of(userEntityUpdating)).when(userRepository).findById(userId);
         doReturn(Optional.of(checkUserUpdating)).when(userRepository).findByEmail(userDtoUpdating.getEmail());
 
@@ -461,7 +465,6 @@ class UserServiceImplTest {
         final UserDto userDtoUpdating = MANAGER_USER.toBuilder().role(ERole.ROLE_ADMIN).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
-        doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
         doReturn(Optional.of(userEntityUpdating)).when(userRepository).findById(userId);
         doReturn(Optional.of(checkUserUpdating)).when(userRepository).findByEmail(userDtoUpdating.getEmail());
 
@@ -602,7 +605,7 @@ class UserServiceImplTest {
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         // responsibility
-        final CategoryDto responsibilityDto = CategoryDto.builder().id(0).build();
+        final ResponsibilityDto responsibilityDto = ResponsibilityDto.builder().id(0).build();
         // user details to update the entity
         final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).responsibility(responsibilityDto).build();
 
@@ -612,18 +615,18 @@ class UserServiceImplTest {
         doReturn(Optional.of(checkUserUpdating)).when(userRepository).findByEmail(userDtoUpdating.getEmail());
 
         // responsibility
-        doReturn(Optional.empty()).when(categoryRepository).findById(userDtoUpdating.getResponsibility().getId());
+        doReturn(Optional.empty()).when(responsibilityRepository).findById(userDtoUpdating.getResponsibility().getId());
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), String.format(Messages.Error.CATEGORY_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
+        assertEquals(ex.getMessage(), String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(volunteerRepository, atMostOnce()).findById(any());
         verify(userRepository, atMostOnce()).findByVolunteer_Id(any());
-        verify(categoryRepository, atMostOnce()).findById(any());
+        verify(responsibilityRepository, atMostOnce()).findById(any());
 
     }
 
@@ -633,8 +636,8 @@ class UserServiceImplTest {
         final User userToken = UserMapper.MAPPER.toEntity(MANAGER_USER);
         final Integer userIdFromToken = MANAGER_USER.getId();
         // responsibility
-        final CategoryDto responsibilityDtoOrigin = CategoryDto.builder().id(0).build();
-        final CategoryDto responsibilityDtoUpdating = CategoryDto.builder().id(1).build();
+        final ResponsibilityDto responsibilityDtoOrigin = ResponsibilityDto.builder().id(0).build();
+        final ResponsibilityDto responsibilityDtoUpdating = ResponsibilityDto.builder().id(1).build();
         // user entity which will be updated
         final Integer userId = STANDARD_USER.getId();
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER.toBuilder().responsibility(responsibilityDtoOrigin).build());
@@ -648,18 +651,18 @@ class UserServiceImplTest {
         doReturn(Optional.of(checkUserUpdating)).when(userRepository).findByEmail(userDtoUpdating.getEmail());
 
         // responsibility
-        doReturn(Optional.empty()).when(categoryRepository).findById(userDtoUpdating.getResponsibility().getId());
+        doReturn(Optional.empty()).when(responsibilityRepository).findById(userDtoUpdating.getResponsibility().getId());
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateUser(mockedToken, userId, userDtoUpdating));
 
         assertEquals(ex.getHttpStatus(), HttpStatus.NOT_FOUND);
-        assertEquals(ex.getMessage(), String.format(Messages.Error.CATEGORY_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
+        assertEquals(ex.getMessage(), String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, userDtoUpdating.getResponsibility().getId()));
 
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(volunteerRepository, atMostOnce()).findById(any());
         verify(userRepository, atMostOnce()).findByVolunteer_Id(any());
-        verify(categoryRepository, atMostOnce()).findById(any());
+        verify(responsibilityRepository, atMostOnce()).findById(any());
 
     }
 
@@ -694,7 +697,7 @@ class UserServiceImplTest {
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(volunteerRepository, atMostOnce()).findById(any());
         verify(userRepository, atMostOnce()).findByVolunteer_Id(any());
-        verify(categoryRepository, atMostOnce()).findById(any());
+        verify(responsibilityRepository, atMostOnce()).findById(any());
     }
 
     @Test
@@ -729,7 +732,7 @@ class UserServiceImplTest {
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(volunteerRepository, atMostOnce()).findById(any());
         verify(userRepository, atMostOnce()).findByVolunteer_Id(any());
-        verify(categoryRepository, atMostOnce()).findById(any());
+        verify(responsibilityRepository, atMostOnce()).findById(any());
     }
 
     @Test
@@ -746,8 +749,8 @@ class UserServiceImplTest {
         // volunteer + responsibility + group
         final VolunteerDto volunteerDtoUpdating = VolunteerDto.builder().id(1).build();
         final Volunteer volunteer = VolunteerMapper.MAPPER.toEntity(volunteerDtoUpdating);
-        final CategoryDto responsibilityDto = CategoryDto.builder().id(0).build();
-        final Category responsibility = CategoryMapper.MAPPER.toMo(responsibilityDto);
+        final ResponsibilityDto responsibilityDto = ResponsibilityDto.builder().id(0).build();
+        final Responsibility responsibility = ResponsibilityMapper.MAPPER.toEntity(responsibilityDto);
         final GroupDto groupDto = GroupDto.builder().id(0).build();
         final Group group = GroupMapper.MAPPER.toMo(groupDto);
         // user details to update the entity
@@ -764,12 +767,12 @@ class UserServiceImplTest {
         doReturn(Optional.empty()).when(userRepository).findByVolunteer_Id(userDtoUpdating.getVolunteer().getId());
 
         // responsibility
-        doReturn(Optional.of(responsibility)).when(categoryRepository).findById(userDtoUpdating.getResponsibility().getId());
+        doReturn(Optional.of(responsibility)).when(responsibilityRepository).findById(userDtoUpdating.getResponsibility().getId());
 
         // group
         doReturn(Optional.of(group)).when(groupRepository).findById(userDtoUpdating.getGroup().getId());
 
-        mockedSignedJWT = generateNewToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
 
         HttpHeaders headers = new HttpHeaders();
         final String headerPayLoad = String.format("%s.%s", mockedSignedJWT.getParsedParts()[0], mockedSignedJWT.getParsedParts()[1]);
@@ -799,7 +802,7 @@ class UserServiceImplTest {
         verify(userRepository, times(2)).findById(any());
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(volunteerRepository, atMostOnce()).findById(any());
-        verify(categoryRepository, atMostOnce()).findById(any());
+        verify(responsibilityRepository, atMostOnce()).findById(any());
         verify(groupRepository, atMostOnce()).findById(any());
         verify(userRepository, atMostOnce()).saveAndFlush(any());
         verify(tokenRepository, atMostOnce()).deleteAllTokensFromUser(any());

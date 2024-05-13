@@ -1,6 +1,4 @@
-version: '3.8'
-
-# this docker script loads every dependency backend (api) has, to run and test in local
+# this docker script loads API and UI, for QA to run and test in local (it requires to run from run.sh script)
 
 services:
 
@@ -55,24 +53,41 @@ services:
       - LOGGING_HIBERNATE=${LOGGING_HIBERNATE:-ERROR}
       - DB_START_MODE=${DB_START_MODE:-create-drop}
       - LOAD_INITIAL_DATA=${LOAD_INITIAL_DATA:-true}
-      - CONSUMABLES_REGISTRATION_TEST_DATA=${TEST_DATA:-false}
-      - TOOLS_REGISTRATION_TEST_DATA=${TEST_DATA:-false}
+      - RANDOM_TEST_DATA=${TEST_DATA:-false}
     depends_on:
       postgresql:
-        condition: service_healthy
-      maildev:
         condition: service_healthy
     networks:
       - api_db_network
       - api_smtp_network
+      - api_network
+      - ui_network
     ports:
       - "8080:8080"
+    restart: always
+
+  ui:
+    container_name: ldcgc-ui
+    image: ldcgc-ui
+    build:
+      context: ${UI_DOCKERFILE:-../ldcgc-frontend-elm}
+      dockerfile: ${UI_DOCKERFILE:-../ldcgc-frontend-elm}/Dockerfile
+    depends_on:
+      - api
+    networks:
+      - api_network
+    ports:
+      - "3000:1234"
     restart: always
 
 networks:
   api_db_network:
     driver: bridge
   api_smtp_network:
+    driver: bridge
+  api_network:
+    driver: bridge
+  ui_network:
     driver: bridge
 
 volumes:

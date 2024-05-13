@@ -48,7 +48,7 @@ import org.thymeleaf.TemplateEngine;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
-import static org.ldcgc.backend.base.Constants.apiRoot;
+import static org.ldcgc.backend.base.Constants.API_ROOT;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
@@ -124,7 +124,7 @@ public class AccountControllerImplTest {
 
         final String request = requestRoot + "/login";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         given(accountService.login(Mockito.any(UserCredentialsDto.class))).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser));
@@ -145,7 +145,7 @@ public class AccountControllerImplTest {
 
         final String request = requestRoot + "/logout";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         given(jwtUtils.getUserIdFromStringToken(Mockito.anyString())).willReturn(0);
         given(userRepository.existsById(Mockito.anyInt())).willReturn(Boolean.TRUE);
@@ -165,7 +165,7 @@ public class AccountControllerImplTest {
     public void recoverCredentials() throws Exception {
         final String request = requestRoot + "/recover";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         Email email = new Email(templateEngine, sender);
         Email.setINSTANCE(email);
@@ -196,7 +196,7 @@ public class AccountControllerImplTest {
     public void validateTokenWhenRecoveringCredentials() throws Exception {
         final String request = requestRoot + "/validate";
 
-        log.info("Testing a GET Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a GET Request to %s%s\n".formatted(API_ROOT, request));
 
         given(accountService.validateToken(JWT)).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.RECOVERY_TOKEN_VALID));
@@ -213,7 +213,7 @@ public class AccountControllerImplTest {
     public void setNewPasswordWhenRecoveringCredentials() throws Exception {
         final String request = requestRoot + "/new-credentials";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         UserCredentialsDto credentialsDto = UserCredentialsDto.builder()
             .email(mockedUser.getEmail())
@@ -234,11 +234,11 @@ public class AccountControllerImplTest {
     public void refreshToken() throws Exception {
         final String request = requestRoot + "/refresh-token";
 
-        log.info("Testing a POST Request to %s%s\n".formatted(apiRoot, request));
+        log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
         User user = UserMapper.MAPPER.toEntity(mockedUser);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("x-refresh-token", MockedToken.generateRefreshToken(user).getParsedString());
+        headers.add("x-refresh-token", MockedToken.generateSignedRefreshToken(user).getParsedString());
 
         UserDto userDto = UserDto.builder()
             .tokenExpires(LocalDateTime.now().plusDays(1))

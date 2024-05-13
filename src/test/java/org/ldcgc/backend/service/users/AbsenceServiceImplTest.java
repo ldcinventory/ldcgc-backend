@@ -1,12 +1,5 @@
 package org.ldcgc.backend.service.users;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +11,7 @@ import org.ldcgc.backend.db.repository.users.AbsenceRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.users.AbsenceDto;
 import org.ldcgc.backend.payload.mapper.users.AbsenceMapper;
@@ -26,10 +20,10 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.AbsenceServiceImpl;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,17 +41,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.ldcgc.backend.base.mock.MockedToken.generateNewStringToken;
+import static org.ldcgc.backend.base.mock.MockedPagination.mockPagination;
+import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomBuilderAssistantId;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AbsenceServiceImplTest {
@@ -69,21 +63,12 @@ class AbsenceServiceImplTest {
     @Mock VolunteerRepository volunteerRepository;
     @Mock AbsenceRepository absenceRepository;
 
-    // -- lambda part ->>
-    @Mock EntityManager entityManager;
-    @Mock CriteriaBuilder criteriaBuilder;
-    @Mock CriteriaQuery<Absence> criteriaQuery;
-    @Mock Root<Absence> rootAbsence;
-    @Mock Join<Volunteer, Absence> joinVolunteerAbsence;
-    @Mock Path<String> builderAssistantIdExpression;
-    // -- lambda part <<-
-
     private String mockedToken;
 
     @BeforeEach
     public void init() {
         absenceService = new AbsenceServiceImpl(jwtUtils, userRepository, volunteerRepository, absenceRepository);
-        mockedToken = generateNewStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
 
     }
 
@@ -132,7 +117,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.getMyAbsence(mockedToken, 0));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -198,7 +183,7 @@ class AbsenceServiceImplTest {
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.empty()).when(userRepository).findById(0);
 
-        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, DATE_FROM, DATE_TO, "dateFrom"));
+        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, null, null, DATE_FROM, DATE_TO, "dateFrom"));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
@@ -213,7 +198,7 @@ class AbsenceServiceImplTest {
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITHOUT_VOLUNTEER)).when(userRepository).findById(0);
 
-        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, DATE_FROM, DATE_TO, SORT_FIELD));
+        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, null, null, DATE_FROM, DATE_TO, SORT_FIELD));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_DOESNT_HAVE_VOLUNTEER, ex.getMessage());
@@ -227,9 +212,9 @@ class AbsenceServiceImplTest {
 
         doThrow(ParseException.class).when(jwtUtils).getUserIdFromStringToken(mockedToken);
 
-        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, DATE_FROM, DATE_TO, SORT_FIELD));
+        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, null, null, DATE_FROM, DATE_TO, SORT_FIELD));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -243,7 +228,7 @@ class AbsenceServiceImplTest {
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
         USER_WITH_VOLUNTEER.getVolunteer().setAbsences(null);
 
-        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, DATE_FROM, DATE_TO, SORT_FIELD));
+        RequestException ex = assertThrows(RequestException.class, () -> absenceService.listMyAbsences(mockedToken, null, null, DATE_FROM, DATE_TO, SORT_FIELD));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.VOLUNTEER_ABSENCES_EMPTY, ex.getMessage());
@@ -261,16 +246,18 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(absences).when(absenceRepository).findAll(any(Specification.class));
 
-        ResponseEntity<?> response = absenceService.listMyAbsences(mockedToken, null, null, SORT_FIELD);
+        doReturn(mockPagination(absences)).when(absenceRepository).findAllFiltered(isNull(), isNull(), Mockito.anyList(), Mockito.any(Pageable.class));
+
+        ResponseEntity<?> response = absenceService.listMyAbsences(mockedToken, 0, 25, null, null, SORT_FIELD);
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertNotNull(responseBody);
-        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseData.getGroupedElements();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
-        assertEquals(String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.ABSENCES_LISTED, absencesDto.size()), responseBody.getMessage());
         assertTrue(absencesMap.containsKey(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         assertEquals(absencesDto.size(), absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size());
 
@@ -288,19 +275,20 @@ class AbsenceServiceImplTest {
 
         doReturn(0).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        doReturn(absences).when(absenceRepository).findAll(any(Specification.class));
+        doReturn(mockPagination(absences)).when(absenceRepository).findAllFiltered(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.anyList(), Mockito.any(Pageable.class));
 
         LocalDate dateFrom = absencesDto.getFirst().getDateFrom();
         LocalDate dateTo = absencesDto.getLast().getDateTo();
 
-        ResponseEntity<?> response = absenceService.listMyAbsences(mockedToken, dateFrom, dateTo, SORT_FIELD);
+        ResponseEntity<?> response = absenceService.listMyAbsences(mockedToken, 0, 25, dateFrom, dateTo, SORT_FIELD);
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertNotNull(responseBody);
-        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseData.getGroupedElements();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
-        assertEquals(String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.ABSENCES_LISTED, absencesDto.size()), responseBody.getMessage());
         assertTrue(absencesMap.containsKey(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         assertEquals(absencesDto.size(), absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size());
 
@@ -347,7 +335,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.createMyAbsence(mockedToken, ABSENCE));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -416,7 +404,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.updateMyAbsence(mockedToken, 0, ABSENCE));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -521,7 +509,7 @@ class AbsenceServiceImplTest {
 
         RequestException ex = assertThrows(RequestException.class, () -> absenceService.deleteMyAbsence(mockedToken, 0));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getHttpStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getHttpStatus());
         assertEquals(Messages.Error.TOKEN_NOT_PARSEABLE, ex.getMessage());
 
         verify(userRepository, Mockito.times(0)).findById(anyInt());
@@ -634,30 +622,26 @@ class AbsenceServiceImplTest {
 
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
-        //doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
-        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
+        doReturn(mockPagination(bothLists)).when(absenceRepository).findAll(Mockito.any(Pageable.class));
 
-        ResponseEntity<?> response = absenceService.listAbsences(null, null, null, SORT_FIELD);
-
-        // -- lambda part
-        List<Absence> testAbsences = testLambdaPart(specCaptor);
+        ResponseEntity<?> response = absenceService.listAbsences(0, 25, null, null, null, SORT_FIELD, true);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
+        assertNotNull(responseBody);
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseData.getGroupedElements();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
-        assertEquals(String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.ABSENCES_LISTED, absencesDto.size()), responseBody.getMessage());
         assertTrue(absencesMap.containsKey(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         assertTrue(absencesMap.containsKey(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
-        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, times(2)).findAll(any(Specification.class));
+        verify(absenceRepository, atMostOnce()).findAll(Mockito.any(Pageable.class));
 
     }
 
@@ -675,34 +659,29 @@ class AbsenceServiceImplTest {
 
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
-        //doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
-        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
+        doReturn(mockPagination(bothLists)).when(absenceRepository).findAllFiltered(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull(), Mockito.any(Pageable.class));
 
         LocalDate dateFrom = absencesDto.getFirst().getDateFrom();
         LocalDate dateTo = absencesDto.getLast().getDateTo();
 
-        ResponseEntity<?> response = absenceService.listAbsences(dateFrom, dateTo, null, SORT_FIELD);
-
-        // -- lambda part
-        List<Absence> testAbsences = testLambdaPart(specCaptor);
+        ResponseEntity<?> response = absenceService.listAbsences(0, 25, dateFrom, dateTo, null, SORT_FIELD, true);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertNotNull(responseBody);
-        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseData.getGroupedElements();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
-        assertEquals(String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.ABSENCES_LISTED, absencesDto.size()), responseBody.getMessage());
         assertTrue(absencesMap.containsKey(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         assertTrue(absencesMap.containsKey(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
-        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, times(2)).findAll(any(Specification.class));
+        verify(absenceRepository, atMostOnce()).findAllFiltered(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull(), Mockito.any(Pageable.class));
 
     }
 
@@ -720,33 +699,28 @@ class AbsenceServiceImplTest {
 
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
-        //doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
-        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
+        doReturn(mockPagination(bothLists)).when(absenceRepository).findAllFiltered(isNull(), isNull(), Mockito.anyList(), Mockito.any(Pageable.class));
 
-        ResponseEntity<?> response = absenceService.listAbsences(null, null, new String[]{
+        ResponseEntity<?> response = absenceService.listAbsences(0, 25, null, null, List.of(
             USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId(),
-            ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()}, SORT_FIELD);
-
-        // -- lambda part
-        List<Absence> testAbsences = testLambdaPart(specCaptor);
+            ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()), SORT_FIELD, true);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertNotNull(responseBody);
-        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseData.getGroupedElements();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
-        assertEquals(String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.ABSENCES_LISTED, absencesDto.size()), responseBody.getMessage());
         assertTrue(absencesMap.containsKey(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         assertTrue(absencesMap.containsKey(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
-        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, times(2)).findAll(any(Specification.class));
+        verify(absenceRepository, atMostOnce()).findAllFiltered(isNull(), isNull(), Mockito.anyList(), Mockito.any(Pageable.class));
 
     }
 
@@ -764,48 +738,32 @@ class AbsenceServiceImplTest {
 
         List<AbsenceDto> absencesDto = bothLists.stream().map(AbsenceMapper.MAPPER::toDto).toList();
 
-        //doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(0);
-        ArgumentCaptor<Specification<Absence>> specCaptor = ArgumentCaptor.forClass(Specification.class);
-        doReturn(bothLists).when(absenceRepository).findAll(specCaptor.capture());
+        doReturn(mockPagination(bothLists)).when(absenceRepository).findAllFiltered(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.anyList(), Mockito.any(Pageable.class));
 
         LocalDate dateFrom = absencesDto.getFirst().getDateFrom();
         LocalDate dateTo = absencesDto.getLast().getDateTo();
 
-        ResponseEntity<?> response = absenceService.listAbsences(dateFrom, dateTo, new String[]{
+        ResponseEntity<?> response = absenceService.listAbsences(0, 25, dateFrom, dateTo, List.of(
             USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId(),
-            ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()}, SORT_FIELD);
-
-        // -- lambda part
-        List<Absence> testAbsences = testLambdaPart(specCaptor);
+            ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()), SORT_FIELD, true);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertNotNull(responseBody);
-        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        HashMap<String, List<AbsenceDto>> absencesMap = (HashMap<String, List<AbsenceDto>>) responseData.getGroupedElements();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody.getData());
-        assertEquals(String.format(Messages.Info.ABSENCES_FOUND, absencesDto.size()), responseBody.getMessage());
+        assertEquals(String.format(Messages.Info.ABSENCES_LISTED, absencesDto.size()), responseBody.getMessage());
         assertTrue(absencesMap.containsKey(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         assertTrue(absencesMap.containsKey(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()));
         int firstListAbsencesQt = absencesMap.get(USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         int secondListAbsencesQt = absencesMap.get(ANOTHER_USER_WITH_VOLUNTEER.getVolunteer().getBuilderAssistantId()).size();
         assertEquals(absencesDto.size(), firstListAbsencesQt + secondListAbsencesQt);
-        assertEquals(bothLists, testAbsences);
 
         verify(userRepository, atMostOnce()).findById(anyInt());
-        verify(absenceRepository, times(2)).findAll(any(Specification.class));
+        verify(absenceRepository, atMostOnce()).findAllFiltered(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.anyList(), Mockito.any(Pageable.class));
 
-    }
-
-    private List<Absence> testLambdaPart(ArgumentCaptor<Specification<Absence>> specCaptor) {
-        when(entityManager.getCriteriaBuilder()).thenReturn(this.criteriaBuilder);
-        //doReturn(joinVolunteerAbsence).when(rootAbsence).join(anyString(), eq(JoinType.LEFT));
-        //doReturn(builderAssistantIdExpression).when(joinVolunteerAbsence).get(anyString());
-
-        Specification<Absence> capturedSpec = specCaptor.getValue();
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        Predicate predicate = capturedSpec.toPredicate(rootAbsence, criteriaQuery, criteriaBuilder);
-        return absenceRepository.findAll((Specification<Absence>) (r, q, cb) -> predicate);
     }
 
     @Test

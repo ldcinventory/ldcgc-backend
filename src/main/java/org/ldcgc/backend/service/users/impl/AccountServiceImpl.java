@@ -40,7 +40,7 @@ import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId
 import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
 import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
 import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
-import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
+import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDateTime;
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
 
 @Component
@@ -90,8 +90,8 @@ public class AccountServiceImpl implements AccountService {
             return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
         UserDto userDto = UserMapper.MAPPER.toDTO(userEntity).toBuilder()
-            .tokenExpires(convertDateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
-            .refreshExpires(convertDateToLocalDateTime(refreshToken.getJWTClaimsSet().getExpirationTime()))
+            .tokenExpires(dateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
+            .refreshExpires(dateToLocalDateTime(refreshToken.getJWTClaimsSet().getExpirationTime()))
             .build();
 
         return Constructor.buildResponseObjectHeader(HttpStatus.OK, userDto, headers);
@@ -130,7 +130,7 @@ public class AccountServiceImpl implements AccountService {
                 new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_NOT_FOUND)));
 
         if(tokenDto.getExpiresAt().isBefore(LocalDateTime.now()))
-            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOKEN_EXPIRED);
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.TOKEN_EXPIRED);
 
         // check recovery & refresh token
         if (!tokenDto.isRecoveryToken() && !tokenDto.isRefreshToken())
@@ -177,8 +177,8 @@ public class AccountServiceImpl implements AccountService {
         response.setHeader("x-refresh-token", refreshJwt.getParsedString());
 
         UserDto userDto = UserDto.builder()
-            .tokenExpires(convertDateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
-            .refreshExpires(convertDateToLocalDateTime(refreshJwt.getJWTClaimsSet().getExpirationTime())).build();
+            .tokenExpires(dateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
+            .refreshExpires(dateToLocalDateTime(refreshJwt.getJWTClaimsSet().getExpirationTime())).build();
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.TOKEN_REFRESHED, userDto);
     }

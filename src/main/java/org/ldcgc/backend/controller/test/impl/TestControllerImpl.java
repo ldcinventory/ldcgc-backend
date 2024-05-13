@@ -16,6 +16,10 @@ public class TestControllerImpl implements TestController {
         return testService.testAccessWithCredentials();
     }
 
+    public ResponseEntity<?> testAccessWithManagerCredentials() {
+        return testService.testAccessWithManagerCredentials();
+    }
+
     public ResponseEntity<?> testAccessWithAdminCredentials() {
         return testService.testAccessWithAdminCredentials();
     }

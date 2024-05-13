@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.history.ToolRegisterController;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
 import org.ldcgc.backend.service.history.ToolRegisterService;
+import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,21 +21,21 @@ public class ToolRegisterControllerImpl implements ToolRegisterController {
         return service.createToolRegister(toolRegisterDto);
     }
 
-    public ResponseEntity<?> getAllRegisters(Integer pageIndex, Integer size, String sortString, Boolean descOrder, String status, String volunteer, String tool) {
-        return service.getAllRegisters(pageIndex, size, sortString, descOrder, status, volunteer, tool);
+    public ResponseEntity<?> getAllToolRegisters(ERegisterStatus status, String volunteer, String tool, Integer pageIndex, Integer size, String sortString, EOrder order) {
+        return service.getAllToolRegisters(status, volunteer, tool, pageIndex, size, sortString, order);
     }
 
-    public ResponseEntity<?> updateRegister(Integer registerId, ToolRegisterDto registerDto) {
-        return service.updateRegister(registerId, registerDto);
+    public ResponseEntity<?> updateToolRegister(Integer registerId, ToolRegisterDto registerDto) {
+        return service.updateToolRegister(registerId, registerDto);
     }
 
-    public ResponseEntity<?> getRegister(Integer registerId) {
-        return service.getRegister(registerId);
+    public ResponseEntity<?> getToolRegister(Integer registerId) {
+        return service.getToolRegister(registerId);
     }
 
-    public ResponseEntity<?> deleteRegister(Integer registerId) {
-        return service.deleteRegister(registerId);
+    public ResponseEntity<?> deleteToolRegister(Integer registerId) {
+        return service.deleteToolRegister(registerId);
     }
 
-    public ResponseEntity<?> createToolRegisters(List<ToolRegisterDto> toolRegistersDto) { return service.createToolRegisters(toolRegistersDto); }
+    public ResponseEntity<?> createMultipleToolRegisters(List<ToolRegisterDto> toolRegistersDto) { return service.createMultipleToolRegisters(toolRegistersDto); }
 }

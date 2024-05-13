@@ -3,7 +3,6 @@ package org.ldcgc.backend.payload.mapper.users;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
-import org.ldcgc.backend.payload.mapper.category.CategoryMapper;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,7 +12,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.ldcgc.backend.util.creation.EncryptedPassword.getEncryptedPassword;
 
-@Mapper(uses = { LocationMapper.class, CategoryMapper.class, VolunteerMapper.class })
+@Mapper(uses = { LocationMapper.class, VolunteerMapper.class })
 public interface UserMapper {
 
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
@@ -23,7 +22,6 @@ public interface UserMapper {
     User toEntity(UserDto userRequest);
 
     @Mapping(target = "password", ignore = true)
-    @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "volunteer.absences", ignore = true)
     UserDto toDTO(User user);
 

@@ -1,17 +1,24 @@
 package org.ldcgc.backend.payload.dto.other;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder(toBuilder = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaginationDetails {
 
     private List<?> elements;
+    private Map<?, ?> groupedElements;
     private int numElements;
     private int elementsPerPage;
     private int elementsThisPage;
@@ -21,9 +28,27 @@ public class PaginationDetails {
     private int totalPages;
 
     public static PaginationDetails fromPaging(Pageable pageable, Page<?> page) {
-        PaginationDetails paginationDetails = PaginationDetails.builder()
+        return genericPaginationDetails(pageable, page).toBuilder()
             .elements(page.getContent())
+            .build();
+    }
+
+    public static PaginationDetails fromPagingGrouped(Pageable pageable, Page<?> page, Map<?, ?> groupedElements) {
+        return genericPaginationDetails(pageable, page).toBuilder()
+            .groupedElements(groupedElements)
+            .build();
+    }
+
+    public static <T> PaginationDetails pagingOneObject(T t) {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<T> pagedObject = new PageImpl<>(Collections.singletonList(t), pageable, 1);
+        return fromPaging(PageRequest.of(0, 1), pagedObject);
+    }
+
+    private static PaginationDetails genericPaginationDetails(Pageable pageable, Page<?> page) {
+        PaginationDetails paginationDetails = PaginationDetails.builder()
             .numElements((int) page.getTotalElements())
+            .elements(page.getContent())
             .elementsPerPage(pageable.getPageSize())
             .actualPage(pageable.getPageNumber())
             .actualPageFrom(pageable.getPageNumber() * pageable.getPageSize() + 1)

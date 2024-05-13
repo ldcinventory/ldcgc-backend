@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +20,8 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.getMyAbsence(token, absenceId);
     }
 
-    public ResponseEntity<?> listMyAbsences(String token, LocalDate dateFrom, LocalDate dateTo, String sortField) {
-        return absenceService.listMyAbsences(token, dateFrom, dateTo, sortField);
+    public ResponseEntity<?> listMyAbsences(String token, Integer pageIndex, Integer size, LocalDate dateFrom, LocalDate dateTo, String sortField) {
+        return absenceService.listMyAbsences(token, pageIndex, size, dateFrom, dateTo, sortField);
     }
 
     public ResponseEntity<?> createMyAbsence(String token, AbsenceDto absenceDto) {
@@ -39,8 +40,8 @@ public class AbsenceControllerImpl implements AbsenceController {
         return absenceService.getAbsence(absenceId);
     }
 
-    public ResponseEntity<?> listAbsences(LocalDate dateFrom, LocalDate dateTo, String[] builderAssistantIds, String sortField) {
-        return absenceService.listAbsences(dateFrom, dateTo, builderAssistantIds, sortField);
+    public ResponseEntity<?> listAbsences(Integer pageIndex, Integer size, LocalDate dateFrom, LocalDate dateTo, List<String> builderAssistantIds, String sortField, boolean groupedByBAId) {
+        return absenceService.listAbsences(pageIndex, size, dateFrom, dateTo, builderAssistantIds, sortField, groupedByBAId);
     }
 
     public ResponseEntity<?> createAbsence(AbsenceDto absenceDto) {

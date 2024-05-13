@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.ldcgc.backend.util.conversion.Convert.convertDateToLocalDateTime;
+import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDateTime;
 import static org.ldcgc.backend.util.process.Threads.runInBackground;
 
 @Component
@@ -84,10 +84,8 @@ public class JwtUtils {
         {{
             put("email", user.getEmail());
             put("role", user.getRole().getRoleName());
-            if(isRefreshToken)
-                put("refresh-token", "true");
-            if(isRecoveryToken)
-                put("recovery-token", "true");
+            if(isRefreshToken) put("refresh-token", "true");
+            if(isRecoveryToken) put("recovery-token", "true");
         }};
 
         Date now = new Date();
@@ -130,11 +128,13 @@ public class JwtUtils {
             .jwk(Base64.encode(jwk.toJSONString().getBytes()).toString())
             .userId(user.getId())
             .role(user.getRole())
-            .issuedAt(convertDateToLocalDateTime(now))
-            .expiresAt(convertDateToLocalDateTime(expirationTime))
+            .issuedAt(dateToLocalDateTime(now))
+            .expiresAt(dateToLocalDateTime(expirationTime))
             .isRecoveryToken(isRecoveryToken)
             .isRefreshToken(isRefreshToken)
-            .refreshTokenId(isRefreshToken ? null : refreshTokenLocalRepository.get(user.getId()).getId())
+            .refreshTokenId(isRefreshToken // attach refresh token only when regular token
+                ? null
+                : refreshTokenLocalRepository.get(user.getId()).getId())
             .signedJWT(signedJWT)
             .build();
         token = tokenRepository.saveAndFlush(token);

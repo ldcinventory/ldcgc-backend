@@ -1,11 +1,16 @@
 package org.ldcgc.backend.service.resources.tool;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.db.model.category.Category;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.db.model.category.Brand;
+import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.db.model.resources.Tool;
-import org.ldcgc.backend.db.repository.category.CategoryRepository;
+import org.ldcgc.backend.db.repository.category.BrandRepository;
+import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
@@ -16,16 +21,18 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.resources.tool.impl.ToolServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import uk.co.jemos.podam.api.DefaultClassInfoStrategy;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
@@ -40,26 +47,39 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ToolServiceImplTest {
 
     @InjectMocks private ToolServiceImpl toolService;
+
     @Mock private ToolRepository toolRepository;
     @Mock private ToolExcelService toolExcelService;
-    @Mock private CategoryRepository categoryRepository;
+    @Mock private BrandRepository brandRepository;
+    @Mock private ResourceTypeRepository resourceTypeRepository;
     @Mock private LocationRepository locationRepository;
     @Mock private GroupRepository groupRepository;
 
     private final PodamFactory factory = new PodamFactoryImpl();
+
+    @BeforeEach
+    void setup() {
+        DefaultClassInfoStrategy classInfoStrategy = DefaultClassInfoStrategy.getInstance();
+        classInfoStrategy.addExcludedField(Tool.class, "location");
+        classInfoStrategy.addExcludedField(Group.class, "location");
+        classInfoStrategy.addExcludedField(Maintenance.class, "tool");
+        classInfoStrategy.addExcludedField(Maintenance.class, "volunteer");
+        factory.setClassStrategy(classInfoStrategy);
+    }
 
     @Test
     void getToolShouldReturnResponseEntity() {
@@ -86,21 +106,21 @@ class ToolServiceImplTest {
         RequestException requestException = assertThrows(RequestException.class, () -> toolService.getTool(id));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
-        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
+        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_ID_NOT_FOUND, id)));
     }
 
     @Test
     void createToolShouldReturnResponseEntity() {
         ToolDto toolDto = getRandomToolDto().toBuilder().id(null).build();
         Tool entityTool = ToolMapper.MAPPER.toMo(toolDto);
-        Category category = factory.manufacturePojo(Category.class);
-        Category consumableCategory = factory.manufacturePojo(Category.class);
+        Brand brand = factory.manufacturePojo(Brand.class);
+        ResourceType resourceType = factory.manufacturePojo(ResourceType.class);
         Location location = factory.manufacturePojo(Location.class);
         Group group = factory.manufacturePojo(Group.class);
 
         doReturn(Optional.empty()).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
-        doReturn(Optional.of(category)).when(categoryRepository).findById(toolDto.getBrand().getId());
-        doReturn(Optional.of(consumableCategory)).when(categoryRepository).findById(toolDto.getCategory().getId());
+        doReturn(Optional.of(brand)).when(brandRepository).findById(toolDto.getBrand().getId());
+        doReturn(Optional.of(resourceType)).when(resourceTypeRepository).findById(toolDto.getResourceType().getId());
         doReturn(Optional.of(location)).when(locationRepository).findById(anyInt());
         doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
         doReturn(entityTool).when(toolRepository).saveAndFlush(any(Tool.class));
@@ -139,18 +159,33 @@ class ToolServiceImplTest {
     }
 
     @Test
+    void createToolShouldThrownResourceTypeNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void createToolShouldThrownLocationNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void createToolShouldThrownGroupNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
     void putToolShouldReturnResponseEntity() {
         ToolDto toolDto = factory.manufacturePojo(ToolDto.class);
         Tool tool = ToolMapper.MAPPER.toMo(toolDto);
-        Category category = factory.manufacturePojo(Category.class);
-        Category consumableCategory = factory.manufacturePojo(Category.class);
+        Brand brand = factory.manufacturePojo(Brand.class);
+        ResourceType resourceType = factory.manufacturePojo(ResourceType.class);
         Location location = factory.manufacturePojo(Location.class);
         Group group = factory.manufacturePojo(Group.class);
 
         doReturn(Optional.of(tool)).when(toolRepository).findById(toolDto.getId());
         doReturn(Optional.empty()).when(toolRepository).findFirstByBarcode(toolDto.getBarcode());
-        doReturn(Optional.of(category)).when(categoryRepository).findById(toolDto.getBrand().getId());
-        doReturn(Optional.of(consumableCategory)).when(categoryRepository).findById(toolDto.getCategory().getId());
+        doReturn(Optional.of(brand)).when(brandRepository).findById(toolDto.getBrand().getId());
+        doReturn(Optional.of(resourceType)).when(resourceTypeRepository).findById(toolDto.getResourceType().getId());
         doReturn(Optional.of(location)).when(locationRepository).findById(anyInt());
         doReturn(Optional.of(group)).when(groupRepository).findById(anyInt());
         doReturn(tool).when(toolRepository).saveAndFlush(any(Tool.class));
@@ -175,7 +210,7 @@ class ToolServiceImplTest {
 
         verify(toolRepository, times(1)).findById(id);
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
-        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
+        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_ID_NOT_FOUND, id)));
     }
     @Test
     void putToolShouldThrowExceptionWhenBarcodeAlreadyExist(){
@@ -224,42 +259,53 @@ class ToolServiceImplTest {
         verify(toolRepository, times(1)).findById(id);
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
-        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_NOT_FOUND, id)));
+        assertTrue(requestException.getMessage().contains(String.format(Messages.Error.TOOL_ID_NOT_FOUND, id)));
     }
 
 
     @Test
     void getAllToolsShouldReturnPage() {
-        String sortString = "name";
-
         Page<Tool> tools = new PageImpl<>(factory.manufacturePojo(List.class, Tool.class));
 
-        doReturn(tools).when(toolRepository).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        doReturn(tools).when(toolRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = toolService.getAllTools(0, 25, "", "", "", "", "", null, sortString);
+        ResponseEntity<?> response = toolService.getAllTools(null, null, null, null, null, null, null, null, 0, 25, "name", EOrder.DESC);
 
-        verify(toolRepository, atMostOnce()).findAllFiltered(eq(""), eq(""), eq(""), eq(""), eq(""), eq(null), any(Pageable.class));
+        verify(toolRepository, atMostOnce()).findAll(any(Pageable.class));
 
         assertNotNull(response);
         Response.DTO responseBody = (Response.DTO) Objects.requireNonNull(response.getBody());
         assertEquals(ToolDto.class, ((PaginationDetails) responseBody.getData()).getElements().getFirst().getClass());
+
     }
 
     @Test
     void getAllToolsShouldThrowExceptionWhenStatusNotFound(){
         String status = "made up status";
-        String sorField = "name";
+        String sortField = "name";
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(0, 25, "", "", "", "", "", status, sorField));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolService.getAllTools(null, null, null, null, null, null, null, status, 0, 25, sortField, null));
 
         assertEquals(HttpStatus.NOT_FOUND, requestException.getHttpStatus());
         assertTrue(requestException.getMessage().contains(String.format(Messages.Error.STATUS_NOT_FOUND, status)));
     }
+
+    @Test
+    void getAllToolsUnfilteredShouldReturnPage() {
+        // toolRepository.findAll(pageable).map(ToolMapper.MAPPER::toDto)
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void getAllToolsShouldThrowPageIndexRequestedExceededTotal() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
     @Test
     void uploadToolsExcelShouldReturnList() throws IOException {
         List<ToolDto> tools = factory.manufacturePojo(ArrayList.class, ToolDto.class);
         List<Tool> toolEntities = factory.manufacturePojo(ArrayList.class, Tool.class);
-        MultipartFile file = MultipartFileFactory.getFileFromTools(tools, null);
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(tools, null);
 
         doReturn(tools).when(toolExcelService).excelToTools(file);
         doReturn(toolEntities).when(toolRepository).saveAll(any());
@@ -274,4 +320,15 @@ class ToolServiceImplTest {
         assertNotNull(responseBody);
         assertEquals(ToolDto.class, ((List<ToolDto>) responseBody.getData()).getFirst().getClass());
     }
+
+    @Test
+    void getAllToolsLooseShouldThrowPageIndexRequestedExceededTotal() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void getAllToolsLooseShouldReturnToolsPaged() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
 }

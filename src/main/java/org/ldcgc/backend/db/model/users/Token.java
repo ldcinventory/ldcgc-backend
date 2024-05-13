@@ -36,7 +36,7 @@ public class Token {
     private String jwtID;
 
     @NotBlank
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "text", nullable = false)
     private String jwk;
 
     @NotNull

@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 
 @Controller
 @RequestMapping("/resources/consumables")
+@Tag(name = "Consumable", description = "Consumables methods with CRUD functions and load from Excel")
 public interface ConsumableController {
 
     @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_MANAGER)
@@ -45,7 +48,7 @@ public interface ConsumableController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @GetMapping("/{consumableId}")
@@ -105,10 +108,8 @@ public interface ConsumableController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listConsumables(
-        @Parameter(description = "Page index (default = 0)")
-            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
-        @Parameter(description = "Size of every page (default = 25)")
-            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Filter to search by barcode (ignores other fields)")
+            @RequestParam(required = false) String barcode,
         @Parameter(description = "Filter to search by category")
             @RequestParam(required = false) String category,
         @Parameter(description = "Filter to search by brand")
@@ -119,10 +120,54 @@ public interface ConsumableController {
             @RequestParam(required = false) String model,
         @Parameter(description = "Filter to search by description")
             @RequestParam(required = false) String description,
-        @Parameter(description = "Sort by any field desired (see fields of filtering, are the same as sorting")
-            @RequestParam(required = false, defaultValue = "id") String sortField);
+        @Parameter(description = "If there's stock left")
+            @RequestParam(required = false) Boolean hasStock,
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Sort by any field from Consumable class (default = id)")
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
-    @Operation(summary = "Update a consumable. If another consumable has the barcode, an exception will be thrown.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "List consumables", description = """
+        Get all consumables, paginated and sorted. You can also include 6 filters:
+        - category
+        - brand
+        - name
+        - model
+        - description
+        - stock (true/false)
+        """
+        + SWAGGER_ROLE_OPERATION_MANAGER)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)),
+            examples = {
+                @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+            }
+        )
+    )
+    @GetMapping("/loose")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> listConsumablesLoose(
+        @Parameter(description = "Filter to search by provided filter string")
+            @RequestParam(required = false) String filterString,
+        @Parameter(description = "If there's stock left")
+            @RequestParam(required = false) Boolean hasStock,
+        @Parameter(description = "Page index (default = 0)")
+            @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
+        @Parameter(description = "Size of every page (default = 25)")
+            @RequestParam(required = false, defaultValue = "25") Integer size,
+        @Parameter(description = "Sort by any field from Consumable class (default = id)")
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
+
+    @Operation(summary = "List consumable registers and filter by just a filterString", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -150,7 +195,7 @@ public interface ConsumableController {
         description = SwaggerConfig.HTTP_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Consumable doesn't exist", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Consumable doesn't exist", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @PutMapping("/{consumableId}")
@@ -176,7 +221,7 @@ public interface ConsumableController {
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_NOT_FOUND)
+                @ExampleObject(name = "Consumable not found", value = Messages.Error.CONSUMABLE_ID_NOT_FOUND)
             })
     )
     @DeleteMapping("/{consumableId}")
@@ -203,7 +248,7 @@ public interface ConsumableController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Error parsing consumable", value = Messages.Error.EXCEL_PARSE_ERROR),
-                @ExampleObject(name = "Error parsing consumable (category)", value = Messages.Error.CATEGORY_SON_NOT_FOUND),
+                @ExampleObject(name = "Error parsing consumable (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
                 @ExampleObject(name = "Error parsing consumable (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
                 @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_EXCEL),
                 @ExampleObject(name = "Error parsing consumable (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),

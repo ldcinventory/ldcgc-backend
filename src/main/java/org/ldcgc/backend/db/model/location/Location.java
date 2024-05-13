@@ -27,17 +27,19 @@ import java.util.List;
 @Table(name = "locations")
 public class Location {
 
-    public Location(String name, Integer level) {
+    public Location(String name, Integer level, Integer groupId) {
         this.name = name;
         this.description = name;
         this.level = level;
+        this.groupId = groupId;
     }
 
-    public Location(String name, Location parent, Integer level) {
+    public Location(String name, Location parent, Integer level, Integer groupId) {
         this.name = name;
         this.description = name;
         this.parent = parent;
         this.level = level;
+        this.groupId = groupId;
     }
 
     @Id
@@ -53,10 +55,12 @@ public class Location {
 
     private Integer level;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Location parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Location> locations = new ArrayList<>();
+
+    private Integer groupId;
 
 }

@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ERegisterStatus {
-    OPEN ("open"),
-    CLOSED("closed");
+    OPENED ("opened"),
+    CLOSED ("closed");
 
     private final String name;
 }

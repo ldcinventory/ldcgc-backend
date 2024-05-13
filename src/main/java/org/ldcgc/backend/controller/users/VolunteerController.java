@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.MediaType;
@@ -120,17 +121,20 @@ public interface VolunteerController {
     @GetMapping
     @PreAuthorize(MANAGER_LEVEL)
     ResponseEntity<?> listVolunteers(
+        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
+            @RequestParam(required = false) String builderAssistantId,
+        @Parameter(description = "Filter to search user name OR last name")
+            @RequestParam(required = false) String filterString,
+        @Parameter(description = "Volunteer Filter by active/inactive (true for active)")
+            @RequestParam(required = false) Boolean isActive,
         @Parameter(description = "Page index")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
             @RequestParam(required = false, defaultValue = "25") Integer size,
-        @Parameter(description = "Filter to search user name OR last name")
-            @RequestParam(required = false) String filterString,
-        @Parameter(description = "Volunteer Builder Assistant Id (ignores the other params)")
-            @RequestParam(required = false) String builderAssistantId,
-        @Parameter(description = "Sort by any field desired (see fields of Volunteer class)")
-            @RequestParam(required = false, defaultValue = "id") String sortField);
-
+        @Parameter(description = "Sort by any field from Volunteer class (default = id)")
+            @RequestParam(required = false, defaultValue = "id") String sortField,
+        @Parameter(description = "Sort asc desc (default = desc)")
+            @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
     @Operation(summary = "Update any volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

@@ -1,11 +1,7 @@
 package org.ldcgc.backend.service.history.impl;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.users.Volunteer;
@@ -17,23 +13,25 @@ import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.mapper.history.ConsumableRegisterMapper;
 import org.ldcgc.backend.service.history.ConsumableRegisterService;
+import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.util.common.ERegisterStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -50,45 +48,15 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         return Constructor.buildResponseObject(HttpStatus.OK, ConsumableRegisterMapper.MAPPER.toDto(consumableRegister));
     }
 
-    public ResponseEntity<?> listConsumableRegister(Integer pageIndex, Integer size, String builderAssistantId, String consumableBarcode, LocalDateTime dateFrom, LocalDateTime dateTo, String sortField) {
-        Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(sortField).ascending());
-        Page<ConsumableRegisterDto> pagedConsumableRegisters;
+    public ResponseEntity<?> listConsumableRegister(String volunteer, String consumable, LocalDateTime registerFrom, LocalDateTime registerTo, ERegisterStatus status, Integer pageIndex, Integer size, String sortField, EOrder order) {
 
-        if (ObjectUtils.allNull(builderAssistantId, consumableBarcode, dateFrom, dateTo))
-            pagedConsumableRegisters = consumableRegisterRepository.findAll(pageable).map(ConsumableRegisterMapper.MAPPER::toDto);
-        else {
-            List<ConsumableRegisterDto> consumableRegisterList = consumableRegisterRepository.findAll((Specification<ConsumableRegister>) (consumableRegister, query, cb) -> {
-                List<Predicate> predicates = new ArrayList<>();
-
-                if (dateFrom != null)
-                    predicates.add(cb.greaterThanOrEqualTo(consumableRegister.get("registrationIn"), dateFrom));
-
-                if (dateTo != null)
-                    predicates.add(cb.lessThanOrEqualTo(consumableRegister.get("registrationOut"), dateTo));
-
-                if (StringUtils.isNotEmpty(builderAssistantId)) {
-                    Join<Volunteer, ConsumableRegister> volunteerConsumableRegisterJoin = consumableRegister.join("volunteer", JoinType.LEFT);
-                    predicates.add(cb.and(cb.like(volunteerConsumableRegisterJoin.get("builderAssistantId"), "%" + builderAssistantId + "%")));
-                }
-
-                if (StringUtils.isNotEmpty(consumableBarcode)) {
-                    Join<Consumable, ConsumableRegister> consumableConsumableRegisterJoin = consumableRegister.join("consumable", JoinType.LEFT);
-                    predicates.add(cb.and(cb.like(consumableConsumableRegisterJoin.get("barcode"), "%" + consumableBarcode + "%")));
-                }
-
-                return cb.and(predicates.toArray(new Predicate[0]));
-            }).stream().map(ConsumableRegisterMapper.MAPPER::toDto).toList();
-
-            int start = (int) pageable.getOffset();
-            int end = Math.min((start + pageable.getPageSize()), consumableRegisterList.size());
-
-            if (start > end)
-                throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
-
-            List<ConsumableRegisterDto> pageContent = consumableRegisterList.subList(start, end);
-
-            pagedConsumableRegisters = new PageImpl<>(pageContent, pageable, consumableRegisterList.size());
-        }
+        Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
+            ? Sort.by(sortField).descending()
+            : Sort.by(sortField).ascending());
+        Page<ConsumableRegisterDto> pagedConsumableRegisters = ObjectUtils.allNull(volunteer, consumable, registerFrom, registerTo, status)
+            ? consumableRegisterRepository.findAll(pageable).map(ConsumableRegisterMapper.MAPPER::toDto)
+            : consumableRegisterRepository.findAllFiltered(Optional.ofNullable(status).map(ERegisterStatus::getName).orElse(null),
+                volunteer, consumable, registerFrom, registerTo, pageable).map(ConsumableRegisterMapper.MAPPER::toDto);
 
         if (pageIndex > pagedConsumableRegisters.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
@@ -100,15 +68,15 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
 
     public ResponseEntity<?> createConsumableRegister(ConsumableRegisterDto consumableRegisterDto) {
         List<ConsumableRegister> consumableRegisters = consumableRegisterRepository
-            .findAllByConsumable_Barcode(consumableRegisterDto.getConsumableBardcode());
+            .findAllByConsumable_Barcode(consumableRegisterDto.getConsumableBarcode());
 
-        Consumable consumable = consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBardcode())
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBardcode())));
+        Consumable consumable = consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBarcode())
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBarcode())));
 
         validateCreateConsumableRegister(consumableRegisterDto, consumableRegisters, consumable);
 
-        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBAId())
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.VOLUNTEER_BARCODE_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
+        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBuilderAssistantId())
+            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBuilderAssistantId())));
 
         ConsumableRegister newConsumableRegister = ConsumableRegisterMapper.MAPPER.toEntity(consumableRegisterDto);
 
@@ -142,7 +110,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         if(!CollectionUtils.isEmpty(consumableRegisters) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegisterTo(),
                                 consumableRegisterDto.getStockAmountReturn())) {
-            if (consumableRegisters.stream().anyMatch(cr -> cr.getVolunteer().getBuilderAssistantId().equals(consumableRegisterDto.getVolunteerBAId())))
+            if (consumableRegisters.stream().anyMatch(cr -> cr.getVolunteer().getBuilderAssistantId().equals(consumableRegisterDto.getVolunteerBuilderAssistantId())))
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_VOLUNTEER_DUPLICATED);
 
             // check
@@ -152,8 +120,8 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
                 .reduce(0.0f, Float::sum) + consumableRegisterDto.getStockAmountRequest() > consumable.getStock())
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_NOT_ENOUGH_AMOUNT_ALLOCATE);
 
-            if (consumableRegisterDto.getRegisterFrom() != null &&
-                consumableRegisterDto.getRegisterFrom().isBefore(LocalDateTime.now()))
+            if(Objects.nonNull(consumableRegisterDto.getRegisterFrom()) &&
+                consumableRegisterDto.getRegisterFrom().toLocalDate().isBefore(LocalDate.now()))
                 throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_ALLOCATE_DATE_BEFORE_TODAY);
         }
 
@@ -174,7 +142,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             consumableRegisterDto.getStockAmountReturn() != null)
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_DATA_OUT_NOT_COMPLETE);
 
-        if (Boolean.FALSE.equals(consumableRegisterDto.getClosedRegister()) &&
+        if (Boolean.TRUE.equals(consumableRegisterDto.getClosedRegister()) &&
             ObjectUtils.anyNull(consumableRegisterDto.getRegisterFrom(),
                                 consumableRegisterDto.getRegisterTo(),
                                 consumableRegisterDto.getStockAmountReturn()))
@@ -191,18 +159,18 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
             .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.CONSUMABLE_REGISTER_NOT_FOUND, registerId)));
 
         Consumable consumable =
-            consumableRegisterDto.getConsumableBardcode().equals(updateConsumableRegister.getConsumable().getBarcode())
+            consumableRegisterDto.getConsumableBarcode().equals(updateConsumableRegister.getConsumable().getBarcode())
             ? updateConsumableRegister.getConsumable()
-            : consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBardcode())
+            : consumableRepository.findByBarcode(consumableRegisterDto.getConsumableBarcode())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                    String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBardcode())));
+                    String.format(Messages.Error.CONSUMABLE_BARCODE_NOT_FOUND, consumableRegisterDto.getConsumableBarcode())));
 
         Volunteer volunteer =
-            consumableRegisterDto.getVolunteerBAId().equals(updateConsumableRegister.getVolunteer().getBuilderAssistantId())
+            consumableRegisterDto.getVolunteerBuilderAssistantId().equals(updateConsumableRegister.getVolunteer().getBuilderAssistantId())
             ? updateConsumableRegister.getVolunteer()
-            : volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBAId())
+            : volunteerRepository.findByBuilderAssistantId(consumableRegisterDto.getVolunteerBuilderAssistantId())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND,
-                    String.format(Messages.Error.VOLUNTEER_BARCODE_NOT_FOUND, consumableRegisterDto.getVolunteerBAId())));
+                    String.format(Messages.Error.VOLUNTEER_BAID_NOT_FOUND, consumableRegisterDto.getVolunteerBuilderAssistantId())));
 
         validateUpdateConsumableRegister(consumableRegisterDto, updateConsumableRegister, consumable);
 
@@ -240,7 +208,7 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         if (updateConsumableRegister.getClosedRegister() &&
            ((ObjectUtils.allNull(consumableRegisterDto.getRegisterTo(), consumableRegisterDto.getStockAmountReturn())) ||
            (Boolean.FALSE.equals(consumableRegisterDto.getClosedRegister()) ||
-            !consumableRegisterDto.getConsumableBardcode().equals(updateConsumableRegister.getConsumable().getBarcode()) ||
+            !consumableRegisterDto.getConsumableBarcode().equals(updateConsumableRegister.getConsumable().getBarcode()) ||
             !consumableRegisterDto.getStockAmountRequest().equals(updateConsumableRegister.getStockAmountRequest()) ||
             !consumableRegisterDto.getRegisterFrom().equals(updateConsumableRegister.getRegisterFrom()))))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.CONSUMABLE_REGISTER_CLOSED_FOR_MODIFICATIONS);
@@ -279,5 +247,30 @@ public class ConsumableRegisterServiceImpl implements ConsumableRegisterService 
         consumableRegisterRepository.delete(consumableRegister);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_REGISTER_DELETED);
+    }
+
+    public ResponseEntity<?> createMultipleConsumableRegisters(List<ConsumableRegisterDto> consumableRegistersDto) {
+        int registers = 0;
+        List<String> errors = new ArrayList<>();
+
+        for (ConsumableRegisterDto consumableRegisterDto : consumableRegistersDto) {
+            try {
+            createConsumableRegister(consumableRegisterDto);
+            registers++;
+            }
+            catch (RequestException e) {
+                errors.add(consumableRegistersDto.get(registers).getConsumableName() + " - " + e.getMessage());
+            }
+        }
+
+        if(registers == 0)
+            return Constructor.buildResponseMessage(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_NOT_CREATED
+                .formatted(String.join("\n", errors)));
+
+        if(!errors.isEmpty())
+            return Constructor.buildResponseObject(HttpStatus.NOT_ACCEPTABLE, Messages.Error.CONSUMABLE_REGISTERS_CREATED_PARTIALLY
+                    .formatted(String.join("\n", errors)));
+
+        return Constructor.buildResponseObject(HttpStatus.CREATED, String.format(Messages.Info.CONSUMABLE_REGISTERS_CREATED));
     }
 }

@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 
 public class Convert {
 
@@ -22,10 +23,12 @@ public class Convert {
     }
 
     public static LocalDate stringToLocalDate(String dbString, String pattern) {
-        return LocalDate.parse(dbString, DateTimeFormatter.ofPattern(pattern));
+        return dbString.matches(pattern)
+            ? LocalDate.parse(dbString, DateTimeFormatter.ofPattern(pattern))
+            : null;
     }
 
-    public static Float convertToFloat2Decimals(String number) {
+    public static Float toFloat2Decimals(String number) {
         if(StringUtils.isEmpty(number))
             return null;
 
@@ -35,16 +38,23 @@ public class Convert {
             .floatValue();
     }
 
-    public static Float convertToFloat(String number) {
+    public static Float toFloat(String number) {
         if(StringUtils.isEmpty(number))
             return null;
 
         return Float.parseFloat(number);
     }
 
-    public static LocalDateTime convertDateToLocalDateTime(Date dateToConvert) {
-        return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    public static LocalDateTime dateToLocalDateTime(Date dateToConvert) {
+        return Optional.ofNullable(dateToConvert)
+            .map(d -> d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+            .orElse(null);
+    }
 
+    public static LocalDate dateToLocalDate(Date dateToConvert) {
+        return Optional.ofNullable(dateToConvert)
+            .map(d -> d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+            .orElse(null);
     }
 
 }
