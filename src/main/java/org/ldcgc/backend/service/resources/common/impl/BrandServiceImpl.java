@@ -22,7 +22,7 @@ public class BrandServiceImpl implements BrandService {
 
     private final BrandRepository brandRepository;
 
-    public ResponseEntity<?> getResourceTypes() {
+    public ResponseEntity<?> getBrands() {
         List<BrandDto> brands = brandRepository.findAll().stream()
             .map(BrandMapper.MAPPER::toDto)
             .toList();
@@ -31,10 +31,9 @@ public class BrandServiceImpl implements BrandService {
             HttpStatus.OK,
             String.format(Messages.Info.BRAND_FOUND, brands.size()),
             NonPaged.of(brands));
-
     }
 
-    public ResponseEntity<?> createResourceType(BrandDto brandDto) {
+    public ResponseEntity<?> createBrand(BrandDto brandDto) {
         if(brandRepository.existsByName(brandDto.getName()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.BRAND_EXISTS);
 
@@ -45,10 +44,9 @@ public class BrandServiceImpl implements BrandService {
             HttpStatus.CREATED,
             Messages.Info.BRAND_CREATED,
             brand);
-
     }
 
-    public ResponseEntity<?> deleteResourceType(Integer brandId) {
+    public ResponseEntity<?> deleteBrand(Integer brandId) {
         Brand brand = brandRepository.findById(brandId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.BRAND_NOT_FOUND, brandId)));
 
@@ -60,7 +58,6 @@ public class BrandServiceImpl implements BrandService {
         return Constructor.buildResponseMessage(
             HttpStatus.OK,
             String.format(Messages.Info.BRAND_DELETED, brandId));
-
     }
 
 }
