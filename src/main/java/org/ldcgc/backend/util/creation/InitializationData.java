@@ -100,6 +100,7 @@ public class InitializationData {
 
     @Value("${LOAD_INITIAL_DATA:false}") private boolean loadInitialData;
     @Value("${LOAD_FROM_CSV:false}") private boolean loadFromCSV;
+    @Value("${ONLY_RANDOM_TEST_DATA:false}") private boolean onlyRandomTestData;
     @Value("${RANDOM_TEST_DATA:false}") private boolean randomTestData;
     @Value("${CREATE_TEST_USERS:true}") private boolean createTestUsers;
 
@@ -124,6 +125,8 @@ public class InitializationData {
     @Profile("!pro")
     InitializingBean sendDatabase() {
         if (!loadInitialData) return null;
+
+        if (onlyRandomTestData) return this::createRandomTestData;
 
         return () -> {
             // execute when changing database version
@@ -268,22 +271,7 @@ public class InitializationData {
             else loadConsumables();
             log.info("Created consumables from {}", loadFromCSV ? "csv" : "random data");
 
-            if(randomTestData) {
-                timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
-                timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
-
-                // --> TOOLS REGISTRATION
-                loadToolsRegistration();
-                log.info("Created random registration data for tools");
-
-                // --> CONSUMABLES REGISTRATION
-                loadConsumablesRegistration();
-                log.info("Created random registration data for consumables");
-
-                // --> MAINTENANCE
-                loadMaintenance();
-                log.info("Created random registration data for maintenance");
-            }
+            if(randomTestData) createRandomTestData();
 
             // --> USERS
             List<Responsibility> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario")
@@ -502,6 +490,27 @@ public class InitializationData {
 
     private void loadConsumables() {
         IntStream.range(0, 2_000).parallel().forEach(i -> consumableRepository.saveAndFlush(getRandomConsumable()));
+    }
+
+    private void createRandomTestData() {
+        systemOffset = OffsetDateTime.now().getOffset();
+        minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+        maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
+
+        timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+        timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+
+        // --> TOOLS REGISTRATION
+        loadToolsRegistration();
+        log.info("Created random registration data for tools");
+
+        // --> CONSUMABLES REGISTRATION
+        loadConsumablesRegistration();
+        log.info("Created random registration data for consumables");
+
+        // --> MAINTENANCE
+        loadMaintenance();
+        log.info("Created random data for maintenance");
     }
 
     private void loadMaintenance() {
