@@ -1,10 +1,13 @@
 package org.ldcgc.backend;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
+import org.ldcgc.backend.base.GlobalTestConfig;
 
 @Suite
+@ExtendWith(GlobalTestConfig.class)
 @SuiteDisplayName("LDCGC Test Suite")
 @SelectPackages({"org.ldcgc.backend"})
 public class TestSuite {
