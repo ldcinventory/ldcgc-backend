@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.resources.tool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.resources.Tool;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class ToolExcelServiceImplTest {
 
     @InjectMocks private ToolExcelServiceImpl toolExcelService;

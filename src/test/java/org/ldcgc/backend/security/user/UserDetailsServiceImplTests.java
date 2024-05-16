@@ -3,6 +3,7 @@ package org.ldcgc.backend.security.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.UserRepository;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 public class UserDetailsServiceImplTests {
 
     private UserDetailsServiceImpl userDetailsService;

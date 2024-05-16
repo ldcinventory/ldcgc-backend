@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.resources.consumable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.base.mock.MockedResources;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class ConsumableExcelServiceImplTest {
 
     @Mock private ConsumableExcelService consumableExcelService;

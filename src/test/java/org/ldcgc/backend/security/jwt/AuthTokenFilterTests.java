@@ -9,6 +9,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.base.mock.MockedToken;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.users.User;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 public class AuthTokenFilterTests {
 
     private AuthTokenFilter authTokenFilter;

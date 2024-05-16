@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.history;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.db.repository.history.ToolRegisterRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
@@ -14,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Fail.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 public class ToolRegisterServiceImplTest {
 
     // service

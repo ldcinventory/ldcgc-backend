@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.common;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.service.resources.common.impl.ResourceTypeServiceImpl;
 import org.mockito.InjectMocks;
@@ -11,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class ResourceTypeServiceImplTest {
 
     @InjectMocks private ResourceTypeServiceImpl resourceTypeService;
