@@ -2,6 +2,7 @@ package org.ldcgc.backend.db.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,7 +13,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 public class AvailabililtyConverterTest {
 
     @InjectMocks AvailabilityConverter availabilityConverter;

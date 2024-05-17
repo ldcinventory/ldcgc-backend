@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.resources.tool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
@@ -57,7 +58,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class ToolServiceImplTest {
 
     @InjectMocks private ToolServiceImpl toolService;

@@ -7,6 +7,7 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.db.model.users.Token;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
@@ -57,7 +58,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.crypto.argon2.Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class AccountServiceImplTest {
 
     private AccountService accountService;

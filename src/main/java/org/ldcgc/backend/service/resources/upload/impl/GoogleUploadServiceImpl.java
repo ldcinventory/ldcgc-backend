@@ -63,7 +63,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
     private final ToolRepository toolRepository;
     private final ConsumableRepository consumableRepository;
 
-    @Value("classpath:gdrive_secret.json") Resource CREDENTIALS_FILE;
+    @Value("${GDRIVE_JSON_PATH:classpath:gdrive_secret.json}") Resource CREDENTIALS_FILE;
     @Value("${IMAGE_QUALITY:0.8f}") private float IMAGE_QUALITY;
     private final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 

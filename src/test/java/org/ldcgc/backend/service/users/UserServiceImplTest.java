@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
@@ -65,7 +66,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @Slf4j
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class UserServiceImplTest {
 
     private UserService userService;

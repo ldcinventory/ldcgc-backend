@@ -6,6 +6,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.base.mock.MockedToken;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;
 import org.ldcgc.backend.db.model.users.Token;
@@ -25,7 +26,7 @@ import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 public class JwtUtilsTests {
 
     @Mock private JwtUtils jwtUtils;

@@ -15,6 +15,7 @@ import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.UserService;
+import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
@@ -30,7 +31,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
@@ -73,9 +73,6 @@ public class UserControllerImplTest {
     // other
     @MockBean private UserValidation userValidation;
     @MockBean private ContextConstants contextConstants;
-
-    // context
-    @Autowired private WebApplicationContext context;
 
     // mapper
     @Autowired private ObjectMapper mapper;
@@ -220,7 +217,7 @@ public class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(users).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(userService.listUsers(anyString(), anyInt(), anyInt(), anyInt(), anyString(), isNull()))
+        given(userService.listUsers(anyString(), isNull(), anyInt(), anyInt(), anyString(), any(EOrder.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
         mockMvc.perform(getRequest(request, ERole.ROLE_USER)

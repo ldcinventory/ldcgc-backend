@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.resources.upload;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.service.resources.upload.impl.GoogleUploadServiceImpl;
@@ -12,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, GlobalTestConfig.class})
 class GoogleUploadServiceImplTest {
 
     @InjectMocks private GoogleUploadServiceImpl googleUploadService;
