@@ -76,9 +76,11 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
 
         // folder LDC -> G8 -> Tools
         String[] urlImages = uploadToGDrive(images, Google.DRIVE_TOOLS_FOLDER_ID);
-        tool.setUrlImages(cleanExisting
-            ? urlImages
-            : Stream.concat(Stream.of(tool.getUrlImages()), Stream.of(urlImages)).toArray(String[]::new));
+
+        if(Objects.isNull(tool.getUrlImages()) || cleanExisting)
+            tool.setUrlImages(urlImages);
+        else
+            tool.setUrlImages(Stream.concat(Stream.of(tool.getUrlImages()), Stream.of(urlImages)).toArray(String[]::new));
 
         tool = toolRepository.saveAndFlush(tool);
 

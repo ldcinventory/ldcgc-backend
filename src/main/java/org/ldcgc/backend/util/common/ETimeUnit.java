@@ -15,7 +15,8 @@ public enum ETimeUnit implements EnumMethods {
     DAYS("días", 1),
     WEEKS("semanas", 2),
     MONTHS("meses", 3),
-    YEARS("años", 4);
+    YEARS("años", 4),
+    HOURS("horas", 5);
 
     private final String desc;
     private final Integer id;

@@ -25,5 +25,5 @@ data/
 .DS_Store
 *.zip
 
-gdrive_secret.json
+src/main/resources/gdrive_secret.json
 *.xlsx
