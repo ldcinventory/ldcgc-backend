@@ -23,6 +23,8 @@ public class GoogleUploadControllerImpl implements GoogleUploadController {
     public ResponseEntity<?> uploadImages(String toolBarcode, String consumableBarcode, boolean cleanExisting, MultipartFile[] images) throws GeneralSecurityException, IOException {
         if(ObjectUtils.allNotNull(toolBarcode, consumableBarcode))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.UPLOAD_IMAGES_TOO_MANY_ARGUMENTS);
+        if(images == null && !cleanExisting)
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.UPLOAD_IMAGES_NULL);
 
         if(toolBarcode != null)
             return googleUploadService.uploadToolImages(toolBarcode, cleanExisting, images);
