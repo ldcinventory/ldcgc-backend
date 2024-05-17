@@ -75,7 +75,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             cleanFromGDrive(tool.getUrlImages());
 
         // folder LDC -> G8 -> Tools
-        String[] urlImages = uploadToGDrive(images, Google.DRIVE_TOOLS_FOLDER_ID);
+        String[] urlImages = uploadToGDrive(images, Google.DRIVE_TOOLS_FOLDER_ID, toolBarcode);
 
         if(Objects.isNull(tool.getUrlImages()) || cleanExisting)
             tool.setUrlImages(urlImages);
@@ -95,10 +95,12 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             cleanFromGDrive(consumable.getUrlImages());
 
         // folder LDC -> G8 -> Consumables
-        String[] urlImages = uploadToGDrive(images, Google.DRIVE_CONSUMABLES_FOLDER_ID);
-        consumable.setUrlImages(cleanExisting
-            ? urlImages
-            : Stream.concat(Stream.of(ObjectUtils.defaultIfNull(consumable.getUrlImages(), new String[0])), Stream.of(urlImages)).toArray(String[]::new));
+        String[] urlImages = uploadToGDrive(images, Google.DRIVE_CONSUMABLES_FOLDER_ID, consumableBarcode);
+
+        if(Objects.isNull(consumable.getUrlImages()) || cleanExisting)
+            consumable.setUrlImages(urlImages);
+        else
+            consumable.setUrlImages(Stream.concat(Stream.of(consumable.getUrlImages()), Stream.of(urlImages)).toArray(String[]::new));
 
         consumable = consumableRepository.saveAndFlush(consumable);
 
@@ -191,7 +193,7 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
         }
     }
 
-    private String[] uploadToGDrive(MultipartFile[] images, String folderId) throws GeneralSecurityException, IOException {
+    private String[] uploadToGDrive(MultipartFile[] images, String folderId, String barcode) throws GeneralSecurityException, IOException {
         List<String> urlImages = new ArrayList<>();
 
         for(MultipartFile image : images) {
@@ -206,7 +208,11 @@ public class GoogleUploadServiceImpl implements GoogleUploadService {
             File uploadFile = getGDriveInstance()
                 .files()
                 .create(fileMetadata, mediacontent)
-                .setFields("id").execute();
+                .setFields("id")
+                .execute();
+            File renamingFile = new File();
+            renamingFile.setName(String.format("%s-%s", barcode, uploadFile.getId()));
+            getGDriveInstance().files().update(uploadFile.getId(), renamingFile).execute();
             urlImages.add(uploadFile.getId());
         }
 
