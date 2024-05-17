@@ -1,10 +1,12 @@
 package org.ldcgc.backend.util.creation;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.category.Responsibility;
@@ -72,6 +74,7 @@ import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
 import static org.ldcgc.backend.util.conversion.Convert.toFloat;
 import static org.ldcgc.backend.util.conversion.Convert.toFloat2Decimals;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class InitializationData {
@@ -97,6 +100,7 @@ public class InitializationData {
 
     @Value("${LOAD_INITIAL_DATA:false}") private boolean loadInitialData;
     @Value("${LOAD_FROM_CSV:false}") private boolean loadFromCSV;
+    @Value("${ONLY_RANDOM_TEST_DATA:false}") private boolean onlyRandomTestData;
     @Value("${RANDOM_TEST_DATA:false}") private boolean randomTestData;
     @Value("${CREATE_TEST_USERS:true}") private boolean createTestUsers;
 
@@ -122,6 +126,8 @@ public class InitializationData {
     InitializingBean sendDatabase() {
         if (!loadInitialData) return null;
 
+        if (onlyRandomTestData) return this::createRandomTestData;
+
         return () -> {
             // execute when changing database version
             jdbcTemplate.execute("ALTER DATABASE \"%s\" REFRESH COLLATION VERSION;".formatted(dbName));
@@ -139,22 +145,14 @@ public class InitializationData {
                 .phoneNumber("+34630480855")
                 .build();
             group8 = groupRepository.saveAndFlush(group8);
+            log.info("Created new group {}", group8.getName());
 
-            Location ferreteria = new Location("Ferretería", 0, group8.getId());
-            ferreteria.setLocations(List.of(
-                new Location("Estantería 1", ferreteria, 1, group8.getId()),
-                new Location("Estantería 2", ferreteria, 1, group8.getId()),
-                new Location("Arcón-suelo 1", ferreteria, 1, group8.getId()),
-                new Location("Arcón-suelo 2", ferreteria, 1, group8.getId()),
-                new Location("Arcón-medio 1", ferreteria, 1, group8.getId()),
-                new Location("Arcón-medio 2", ferreteria, 1, group8.getId())
-            ));
-
-            ferreteria.setGroupId(group8.getId());
+            Location ferreteria = createFerreteria();
             ferreteria = locationRepository.saveAndFlush(ferreteria);
 
             group8.setLocation(ferreteria);
             group8 = groupRepository.saveAndFlush(group8);
+            log.info("Created main location for group {}", ferreteria.getName());
 
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
             locationRepository.saveAndFlush(Location.builder()
@@ -217,6 +215,7 @@ public class InitializationData {
                     .level(0)
                     .groupId(group8.getId())
                     .build());
+            log.info("Created other locations");
 
             // RESOURCE TYPES (select name from categories;)
             // --> resources
@@ -228,10 +227,12 @@ public class InitializationData {
                     .locked(true)
                     .build())
                 .forEach(resourceTypeRepository::saveAndFlush);
+            log.info("Created resources");
 
             // VOLUNTEERS
             if(loadFromCSV) loadVolunteersCSV(group8);
             else loadVolunteers();
+            log.info("Created volunteers from {}", loadFromCSV ? "csv" : "random data");
 
             // CONSUMABLES + TOOLS
 
@@ -247,6 +248,7 @@ public class InitializationData {
                     .toList();
 
             brandRepository.saveAllAndFlush(brands);
+            log.info("Created brands");
 
             // REGISTRATION (TOOLS + CONSUMABLES) initial data
             systemOffset = OffsetDateTime.now().getOffset();
@@ -260,27 +262,16 @@ public class InitializationData {
             resourceTypeMap = resourceTypeEntities.stream().collect(Collectors.toMap(ResourceType::getName, b -> b));
 
             // --> TOOLS
-            // TODO check status when final migration
             if(loadFromCSV) loadToolsCSV();
             else loadTools();
+            log.info("Created tools from {}", loadFromCSV ? "csv" : "random data");
 
             // --> CONSUMABLES
             if(loadFromCSV) loadConsumablesCSV();
             else loadConsumables();
+            log.info("Created consumables from {}", loadFromCSV ? "csv" : "random data");
 
-            if(randomTestData) {
-                timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
-                timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
-
-                // --> TOOLS REGISTRATION
-                loadToolsRegistration();
-
-                // --> CONSUMABLES REGISTRATION
-                loadConsumablesRegistration();
-
-                // --> MAINTENANCE
-                loadMaintenance();
-            }
+            if(randomTestData) createRandomTestData();
 
             // --> USERS
             List<Responsibility> responsibilities = Stream.of("Coordinador", "Auxiliar de coordinador", "Voluntario")
@@ -292,14 +283,31 @@ public class InitializationData {
                 .toList();
 
             responsibilityRepository.saveAllAndFlush(responsibilities);
+            log.info("Created responsibilities");
 
             List<Responsibility> responsibilitiesEntities = responsibilityRepository.findAll();
 
             if(createTestUsers) createTestUsers(group8, responsibilitiesEntities);
             else loadUsersCSV();
+            log.info("Created users from {}", loadFromCSV ? "csv" : "random data");
 
         };
 
+    }
+
+    private @NotNull Location createFerreteria() {
+        Location ferreteria = new Location("Ferretería", 0, group8.getId());
+        ferreteria.setLocations(List.of(
+            new Location("Estantería 1", ferreteria, 1, group8.getId()),
+            new Location("Estantería 2", ferreteria, 1, group8.getId()),
+            new Location("Arcón-suelo 1", ferreteria, 1, group8.getId()),
+            new Location("Arcón-suelo 2", ferreteria, 1, group8.getId()),
+            new Location("Arcón-medio 1", ferreteria, 1, group8.getId()),
+            new Location("Arcón-medio 2", ferreteria, 1, group8.getId())
+        ));
+
+        ferreteria.setGroupId(group8.getId());
+        return ferreteria;
     }
 
     private Set<EWeekday> getRandomAvailability() {
@@ -438,7 +446,7 @@ public class InitializationData {
     }
 
     private Volunteer getRandomVolunteer() {
-        return Volunteer.builder()
+        Volunteer volunteer = Volunteer.builder()
             .name(new Faker().name().firstName())
             .lastName(String.format("%s %s", new Faker().name().lastName(), new Faker().name().lastName()))
             .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
@@ -446,6 +454,9 @@ public class InitializationData {
             .isActive(new Random().nextBoolean())
             .group(groupRepository.getRandomGroup())
             .build();
+        volunteer.setAbsences(getRandomAbsences(volunteer));
+
+        return volunteer;
     }
 
     // load random data
@@ -480,6 +491,27 @@ public class InitializationData {
 
     private void loadConsumables() {
         IntStream.range(0, 2_000).parallel().forEach(i -> consumableRepository.saveAndFlush(getRandomConsumable()));
+    }
+
+    private void createRandomTestData() {
+        systemOffset = OffsetDateTime.now().getOffset();
+        minLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0).toEpochSecond(systemOffset);
+        maxLocalDateTime = LocalDateTime.now().minusDays(1).toEpochSecond(systemOffset);
+
+        timeIn = LocalDateTime.ofEpochSecond(ThreadLocalRandom.current().nextLong(minLocalDateTime, maxLocalDateTime), 0, systemOffset);
+        timeOut = timeIn.plusDays(new Random().nextInt(0, (int) ChronoUnit.DAYS.between(timeIn, LocalDateTime.now())));
+
+        // --> TOOLS REGISTRATION
+        loadToolsRegistration();
+        log.info("Created random registration data for tools");
+
+        // --> CONSUMABLES REGISTRATION
+        loadConsumablesRegistration();
+        log.info("Created random registration data for consumables");
+
+        // --> MAINTENANCE
+        loadMaintenance();
+        log.info("Created random data for maintenance");
     }
 
     private void loadMaintenance() {
