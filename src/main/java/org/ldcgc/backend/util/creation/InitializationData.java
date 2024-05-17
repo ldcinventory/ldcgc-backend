@@ -55,8 +55,10 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +123,9 @@ public class InitializationData {
     private LocalDateTime timeIn;
     private LocalDateTime timeOut;
 
+    private final String[] testURLTools = new String[]{"1hi2rxiQgjPZXCQwR7bv9X2uFBNQiA3sU","1tOc34YXR3-0JXGjiii7pbWp5BFC_5GYW","1bHf4Scn5P2FnL9Ni1ETY8tcuHzg7IGK9","1pA9FqP2OLTsZlNxr2_1eRrY_JAjAHWTF","1lkP-rmQX6iVAG9WK2PKAlF9Z_5lywHeD","1YJ7SUpyzg5gNDD07r8mT3p_Zl-GXVZOC"};
+    private final String[] testURLConsumables = new String[]{"1CVrLvhmaPKD_OvKFihtF9N_yPl-m6Qmt","1CUVZpUXRabC7NuMB8Sz16rmGGIc3ALfK","1tvxjnQyWFdeYSnwkw6MXd_pwowZVzYcS","1tCjP99iUO3ZR36IoYsJR57bf5DLAtLVE","1oA95QY8sh529LlU5eIsS9epbPLGh_Lgn","195JIjIFdqh-t48oAzebd-dIaIl4CgaSw"};
+
     @Bean
     @Profile("!pro")
     InitializingBean sendDatabase() {
@@ -145,14 +150,14 @@ public class InitializationData {
                 .phoneNumber("+34630480855")
                 .build();
             group8 = groupRepository.saveAndFlush(group8);
-            log.info("Created new group {}", group8.getName());
 
             Location ferreteria = createFerreteria();
             ferreteria = locationRepository.saveAndFlush(ferreteria);
+            log.info("Created main location for group");
 
             group8.setLocation(ferreteria);
             group8 = groupRepository.saveAndFlush(group8);
-            log.info("Created main location for group {}", ferreteria.getName());
+            log.info("Created group 8");
 
             // Guadalajara SR (Calle León Felipe, 6, bajo derecha)
             locationRepository.saveAndFlush(Location.builder()
@@ -215,7 +220,7 @@ public class InitializationData {
                     .level(0)
                     .groupId(group8.getId())
                     .build());
-            log.info("Created other locations");
+            log.info("Created rest of locations");
 
             // RESOURCE TYPES (select name from categories;)
             // --> resources
@@ -227,7 +232,7 @@ public class InitializationData {
                     .locked(true)
                     .build())
                 .forEach(resourceTypeRepository::saveAndFlush);
-            log.info("Created resources");
+            log.info("Created resource types");
 
             // VOLUNTEERS
             if(loadFromCSV) loadVolunteersCSV(group8);
@@ -383,7 +388,7 @@ public class InitializationData {
     private LocalDate calculateNextMaintenance(ETimeUnit timeUnit, Integer period, LocalDate fromDate) {
         LocalDate date = ObjectUtils.defaultIfNull(fromDate, LocalDate.now());
         return switch (timeUnit) {
-            case HOURS   -> date;
+            case HOURS  -> date;
             case DAYS   -> date.plusDays(period);
             case WEEKS  -> date.plusWeeks(period);
             case MONTHS -> date.plusMonths(period);
@@ -391,10 +396,16 @@ public class InitializationData {
         };
     }
 
-    private String[] getRandomURLs() {
-        return IntStream.rangeClosed(1, getRandomIntegerFromRange(2, 4))
-            .mapToObj(x -> RandomStringUtils.randomAlphanumeric(44))
-            .toArray(String[]::new);
+    private enum EResourceType {
+        TOOL, CONSUMABLE
+    }
+
+    private String[] getRandomURLs(EResourceType resourceType) {
+        List<String> urls = new ArrayList<>(List.of(resourceType.equals(EResourceType.TOOL) ? testURLTools : testURLConsumables));
+        Collections.shuffle(urls);
+
+        return urls.subList(0, getRandomIntegerFromRange(0, urls.size() - 1)).toArray(String[]::new);
+
     }
 
     private Tool getRandomTool() {
@@ -414,7 +425,7 @@ public class InitializationData {
             .stockWeightType(getRandomEnum(EStockType.class))
             .price(new Faker().random().nextFloat())
             .purchaseDate(getRandomDate(false))
-            .urlImages(getRandomURLs())
+            .urlImages(getRandomURLs(EResourceType.TOOL))
             .maintenancePeriod(maintenancePeriod)
             .maintenanceTime(maintenanceTime)
             .lastMaintenance(lastMaintenanceDate)
@@ -435,7 +446,7 @@ public class InitializationData {
             .description(new Faker().lorem().sentence())
             .price(new Faker().random().nextFloat())
             .purchaseDate(getRandomDate(false))
-            .urlImages(getRandomURLs())
+            .urlImages(getRandomURLs(EResourceType.CONSUMABLE))
             .stock(new Random().nextBoolean() ? getRandomFloatFromRange(1,100) : 0.0f)
             .stockType(getRandomEnum(EStockType.class))
             .minStock(getRandomFloatFromRange(0,100))
