@@ -13,6 +13,8 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.poi.util.StringUtil.isBlank;
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
@@ -65,6 +67,7 @@ public interface ToolMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "nextMaintenance", source = ".", qualifiedByName = "calculateNextMaintenanceWhenTrue")
+    @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "extractImagesId")
     void update(ToolDto from, @MappingTarget Tool to);
 
     @Named("calculateNextMaintenanceWhenTrue")
@@ -74,4 +77,10 @@ public interface ToolMapper {
             : toolDto.getNextMaintenance();
     }
 
+    @Named("extractImagesId")
+    static String[] extractImagesId(String[] urlImages) {
+        return Stream.of(urlImages)
+                .map(url -> url.substring(url.lastIndexOf("id=") + 3))
+                .toArray(String[]::new);
+    }
 }
