@@ -59,8 +59,7 @@ public class AccountServiceImpl implements AccountService {
         User userEntity = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
-        if (Boolean.FALSE.equals(userEntity.isEnabled()))
-            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+        validateUserEnabled(userEntity);
 
         if (!passwordEncoder.matches(userCredentials.getPassword(), userEntity.getPassword()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.USER_PASSWORD_DONT_MATCH);
@@ -115,8 +114,7 @@ public class AccountServiceImpl implements AccountService {
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
-        if (Boolean.FALSE.equals(user.isEnabled()))
-            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+        validateUserEnabled(user);
 
         SignedJWT jwt = jwtUtils.generateNewRecoveryToken(user);
 
@@ -162,8 +160,7 @@ public class AccountServiceImpl implements AccountService {
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
-        if (Boolean.FALSE.equals(user.isEnabled()))
-            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+        validateUserEnabled(user);
 
         user.setPassword(passwordEncoder.encode(userCredentials.getPassword()));
         userRepository.saveAndFlush(user);
@@ -175,8 +172,7 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws ParseException, JOSEException {
         validateToken(refreshToken);
 
-        if (Boolean.FALSE.equals(petitionUser.isEnabled()))
-            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+        validateUserEnabled(petitionUser);
 
         tokenRepository.deleteNonRefreshTokensFromUser(petitionUser.getId());
 
@@ -192,6 +188,14 @@ public class AccountServiceImpl implements AccountService {
             .refreshExpires(dateToLocalDateTime(refreshJwt.getJWTClaimsSet().getExpirationTime())).build();
 
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.TOKEN_REFRESHED, userDto);
+    }
+
+    private void validateUserEnabled(User user) {
+        if (Boolean.FALSE.equals(user.isEnabled())) {
+            tokenRepository.deleteAllTokensFromUser(user.getId());
+            cleanLocalTokensFromUserId(user.getId(), true);
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+        }
     }
 
 }

@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
 
         if (Boolean.FALSE.equals(userRepository.userIsEnabled(userId))) {
             tokenRepository.deleteAllTokensFromUser(userId);
+            cleanLocalTokensFromUserId(userId, true);
             throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
         }
         String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
