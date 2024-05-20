@@ -48,6 +48,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,10 +60,12 @@ import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateSignedToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -100,10 +103,26 @@ class UserServiceImplTest {
         configureToken();
         configureTokenRepositoryReturn(Optional.empty());
 
+        doReturn(true).when(userRepository).userIsEnabled(anyInt());
+
         RequestException ex = assertThrows(RequestException.class, () -> userService.getMyUser(mockedToken));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND_TOKEN, ex.getMessage());
+
+        verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
+
+    }
+
+    @Test
+    public void whenGetMyUser_returnUserNotEnabled() {
+        configureToken();
+        configureTokenRepositoryReturn(Optional.empty());
+
+        RequestException ex = assertThrows(RequestException.class, () -> userService.getMyUser(mockedToken));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
 
@@ -117,6 +136,7 @@ class UserServiceImplTest {
         final UserDto userExpected = STANDARD_USER.toBuilder().password(null).build();
         configureTokenRepositoryReturn(Optional.of(user.getId()));
 
+        doReturn(true).when(userRepository).userIsEnabled(anyInt());
         doReturn(Optional.of(UserMapper.MAPPER.toEntity(user))).when(userRepository).findById(user.getId());
 
         ResponseEntity<?> response = userService.getMyUser(mockedToken);
@@ -124,7 +144,7 @@ class UserServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(Objects.requireNonNull(responseBody).getData());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).findById(any());
@@ -137,10 +157,26 @@ class UserServiceImplTest {
         configureToken();
         configureTokenRepositoryReturn(Optional.empty());
 
+        doReturn(true).when(userRepository).userIsEnabled(anyInt());
+
         RequestException ex = assertThrows(RequestException.class, () -> userService.updateMyUser(mockedToken, NOT_FOUND_USER));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND_TOKEN, ex.getMessage());
+
+        verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
+
+    }
+
+    @Test
+    public void whenUpdateMy_returnUserUserNotEnabled() {
+        configureToken();
+        configureTokenRepositoryReturn(Optional.empty());
+
+        RequestException ex = assertThrows(RequestException.class, () -> userService.updateMyUser(mockedToken, NOT_FOUND_USER));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
 
@@ -155,15 +191,13 @@ class UserServiceImplTest {
 
         doReturn(Optional.of(UserMapper.MAPPER.toEntity(user))).when(userRepository).findById(user.getId());
 
-        UserCredentialsDto credentials = UserCredentialsDto.builder()
-            .email(user.getEmail()).password(user.getPassword()).build();
-
         HttpHeaders headers = new HttpHeaders();
         final String headerPayLoad = String.format("%s.%s", mockedSignedJWT.getParsedParts()[0], mockedSignedJWT.getParsedParts()[1]);
         headers.add("x-header-payload-token", headerPayLoad);
         final String signature = mockedSignedJWT.getParsedParts()[2].toString();
         headers.add("x-signature-token", signature);
 
+        doReturn(true).when(userRepository).userIsEnabled(anyInt());
         doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, user, headers)).when(accountService).login(any(UserCredentialsDto.class));
 
         ResponseEntity<?> response = userService.updateMyUser(mockedToken, user);
@@ -179,9 +213,9 @@ class UserServiceImplTest {
         assertEquals(Messages.Info.USER_UPDATED, responseBody.getMessage());
         assertEquals(2, response.getHeaders().size());
         assertTrue(response.getHeaders().containsKey("x-header-payload-token"));
-        assertEquals(headerPayLoad, response.getHeaders().get("x-header-payload-token").getFirst());
+        assertEquals(headerPayLoad, Objects.requireNonNull(response.getHeaders().get("x-header-payload-token")).getFirst());
         assertTrue(response.getHeaders().containsKey("x-signature-token"), signature);
-        assertEquals(signature, response.getHeaders().get("x-signature-token").getFirst());
+        assertEquals(signature, Objects.requireNonNull(response.getHeaders().get("x-signature-token")).getFirst());
         assertEquals(user, responseData.getData());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
@@ -193,9 +227,25 @@ class UserServiceImplTest {
 
     // delete my user
     @Test
+    public void whenDeleteMyUser_returnUserNotEnabled() {
+        configureToken();
+        configureTokenRepositoryReturn(Optional.empty());
+
+        RequestException ex = assertThrows(RequestException.class, () -> userService.deleteMyUser(mockedToken));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
+
+        verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
+
+    }
+
+    @Test
     public void whenDeleteMyUser_returnUserNotFound() {
         configureToken();
         configureTokenRepositoryReturn(Optional.empty());
+
+        doReturn(true).when(userRepository).userIsEnabled(anyInt());
 
         RequestException ex = assertThrows(RequestException.class, () -> userService.deleteMyUser(mockedToken));
 
@@ -213,6 +263,7 @@ class UserServiceImplTest {
         final UserDto user = STANDARD_USER;
         configureTokenRepositoryReturn(Optional.of(user.getId()));
 
+        doReturn(true).when(userRepository).userIsEnabled(anyInt());
         doReturn(true).when(userRepository).existsById(user.getId());
 
         ResponseEntity<?> response = userService.deleteMyUser(mockedToken);
@@ -220,7 +271,7 @@ class UserServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(Messages.Info.USER_DELETED, responseBody.getMessage());
+        assertEquals(Messages.Info.USER_DELETED, Objects.requireNonNull(responseBody).getMessage());
 
         verify(tokenRepository, atMostOnce()).getUserIdFromJwtId(any());
         verify(userRepository, atMostOnce()).existsById(any());
@@ -238,13 +289,13 @@ class UserServiceImplTest {
             throw new RuntimeException(e.getMessage());
         }
 
-        doReturn(signedJWT).when(jwtUtils).getDecodedJwt(mockedToken);
-        doReturn(jwsHeader).when(signedJWT).getHeader();
-        doReturn(mockedSignedJWT.getHeader().getKeyID()).when(jwsHeader).getKeyID();
+        lenient().doReturn(signedJWT).when(jwtUtils).getDecodedJwt(mockedToken);
+        lenient().doReturn(jwsHeader).when(signedJWT).getHeader();
+        lenient().doReturn(mockedSignedJWT.getHeader().getKeyID()).when(jwsHeader).getKeyID();
     }
 
-    private void configureTokenRepositoryReturn(Optional<?> optional) {
-        doReturn(optional).when(tokenRepository).getUserIdFromJwtId(mockedSignedJWT.getHeader().getKeyID());
+    private <T> void configureTokenRepositoryReturn(Optional<T> optional) {
+        lenient().doReturn(optional).when(tokenRepository).getUserIdFromJwtId(mockedSignedJWT.getHeader().getKeyID());
     }
 
     // create user
@@ -277,7 +328,7 @@ class UserServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(Messages.Info.USER_CREATED, responseBody.getMessage());
+        assertEquals(Messages.Info.USER_CREATED, Objects.requireNonNull(responseBody).getMessage());
         assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
 
         verify(userRepository, atMostOnce()).findByEmail(any());
@@ -312,7 +363,7 @@ class UserServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(Objects.requireNonNull(responseBody).getData());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -331,7 +382,7 @@ class UserServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertThat(userExpected).usingRecursiveComparison().isEqualTo(responseBody.getData());
+        assertThat(userExpected).usingRecursiveComparison().isEqualTo(Objects.requireNonNull(responseBody).getData());
 
         verify(userRepository, atMostOnce()).findById(any());
     }
@@ -354,7 +405,7 @@ class UserServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) Objects.requireNonNull(responseBody).getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
         assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseData.getElements());
@@ -380,7 +431,33 @@ class UserServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) Objects.requireNonNull(responseBody).getData();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
+        assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseData.getElements());
+
+        verify(userRepository, atMostOnce()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    public void whenListUsersFilteredAscending_returnMultipleUsers() {
+        final List<UserDto> users = MockedUserVolunteer.getListOfMockedUsers(5);
+        final List<User> userEntities = users.stream().map(UserMapper.MAPPER::toEntity).toList();
+        final List<UserDto> usersExpected = users.stream().map(u ->
+            u.toBuilder()
+                .password(null)
+                .volunteer(u.getVolunteer().toBuilder().absences(null).build())
+                .build()).toList();
+
+        Page<User> userPage = new PageImpl<>(userEntities);
+
+        doReturn(userPage).when(userRepository).findAllFiltered(anyString(), isNull(), any(Pageable.class));
+
+        ResponseEntity<?> response = userService.listUsers("x", null, null, 0, 5, "id", EOrder.ASC);
+        assertNotNull(response);
+
+        Response.DTO responseBody = (Response.DTO) response.getBody();
+        PaginationDetails responseData = (PaginationDetails) Objects.requireNonNull(responseBody).getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(String.format(Messages.Info.USER_LISTED, 5), responseBody.getMessage());
         assertThat(usersExpected).usingRecursiveFieldByFieldElementComparator().isEqualTo(responseData.getElements());
@@ -432,7 +509,6 @@ class UserServiceImplTest {
     @Test
     public void whenUpdateUser_validateUserAlreadyExists() throws ParseException {
         // user which calls endpoint
-        final User userToken = UserMapper.MAPPER.toEntity(MANAGER_USER);
         final Integer userIdFromToken = MANAGER_USER.getId();
         // user entity which will be updated
         final Integer userId = MANAGER_USER.getId();
@@ -457,7 +533,6 @@ class UserServiceImplTest {
     @Test
     public void whenUpdateUser_validateChangeSelfRole() throws ParseException {
         // user which calls endpoint
-        final User userToken = UserMapper.MAPPER.toEntity(MANAGER_USER);
         final Integer userIdFromToken = MANAGER_USER.getId();
         // user entity which will be updated
         final Integer userId = MANAGER_USER.getId();
@@ -782,23 +857,20 @@ class UserServiceImplTest {
         final String signature = mockedSignedJWT.getParsedParts()[2].toString();
         headers.add("x-signature-token", signature);
 
-        UserCredentialsDto credentials = UserCredentialsDto.builder()
-            .email(userDtoUpdating.getEmail()).password(userDtoUpdating.getPassword()).build();
-
         doReturn(Constructor.buildResponseObjectHeader(HttpStatus.OK, userDtoExpected, headers)).when(accountService).login(any(UserCredentialsDto.class));
 
         ResponseEntity<?> response = userService.updateUser(mockedToken, userId, userDtoUpdating);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        Response.DTO responseData = (Response.DTO) responseBody.getData();
+        Response.DTO responseData = (Response.DTO) Objects.requireNonNull(responseBody).getData();
         assertEquals(response.getStatusCode(), HttpStatus.CREATED);
         assertEquals(responseBody.getMessage(), Messages.Info.USER_UPDATED);
         assertEquals(response.getHeaders().size(), 2);
         assertTrue(response.getHeaders().containsKey("x-header-payload-token"));
-        assertEquals(response.getHeaders().get("x-header-payload-token").getFirst(), headerPayLoad);
+        assertEquals(Objects.requireNonNull(response.getHeaders().get("x-header-payload-token")).getFirst(), headerPayLoad);
         assertTrue(response.getHeaders().containsKey("x-signature-token"), signature);
-        assertEquals(response.getHeaders().get("x-signature-token").getFirst(), signature);
+        assertEquals(Objects.requireNonNull(response.getHeaders().get("x-signature-token")).getFirst(), signature);
         assertEquals(responseData.getData(), userDtoExpected);
 
         verify(userRepository, times(2)).findById(any());
@@ -838,7 +910,7 @@ class UserServiceImplTest {
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
         assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals(responseBody.getMessage(), Messages.Info.USER_DELETED);
+        assertEquals(Objects.requireNonNull(responseBody).getMessage(), Messages.Info.USER_DELETED);
 
         verify(userRepository, atMostOnce()).existsById(any());
         verify(userRepository, atMostOnce()).deleteById(any());
