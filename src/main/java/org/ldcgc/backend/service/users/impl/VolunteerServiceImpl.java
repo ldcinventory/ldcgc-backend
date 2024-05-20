@@ -81,9 +81,9 @@ public class VolunteerServiceImpl implements VolunteerService {
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
             ? Sort.by(sortField).descending()
             : Sort.by(sortField).ascending());
-        Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) ?
+        Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) && isActive == null ?
             volunteerRepository.findAll(pageable).map(VolunteerMapper.MAPPER::toDto) :
-            volunteerRepository.findAllFiltered(filterString, pageable).map(VolunteerMapper.MAPPER::toDto);
+            volunteerRepository.findAllFiltered(filterString, isActive, pageable).map(VolunteerMapper.MAPPER::toDto);
 
         if (pageIndex > pagedVolunteers.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
