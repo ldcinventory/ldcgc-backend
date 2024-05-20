@@ -13,7 +13,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.poi.util.StringUtil.isBlank;
