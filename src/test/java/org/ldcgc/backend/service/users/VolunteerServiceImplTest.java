@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +45,7 @@ import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -214,7 +216,7 @@ class VolunteerServiceImplTest {
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) Objects.requireNonNull(responseBody).getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
@@ -231,13 +233,13 @@ class VolunteerServiceImplTest {
 
         Page<Volunteer> volunteerPage = new PageImpl<>(volunteersEntities);
 
-        doReturn(volunteerPage).when(volunteerRepository).findAllFiltered(anyString(), any(Pageable.class));
+        doReturn(volunteerPage).when(volunteerRepository).findAllFiltered(anyString(), isNull(), any(Pageable.class));
 
         ResponseEntity<?> response = volunteerService.listVolunteers(null, "x", null, 0, 5, "builderAssistantId", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
-        PaginationDetails responseData = (PaginationDetails) responseBody.getData();
+        PaginationDetails responseData = (PaginationDetails) Objects.requireNonNull(responseBody).getData();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(responseBody);
         assertNotNull(responseBody.getMessage());
