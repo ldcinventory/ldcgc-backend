@@ -47,12 +47,14 @@ public class Location {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
     private String description;
 
     private String url;
 
+    @Column(nullable = false)
     private Integer level;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -61,6 +63,7 @@ public class Location {
     @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Location> locations = new ArrayList<>();
 
+    @Column(nullable = false)
     private Integer groupId;
 
 }

@@ -39,11 +39,11 @@ public class Volunteer {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
     private String lastName;
 
-    // this id will be their barcode
     private String builderAssistantId;
 
     private Boolean isActive;

@@ -25,6 +25,7 @@ public class Responsibility {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
     private Boolean locked = false;

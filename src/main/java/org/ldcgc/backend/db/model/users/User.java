@@ -37,8 +37,10 @@ public class User {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     @NotNull @NonNull

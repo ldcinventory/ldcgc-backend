@@ -28,6 +28,7 @@ public class Group {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
     private String description;
