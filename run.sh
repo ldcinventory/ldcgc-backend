@@ -113,13 +113,13 @@ echo "Load test data for tools and consumables = $TEST_DATA"
 echo "Docker initialization mode = '$1'"
 case "$1" in
   create|restart)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA RANDOM_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-api.yml up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-api.yml up -d
   ;;
   create-api|create-test-data-api|restart-api)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA RANDOM_TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-ui.yml up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TEST_DATA=$TEST_DATA docker compose -f docker-compose-no-ui.yml up -d
   ;;
   create-ui|create-test-data-ui|restart-ui)
-    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA RANDOM_TEST_DATA=$TEST_DATA UI_DOCKERFILE=$UI_DOCKERFILE docker-compose up -d
+    DB_START_MODE=$DB_START_MODE LOAD_INITIAL_DATA=$LOAD_INITIAL_DATA TEST_DATA=$TEST_DATA UI_DOCKERFILE=$UI_DOCKERFILE docker-compose up -d
   ;;
 esac
 

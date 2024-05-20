@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.dto.location;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Getter
 @Builder
@@ -16,11 +18,15 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 public class LocationDto {
 
     private Integer id;
+    @Schema(requiredMode = REQUIRED)
     private String name;
     private String description;
     private String url;
+    @Schema(requiredMode = REQUIRED)
+    private Integer level;
     private Integer parentLocationId;
     @JsonInclude(NON_EMPTY) @Setter
     private List<LocationDto> locations;
+    @Schema(requiredMode = REQUIRED)
     private Integer groupId;
 }

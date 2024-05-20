@@ -28,8 +28,10 @@ public class Absence {
     @Column(updatable = false, nullable = false)
     private Integer id;
 
+    @Column(nullable = false)
     private LocalDate dateFrom;
 
+    @Column(nullable = false)
     private LocalDate dateTo;
 
     @ManyToOne

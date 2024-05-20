@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
@@ -8,15 +9,18 @@ import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Getter
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VolunteerDto {
 
     private Integer id;
+    @Schema(requiredMode = REQUIRED)
     private String name;
     private String lastName;
-    // this id will be their barcode
+    @Schema(requiredMode = REQUIRED)
     private String builderAssistantId;
     private Boolean isActive;
     private List<EWeekday> availability;

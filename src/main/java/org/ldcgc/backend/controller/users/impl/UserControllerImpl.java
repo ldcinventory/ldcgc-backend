@@ -17,7 +17,7 @@ public class UserControllerImpl implements UserController {
 
     private final UserService userService;
 
-    public ResponseEntity<?> getMyUser(String token) {
+    public ResponseEntity<?> getMyUser(String token) throws ParseException {
         return userService.getMyUser(token);
     }
 
@@ -25,7 +25,7 @@ public class UserControllerImpl implements UserController {
         return userService.updateMyUser(token, user);
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) {
+    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
         return userService.deleteMyUser(token);
     }
 
@@ -37,8 +37,8 @@ public class UserControllerImpl implements UserController {
         return userService.getUser(userId);
     }
 
-    public ResponseEntity<?> listUsers(String filterString, Integer userId, Integer pageIndex, Integer size, String sortField, EOrder order) {
-        return userService.listUsers(filterString, userId, pageIndex, size, sortField, order);
+    public ResponseEntity<?> listUsers(String filterString, Integer userId, Boolean enabled, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return userService.listUsers(filterString, userId, enabled, pageIndex, size, sortField, order);
     }
 
     public ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException {

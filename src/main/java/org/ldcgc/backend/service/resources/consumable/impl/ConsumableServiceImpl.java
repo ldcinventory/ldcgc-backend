@@ -72,7 +72,7 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     }
 
-    public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
+    public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, String location, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
         if(StringUtils.isNotBlank(barcode))
             return Constructor.buildResponseObject(HttpStatus.OK,
                 ConsumableMapper.MAPPER.toDto(getOrElseThrowNotFound(barcode)));
@@ -80,9 +80,9 @@ public class ConsumableServiceImpl implements ConsumableService {
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
             ? Sort.by(sortField).descending()
             : Sort.by(sortField).ascending());
-        Page<ConsumableDto> pagedConsumables = ObjectUtils.allNull(category, brand, name, model, description, hasStock)
+        Page<ConsumableDto> pagedConsumables = ObjectUtils.allNull(category, brand, name, model, description, location, hasStock)
             ? consumableRepository.findAll(pageable).map(ConsumableMapper.MAPPER::toDto)
-            : consumableRepository.findAllFiltered(category, brand, name, model, description, hasStock, pageable).map(ConsumableMapper.MAPPER::toDto);
+            : consumableRepository.findAllFiltered(category, brand, name, model, description, location, hasStock, pageable).map(ConsumableMapper.MAPPER::toDto);
 
         if (pageIndex > pagedConsumables.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);

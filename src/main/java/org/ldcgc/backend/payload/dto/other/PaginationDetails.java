@@ -51,7 +51,7 @@ public class PaginationDetails {
             .elements(page.getContent())
             .elementsPerPage(pageable.getPageSize())
             .actualPage(pageable.getPageNumber())
-            .actualPageFrom(pageable.getPageNumber() * pageable.getPageSize() + 1)
+            .actualPageFrom((int) page.getTotalElements() == 0 ? 0 : pageable.getPageNumber() * pageable.getPageSize() + 1)
             .actualPageTo(Math.min(((pageable.getPageNumber() + 1) * pageable.getPageSize()), (int) page.getTotalElements()))
             .totalPages(page.getTotalPages())
             .build();

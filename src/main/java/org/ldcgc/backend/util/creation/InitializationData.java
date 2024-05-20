@@ -58,7 +58,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +71,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.ldcgc.backend.util.common.EStockType.KILOGRAMS;
+import static org.ldcgc.backend.util.common.EStockType.UNITS;
 import static org.ldcgc.backend.util.conversion.Convert.stringToLocalDate;
 import static org.ldcgc.backend.util.conversion.Convert.toFloat;
 import static org.ldcgc.backend.util.conversion.Convert.toFloat2Decimals;
@@ -587,6 +588,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -599,6 +601,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -612,6 +615,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -622,6 +626,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -634,6 +639,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -647,6 +653,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -657,6 +664,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Voluntario")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -668,6 +676,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
 
         userRepository.saveAndFlush(User.builder()
@@ -680,6 +689,7 @@ public class InitializationData {
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Voluntario")).findFirst()
                 .orElse(null))
+            .enabled(true)
             .build());
     }
 
@@ -746,7 +756,7 @@ public class InitializationData {
                 .resourceType(resourceTypeMap.get(tFieldList.get(5)))
                 .status(EStatus.AVAILABLE)
                 .weight(toFloat(tFieldList.get(6)))
-                .stockWeightType(EStockType.KILOGRAMS)
+                .stockWeightType(KILOGRAMS)
                 .price(toFloat(tFieldList.get(7)))
                 .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
                 .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
@@ -835,25 +845,29 @@ public class InitializationData {
     // null registers
     private void createNullRegisters() {
         userRepository.saveAndFlush(User.builder()
-            .email("[ null user ]")
+            .email("null")
             .password(passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(20)))
             .role(ERole.ROLE_NULL)
             .enabled(false)
             .build());
 
         volunteerRepository.saveAndFlush(Volunteer.builder()
+            .name("null")
             .isActive(false)
             .build());
 
         toolRepository.saveAndFlush(Tool.builder()
             .barcode("null")
+            .name("null")
             .enabled(false)
             .build());
 
         consumableRepository.saveAndFlush(Consumable.builder()
             .barcode("null")
+            .name("null")
             .quantityEachItem(0.0f)
             .stock(0.0f)
+            .stockType(UNITS)
             .enabled(false)
             .build());
 

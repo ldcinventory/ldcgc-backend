@@ -16,11 +16,13 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             SELECT c.* FROM consumables c
             JOIN "resource-types" r on c.resource_type_id = r.id
             JOIN brands b on c.brand_id = b.id
+            JOIN locations l on c.location_id = l.id
             WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :resourceType, '%'))
               AND unaccent(b.name) ILIKE unaccent(CONCAT('%', :brand, '%'))
               AND unaccent(c.name) ILIKE unaccent(CONCAT('%', :name, '%'))
               AND unaccent(c.model) ILIKE unaccent(CONCAT('%', :model, '%'))
               AND unaccent(c.description) ILIKE unaccent(CONCAT('%', :description, '%'))
+              AND unaccent(l.name) ILIKE unaccent(CONCAT('%', :location, '%'))
               AND (
                   CASE WHEN :hasStock IS NOT NULL THEN
                     CASE
@@ -31,7 +33,7 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
                   END
               )
             """, nativeQuery = true)
-    Page<Consumable> findAllFiltered(String resourceType, String brand, String name, String model, String description, Boolean hasStock, Pageable pageable);
+    Page<Consumable> findAllFiltered(String resourceType, String brand, String name, String model, String description, String location, Boolean hasStock, Pageable pageable);
 
     @Query(value = """
             SELECT c.* FROM consumables c

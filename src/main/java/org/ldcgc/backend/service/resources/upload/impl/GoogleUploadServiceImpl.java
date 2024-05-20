@@ -13,7 +13,6 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.jetbrains.annotations.NotNull;
 import org.ldcgc.backend.db.model.resources.Consumable;

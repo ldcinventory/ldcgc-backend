@@ -11,17 +11,17 @@ import java.text.ParseException;
 @Service
 public interface UserService {
 
-    ResponseEntity<?> getMyUser(String token);
+    ResponseEntity<?> getMyUser(String token) throws ParseException;
 
     ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException, JOSEException;
 
-    ResponseEntity<?> deleteMyUser(String token);
+    ResponseEntity<?> deleteMyUser(String token) throws ParseException;
 
     ResponseEntity<?> createUser(String token, UserDto user);
 
     ResponseEntity<?> getUser(Integer userId);
 
-    ResponseEntity<?> listUsers(String filterString, Integer userId, Integer pageIndex, Integer size, String sortField, EOrder order);
+    ResponseEntity<?> listUsers(String filterString, Integer userId, Boolean enabled, Integer pageIndex, Integer size, String sortField, EOrder order);
 
     ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException;
 

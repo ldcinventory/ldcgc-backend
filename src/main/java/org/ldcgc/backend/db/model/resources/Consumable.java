@@ -50,6 +50,7 @@ public class Consumable {
     @JoinColumn(name = "brand_id", referencedColumnName = "id")
     private Brand brand;
 
+    @Column(nullable = false)
     private String name;
 
     private String model;
@@ -73,7 +74,7 @@ public class Consumable {
     private Float minStock;
 
     @Convert(converter = StockTypeConverter.class)
-    @Column(columnDefinition = "int")
+    @Column(columnDefinition = "int", nullable = false)
     private EStockType stockType;
 
     @ManyToOne

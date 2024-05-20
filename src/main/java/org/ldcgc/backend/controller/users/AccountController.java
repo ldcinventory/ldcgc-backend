@@ -52,6 +52,14 @@ public interface AccountController {
             })
     )
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_401,
+        description = SwaggerConfig.HTTP_REASON_401,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not enabled", value = Messages.Error.USER_NOT_ENABLED)
+            })
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
@@ -94,6 +102,14 @@ public interface AccountController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Email sent", value = Messages.Info.CREDENTIALS_EMAIL_SENT)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_401,
+        description = SwaggerConfig.HTTP_REASON_401,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not enabled", value = Messages.Error.USER_NOT_ENABLED)
             })
     )
     @ApiResponse(
@@ -159,6 +175,14 @@ public interface AccountController {
             })
     )
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_401,
+        description = SwaggerConfig.HTTP_REASON_401,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not enabled", value = Messages.Error.USER_NOT_ENABLED)
+            })
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
@@ -186,6 +210,14 @@ public interface AccountController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "Refresh token not valid", value = Messages.Error.REFRESH_TOKEN_NOT_VALID)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_401,
+        description = SwaggerConfig.HTTP_REASON_401,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not enabled", value = Messages.Error.USER_NOT_ENABLED)
             })
     )
     @PostMapping("/refresh-token")

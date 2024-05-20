@@ -217,7 +217,7 @@ public class UserControllerImplTest {
         Response.DTO responseDTO = Response.DTO.builder().message(message).data(users).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
-        given(userService.listUsers(anyString(), isNull(), anyInt(), anyInt(), anyString(), any(EOrder.class)))
+        given(userService.listUsers(anyString(), isNull(), isNull(), anyInt(), anyInt(), anyString(), any(EOrder.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
         mockMvc.perform(getRequest(request, ERole.ROLE_USER)

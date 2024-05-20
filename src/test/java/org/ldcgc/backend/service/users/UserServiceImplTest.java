@@ -60,6 +60,7 @@ import static org.ldcgc.backend.base.mock.MockedToken.generateSignedToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -109,7 +110,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void whenGetMyUser_returnUser() {
+    public void whenGetMyUser_returnUser() throws ParseException {
         configureToken();
 
         final UserDto user = STANDARD_USER;
@@ -206,7 +207,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void whenDeleteMyUser_returnOK() {
+    public void whenDeleteMyUser_returnOK() throws ParseException {
         configureToken();
 
         final UserDto user = STANDARD_USER;
@@ -325,7 +326,7 @@ class UserServiceImplTest {
 
         doReturn(Optional.of(userEntity)).when(userRepository).findById(user.getId());
 
-        ResponseEntity<?> response = userService.listUsers(null, user.getId(), null, null, null, null);
+        ResponseEntity<?> response = userService.listUsers(null, user.getId(), null, null, null, null, null);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -349,7 +350,7 @@ class UserServiceImplTest {
 
         doReturn(userPage).when(userRepository).findAll(any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers(null, null, 0, 5, "id", EOrder.DESC);
+        ResponseEntity<?> response = userService.listUsers(null, null, null, 0, 5, "id", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
@@ -373,9 +374,9 @@ class UserServiceImplTest {
 
         Page<User> userPage = new PageImpl<>(userEntities);
 
-        doReturn(userPage).when(userRepository).findAllFiltered(anyString(), any(Pageable.class));
+        doReturn(userPage).when(userRepository).findAllFiltered(anyString(), isNull(), any(Pageable.class));
 
-        ResponseEntity<?> response = userService.listUsers("x", null,0, 5, "id", EOrder.DESC);
+        ResponseEntity<?> response = userService.listUsers("x", null, null, 0, 5, "id", EOrder.DESC);
         assertNotNull(response);
 
         Response.DTO responseBody = (Response.DTO) response.getBody();
