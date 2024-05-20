@@ -120,6 +120,8 @@ public interface ConsumableController {
             @RequestParam(required = false) String model,
         @Parameter(description = "Filter to search by description")
             @RequestParam(required = false) String description,
+        @Parameter(description = "Filter by location")
+            @RequestParam(required = false, defaultValue = "") String location,
         @Parameter(description = "If there's stock left")
             @RequestParam(required = false) Boolean hasStock,
         @Parameter(description = "Page index (default = 0)")

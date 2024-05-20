@@ -11,7 +11,7 @@ public interface ConsumableService {
 
     ResponseEntity<?> getConsumable(Integer consumableId);
     ResponseEntity<?> createConsumable(ConsumableDto consumable);
-    ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order);
+    ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, String location, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order);
     ResponseEntity<?> listConsumablesLoose(String filterString, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order);
     ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId);
     ResponseEntity<?> deleteConsumable(Integer consumableId);

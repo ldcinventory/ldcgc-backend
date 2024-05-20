@@ -23,8 +23,8 @@ public class ConsumableControllerImpl implements ConsumableController {
         return consumableService.createConsumable(consumableDto);
     }
 
-    public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
-        return consumableService.listConsumables(barcode, category, brand, name, model, description, hasStock, pageIndex, size, sortField, order);
+    public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, String location, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
+        return consumableService.listConsumables(barcode, category, brand, name, model, description, location, hasStock, pageIndex, size, sortField, order);
     }
 
     public ResponseEntity<?> listConsumablesLoose(String filterString, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
