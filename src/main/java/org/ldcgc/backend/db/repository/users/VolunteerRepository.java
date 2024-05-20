@@ -20,11 +20,20 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
 
     @Query(value = """
             SELECT v.* FROM volunteers v
-            WHERE unaccent(v.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
+            WHERE (unaccent(v.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
                OR unaccent(v.last_name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-               OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString)
+               OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString))
+            AND (
+                  CASE WHEN :isActive IS NOT NULL THEN
+                    CASE
+                        WHEN :isActive = TRUE THEN v.is_active = TRUE
+                        ELSE v.is_active = FALSE
+                    END
+                  ELSE TRUE
+                  END
+              )
             """, nativeQuery = true)
-    Page<Volunteer> findAllFiltered(String filterString, Pageable pageable);
+    Page<Volunteer> findAllFiltered(String filterString, Boolean isActive, Pageable pageable);
 
     boolean existsByBuilderAssistantId(String builderAssistantId);
 
