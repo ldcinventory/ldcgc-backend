@@ -51,6 +51,22 @@ public interface UserController {
             schema = @Schema(implementation = UserDto.class))
     )
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Role not parseable", value = Messages.Error.TOKEN_NOT_PARSEABLE_ROLE)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_401,
+        description = SwaggerConfig.HTTP_REASON_401,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not enabled", value = Messages.Error.USER_NOT_ENABLED)
+            })
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",
@@ -63,7 +79,7 @@ public interface UserController {
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> getMyUser(
         @Parameter(description = "Valid JWT of the user to get details", required = true)
-        @RequestAttribute("Authorization") @UserFromTokenInDb String token);
+        @RequestAttribute("Authorization") @UserFromTokenInDb String token) throws ParseException;
 
     @Operation(summary = "Update my user", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
@@ -72,6 +88,14 @@ public interface UserController {
         content = @Content(mediaType = "application/json",
             examples = {
                 @ExampleObject(name = "User updated", value = Messages.Info.USER_UPDATED)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_401,
+        description = SwaggerConfig.HTTP_REASON_401,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not enabled", value = Messages.Error.USER_NOT_ENABLED)
             })
     )
     @ApiResponse(
@@ -175,6 +199,8 @@ public interface UserController {
             @RequestParam(required = false) String filterString,
         @Parameter(description = "User Id (ignores the other params)")
             @RequestParam(required = false) Integer userId,
+        @Parameter(description = "Enabled user")
+            @RequestParam(required = false) Boolean enabled,
         @Parameter(description = "Page index")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")

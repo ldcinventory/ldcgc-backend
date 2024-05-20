@@ -59,6 +59,9 @@ public class AccountServiceImpl implements AccountService {
         User userEntity = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
+        if (Boolean.FALSE.equals(userEntity.isEnabled()))
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+
         if (!passwordEncoder.matches(userCredentials.getPassword(), userEntity.getPassword()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.USER_PASSWORD_DONT_MATCH);
 
@@ -112,6 +115,9 @@ public class AccountServiceImpl implements AccountService {
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
 
+        if (Boolean.FALSE.equals(user.isEnabled()))
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+
         SignedJWT jwt = jwtUtils.generateNewRecoveryToken(user);
 
         return sendRecoveringCredentials(userCredentials.getEmail(), jwt.getParsedString());
@@ -153,9 +159,11 @@ public class AccountServiceImpl implements AccountService {
 
         validateToken(recoveryToken);
 
-        // get uset details
         User user = userRepository.findByEmail(userCredentials.getEmail()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
+
+        if (Boolean.FALSE.equals(user.isEnabled()))
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
 
         user.setPassword(passwordEncoder.encode(userCredentials.getPassword()));
         userRepository.saveAndFlush(user);
@@ -166,6 +174,9 @@ public class AccountServiceImpl implements AccountService {
 
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws ParseException, JOSEException {
         validateToken(refreshToken);
+
+        if (Boolean.FALSE.equals(petitionUser.isEnabled()))
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
 
         tokenRepository.deleteNonRefreshTokensFromUser(petitionUser.getId());
 

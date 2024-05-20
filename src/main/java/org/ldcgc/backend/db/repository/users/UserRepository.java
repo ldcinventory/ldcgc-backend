@@ -15,8 +15,23 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void deleteById(@NotNull Integer id);
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :filterString,'%'))")
-    Page<User> findAllFiltered(String filterString, Pageable pageable);
+    @Query(value = """
+            SELECT u.* FROM users u
+            WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :filterString,'%'))
+            AND (
+                  CASE WHEN :isEnabled IS NOT NULL THEN
+                    CASE
+                        WHEN :isEnabled = TRUE THEN u.enabled = TRUE
+                        ELSE u.enabled = FALSE
+                    END
+                  ELSE TRUE
+                  END
+              )
+            """, nativeQuery = true)
+    Page<User> findAllFiltered(String filterString, Boolean isEnabled, Pageable pageable);
 
     Optional<User> findByVolunteer_Id(Integer id);
+
+    @Query(value = "SELECT u.enabled FROM User u WHERE u.id = :id")
+    boolean userIsEnabled(Integer id);
 }

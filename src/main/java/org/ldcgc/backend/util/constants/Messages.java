@@ -114,6 +114,7 @@ public class Messages {
         public static final String
             TOKEN_NOT_FOUND_HEADERS = "The token is not found in headers",
             TOKEN_NOT_PARSEABLE = "This token is not parseable",
+            TOKEN_NOT_PARSEABLE_ROLE = "The role is not parseable",
             TOKEN_NOT_VALID = "This token is not valid",
             TOKEN_NOT_FOUND = "This token doesn't exist in DB",
             TOKEN_EXPIRED = "This token is expired",
@@ -122,6 +123,7 @@ public class Messages {
             REFRESH_TOKEN_NOT_VALID = "This refresh token is not valid",
 
             USER_ALREADY_EXIST = "There's already a user with this id or email",
+            USER_NOT_ENABLED = "This user is not enabled",
             USER_NOT_FOUND = "User not found",
             USER_NOT_FOUND_TOKEN = "User id or user from token not found, or token is not valid",
             USER_PERMISSION_ROLE = "User doesn't have the permission to change its own role, even if it's admin",

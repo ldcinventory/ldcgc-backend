@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.users.impl;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Responsibility;
@@ -52,33 +53,38 @@ public class UserServiceImpl implements UserService {
     private final AccountService accountService;
     private final JwtUtils jwtUtils;
 
-    public ResponseEntity<?> getMyUser(String token) {
-        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
-
-        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
-            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
+    public ResponseEntity<?> getMyUser(String token) throws ParseException {
+        Integer userId = validateUserEnabledAndGetUserId(token);
 
         return getUser(userId);
     }
 
     public ResponseEntity<?> updateMyUser(String token, UserDto userDto) throws ParseException, JOSEException {
-        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
-
-        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
-            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
+        Integer userId = validateUserEnabledAndGetUserId(token);
 
         User userEntity = getUserFromUserId(userId);
 
         return updateUser(userEntity, userEntity, userDto);
     }
 
-    public ResponseEntity<?> deleteMyUser(String token) {
-        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
-
-        Integer userId = tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
-            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
+    public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
+        Integer userId = validateUserEnabledAndGetUserId(token);
 
         return deleteUser(userId);
+    }
+
+    private Integer validateUserEnabledAndGetUserId(String token) throws ParseException {
+        SignedJWT signedJwt = jwtUtils.getDecodedJwt(token);
+        Integer userId = jwtUtils.getUserIdFromJwtToken(signedJwt);
+
+        if (Boolean.FALSE.equals(userRepository.userIsEnabled(userId))) {
+            tokenRepository.deleteAllTokensFromUser(userId);
+            throw new RequestException(HttpStatus.UNAUTHORIZED, Messages.Error.USER_NOT_ENABLED);
+        }
+        String publicKey = jwtUtils.getDecodedJwt(token).getHeader().getKeyID();
+
+        return tokenRepository.getUserIdFromJwtId(publicKey).orElseThrow(()
+            -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
     }
 
     public ResponseEntity<?> createUser(String token, UserDto user) {
@@ -98,15 +104,15 @@ public class UserServiceImpl implements UserService {
         return Constructor.buildResponseObject(HttpStatus.OK, UserMapper.MAPPER.toDTO(user));
     }
 
-    public ResponseEntity<?> listUsers(String filterString, Integer userId, Integer pageIndex, Integer size, String sortField, EOrder order) {
+    public ResponseEntity<?> listUsers(String filterString, Integer userId, Boolean enabled, Integer pageIndex, Integer size, String sortField, EOrder order) {
         if (userId != null) return getUser(userId);
 
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
             ? Sort.by(sortField).descending()
             : Sort.by(sortField).ascending());
-        Page<UserDto> pagedUsers = StringUtils.isBlank(filterString) ?
+        Page<UserDto> pagedUsers = StringUtils.isBlank(filterString) && enabled == null ?
             userRepository.findAll(pageable).map(UserMapper.MAPPER::toDTO) :
-            userRepository.findAllFiltered(filterString, pageable).map(UserMapper.MAPPER::toDTO);
+            userRepository.findAllFiltered(filterString, enabled, pageable).map(UserMapper.MAPPER::toDTO);
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
