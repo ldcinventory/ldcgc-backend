@@ -67,6 +67,15 @@ public interface UserController {
             })
     )
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Forbidden standard", value = Messages.Error.EULA_STANDARD_NOT_ACCEPTED),
+                @ExampleObject(name = "Forbidden manager/admin", value = Messages.Error.EULA_MANAGER_NOT_ACCEPTED)
+            })
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = "application/json",

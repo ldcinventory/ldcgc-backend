@@ -41,7 +41,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtils jwtUtils;
 
-    @Value("${jwtExpirationMs}")
+    @Value("${jwtExpiration}")
     private int jwtExpirationSeconds;
 
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {

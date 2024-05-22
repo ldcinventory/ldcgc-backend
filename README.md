@@ -8,7 +8,7 @@
 - Download docker from https://docs.docker.com/engine/install/, install it and run it.
 - Go to https://github.com/settings/tokens/new, create **a classic token**. Give the only permission of _read:packages_ (_Download packages from GitHub Package Registry_). 
 - Copy the generated token. Go to the terminal. Run this command: `docker login ghcr.io -u your_github_user`, and paste the token from GitHub.
-- Put the CSVs into `src/main/resources` folder (ask L for them).
+- Put the CSVs into `src/main/resources` folder (ask L for them, although they are not necessary for testing purposes right now).
 - Run this:
   - If you're backend: `./run.sh create`
   - If you're frontend: `./run.sh create-api`
@@ -28,7 +28,7 @@ To perform a login in this API, just go with default credentials for testing pur
 >
 > **USER**. email: `user@user` Password: `user` 
 >
-> **USER+VOLUNTEER**. email: `volunteer@volunteer` Password: `volunteer`. This is an account with user + volunteer associated (_needs the CSV files to test on local_).
+> **USER+VOLUNTEER**. email: `volunteer@volunteer` Password: `volunteer`. This is an account with user + volunteer associated.
 
 Call the api to endpoint `/api/account/login` with the payload:
 
@@ -50,6 +50,25 @@ Is necessary indicate some values as environment variables:
 + `TOOLS_REGISTRATION_TEST_DATA`: a boolean to load test data for tools registration.
 + `CONSUMABLES_REGISTRATION_TEST_DATA`: a boolean to load test data for consumables registration.
 
+**SPRING SECURITY**
+
++ `CORS_ORIGIN`: the origin that will be acceptable to allow traffic from.
++ `REQUEST_MATCHERS`: the endpoints that will be secured by Spring Security when calling to API (default is `/**`).
+
+**JWT**
+
++ `jwtExpiration`: the expiration of a token in seconds (default is 86400, ie, 1 day)
+
+**PASSWORD SECURITY**
+
+Argon2 password encoder with the provided parameters:
+
++ `spring.security.crypto.password.argon2.salt-length`: the salt length (in bytes) (default is 16)
++ `spring.security.crypto.password.argon2.hash-length`: the hash length (in bytes) (default is 32)
++ `spring.security.crypto.password.argon2.parallelism`: how many threads to process a password (default is 1 thread)
++ `spring.security.crypto.password.argon2.memory`: how much memory (default is 16384, ie, 16MB) 
++ `spring.security.crypto.password.argon2.iterations`: how many iterations to process the password (default is 2 iterations) 
+
 **DB**
 
 + `DB_HOST`: host of database.
@@ -57,8 +76,15 @@ Is necessary indicate some values as environment variables:
 + `DB_USER`: user to login on database server.
 + `DB_PASS`: password for login.
 + `DB_START_MODE`: hibernate ddl-auto options: `none` (for production), `create-drop`, `create`, `drop`, `update` (default for dev), `validate`.
-+ `LOAD_INITIAL_DATA`: only used on development mode. It is used to indicate if the bootstrap process must load or not data from csv local file.
++ `LOAD_INITIAL_DATA`: only used on development mode. It is used to indicate if the bootstrap process must load or not data into DB.
++ `RANDOM_TEST_DATA`: boolean to indicate if data will be loaded randomly, or, if false, from CSV.
++ `ONLY_RANDOM_TEST_DATA`: boolean to indicate if the data to insert is just the registers and maintenance.
 + `CSV_FILE`: file name which contains all the data to insert. It should be placed into `resources` folder.
+
+**IMAGES UPLOADING**
+
++ `GDRIVE_JSON_PATH`: the JSON file from GDrive that stores credentials to connect and upload files.
++ `IMAGE_QUALITY`: the factor of compress an image before uploading (default is 0.8f, range between 0.01f and 1.0f).
 
 **MAIL**
 
@@ -109,16 +135,16 @@ This option is mainly use by the Backend side of the project. The options used f
 
 This option is mainly use by the Frontend side of the project. The options used for run in this mode are:
 
-- `create-api`: create the API with CSVs (you need those inside `src/main/resources`)
-- `create-test-data-api`: create the API with CSVs and test data for consumible and tool registers
+- `create-api`: create the API with random data
+- `create-test-data-api`: create the API with random data + random registration data for consumables and tools, and maintenance
 - `restart-api`: just restart the containers
 
 #### RUN UI (i.e. UI + API + DB + SMTP)
 
 This option is mainly use by the QA side of the project. The options used for run in this mode are:
 
-- `create-ui`: create the UI + API with CSVs (you need those inside `src/main/resources`)
-- `create-test-data-ui`: create the UI + API with CSVs and test data for consumible and tool registers
+- `create-ui`: create the UI + API with  random data
+- `create-test-data-ui`: create the UI + API with random data + random registration data for consumables and tools, and maintenance
 - `restart-ui`: just restart all the containers
 
 #### PURGE EVERYTHING

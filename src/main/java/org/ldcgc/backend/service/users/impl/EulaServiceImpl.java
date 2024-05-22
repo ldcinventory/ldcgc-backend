@@ -35,6 +35,7 @@ public class EulaServiceImpl implements EulaService {
 
     @Value("${eula-standard}") private String EULA_STANDARD;
     @Value("${eula-managers}") private String EULA_MANAGERS;
+    private final String GOOGLE_DOCS_FORMAT = "https://docs.google.com/document/d/e/%s/pub?embedded=true";
 
     private final String EVERY_USER = "every user";
     private final String MANAGERS = "managers and admins";
@@ -56,7 +57,7 @@ public class EulaServiceImpl implements EulaService {
     private ResponseEntity<?> getEULAStandard() {
         EulaDto eulaDto = EulaDto.builder()
             .actionsAvailable(List.of(EEULAStatus.ACCEPT, EEULAStatus.PENDING, EEULAStatus.REJECT))
-            .url(EULA_STANDARD)
+            .url(String.format(GOOGLE_DOCS_FORMAT, EULA_STANDARD))
             .build();
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.App.EULA_SELECT_ACTION, EVERY_USER), eulaDto);
@@ -65,7 +66,7 @@ public class EulaServiceImpl implements EulaService {
     private ResponseEntity<?> getEULAManager() {
         EulaDto eulaDto = EulaDto.builder()
             .actionsAvailable(List.of(EEULAStatus.ACCEPT, EEULAStatus.PENDING, EEULAStatus.REJECT))
-            .url(EULA_MANAGERS)
+            .url(String.format(GOOGLE_DOCS_FORMAT, EULA_MANAGERS))
             .build();
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, String.format(Messages.App.EULA_SELECT_ACTION, MANAGERS), eulaDto);
