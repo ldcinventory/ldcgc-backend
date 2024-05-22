@@ -80,7 +80,7 @@ server:
       force: true
 
 # ---- JWT ----
-jwtExpirationMs: ${JWT_EXPIRATION:86400}
+jwtExpiration: ${JWT_EXPIRATION:86400}
 
 # LOGGING
 # -----------------------
