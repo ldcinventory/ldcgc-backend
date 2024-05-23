@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -165,8 +166,12 @@ public class MockedResources {
         return RandomStringUtils.randomNumeric(size);
     }
 
-    private static Integer getRandomIntegerFromRange(int min, int max) {
+    public static Integer getRandomIntegerFromRange(int min, int max) {
         return new Random().ints(1, min, max).iterator().nextInt();
+    }
+
+    public static Integer getRandomIndexFromList(List<?> list) {
+        return new Random().ints(1, 0, list.size() - 1).iterator().nextInt();
     }
 
     private static Float getRandomFloatFromRange(float min, float max) {
@@ -177,7 +182,28 @@ public class MockedResources {
         return BrandDto.builder()
             .id(getRandomId())
             .name(new Faker().brand().watch())
+            .locked(new Random().nextBoolean())
             .build();
+    }
+
+    public static BrandDto getRandomBrand(boolean locked) {
+        return getRandomBrand().toBuilder().locked(locked).build();
+    }
+
+    public static <T> List<T> listRandomResource(Class<T> clazz, Integer elements) {
+        if (elements == null) elements = 10;
+
+        return IntStream.rangeClosed(0, elements - 1).boxed().map(i -> {
+            if (clazz == ConsumableDto.class)
+                return clazz.cast(getRandomConsumableDto());
+            else if (clazz == ToolDto.class)
+                return clazz.cast(getRandomToolDto());
+            else if (clazz == BrandDto.class)
+                return clazz.cast(getRandomBrand());
+            else
+                throw new IllegalStateException("Unexpected value: " + clazz.getName());
+            }).toList();
+
     }
 
 }

@@ -52,7 +52,7 @@ import static org.ldcgc.backend.util.process.Threads.runInBackground;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-    @Value("${jwtExpirationMs}")
+    @Value("${jwtExpiration}")
     private int jwtExpirationSeconds;
 
     @Setter private Boolean isRecoveryToken = false;
