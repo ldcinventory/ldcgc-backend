@@ -17,6 +17,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
+import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
@@ -37,6 +38,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
@@ -191,7 +193,12 @@ public class UserServiceImpl implements UserService {
         cleanLocalTokensFromUserId(userEntity.getId(), true);
         tokenRepository.deleteAllTokensFromUser(userEntity.getId());
         ResponseEntity<?> response = accountService.login(credentials);
-        return Constructor.buildResponseMessageObjectHeader(HttpStatus.CREATED, Messages.Info.USER_UPDATED, response.getBody(), response.getHeaders());
+        Response.DTO responseBody = (Response.DTO) response.getBody();
+        return Constructor.buildResponseMessageObjectHeader(
+            HttpStatus.CREATED,
+            Messages.Info.USER_UPDATED,
+            Objects.requireNonNull(responseBody).getData(),
+            response.getHeaders());
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
