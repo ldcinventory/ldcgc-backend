@@ -24,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,9 +38,11 @@ import java.util.stream.Collectors;
 public class ErrorController extends AbstractErrorController {
 
     private final ServerProperties serverProperties;
+    private final ErrorAttributes errorAttributes;
 
     public ErrorController(ErrorAttributes errorAttributes, ServerProperties serverProperties) {
         super(errorAttributes);
+        this.errorAttributes = errorAttributes;
         this.serverProperties = serverProperties;
     }
 
@@ -49,9 +53,7 @@ public class ErrorController extends AbstractErrorController {
         if (getStatus(request) == HttpStatus.NO_CONTENT)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        //body.put("uuid", getRequestUUIDFromRequestMap(request));
-        body.putAll(getErrorAttributes(request, ErrorAttributeOptions.defaults().including(ErrorAttributeOptions.Include.MESSAGE)));
+        Map<String, Object> body = new LinkedHashMap<>(getErrorAttributes(request, ErrorAttributeOptions.defaults().including(ErrorAttributeOptions.Include.MESSAGE)));
         log.error(StringUtils.join(body));
 
         HttpHeaders headers = new HttpHeaders();
@@ -84,6 +86,12 @@ public class ErrorController extends AbstractErrorController {
     public BasicErrorController basicErrorController(ErrorAttributes errorAttributes, ObjectProvider<ErrorViewResolver> errorViewResolvers) {
         return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
                 errorViewResolvers.orderedStream().collect(Collectors.toList()));
+    }
+
+    @Override
+    public Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {
+        WebRequest webRequest = new ServletWebRequest(request);
+        return errorAttributes.getErrorAttributes(webRequest, options);
     }
 
 }

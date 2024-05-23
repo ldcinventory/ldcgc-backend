@@ -53,6 +53,7 @@ import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUse
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -83,11 +84,12 @@ class AccountServiceImplTest {
 
     // mocked users
     private final User USER_NOT_FOUND = User.builder().id(0).role(ERole.ROLE_USER).email("invalid@email.com").build();
-    private final User USER_PASSWORD_DONT_MATCH = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test1").build();
+    private final User USER_NOT_ENABLED = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test1").build();
+    private final User USER_PASSWORD_DONT_MATCH = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test1").enabled(true).build();
     private final UserCredentialsDto USER_PASSWORD_DONT_MATCH_CR = UserCredentialsDto.builder().email("test@test.com").password("test2").build();
-    private final User USER_NOT_EULA_STANDARD = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test").build();
-    private final User USER_NOT_EULA_MANAGER = User.builder().id(0).role(ERole.ROLE_MANAGER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).build();
-    private final User USER_STANDARD = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).build();
+    private final User USER_NOT_EULA_STANDARD = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test").enabled(true).build();
+    private final User USER_NOT_EULA_MANAGER = User.builder().id(0).role(ERole.ROLE_MANAGER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).enabled(true).build();
+    private final User USER_STANDARD = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).enabled(true).build();
 
     // -> login
     @Test
@@ -100,6 +102,20 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.login(userCredentials));
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
+
+        verify(userRepository, atMostOnce()).findByEmail(user.getEmail());
+    }
+
+    @Test
+    public void whenAuthenticateUser_returnUserNotEnabled() {
+        final User user = USER_NOT_ENABLED.toBuilder().build();
+        final UserCredentialsDto userCredentials = USER_PASSWORD_DONT_MATCH_CR;
+
+        doReturn(Optional.of(user)).when(userRepository).findByEmail(userCredentials.getEmail());
+
+        RequestException ex = assertThrows(RequestException.class, () -> accountService.login(userCredentials));
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(user.getEmail());
     }
@@ -215,6 +231,19 @@ class AccountServiceImplTest {
         RequestException ex = assertThrows(RequestException.class, () -> accountService.recoverCredentials(userCredentials));
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.USER_NOT_FOUND, ex.getMessage());
+
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
+    }
+
+    @Test
+    public void whenRecoverCredentials_returnUserNotEnabled() {
+        final UserCredentialsDto userCredentials = UserMapper.MAPPER.toCredentialsDTO(USER_NOT_FOUND);
+
+        doReturn(Optional.of(USER_NOT_ENABLED)).when(userRepository).findByEmail(userCredentials.getEmail());
+
+        RequestException ex = assertThrows(RequestException.class, () -> accountService.recoverCredentials(userCredentials));
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
 
         verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
     }
@@ -367,6 +396,34 @@ class AccountServiceImplTest {
 
     // -> new credentials
     @Test
+    public void whenSettingNewCredentials_returnUserNotEnabled() throws ParseException {
+        final UserCredentialsDto userCredentials = UserMapper.MAPPER.toCredentialsDTO(USER_NOT_ENABLED)
+            .toBuilder().token(mockedToken).build();
+
+        userCredentials.toBuilder().token(mockedToken).build();
+
+        // not a mocked service, let's make it by spying it :)
+        accountService = Mockito.spy(accountService);
+
+        doReturn(ResponseEntity.status(HttpStatus.OK).body(Messages.Info.RECOVERY_TOKEN_VALID)).when(accountService).validateToken(userCredentials.getToken());
+
+        doReturn(Optional.of(USER_NOT_ENABLED)).when(userRepository).findByEmail(userCredentials.getEmail());
+
+        RequestException ex = assertThrows(RequestException.class, () -> accountService.newCredentials(userCredentials));
+        assertNotNull(ex);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
+
+        verify(userRepository, atMostOnce()).findByEmail(userCredentials.getEmail());
+        // verify since it's not calling validateToken
+        verify(jwtUtils, times(0)).getDecodedJwt(Mockito.anyString());
+        verify(tokenRepository, times(0)).findByJwtID(Mockito.anyString());
+        verify(jwtUtils, times(0)).getUserIdFromJwtToken(Mockito.any(SignedJWT.class));
+        verify(userRepository, times(0)).findById(Mockito.anyInt());
+    }
+
+    @Test
     public void whenSettingNewCredentials_returnUserNotFound() throws ParseException {
         final UserCredentialsDto userCredentials = UserMapper.MAPPER.toCredentialsDTO(USER_STANDARD)
             .toBuilder().token(mockedToken).build();
@@ -423,6 +480,35 @@ class AccountServiceImplTest {
         verify(jwtUtils, times(0)).getUserIdFromJwtToken(Mockito.any(SignedJWT.class));
         verify(userRepository, times(0)).findById(Mockito.anyInt());
 
+    }
+
+    @Test
+    public void whenRefreshingToken_returnUserNotEnabled() throws ParseException, JOSEException {
+        SignedJWT mockedSignedToken = generateSignedToken(USER_NOT_ENABLED);
+        Token mockedTokenEntity = factory.manufacturePojo(Token.class);
+        mockedTokenEntity.setRefreshToken(true);
+        mockedTokenEntity.setIssuedAt(LocalDateTime.now());
+        mockedTokenEntity.setExpiresAt(LocalDateTime.now().plusDays(1));
+
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+
+        doReturn(mockedSignedToken).when(jwtUtils).getDecodedJwt(mockedToken);
+        doReturn(Optional.of(mockedTokenEntity)).when(tokenRepository).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+
+        Integer userIdFromTokenString = mockedTokenEntity.getUserId();
+        doReturn(userIdFromTokenString).when(jwtUtils).getUserIdFromJwtToken(mockedSignedToken);
+        doReturn(Optional.of(USER_NOT_ENABLED)).when(userRepository).findById(userIdFromTokenString);
+        lenient().doReturn(mockedSignedToken).when(jwtUtils).generateNewToken(USER_NOT_ENABLED);
+
+        RequestException ex = assertThrows(RequestException.class, () -> accountService.refreshToken(httpRequest, httpResponse, mockedToken));
+        assertNotNull(ex);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getHttpStatus());
+        assertEquals(Messages.Error.USER_NOT_ENABLED, ex.getMessage());
+
+        verify(tokenRepository, atMostOnce()).findByJwtID(mockedSignedToken.getHeader().getKeyID());
+        verify(userRepository, atMostOnce()).findById(userIdFromTokenString);
     }
 
     @Test
