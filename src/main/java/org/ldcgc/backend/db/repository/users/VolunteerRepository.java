@@ -22,7 +22,8 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
             SELECT v.* FROM volunteers v
             WHERE (unaccent(v.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
                OR unaccent(v.last_name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-               OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString))
+               OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString)
+               OR v.builder_assistant_id = :filterString)
             AND (
                   CASE WHEN :isActive IS NOT NULL THEN
                     CASE
