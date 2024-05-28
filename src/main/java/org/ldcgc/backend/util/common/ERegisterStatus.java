@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum ERegisterStatus {
+public enum ERegisterStatus implements EnumMethods {
     OPENED ("opened"),
     CLOSED ("closed");
 

@@ -50,7 +50,7 @@ public class MultipartFileFactory {
                 row.createCell(EXlsxToolPos.PURCHASE_DATE.getColumnNumber()).setCellValue(toolDto.getPurchaseDate());
                 row.createCell(EXlsxToolPos.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", toolDto.getUrlImages()));
                 row.createCell(EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(toolDto.getMaintenancePeriod());
-                row.createCell(EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()).setCellValue(toolDto.getMaintenanceTime().getDesc());
+                row.createCell(EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()).setCellValue(toolDto.getMaintenanceTime().getName());
                 row.createCell(EXlsxToolPos.LAST_MAINTENANCE.getColumnNumber()).setCellValue(toolDto.getLastMaintenance());
                 row.createCell(EXlsxToolPos.NEXT_MAINTENANCE.getColumnNumber()).setCellValue(toolDto.getNextMaintenance());
                 row.createCell(EXlsxToolPos.STATUS.getColumnNumber()).setCellValue(toolDto.getStatus().getDesc());

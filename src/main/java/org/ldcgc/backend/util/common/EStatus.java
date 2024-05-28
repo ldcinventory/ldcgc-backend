@@ -6,8 +6,6 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
-
 @Getter
 @RequiredArgsConstructor
 public enum EStatus implements EnumMethods {
@@ -23,16 +21,18 @@ public enum EStatus implements EnumMethods {
     private final Integer id;
 
     public static EStatus getStatusFromId(Integer id) {
-        return Arrays.stream(EStatus.values())
-                .filter(status -> status.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, id)));
+        for (EStatus status : EStatus.values())
+            if (status.getId().equals(id))
+                return status;
+
+        throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, id));
     }
 
-    public static EStatus getStatusByName(String name){
-        return Arrays.stream(EStatus.values())
-                .filter(status -> status.getDesc().equalsIgnoreCase(name) || status.name().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, name)));
+    public static EStatus getStatusByName(String name) {
+        for (EStatus status : EStatus.values())
+            if (status.getDesc().equalsIgnoreCase(name) || status.name().equalsIgnoreCase(name))
+                return status;
+
+        throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, name));
     }
 }

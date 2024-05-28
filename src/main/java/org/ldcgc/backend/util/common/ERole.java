@@ -20,19 +20,17 @@ public enum ERole implements EnumMethods {
     private final String roleName;
 
     public static ERole getEnumFromRoleName(String roleName) {
-        for(ERole role : ERole.values()) {
+        for(ERole role : ERole.values())
             if(role.getRoleName().equals(roleName))
                 return role;
-        }
 
         return null;
     }
 
     public static ERole getEnumFromAuthority(String authority) {
-        for(ERole role : ERole.values()) {
+        for(ERole role : ERole.values())
             if(role.name().equalsIgnoreCase(authority))
                 return role;
-        }
 
         return null;
     }

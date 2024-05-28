@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EXlsxToolPos {
+public enum EXlsxToolPos implements EnumMethods{
 
     BARCODE(0),
     RESOURCE_TYPE(1),

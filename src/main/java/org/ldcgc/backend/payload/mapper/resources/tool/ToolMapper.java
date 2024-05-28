@@ -59,6 +59,7 @@ public interface ToolMapper {
             case WEEKS  -> LocalDate.now().plusWeeks(toolDto.getMaintenancePeriod());
             case MONTHS -> LocalDate.now().plusMonths(toolDto.getMaintenancePeriod());
             case YEARS  -> LocalDate.now().plusYears(toolDto.getMaintenancePeriod());
+            case NEVER  -> null;
         };
     }
 

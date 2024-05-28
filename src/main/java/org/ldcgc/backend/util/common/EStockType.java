@@ -6,8 +6,6 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
-
 @Getter
 @RequiredArgsConstructor
 public enum EStockType implements EnumMethods {
@@ -25,23 +23,27 @@ public enum EStockType implements EnumMethods {
     MILLIMETERS("milímetros", "mm", 7),
 
     POUNDS("libras", "lb", 8),
-    OUNCES("onzas", "oz", 9);
+    OUNCES("onzas", "oz", 9),
+
+    UNKNOWN("desconocido", "un", 999);
 
     private final String desc;
     private final String abbr;
     private final Integer id;
 
     public static EStockType getStockTypeFromId(Integer id) {
-        return Arrays.stream(EStockType.values())
-            .filter(eStockType -> eStockType.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, id)));
+        for (EStockType stockType : EStockType.values())
+            if (stockType.getId().equals(id))
+                return stockType;
+
+       throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, id));
     }
 
     public static EStockType getStockTypeByDesc(String desc) {
-        return Arrays.stream(EStockType.values())
-            .filter(eStockType -> eStockType.desc.equals(desc))
-            .findFirst()
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, desc)));
+        for (EStockType stockType : EStockType.values())
+            if (stockType.getDesc().equals(desc))
+                return stockType;
+
+        throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STOCK_TYPE_NOT_FOUND, desc));
     }
 }

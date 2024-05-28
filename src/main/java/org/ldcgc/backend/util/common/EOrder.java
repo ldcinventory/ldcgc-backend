@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum EOrder {
+public enum EOrder implements EnumMethods {
 
     ASC ("asc"),
     DESC ("desc");
