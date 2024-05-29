@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ResourceTypeService {
 
-    ResponseEntity<?> getResourceTypes();
+    ResponseEntity<?> getResourceTypes(String name, Boolean locked);
 
     ResponseEntity<?> createResourceType(ResourceTypeDto resourceTypeDto);
+
+    ResponseEntity<?> updateResourceType(Integer resourceTypeId, ResourceTypeDto resourceTypeDto);
 
     ResponseEntity<?> deleteResourceType(Integer resourceId);
 

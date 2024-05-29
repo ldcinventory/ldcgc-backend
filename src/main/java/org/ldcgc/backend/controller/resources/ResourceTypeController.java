@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
@@ -42,7 +44,12 @@ public interface ResourceTypeController {
     )
     @GetMapping
     @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> getResourceTypes();
+    ResponseEntity<?> getResourceTypes(
+        @Parameter(description = "Name of the resource type")
+            @RequestParam(required = false) String name,
+        @Parameter(description = "Search by locked (true/false/null for not apply)")
+            @RequestParam(required = false) Boolean locked
+    );
 
     @Operation(summary = "Create a new resource type", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -51,7 +58,7 @@ public interface ResourceTypeController {
         content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ResourceTypeDto.class),
             examples = {
-                @ExampleObject(name = "Resource type updated", value = Messages.Info.RESOURCE_TYPE_CREATED)
+                @ExampleObject(name = "Resource type created", value = Messages.Info.RESOURCE_TYPE_CREATED)
             }
         )
     )
@@ -69,6 +76,41 @@ public interface ResourceTypeController {
         @Parameter(description = "Resource type to create")
             @RequestBody(required = false) ResourceTypeDto resourceTypeDto
     );
+
+    @Operation(summary = "Update resource type", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = ResourceTypeDto.class),
+            examples = {
+                @ExampleObject(name = "Resource type updated", value = Messages.Info.RESOURCE_TYPE_UPDATED)
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Resource type duplicated", value = Messages.Error.RESOURCE_TYPE_EXISTS)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Resource type not found", value = Messages.Error.RESOURCE_TYPE_NOT_FOUND)
+            })
+    )
+    @PutMapping("/{resourceTypeId}")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> updateResourceType(
+        @Parameter(description = "Update ID to update")
+            @PathVariable Integer resourceTypeId,
+        @Parameter(description = "Resource type details")
+            @RequestBody(required = false) ResourceTypeDto resourceTypeDto);
 
     @Operation(summary = "Delete an existing resource type", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(

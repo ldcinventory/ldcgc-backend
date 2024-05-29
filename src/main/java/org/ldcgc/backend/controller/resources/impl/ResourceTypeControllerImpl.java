@@ -13,12 +13,16 @@ public class ResourceTypeControllerImpl implements ResourceTypeController {
 
     private final ResourceTypeService resourceTypeService;
 
-    public ResponseEntity<?> getResourceTypes() {
-        return resourceTypeService.getResourceTypes();
+    public ResponseEntity<?> getResourceTypes(String name, Boolean locked) {
+        return resourceTypeService.getResourceTypes(name, locked);
     }
 
     public ResponseEntity<?> createResourceType(ResourceTypeDto resourceTypeDto) {
         return resourceTypeService.createResourceType(resourceTypeDto);
+    }
+
+    public ResponseEntity<?> updateResourceType(Integer resourceTypeId, ResourceTypeDto resourceTypeDto) {
+        return resourceTypeService.updateResourceType(resourceTypeId, resourceTypeDto);
     }
 
     public ResponseEntity<?> deleteResourceType(Integer resourceId) {

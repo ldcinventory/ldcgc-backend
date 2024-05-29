@@ -40,6 +40,7 @@ public class Messages {
 
             RESOURCE_TYPE_FOUND = "Found %s resource types",
             RESOURCE_TYPE_CREATED = "Resource type created successfully!",
+            RESOURCE_TYPE_UPDATED = "Resource type updated",
             RESOURCE_TYPE_DELETED = "Resource type with id %s deleted",
 
             BRAND_FOUND = "Found %s brands",
