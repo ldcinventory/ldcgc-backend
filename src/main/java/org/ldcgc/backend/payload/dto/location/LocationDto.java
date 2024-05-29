@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.ldcgc.backend.util.common.ELocationType;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class LocationDto {
     private String name;
     private String description;
     private String url;
+    private ELocationType locationType;
     @Schema(requiredMode = REQUIRED)
     private Integer level;
     private Integer parentLocationId;
@@ -29,4 +31,6 @@ public class LocationDto {
     private List<LocationDto> locations;
     @Schema(requiredMode = REQUIRED)
     private Integer groupId;
+    private boolean storesResources;
+
 }

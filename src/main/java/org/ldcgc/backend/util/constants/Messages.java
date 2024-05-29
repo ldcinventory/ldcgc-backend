@@ -31,7 +31,7 @@ public class Messages {
             CREDENTIALS_EMAIL_SENT = "Credentials email sent",
             EMAIL_SENT = "Email sent",
 
-            LOCATION_FOUND = "Found %s locations",
+            LOCATION_FOUND = "Found %s locations, %s warehouses and %s placements",
             LOCATION_CREATED = "Location created successfully!",
             LOCATION_UPDATED = "Location with id %s was updated",
             LOCATION_DELETED = "Location with id %s was deleted",

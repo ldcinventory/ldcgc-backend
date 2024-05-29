@@ -34,12 +34,21 @@ public class Location {
         this.groupId = groupId;
     }
 
+    public Location(String name, String description, Integer level, Integer groupId) {
+        this.name = name;
+        this.description = description;
+        this.level = level;
+        this.groupId = groupId;
+    }
+
     public Location(String name, Location parent, Integer level, Integer groupId) {
         this.name = name;
         this.description = name;
         this.parent = parent;
+        parent.setStoresResources(false);
         this.level = level;
         this.groupId = groupId;
+        this.storesResources = true;
     }
 
     @Id
@@ -56,6 +65,8 @@ public class Location {
 
     @Column(nullable = false)
     private Integer level;
+
+    private boolean storesResources = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Location parent;

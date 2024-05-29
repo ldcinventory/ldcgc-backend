@@ -33,7 +33,7 @@ import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
 @Tag(name = "Locations", description = "Locations methods with CRUD functions")
 public interface LocationController {
 
-    @Operation(summary = "Get all locations (can filter by group)", description = SWAGGER_ROLE_OPERATION_USER)
+    @Operation(summary = "Get all locations (can filter by locationType)", description = SWAGGER_ROLE_OPERATION_USER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -45,8 +45,12 @@ public interface LocationController {
     @GetMapping
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> getLocations(
-        @Parameter(description = "Filter by groupId")
-            @RequestParam(required = false) Integer groupId
+        @Parameter(description = "Filter by location")
+            @RequestParam(required = false) String location,
+        @Parameter(description = "Filter by warehouse")
+            @RequestParam(required = false) String warehouse,
+        @Parameter(description = "Filter by placement")
+            @RequestParam(required = false) String placement
     );
 
     @Operation(summary = "Get specific location", description = SWAGGER_ROLE_OPERATION_USER)

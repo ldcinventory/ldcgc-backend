@@ -13,8 +13,8 @@ public class LocationControllerImpl implements LocationController {
 
     private final LocationService locationService;
 
-    public ResponseEntity<?> getLocations(Integer groupId) {
-        return locationService.getLocations(groupId);
+    public ResponseEntity<?> getLocations(String location, String warehouse, String placement) {
+        return locationService.getLocations(location, warehouse, placement);
     }
 
     public ResponseEntity<?> getLocation(Integer locationId, boolean detailed) {
