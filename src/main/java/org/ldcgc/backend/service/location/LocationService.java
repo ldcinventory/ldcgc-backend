@@ -11,7 +11,7 @@ public interface LocationService {
 
     List<LocationDto> getAllLocations();
 
-    ResponseEntity<?> getLocations(Integer groupId);
+    ResponseEntity<?> getLocations(String location, String warehouse, String placement);
 
     ResponseEntity<?> getLocation(Integer locationId, boolean detailed);
 

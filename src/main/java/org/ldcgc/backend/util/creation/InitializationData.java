@@ -302,8 +302,29 @@ public class InitializationData {
     }
 
     private @NotNull Location createFerreteria() {
-        Location ferreteria = new Location("Ferretería", 0, group8.getId());
+        // location
+        Location ferreteria = new Location("Ferretería", "Ferretería local", 0, group8.getId());
+
+        Location warehouseStorage1 = new Location("Almacén 1", ferreteria, 1, group8.getId());
+        Location warehouseStorage2 = new Location("Almacén 2", ferreteria, 1, group8.getId());
+
+        // placements
+        List<Location> placementsShelving = List.of(
+            new Location("Chest 2", warehouseStorage1, 2, group8.getId()),
+            new Location("Chest 3", warehouseStorage1, 2, group8.getId()),
+            new Location("Chest 5", warehouseStorage1, 2, group8.getId())
+        );
+        warehouseStorage1.setLocations(placementsShelving);
+        List<Location> placementsStorage = List.of(
+            new Location("Chest 1", warehouseStorage2, 2, group8.getId()),
+            new Location("Chest 4", warehouseStorage2, 2, group8.getId())
+        );
+        warehouseStorage2.setLocations(placementsStorage);
+
         ferreteria.setLocations(List.of(
+            // more warehouses
+            warehouseStorage1,
+            warehouseStorage2,
             new Location("Estantería 1", ferreteria, 1, group8.getId()),
             new Location("Estantería 2", ferreteria, 1, group8.getId()),
             new Location("Arcón-suelo 1", ferreteria, 1, group8.getId()),
@@ -394,6 +415,7 @@ public class InitializationData {
             case WEEKS  -> date.plusWeeks(period);
             case MONTHS -> date.plusMonths(period);
             case YEARS  -> date.plusYears(period);
+            case NEVER -> null;
         };
     }
 

@@ -11,10 +11,13 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
 
     Optional<Location> getLocationByName(String name);
 
-    List<Location> findAllByGroupId(Integer groupId);
-
     @Query("SELECT l FROM Location l ORDER BY random() LIMIT 1")
     Location getRandomLocation();
+
+    @Query("SELECT l FROM Location l WHERE l.level = 0")
+    List<Location> findAllLevel0();
+
+    Integer countByLevel(int level);
 
     boolean existsByName(String name);
 
