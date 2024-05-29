@@ -45,7 +45,7 @@ public interface ResourceTypeController {
     @GetMapping
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> getResourceTypes(
-        @Parameter(description = "Name of the resource type")
+        @Parameter(description = "Name of the resource type (could be partial)")
             @RequestParam(required = false) String name,
         @Parameter(description = "Search by locked (true/false/null for not apply)")
             @RequestParam(required = false) Boolean locked
