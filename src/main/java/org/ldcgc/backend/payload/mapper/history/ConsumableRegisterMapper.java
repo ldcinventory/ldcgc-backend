@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.mapper.history;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
@@ -25,7 +26,7 @@ public interface ConsumableRegisterMapper {
     ConsumableRegisterMapper MAPPER = Mappers.getMapper(ConsumableRegisterMapper.class);
 
     @Mapping(target = "consumableBarcode", source = "consumable.barcode")
-    @Mapping(target = "consumableName", source = "consumable.name")
+    @Mapping(target = "consumableName", source = "consumable", qualifiedByName = "mapConsumableName")
     @Mapping(target = "consumableUrlImages", source = "consumable", qualifiedByName = "mapConsumableRegisterUrlImagesToDto")
     @Mapping(target = "volunteerBuilderAssistantId", source = "volunteer.builderAssistantId")
     @Mapping(target = "volunteerName", source = "volunteer.name")
@@ -53,6 +54,15 @@ public interface ConsumableRegisterMapper {
     @Named("mapConsumableRegisterUrlImagesToDto")
     static String[] mapConsumableRegisterUrlImagesToDto(Consumable consumable){
         return mapStringArrayWithPrefix(consumable.getUrlImages(), DRIVE_IMAGES_URL);
+    }
+
+    @Named("mapConsumableName")
+    static String mapConsumableName(Consumable consumable) {
+        return String.format("%s # %s # %s%s",
+            consumable.getBarcode(),
+            consumable.getBrand().getName(),
+            consumable.getName(),
+            StringUtils.isBlank(consumable.getModel()) ? "" : " # " + consumable.getModel());
     }
 
 }
