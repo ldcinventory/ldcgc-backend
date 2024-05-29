@@ -28,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomBrand;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomIndexFromList;
 import static org.ldcgc.backend.base.mock.MockedResources.listRandomResource;
@@ -57,7 +59,7 @@ class BrandServiceImplTest {
     void whenGetBrands_ReturnEmptyList() {
         doReturn(Collections.emptyList()).when(brandRepository).findAll();
 
-        ResponseEntity<?> response = brandService.getBrands();
+        ResponseEntity<?> response = brandService.getBrands(null, null);
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -73,7 +75,7 @@ class BrandServiceImplTest {
 
         int randomIndex = getRandomIndexFromList(brandEntities);
 
-        ResponseEntity<?> response = brandService.getBrands();
+        ResponseEntity<?> response = brandService.getBrands(null, null);
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -85,6 +87,21 @@ class BrandServiceImplTest {
         assertThat(brandsResponse.getElements()).usingRecursiveFieldByFieldElementComparator().isEqualTo(brandEntities);
 
         verify(brandRepository, atMostOnce()).findAll();
+    }
+
+    @Test
+    void whenGetBrandsFilteredByName_ReturnList() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenGetBrandsFilteredByLocked_ReturnList() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenGetBrandsFilteredByNameAndLocked_ReturnList() {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     // create

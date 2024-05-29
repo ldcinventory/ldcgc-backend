@@ -13,12 +13,16 @@ public class BrandControllerImpl implements BrandController {
 
     private final BrandService brandService;
 
-    public ResponseEntity<?> getBrands() {
-        return brandService.getBrands();
+    public ResponseEntity<?> getBrands(String name, Boolean locked) {
+        return brandService.getBrands(name, locked);
     }
 
     public ResponseEntity<?> createBrand(BrandDto brandDto) {
         return brandService.createBrand(brandDto);
+    }
+
+    public ResponseEntity<?> updateBrand(Integer brandId, BrandDto brandDto) {
+        return brandService.updateBrand(brandId, brandDto);
     }
 
     public ResponseEntity<?> deleteBrand(Integer brandId) {

@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
 import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
@@ -42,7 +44,12 @@ public interface BrandController {
     )
     @GetMapping
     @PreAuthorize(USER_LEVEL)
-    ResponseEntity<?> getBrands();
+    ResponseEntity<?> getBrands(
+        @Parameter(description = "Name of the brand (could be partial)")
+            @RequestParam(required = false) String name,
+        @Parameter(description = "Search by locked (true/false/null for not apply)")
+            @RequestParam(required = false) Boolean locked
+    );
 
     @Operation(summary = "Create a new brand", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -69,6 +76,42 @@ public interface BrandController {
         @Parameter(description = "Brand to create")
             @RequestBody(required = false) BrandDto brandDto
     );
+
+    @Operation(summary = "Update an existing brand", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "No changes", value = Messages.Info.NO_CHANGES_PROCESSED)
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = BrandDto.class),
+            examples = {
+                @ExampleObject(name = "Brand updated", value = Messages.Info.BRAND_CREATED)
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Brand duplicated", value = Messages.Error.BRAND_EXISTS)
+            })
+    )
+    @PutMapping("/{brandId}")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> updateBrand(
+        @Parameter(description = "Brand id to update")
+            @PathVariable Integer brandId,
+        @Parameter(description = "Brand to update")
+            @RequestBody(required = false) BrandDto brandDto);
 
     @Operation(summary = "Delete an existing brand", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(

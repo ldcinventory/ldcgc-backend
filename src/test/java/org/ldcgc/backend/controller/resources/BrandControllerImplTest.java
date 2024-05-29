@@ -135,7 +135,7 @@ public class BrandControllerImplTest {
 
         ResponseEntity<?> response = buildResponseMessageObject(HttpStatus.OK, message, NonPaged.of(brands));
 
-        given(brandService.getBrands()).willAnswer(invocation -> response);
+        given(brandService.getBrands(null, null)).willAnswer(invocation -> response);
 
         mockMvc.perform(getRequest(request, ERole.ROLE_USER))
             .andDo(print())
