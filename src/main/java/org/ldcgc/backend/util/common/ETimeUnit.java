@@ -6,8 +6,6 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
-
 @Getter
 @RequiredArgsConstructor
 public enum ETimeUnit implements EnumMethods {
@@ -16,23 +14,26 @@ public enum ETimeUnit implements EnumMethods {
     WEEKS("semanas", 2),
     MONTHS("meses", 3),
     YEARS("años", 4),
-    HOURS("horas", 5);
+    HOURS("horas", 5),
+    NEVER("nunca", 6);
 
-    private final String desc;
+    private final String name;
     private final Integer id;
 
     public static ETimeUnit getTimeUnitFromId(Integer id) {
-        return Arrays.stream(ETimeUnit.values())
-            .filter(status -> status.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TIME_UNIT_NOT_FOUND, id)));
+        for (ETimeUnit timeUnit : ETimeUnit.values())
+            if (timeUnit.getId().equals(id))
+                return timeUnit;
+
+        throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TIME_UNIT_NOT_FOUND, id));
     }
 
     public static ETimeUnit getTimeUnitByName(String name) {
-        return Arrays.stream(ETimeUnit.values())
-            .filter(timeUnit -> timeUnit.getDesc().equals(name))
-            .findFirst()
-            .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TIME_UNIT_NOT_FOUND, name)));
+        for (ETimeUnit timeUnit : ETimeUnit.values())
+            if (timeUnit.getName().equals(name))
+                return timeUnit;
+
+        throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.TIME_UNIT_NOT_FOUND, name));
     }
 
 }
