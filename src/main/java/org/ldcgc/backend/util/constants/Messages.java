@@ -92,21 +92,12 @@ public class Messages {
 
     }
 
-    public static class App {
+    public static class Warning {
 
         public static final String
+            VOLUNTEER_LINKED_TO_USER = "This volunteer is linked to a user with id %s, please confirm deletion to unlink both first and delete this one"
 
-        EULA_SELECT_ACTION = "EULA for %s: Please select an action to do",
-        EULA_ENDPOINT = "/api/eula",
-
-        CREDENTIALS_EMAIL_TEMPLATE = "credentialsTemplate.html",
-        CREDENTIALS_RECOVERY_SUBJECT = "GC8Inventory : [Recuperación de credenciales] 🙃",
-
-        EMAIL_IMAGE_PARAMETER = "image",
-        EMAIL_IMAGE_PNG = "image/png",
-
-        COPYRIGHT = "© gc8inventory %d";
-
+            ;
     }
 
     public static class Error {
@@ -239,6 +230,25 @@ public class Messages {
             UNEXPECTED_ERROR = "Unexpected error ocurred, or uncontrolled exception had been thrown."
 
         ;
+
+    }
+
+    public static class App {
+
+        public static final String
+
+            EULA_SELECT_ACTION = "EULA for %s: Please select an action to do",
+            EULA_ENDPOINT = "/api/eula",
+
+            CREDENTIALS_EMAIL_TEMPLATE = "credentialsTemplate.html",
+            CREDENTIALS_RECOVERY_SUBJECT = "GC8Inventory : [Recuperación de credenciales] 🙃",
+
+            EMAIL_IMAGE_PARAMETER = "image",
+            EMAIL_IMAGE_PNG = "image/png",
+
+            COPYRIGHT = "© gc8inventory %d"
+
+            ;
 
     }
 

@@ -9,7 +9,6 @@ import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
-import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -29,7 +28,6 @@ public class LocationServiceImpl implements LocationService {
 
     private final LocationRepository locationRepository;
     private final GroupRepository groupRepository;
-    private final JwtUtils jwtUtils;
 
     public List<LocationDto> getAllLocations() {
         return locationRepository.findAll().stream()
