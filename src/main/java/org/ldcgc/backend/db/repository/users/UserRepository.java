@@ -12,7 +12,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     boolean existsById(@NotNull Integer id);
+
     void deleteById(@NotNull Integer id);
+
     Optional<User> findByEmail(String email);
 
     @Query(value = """
@@ -31,6 +33,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Page<User> findAllFiltered(String filterString, Boolean isEnabled, Pageable pageable);
 
     Optional<User> findByVolunteer_Id(Integer id);
+
+    Optional<User> findByVolunteer_BuilderAssistantId(String barcode);
 
     @Query(value = "SELECT u.enabled FROM User u WHERE u.id = :id")
     boolean userIsEnabled(Integer id);

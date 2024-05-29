@@ -1,6 +1,7 @@
 package org.ldcgc.backend.service.resources.common.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,10 +25,11 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
 
     private final ResourceTypeRepository resourceTypeRepository;
 
-    public ResponseEntity<?> getResourceTypes() {
-        List<ResourceTypeDto> resourceTypes = resourceTypeRepository.findAll().stream()
-            .map(ResourceTypeMapper.MAPPER::toDto)
-            .toList();
+    public ResponseEntity<?> getResourceTypes(String name, Boolean locked) {
+        List<ResourceType> resourceTypes = StringUtils.isBlank(name) && locked == null
+            ? resourceTypeRepository.findAll()
+            : resourceTypeRepository.findAllFiltered(
+                Optional.ofNullable(name).map(String::trim).orElse(null), locked);
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
@@ -45,6 +49,26 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
             Messages.Info.RESOURCE_TYPE_CREATED,
             resourceType);
 
+    }
+
+    public ResponseEntity<?> updateResourceType(Integer resourceTypeId, ResourceTypeDto resourceTypeDto) {
+        ResourceType resourceType = resourceTypeRepository.findById(resourceTypeId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, resourceTypeId)));
+
+        ResourceType resourceTypeCheck = resourceTypeRepository.findByName(resourceTypeDto.getName()).orElse(null);
+
+        if(resourceTypeCheck != null && !Objects.equals(resourceTypeCheck.getId(), resourceTypeId) && resourceTypeCheck.getName().equals(resourceTypeDto.getName()))
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.RESOURCE_TYPE_EXISTS);
+
+        resourceType.setName(resourceTypeDto.getName());
+        resourceType.setLocked(resourceTypeDto.getLocked());
+
+        resourceType = resourceTypeRepository.save(resourceType);
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.CREATED,
+            Messages.Info.RESOURCE_TYPE_UPDATED,
+            ResourceTypeMapper.MAPPER.toDto(resourceType));
     }
 
     public ResponseEntity<?> deleteResourceType(Integer resourceId) {
