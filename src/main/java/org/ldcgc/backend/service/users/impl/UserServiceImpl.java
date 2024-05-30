@@ -280,6 +280,7 @@ public class UserServiceImpl implements UserService {
 
         // when updating self user and change self role
         // -> do not allow to change role
+        // TODO allow change if new status is active, but *never* for null user
         if(userFromToken.getEmail().equals(userEntity.getEmail())
             && userDto.getRole() != null && !userEntity.getRole().equals(userDto.getRole()))
             throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PERMISSION_ROLE);
