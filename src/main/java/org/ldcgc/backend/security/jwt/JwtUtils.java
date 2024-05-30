@@ -84,6 +84,7 @@ public class JwtUtils {
         {{
             put("email", user.getEmail());
             put("role", user.getRole().getRoleName());
+            put("groupId", user.getGroup().getId().toString());
             if(isRefreshToken) put("refresh-token", "true");
             if(isRecoveryToken) put("recovery-token", "true");
         }};
