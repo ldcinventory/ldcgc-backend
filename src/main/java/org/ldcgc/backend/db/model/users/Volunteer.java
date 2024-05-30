@@ -46,7 +46,9 @@ public class Volunteer {
 
     private String builderAssistantId;
 
-    private Boolean isActive;
+    private Boolean isActive = true;
+
+    private Boolean isDeleted = false;
 
     // this converter gets the natural string from DB, which is formatted as an array ['L','M','X',...]
     // and instantiate it in backend as a List of EWeekday enum
