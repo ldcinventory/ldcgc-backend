@@ -17,6 +17,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
+import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EOrder;
@@ -49,7 +50,9 @@ public class ToolServiceImpl implements ToolService {
     private final ResourceTypeRepository resourceTypeRepository;
     private final LocationRepository locationRepository;
     private final GroupRepository groupRepository;
+
     private final ToolExcelService toolExcelService;
+    private final BrandService brandService;
 
     public ResponseEntity<?> getTool(Integer toolId) {
         Tool tool = findToolOrElseThrow(toolId);
@@ -67,6 +70,8 @@ public class ToolServiceImpl implements ToolService {
         setLinkedEntitiesForConsumable(entityTool, toolDto);
         entityTool = toolRepository.saveAndFlush(entityTool);
 
+        brandService.lockBrand(entityTool.getBrand());
+
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_CREATED, ToolMapper.MAPPER.toDto(entityTool));
     }
 
@@ -80,6 +85,9 @@ public class ToolServiceImpl implements ToolService {
         ToolMapper.MAPPER.update(toolDto, toolToUpdate);
         setLinkedEntitiesForConsumable(toolToUpdate, toolDto);
         toolToUpdate = toolRepository.saveAndFlush(toolToUpdate);
+
+        if(!brandService.brandIsLocked(toolToUpdate.getBrand()))
+            brandService.lockBrand(toolToUpdate.getBrand());
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_UPDATED, ToolMapper.MAPPER.toDto(toolToUpdate));
     }
@@ -199,4 +207,5 @@ public class ToolServiceImpl implements ToolService {
         toolEntity.setGroup(group);
 
     }
+
 }

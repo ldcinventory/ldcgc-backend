@@ -18,6 +18,7 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
+import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
 import org.ldcgc.backend.util.common.EOrder;
@@ -48,6 +49,8 @@ public class ConsumableServiceImpl implements ConsumableService {
     private final ResourceTypeRepository resourceTypeRepository;
     private final LocationRepository locationRepository;
     private final GroupRepository groupRepository;
+
+    private final BrandService brandService;
     private final ConsumableExcelService consumableExcelService;
 
     public ResponseEntity<?> getConsumable(Integer consumableId) {
@@ -67,6 +70,8 @@ public class ConsumableServiceImpl implements ConsumableService {
         setLinkedEntitiesForConsumable(consumableEntity, consumableDto);
 
         consumableEntity = consumableRepository.saveAndFlush(consumableEntity);
+
+        brandService.lockBrand(consumableEntity.getBrand());
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.CONSUMABLE_CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
 
@@ -127,6 +132,9 @@ public class ConsumableServiceImpl implements ConsumableService {
         ConsumableMapper.MAPPER.update(consumableDto, consumableEntity);
         setLinkedEntitiesForConsumable(consumableEntity, consumableDto);
         consumableEntity = consumableRepository.saveAndFlush(consumableEntity);
+
+        if(!brandService.brandIsLocked(consumableEntity.getBrand()))
+            brandService.lockBrand(consumableEntity.getBrand());
 
         return Constructor.buildResponseObject(HttpStatus.CREATED, ConsumableMapper.MAPPER.toDto(consumableEntity));
     }
