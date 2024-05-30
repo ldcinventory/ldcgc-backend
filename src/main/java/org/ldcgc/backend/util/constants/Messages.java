@@ -144,6 +144,7 @@ public class Messages {
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_BAID_NOT_FOUND = "The volunteer with Builder Assistant id %s couldn't be found",
+            VOLUNTEERS_BAID_NOT_FOUND = "These Builder Assistant Ids couldn't be found: %s",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
             VOLUNTEER_ALREADY_LINKED = "This volunteer is already linked to another user",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
@@ -158,8 +159,6 @@ public class Messages {
 
             TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
             TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
-            TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
-            TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers.",
             TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer.",
             TOOL_REGISTER_INCORRECT_BARCODE = "The tool's barcode %s is incorrect.",
             TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found.",

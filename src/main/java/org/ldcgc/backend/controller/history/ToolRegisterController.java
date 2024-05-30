@@ -56,7 +56,6 @@ public interface ToolRegisterController {
             description = SwaggerConfig.HTTP_REASON_400,
             content = @Content(mediaType = "application/json",
                     examples = {
-                            @ExampleObject(name = "Too many volunteers", value = Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS),
                             @ExampleObject(name = "Incorrect BA id", value = Messages.Error.TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID)
                     })
     )
@@ -172,7 +171,7 @@ public interface ToolRegisterController {
             content = @Content(mediaType = "application/json",
                     examples = {
                             @ExampleObject(name = "Tool not found barcode", value = Messages.Error.TOOL_NOT_FOUND_BARCODE),
-                            @ExampleObject(name = "Volunteer BA id not found", value = Messages.Error.VOLUNTEER_BAID_NOT_FOUND)
+                            @ExampleObject(name = "Volunteers BA ids not found", value = Messages.Error.VOLUNTEERS_BAID_NOT_FOUND)
                     })
     )
     @PostMapping("/many")
