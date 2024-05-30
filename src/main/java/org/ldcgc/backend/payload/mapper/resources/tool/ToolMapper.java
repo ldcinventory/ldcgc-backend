@@ -54,12 +54,13 @@ public interface ToolMapper {
     @Named("calculateNextMaintenance")
     static LocalDate calculateNextMaintenance(ToolDto toolDto) {
         return switch (toolDto.getMaintenanceTime()) {
-            case HOURS  -> LocalDate.now();
-            case DAYS   -> LocalDate.now().plusDays(toolDto.getMaintenancePeriod());
-            case WEEKS  -> LocalDate.now().plusWeeks(toolDto.getMaintenancePeriod());
-            case MONTHS -> LocalDate.now().plusMonths(toolDto.getMaintenancePeriod());
-            case YEARS  -> LocalDate.now().plusYears(toolDto.getMaintenancePeriod());
-            case NEVER  -> null;
+            case HOURS   -> LocalDate.now();
+            case DAYS    -> LocalDate.now().plusDays(toolDto.getMaintenancePeriod());
+            case WEEKS   -> LocalDate.now().plusWeeks(toolDto.getMaintenancePeriod());
+            case MONTHS  -> LocalDate.now().plusMonths(toolDto.getMaintenancePeriod());
+            case YEARS   -> LocalDate.now().plusYears(toolDto.getMaintenancePeriod());
+            case NEVER,
+                 UNKNOWN -> null;
         };
     }
 

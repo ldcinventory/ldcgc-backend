@@ -15,7 +15,8 @@ public enum ETimeUnit implements EnumMethods {
     MONTHS("meses", 3),
     YEARS("años", 4),
     HOURS("horas", 5),
-    NEVER("nunca", 6);
+    NEVER("nunca", 6),
+    UNKNOWN("nunca", 99);
 
     private final String name;
     private final Integer id;

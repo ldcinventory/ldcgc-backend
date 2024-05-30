@@ -411,12 +411,13 @@ public class InitializationData {
     private LocalDate calculateNextMaintenance(ETimeUnit timeUnit, Integer period, LocalDate fromDate) {
         LocalDate date = ObjectUtils.defaultIfNull(fromDate, LocalDate.now());
         return switch (timeUnit) {
-            case HOURS  -> date;
-            case DAYS   -> date.plusDays(period);
-            case WEEKS  -> date.plusWeeks(period);
-            case MONTHS -> date.plusMonths(period);
-            case YEARS  -> date.plusYears(period);
-            case NEVER -> null;
+            case HOURS   -> date;
+            case DAYS    -> date.plusDays(period);
+            case WEEKS   -> date.plusWeeks(period);
+            case MONTHS  -> date.plusMonths(period);
+            case YEARS   -> date.plusYears(period);
+            case NEVER,
+                 UNKNOWN -> null;
         };
     }
 
