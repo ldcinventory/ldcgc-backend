@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.MediaType;
@@ -125,8 +126,8 @@ public interface VolunteerController {
             @RequestParam(required = false) String builderAssistantId,
         @Parameter(description = "Filter to search user name OR last name")
             @RequestParam(required = false) String filterString,
-        @Parameter(description = "Volunteer Filter by active/inactive (true for active)")
-            @RequestParam(required = false) Boolean isActive,
+        @Parameter(description = "Volunteer Filter by status (ACTIVE,INACTIVE)")
+            @RequestParam(required = false) EVStatus status,
         @Parameter(description = "Page index")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")

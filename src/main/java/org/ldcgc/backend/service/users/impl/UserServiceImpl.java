@@ -26,6 +26,7 @@ import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.slf4j.MDC;
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
         userEntity = userRepository.saveAndFlush(userEntity);
 
-        String warningIfVolunteerNotEnabled = userEntity.getVolunteer().getIsActive()
+        String warningIfVolunteerNotEnabled = userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE)
             ? ""
             : ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
 
@@ -164,7 +165,9 @@ public class UserServiceImpl implements UserService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            String.format(volunteer.getIsActive() ? Messages.Info.USER_LINKED : Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, builderAssistantId),
+            String.format(volunteer.getStatus().equals(EVStatus.ACTIVE)
+                ? Messages.Info.USER_LINKED
+                : Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, builderAssistantId),
             UserMapper.MAPPER.toDTO(user));
     }
 
@@ -214,7 +217,7 @@ public class UserServiceImpl implements UserService {
 
             setVolunteer(userEntity, userDto);
 
-            if(!userEntity.getVolunteer().getIsActive())
+            if(!userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE))
                 warningIfVolunteerNotEnabled = ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
         }
 

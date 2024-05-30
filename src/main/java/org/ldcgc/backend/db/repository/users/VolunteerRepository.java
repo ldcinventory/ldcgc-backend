@@ -1,6 +1,7 @@
 package org.ldcgc.backend.db.repository.users;
 
 import org.ldcgc.backend.db.model.users.Volunteer;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,11 +13,22 @@ import java.util.Optional;
 
 public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, JpaSpecificationExecutor<Volunteer> {
 
+    @Query("""
+            SELECT v FROM Volunteer v
+            WHERE v.builderAssistantId = :builderAssistantId
+              AND v.status != 'DELETED' AND v.status != 'LOCKED'
+            """)
     Optional<Volunteer> findByBuilderAssistantId(String builderAssistantId);
 
-    List<Volunteer> findAllByBuilderAssistantId(String builderAssistantId);
-
+    @Query("""
+            SELECT v FROM Volunteer v
+            WHERE (:builderAssistantIds IS NULL OR v.builderAssistantId in (:builderAssistantIds))
+              AND v.status != 'DELETED' AND v.status != 'LOCKED'
+            """)
     List<Volunteer> findAllByBuilderAssistantIdIn(List<String> builderAssistantIds);
+
+    @Query("SELECT v FROM Volunteer v WHERE v.status != 'DELETED' AND v.status != 'LOCKED'")
+    Page<Volunteer> findAll(Pageable pageable);
 
     @Query(value = """
             SELECT v.* FROM volunteers v
@@ -24,19 +36,25 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
                OR unaccent(v.last_name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
                OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString))
             AND (
-                  CASE WHEN :isActive IS NOT NULL THEN
-                    CASE
-                        WHEN :isActive = TRUE THEN v.is_active = TRUE
-                        ELSE v.is_active = FALSE
-                    END
-                  ELSE TRUE
+                  CASE WHEN :status IS NOT NULL THEN v.status = :status
+                  ELSE v.status != 'DELETED' AND v.status != 'LOCKED'
                   END
               )
             """, nativeQuery = true)
-    Page<Volunteer> findAllFiltered(String filterString, Boolean isActive, Pageable pageable);
+    Page<Volunteer> findAllFiltered(String filterString, EVStatus status, Pageable pageable);
 
+    @Query("""
+            SELECT count(v) > 0 FROM Volunteer v
+            WHERE v.builderAssistantId = :builderAssistantId
+              AND v.status != 'DELETED' AND v.status != 'LOCKED'
+            """)
     boolean existsByBuilderAssistantId(String builderAssistantId);
 
-    @Query("SELECT v FROM Volunteer v ORDER BY random() LIMIT 1")
+    @Query("""
+            SELECT v FROM Volunteer v
+            WHERE v.status != 'DELETED'
+              AND v.status != 'LOCKED'
+            ORDER BY random() LIMIT 1
+            """)
     Volunteer getRandomVolunteer();
 }

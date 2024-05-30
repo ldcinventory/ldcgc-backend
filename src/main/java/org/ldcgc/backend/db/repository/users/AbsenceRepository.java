@@ -25,4 +25,7 @@ public interface AbsenceRepository extends JpaRepository<Absence, Integer>, JpaS
             """)
     Page<Absence> findAllFiltered(LocalDate dateFrom, LocalDate dateTo, List<String> builderAssistantIds, Pageable pageable);
 
+    @Transactional
+    void deleteAllByVolunteerId(Integer volunteerId);
+
 }

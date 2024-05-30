@@ -17,6 +17,7 @@ import org.ldcgc.backend.payload.mapper.category.ResponsibilityMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -76,7 +77,7 @@ public class MockedUserVolunteer {
                 .lastName(new Faker().name().lastName())
                 .availability(getRandomAvailabilityForMocked())
                 .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
-                .isActive(new Random().nextBoolean())
+                .status(getRandomEnum(EVStatus.class))
                 .build())
             .build();
     }
@@ -107,7 +108,7 @@ public class MockedUserVolunteer {
                 .lastName(new Faker().name().lastName())
                 .availability(new HashSet<>(getRandomAvailabilityForMocked()))
                 .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
-                .isActive(new Random().nextBoolean())
+                .status(getRandomEnum(EVStatus.class))
                 .build())
             .build();
     }

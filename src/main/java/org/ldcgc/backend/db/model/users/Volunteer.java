@@ -4,6 +4,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +22,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
@@ -46,9 +49,9 @@ public class Volunteer {
 
     private String builderAssistantId;
 
-    private Boolean isActive = true;
-
-    private Boolean isDeleted = false;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EVStatus status;
 
     // this converter gets the natural string from DB, which is formatted as an array ['L','M','X',...]
     // and instantiate it in backend as a List of EWeekday enum

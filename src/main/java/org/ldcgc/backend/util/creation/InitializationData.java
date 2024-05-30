@@ -36,6 +36,7 @@ import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.process.Files;
 import org.springframework.beans.factory.InitializingBean;
@@ -485,7 +486,7 @@ public class InitializationData {
             .lastName(String.format("%s %s", new Faker().name().lastName(), new Faker().name().lastName()))
             .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
             .availability(getRandomAvailability())
-            .isActive(new Random().nextBoolean())
+            .status(getRandomEnum(EVStatus.class))
             .group(groupRepository.getRandomGroup())
             .build();
         volunteer.setAbsences(getRandomAbsences(volunteer));
@@ -731,6 +732,7 @@ public class InitializationData {
                 .builderAssistantId(vFieldList.get(0))
                 .name(vFieldList.get(1))
                 .lastName(vFieldList.get(2))
+                .status(EVStatus.ACTIVE)
                 .group(group)
                 .build();
             volunteerEntities.put(vFieldList.get(1), volunteer);
@@ -872,7 +874,7 @@ public class InitializationData {
 
         volunteerRepository.saveAndFlush(Volunteer.builder()
             .name("null")
-            .isActive(false)
+            .status(EVStatus.LOCKED)
             .build());
 
         toolRepository.saveAndFlush(Tool.builder()

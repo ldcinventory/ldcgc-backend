@@ -7,6 +7,7 @@ import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.users.AbsenceRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -16,6 +17,7 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -46,6 +48,7 @@ public class VolunteerServiceImpl implements VolunteerService {
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
+    private final AbsenceRepository absenceRepository;
 
     public ResponseEntity<?> getMyVolunteer(String token) throws ParseException {
         Integer userId = jwtUtils.getUserIdFromStringToken(token);
@@ -71,7 +74,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, Boolean isActive, Integer pageIndex, Integer size, String sortField, EOrder order) {
+    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, EVStatus status, Integer pageIndex, Integer size, String sortField, EOrder order) {
 
         if (builderAssistantId != null)
             return Constructor.buildResponseMessageObject(
@@ -82,9 +85,9 @@ public class VolunteerServiceImpl implements VolunteerService {
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
             ? Sort.by(sortField).descending()
             : Sort.by(sortField).ascending());
-        Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) && isActive == null ?
+        Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) && status == null ?
             volunteerRepository.findAll(pageable).map(VolunteerMapper.MAPPER::toDto) :
-            volunteerRepository.findAllFiltered(filterString, isActive, pageable).map(VolunteerMapper.MAPPER::toDto);
+            volunteerRepository.findAllFiltered(filterString, status, pageable).map(VolunteerMapper.MAPPER::toDto);
 
         if (pageIndex > pagedVolunteers.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
@@ -123,7 +126,13 @@ public class VolunteerServiceImpl implements VolunteerService {
         }
 
         Volunteer volunteer = getVolunteerFromDB(builderAssistantId);
-        volunteer.setIsActive(false);
+        volunteer.setStatus(EVStatus.DELETED);
+
+        // unlink absences and delete them all
+        absenceRepository.deleteAllByVolunteerId(volunteer.getId());
+        volunteer.getAbsences().removeAll(volunteer.getAbsences());
+
+        volunteer.setAvailability(null);
         volunteerRepository.saveAndFlush(volunteer);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
@@ -144,7 +153,7 @@ public class VolunteerServiceImpl implements VolunteerService {
                 .builderAssistantId(vData.get(0))
                 .name(vData.get(1))
                 .lastName(vData.get(2))
-                .isActive(Boolean.parseBoolean(vData.get(3)))
+                .status(EVStatus.valueOf(vData.get(3)))
                 .availability(availability)
                 .group(group)
                 .build();
