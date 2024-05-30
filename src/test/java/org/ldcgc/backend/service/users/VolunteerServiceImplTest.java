@@ -314,7 +314,7 @@ class VolunteerServiceImplTest {
         String builderAssistantId = MockedUserVolunteer.getRandomBuilderAssistantId();
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.deleteVolunteer(builderAssistantId));
+        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.deleteVolunteer(builderAssistantId, null));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.VOLUNTEER_NOT_FOUND, ex.getMessage());
@@ -327,7 +327,7 @@ class VolunteerServiceImplTest {
         String builderAssistantId = VOLUNTEER.getBuilderAssistantId();
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        ResponseEntity<?> response = volunteerService.deleteVolunteer(builderAssistantId);
+        ResponseEntity<?> response = volunteerService.deleteVolunteer(builderAssistantId, null);
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

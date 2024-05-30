@@ -21,7 +21,7 @@ public interface VolunteerService {
 
     ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteer);
 
-    ResponseEntity<?> deleteVolunteer(String builderAssistantId);
+    ResponseEntity<?> deleteVolunteer(String builderAssistantId, Boolean confirmDeletion);
 
     ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document);
 

@@ -180,6 +180,14 @@ public interface VolunteerController {
             })
     )
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_300,
+        description = SwaggerConfig.HTTP_REASON_300,
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            examples = {
+                @ExampleObject(name = "Volunteer linked to user", value = Messages.Warning.VOLUNTEER_LINKED_TO_USER)
+            })
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -191,7 +199,9 @@ public interface VolunteerController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteVolunteer(
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
-            @PathVariable String builderAssistantId);
+            @PathVariable String builderAssistantId,
+        @Parameter(description = "Confirm deletion of volunteer (necessary only if volunteer is linked to any user)")
+            @RequestParam(required = false) Boolean confirmDeletion);
 
     @Operation(summary = "Upload volunteers from CSV", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

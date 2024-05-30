@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -109,7 +110,18 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.VOLUNTEER_UPDATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId, Boolean confirmDeletion) {
+        User userLinked = userRepository.findByVolunteerBAId(builderAssistantId).orElse(null);
+
+        if(userLinked != null && Boolean.FALSE.equals(confirmDeletion))
+            return Constructor.buildResponseMessage(
+                HttpStatus.MULTIPLE_CHOICES,
+                Messages.Warning.VOLUNTEER_LINKED_TO_USER);
+        else if(Optional.ofNullable(userLinked).map(User::getVolunteer).isPresent()) {
+            userLinked.setVolunteer(null);
+            userRepository.saveAndFlush(userLinked);
+        }
+
         volunteerRepository.delete(getVolunteerFromDB(builderAssistantId));
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);

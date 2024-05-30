@@ -225,7 +225,7 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a DELETE Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(volunteerService.deleteVolunteer(Mockito.anyString()))
+        given(volunteerService.deleteVolunteer(Mockito.anyString(), null))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
         mockMvc.perform(deleteRequest(request, ERole.ROLE_ADMIN, "0"))

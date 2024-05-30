@@ -37,8 +37,8 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.updateVolunteer(builderAssistantId, volunteerDto);
     }
 
-    public ResponseEntity<?> deleteVolunteer(String builderAssistantId) {
-        return volunteerService.deleteVolunteer(builderAssistantId);
+    public ResponseEntity<?> deleteVolunteer(String builderAssistantId, Boolean confirmDeletion) {
+        return volunteerService.deleteVolunteer(builderAssistantId, confirmDeletion);
     }
 
     public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {

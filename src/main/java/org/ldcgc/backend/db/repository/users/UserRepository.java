@@ -34,7 +34,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByVolunteer_Id(Integer id);
 
-    Optional<User> findByVolunteer_BuilderAssistantId(String barcode);
+    @Query(value = """
+        SELECT u.* FROM users u, volunteers v
+        WHERE u.volunteer_id = v.id
+          AND v.builder_assistant_id = :builderAssistantId
+        """,nativeQuery = true)
+    Optional<User> findByVolunteerBAId(String builderAssistantId);
 
     @Query(value = "SELECT u.enabled FROM User u WHERE u.id = :id")
     boolean userIsEnabled(Integer id);
