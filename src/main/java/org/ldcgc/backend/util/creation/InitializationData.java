@@ -226,7 +226,7 @@ public class InitializationData {
 
             // RESOURCE TYPES (select name from categories;)
             // --> resources
-            List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
+            List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura", "Sin especificar");
 
             resourceNames.stream()
                 .map(c -> ResourceType.builder()
@@ -245,7 +245,7 @@ public class InitializationData {
 
             // --> BRANDS (select name from brands;)
 
-            List<String> brandNames = Arrays.asList("ABAC MONTECARLO", "Bahco", "Bellota", "Blackwire", "bo", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi negra", "Rubi", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "WERKU", "Wiha", "Würth", "Xiaomi", "Zosi Smart");
+            List<String> brandNames = Arrays.asList("ABAC MONTECARLO", "Bahco", "Bellota", "Blackwire", "bo", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi negra", "Rubi", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "WERKU", "Wiha", "Würth", "Xiaomi", "Zosi Smart", "Sin marca");
 
             List<Brand> brands = brandNames.stream()
                     .map(b -> Brand.builder()
@@ -891,6 +891,17 @@ public class InitializationData {
             .stockType(UNITS)
             .enabled(false)
             .build());
+
+        Location location = Location.builder().name("Sin localización").level(0).storesResources(true).groupId(0).build();
+        Location warehouse = Location.builder().name("Sin almacén").level(0).storesResources(true).groupId(0).build();
+        Location placement = Location.builder().name("Sin ubicación").level(0).storesResources(true).groupId(0).build();
+
+        placement.setParent(warehouse);
+        warehouse.setParent(location);
+        warehouse.setLocations(List.of(placement));
+        location.setLocations(List.of(warehouse));
+
+        locationRepository.saveAndFlush(location);
 
     }
 

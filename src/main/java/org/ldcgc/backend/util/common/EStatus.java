@@ -15,7 +15,8 @@ public enum EStatus implements EnumMethods {
     IN_MAINTENANCE("En mantenimiento", 2),
     DAMAGED("Dañado", 3),
     NEW("Nueva", 4),
-    DEPRECATED("En desuso", 5);
+    DEPRECATED("En desuso", 5),
+    UNKNOWN("Desconocido", 99);
 
     private final String desc;
     private final Integer id;
