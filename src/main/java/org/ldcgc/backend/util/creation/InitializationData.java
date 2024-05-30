@@ -728,14 +728,11 @@ public class InitializationData {
                 return;
 
             Volunteer volunteer = Volunteer.builder()
-                .builderAssistantId(vFieldList.get(1))
-                .name(vFieldList.get(2))
-                .lastName(vFieldList.get(3))
-                .isActive(Boolean.parseBoolean(vFieldList.get(4)))
+                .builderAssistantId(vFieldList.get(0))
+                .name(vFieldList.get(1))
+                .lastName(vFieldList.get(2))
                 .group(group)
-                .availability(getRandomAvailability())
                 .build();
-            volunteer.setAbsences(getRandomAbsences(volunteer));
             volunteerEntities.put(vFieldList.get(1), volunteer);
         });
 
