@@ -30,6 +30,21 @@ class ResourceTypeServiceImplTest {
         fail(NOT_YET_IMPLEMENTED);
     }
 
+    @Test
+    void whenGetResourceTypeFilteredByName_ReturnList() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenGetResourceTypeFilteredByLocked_ReturnList() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenGetResourceTypeFilteredByNameAndLocked_ReturnList() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
     // create
     @Test
     void createResourceTypeReturnResourceTypeExists() {

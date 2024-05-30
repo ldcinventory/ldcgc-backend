@@ -79,6 +79,15 @@ public interface ResourceTypeController {
 
     @Operation(summary = "Update resource type", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "No changes", value = Messages.Info.NO_CHANGES_PROCESSED)
+            }
+        )
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
         content = @Content(mediaType = "application/json",

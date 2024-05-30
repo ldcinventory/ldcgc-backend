@@ -55,6 +55,10 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
         ResourceType resourceType = resourceTypeRepository.findById(resourceTypeId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, resourceTypeId)));
 
+        if(resourceType.getName().equals(resourceTypeDto.getName())
+            && resourceType.getLocked().equals(resourceTypeDto.getLocked()))
+            return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.NO_CHANGES_PROCESSED);
+
         ResourceType existingResourceType = resourceTypeRepository.findByName(resourceTypeDto.getName()).orElse(null);
 
         // check duplicates

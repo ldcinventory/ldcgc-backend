@@ -83,6 +83,8 @@ public class Messages {
             ABSENCE_UPDATED = "Absence updated",
             ABSENCE_DELETED = "Absence deleted",
 
+            NO_CHANGES_PROCESSED = "No changes processed",
+
             CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
 
             TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
