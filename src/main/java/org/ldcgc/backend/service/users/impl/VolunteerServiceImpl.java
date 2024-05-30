@@ -122,7 +122,9 @@ public class VolunteerServiceImpl implements VolunteerService {
             userRepository.saveAndFlush(userLinked);
         }
 
-        volunteerRepository.delete(getVolunteerFromDB(builderAssistantId));
+        Volunteer volunteer = getVolunteerFromDB(builderAssistantId);
+        volunteer.setIsActive(false);
+        volunteerRepository.saveAndFlush(volunteer);
 
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
     }
