@@ -245,7 +245,7 @@ public class InitializationData {
 
             // --> BRANDS (select name from brands;)
 
-            List<String> brandNames = Arrays.asList("ABAC MONTECARLO", "Bahco", "Bellota", "Blackwire", "bo", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi negra", "Rubi", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "WERKU", "Wiha", "Würth", "Xiaomi", "Zosi Smart", "Sin marca");
+            List<String> brandNames = Arrays.asList("Abac Montecarlo", "Bahco", "Bellota", "Blackwire", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "Grespania", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "Opel", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Werku", "Wiha", "Würth", "Xiaomi", "Zosi Smart", "Sin marca");
 
             List<Brand> brands = brandNames.stream()
                     .map(b -> Brand.builder()
