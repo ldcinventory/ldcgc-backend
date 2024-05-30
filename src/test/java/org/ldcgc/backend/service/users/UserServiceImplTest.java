@@ -317,6 +317,11 @@ class UserServiceImplTest {
     }
 
     @Test
+    public void whenCreateUser_returnVolunteerNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
     public void whenCreateUser_returnUserCreated() {
         final UserDto user = MANAGER_USER;
         final UserDto userExpected = MANAGER_USER.toBuilder().password(null).build();
@@ -335,6 +340,11 @@ class UserServiceImplTest {
 
         verify(userRepository, atMostOnce()).findByEmail(any());
         verify(userRepository, atMostOnce()).saveAndFlush(any());
+    }
+
+    @Test
+    public void whenCreateUser_returnUserCreatedWarning() {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     // get user
@@ -884,6 +894,11 @@ class UserServiceImplTest {
         verify(tokenRepository, atMostOnce()).deleteAllTokensFromUser(any());
         verify(tokenRepository, atMostOnce()).saveAndFlush(any());
 
+    }
+
+    @Test
+    public void whenUpdateUser_returnUpdatedUserWarning() {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test

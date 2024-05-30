@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.users.impl;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
@@ -15,10 +16,8 @@ import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
-import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
-import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
@@ -29,6 +28,7 @@ import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -90,14 +90,26 @@ public class UserServiceImpl implements UserService {
             -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND_TOKEN));
     }
 
-    public ResponseEntity<?> createUser(String token, UserDto user) {
-        if(userRepository.findByEmail(user.getEmail()).isPresent())
+    public ResponseEntity<?> createUser(String token, UserDto userDto) {
+        if(userRepository.findByEmail(userDto.getEmail()).isPresent())
             throw new RequestException(HttpStatus.CONFLICT, Messages.Error.USER_ALREADY_EXIST);
 
-        User userEntity = UserMapper.MAPPER.toEntity(user);
+        User userEntity = UserMapper.MAPPER.toEntity(userDto);
+
+        setVolunteer(userEntity, userDto);
+
+        setCurrentGroup(userEntity);
+
         userEntity = userRepository.saveAndFlush(userEntity);
 
-        return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.USER_CREATED, UserMapper.MAPPER.toDTO(userEntity));
+        String warningIfVolunteerNotEnabled = userEntity.getVolunteer().getIsActive()
+            ? ""
+            : ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.CREATED,
+            Messages.Info.USER_CREATED + warningIfVolunteerNotEnabled,
+            UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
@@ -187,20 +199,23 @@ public class UserServiceImpl implements UserService {
 
         // volunteers
         // check if dto comes with volunteer
+        String warningIfVolunteerNotEnabled = "";
         if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent() &&
             // check if origin (entity) is null and dto is not
             (originVolunteerId.isEmpty() ||
                 // check origin (entity) and dto are not the same
                 !originVolunteerId.get().equals(userDto.getVolunteer().getId()))) {
-            Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId()).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
             // check this builder assistant id is not assigned to another volunteer
+            User finalUserEntity = userEntity;
             userRepository.findByVolunteer_Id(userDto.getVolunteer().getId()).ifPresent(checkUser -> {
-                if(!checkUser.getId().equals(userEntity.getId()))
+                if(!checkUser.getId().equals(finalUserEntity.getId()))
                     throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_VOLUNTEER_ALREADY_ASSIGNED);
             });
 
-            userEntity.setVolunteer(volunteer);
+            setVolunteer(userEntity, userDto);
+
+            if(!userEntity.getVolunteer().getIsActive())
+                warningIfVolunteerNotEnabled = ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
         }
 
         // responsibility
@@ -212,36 +227,32 @@ public class UserServiceImpl implements UserService {
                 !originResponsibilityId.get().equals(userDto.getResponsibility().getId()))) {
             Responsibility responsibility = responsibilityRepository.findById(userDto.getResponsibility().getId()).orElseThrow(
                 () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, userDto.getResponsibility().getId())));
-            userEntity.setResponsibility(responsibility);
+            setResponsibility(userEntity, userDto.getResponsibility().getId());
         }
 
         // group
-        // check if dto comes with group
-        if(Optional.ofNullable(userDto.getGroup()).map(GroupDto::getId).isPresent() &&
-            // check if origin (entity) is null and dto is not
-            (originGroupId.isEmpty() ||
-                // check origin (entity) and dto are not the same
-                !originGroupId.get().equals(userDto.getGroup().getId()))) {
-            Group group = groupRepository.findById(userDto.getGroup().getId()).orElseThrow(
-                () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, userDto.getGroup().getId())));
-            userEntity.setGroup(group);
-        }
+        setCurrentGroup(userEntity);
 
-        userRepository.saveAndFlush(userEntity);
-
-        UserCredentialsDto credentials = UserCredentialsDto.builder()
-            .email(userDto.getEmail()).password(userDto.getPassword()).build();
+        userEntity = userRepository.saveAndFlush(userEntity);
 
         // when modifying my user, return new token
-        cleanLocalTokensFromUserId(userEntity.getId(), true);
-        tokenRepository.deleteAllTokensFromUser(userEntity.getId());
-        ResponseEntity<?> response = accountService.login(credentials);
-        Response.DTO responseBody = (Response.DTO) response.getBody();
-        return Constructor.buildResponseMessageObjectHeader(
+        if(userFromToken.getId().equals(userEntity.getId())) {
+            cleanLocalTokensFromUserId(userEntity.getId(), true);
+            tokenRepository.deleteAllTokensFromUser(userEntity.getId());
+            ResponseEntity<?> response = accountService.login(userEntity);
+            Response.DTO responseBody = (Response.DTO) response.getBody();
+            return Constructor.buildResponseMessageObjectHeader(
+                HttpStatus.CREATED,
+                Messages.Info.USER_UPDATED + warningIfVolunteerNotEnabled,
+                Objects.requireNonNull(responseBody).getData(),
+                response.getHeaders());
+        }
+
+        // when modifying other user, it's not necessary to re-login
+        return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            Messages.Info.USER_UPDATED,
-            Objects.requireNonNull(responseBody).getData(),
-            response.getHeaders());
+            Messages.Info.USER_UPDATED + warningIfVolunteerNotEnabled,
+            UserMapper.MAPPER.toDTO(userEntity));
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {
@@ -270,7 +281,7 @@ public class UserServiceImpl implements UserService {
         // when updating self user and change self role
         // -> do not allow to change role
         if(userFromToken.getEmail().equals(userEntity.getEmail())
-            && !userEntity.getRole().equals(userDto.getRole()))
+            && userDto.getRole() != null && !userEntity.getRole().equals(userDto.getRole()))
             throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PERMISSION_ROLE);
 
         // when updating an admin user being manager
@@ -282,6 +293,45 @@ public class UserServiceImpl implements UserService {
                 throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PERMISSION_ROLE_OTHER);
         }
 
+    }
+
+    private void setCurrentGroup(User userEntity) {
+        Integer groupId = Integer.valueOf(ObjectUtils.defaultIfNull(MDC.get("groupId"), "-1"));
+        Group group = groupRepository.findById(groupId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.GROUP_NOT_FOUND, groupId)));
+        userEntity.setGroup(group);
+    }
+
+    private void setResponsibility(User userEntity, Integer responsibilityId) {
+        Responsibility responsibility = responsibilityRepository.findById(responsibilityId).orElseThrow(
+            () -> new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, responsibilityId)));
+        userEntity.setResponsibility(responsibility);
+    }
+
+    private void setVolunteer(User userEntity, UserDto userDto) {
+        if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent()){
+            Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId())
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+
+            User checkUser = userRepository.findByVolunteer_Id(userDto.getVolunteer().getId()).orElse(null);
+            if(checkUser != null && !checkUser.getId().equals(userEntity.getId()))
+                throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ALREADY_LINKED);
+
+            userEntity.setVolunteer(volunteer);
+
+            return;
+        }
+
+        if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getBuilderAssistantId).isPresent()){
+            Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(userDto.getVolunteer().getBuilderAssistantId())
+                .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+
+            User checkUser = userRepository.findByVolunteer_Id(userDto.getVolunteer().getId()).orElse(null);
+            if(checkUser != null && !checkUser.getId().equals(userEntity.getId()))
+                throw new RequestException(HttpStatus.CONFLICT, Messages.Error.VOLUNTEER_ALREADY_LINKED);
+
+            userEntity.setVolunteer(volunteer);
+        }
     }
 
 }

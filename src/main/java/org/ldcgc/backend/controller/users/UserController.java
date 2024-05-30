@@ -122,7 +122,7 @@ public interface UserController {
         @Parameter(description = "Valid JWT of the user to update", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
-            @RequestBody UserDto user) throws ParseException, JOSEException;
+            @RequestBody UserDto userDto) throws ParseException, JOSEException;
 
     @Operation(summary = "Delete my user", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -172,7 +172,7 @@ public interface UserController {
         @Parameter(description = "Valid JWT of the user to get details", required = true)
             @RequestAttribute("Authorization") @UserFromTokenInDb String token,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
-            @RequestBody UserDto user);
+            @RequestBody UserDto userDto);
 
     @Operation(summary = "Get any user", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

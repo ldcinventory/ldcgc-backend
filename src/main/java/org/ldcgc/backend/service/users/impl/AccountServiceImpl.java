@@ -71,27 +71,35 @@ public class AccountServiceImpl implements AccountService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        return setToken(userEntity);
+    }
+
+    public ResponseEntity<?> login(User user) throws ParseException, JOSEException {
+        return setToken(user);
+    }
+
+    private ResponseEntity<?> setToken(User user) throws ParseException, JOSEException {
         HttpHeaders headers = new HttpHeaders();
 
-        SignedJWT refreshToken = jwtUtils.generateRefreshToken(userEntity);
+        SignedJWT refreshToken = jwtUtils.generateRefreshToken(user);
         headers.add("x-refresh-token", refreshToken.getParsedString());
 
-        SignedJWT jwt = jwtUtils.generateNewToken(userEntity);
+        SignedJWT jwt = jwtUtils.generateNewToken(user);
         headers.add("x-header-payload-token", String.format("%s.%s", jwt.getParsedParts()[0], jwt.getParsedParts()[1]));
         headers.add("x-signature-token", jwt.getParsedParts()[2].toString());
 
         // HttpServletRequest actualRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 
         // get eula details (standard user)
-        if (userEntity.getAcceptedEULA() == null)
+        if (user.getAcceptedEULA() == null)
             return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_STANDARD_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
         // get eula details (manager)
-        if((userEntity.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
-            && userEntity.getAcceptedEULAManager() == null)
+        if((user.getRole().equalsAny(ROLE_MANAGER, ROLE_ADMIN))
+            && user.getAcceptedEULAManager() == null)
             return Constructor.buildResponseObjectLocation(HttpStatus.FORBIDDEN, Messages.Error.EULA_MANAGER_NOT_ACCEPTED, Messages.App.EULA_ENDPOINT, headers);
 
-        UserDto userDto = UserMapper.MAPPER.toDTO(userEntity).toBuilder()
+        UserDto userDto = UserMapper.MAPPER.toDTO(user).toBuilder()
             .tokenExpires(dateToLocalDateTime(jwt.getJWTClaimsSet().getExpirationTime()))
             .refreshExpires(dateToLocalDateTime(refreshToken.getJWTClaimsSet().getExpirationTime()))
             .build();

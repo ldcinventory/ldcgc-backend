@@ -12,7 +12,7 @@ public class Messages {
             USER_CREATED = "User created successfully!",
             USER_LISTED = "Found %s user/s",
             USER_LINKED = "User linked to volunteer with builder assistant id %s",
-            USER_UNLINKED = "User unlinked from volunteer builder assistant id %s",
+            USER_UNLINKED = "User unlinked from volunteer with builder assistant id %s",
             USER_UPDATED = "User details updated",
             USER_CREDENTIALS_UPDATED = "User credentials updated",
             USER_DELETED = "User deleted",

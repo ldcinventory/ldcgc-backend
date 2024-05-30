@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.users;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.text.ParseException;
 public interface AccountService {
 
     ResponseEntity<?> login(UserCredentialsDto user) throws ParseException, JOSEException;
+    ResponseEntity<?> login(User user) throws ParseException, JOSEException;
     ResponseEntity<?> logout(String token) throws ParseException;
     ResponseEntity<?> recoverCredentials(UserCredentialsDto userCredentials) throws ParseException, JOSEException;
     ResponseEntity<?> validateToken(String token) throws ParseException;
