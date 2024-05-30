@@ -131,6 +131,49 @@ public class UserServiceImpl implements UserService {
         return updateUser(userFromToken, getUserFromUserId(userId), userDto);
     }
 
+    public ResponseEntity<?> linkUserToVolunteer(Integer userId, String builderAssistantId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
+
+        if(!user.isEnabled())
+            throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PROHIBITED);
+
+        if(user.getVolunteer() != null && user.getVolunteer().getBuilderAssistantId().equals(builderAssistantId))
+            return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.NO_CHANGES_PROCESSED, UserMapper.MAPPER.toDTO(user));
+
+        Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(builderAssistantId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
+
+        if(userRepository.findByVolunteerBAId(builderAssistantId).isPresent())
+            throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.VOLUNTEER_ALREADY_LINKED);
+
+        user.setVolunteer(volunteer);
+        user = userRepository.saveAndFlush(user);
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.CREATED,
+            String.format(volunteer.getIsActive() ? Messages.Info.USER_LINKED : Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, builderAssistantId),
+            UserMapper.MAPPER.toDTO(user));
+    }
+
+    public ResponseEntity<?> unlinkUserToVolunteer(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+            new RequestException(HttpStatus.NOT_FOUND, Messages.Error.USER_NOT_FOUND));
+
+        if(user.getVolunteer() == null)
+            return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.NO_CHANGES_PROCESSED, UserMapper.MAPPER.toDTO(user));
+
+        String builderAssistantId = user.getVolunteer().getBuilderAssistantId();
+
+        user.setVolunteer(null);
+        user = userRepository.saveAndFlush(user);
+
+        return Constructor.buildResponseMessageObject(
+            HttpStatus.OK,
+            String.format(Messages.Info.USER_UNLINKED, builderAssistantId),
+            UserMapper.MAPPER.toDTO(user));
+    }
+
     private ResponseEntity<?> updateUser(User userFromToken, User userEntity, UserDto userDto) throws ParseException, JOSEException {
         validateUpdatingParameters(userFromToken, userEntity, userDto);
 

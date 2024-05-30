@@ -25,6 +25,10 @@ public interface UserService {
 
     ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException;
 
+    ResponseEntity<?> linkUserToVolunteer(Integer userId, String builderAssistantId);
+
+    ResponseEntity<?> unlinkUserToVolunteer(Integer userId);
+
     ResponseEntity<?> deleteUser(Integer userId);
 
 }

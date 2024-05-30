@@ -45,6 +45,14 @@ public class UserControllerImpl implements UserController {
         return userService.updateUser(token, userId, user);
     }
 
+    public ResponseEntity<?> linkUserToVolunteer(Integer userId, String builderAssistantId) {
+        return userService.linkUserToVolunteer(userId, builderAssistantId);
+    }
+
+    public ResponseEntity<?> unlinkUserToVolunteer(Integer userId) {
+        return userService.unlinkUserToVolunteer(userId);
+    }
+
     public ResponseEntity<?> deleteUser(Integer userId) {
         return userService.deleteUser(userId);
     }

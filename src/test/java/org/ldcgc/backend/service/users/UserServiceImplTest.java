@@ -56,6 +56,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.ldcgc.backend.base.mock.MockedToken.generateSignedToken;
 import static org.ldcgc.backend.base.mock.MockedUserVolunteer.getRandomMockedUserDto;
@@ -882,6 +884,51 @@ class UserServiceImplTest {
         verify(tokenRepository, atMostOnce()).deleteAllTokensFromUser(any());
         verify(tokenRepository, atMostOnce()).saveAndFlush(any());
 
+    }
+
+    @Test
+    public void whenLinkUserToVolunteer_returnUserNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenLinkUserToVolunteer_returnNoChangesProcessed() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenLinkUserToVolunteer_returnVolunteerNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenLinkUserToVolunteer_returnUserForbidden() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenLinkUserToVolunteer_returnVolunteerAlreadyLinked() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenLinkUserToVolunteer_returnUserLinked() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenUnlinkUserToVolunteer_returnUserNotFound() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenUnlinkUserToVolunteer_returnNoChangesProcessed() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void whenUnlinkUserToVolunteer_returnUnlinkedVolunteer() {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     // delete user

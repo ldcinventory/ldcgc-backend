@@ -11,6 +11,8 @@ public class Messages {
 
             USER_CREATED = "User created successfully!",
             USER_LISTED = "Found %s user/s",
+            USER_LINKED = "User linked to volunteer with builder assistant id %s",
+            USER_UNLINKED = "User unlinked from volunteer builder assistant id %s",
             USER_UPDATED = "User details updated",
             USER_CREDENTIALS_UPDATED = "User credentials updated",
             USER_DELETED = "User deleted",
@@ -98,7 +100,8 @@ public class Messages {
     public static class Warning {
 
         public static final String
-            VOLUNTEER_LINKED_TO_USER = "This volunteer is linked to a user with id %s, please confirm deletion to unlink both first and delete this one"
+            VOLUNTEER_LINKED_TO_USER = "This volunteer is linked to a user with id %s, please confirm deletion to unlink both first and delete this one",
+            USER_LINKED_VOLUNTEER_NOT_ACTIVE = "User linked to volunteer with builder assistant id %s. Please be aware this volunteer is not active"
 
             ;
     }
@@ -123,6 +126,7 @@ public class Messages {
             USER_PERMISSION_ROLE = "User doesn't have the permission to change its own role, even if it's admin",
             USER_PERMISSION_ROLE_OTHER = "User doesn't have the permission to change other's roles, or elevate them",
             USER_PERMISSION_OTHER = "User doesn't have the permission to change other users",
+            USER_PROHIBITED = "This user is prohibited from this action",
             USER_PASSWORD_DONT_MATCH = "Password provided for this email doesn't match our records",
             USER_VOLUNTEER_ALREADY_ASSIGNED = "This volunteer is already assigned to another user",
             USER_DOESNT_HAVE_VOLUNTEER = "This user doesn't have any volunteer associated",
@@ -141,6 +145,7 @@ public class Messages {
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_BAID_NOT_FOUND = "The volunteer with Builder Assistant id %s couldn't be found",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
+            VOLUNTEER_ALREADY_LINKED = "This volunteer is already linked to another user",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
 

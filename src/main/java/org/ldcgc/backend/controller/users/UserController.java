@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -148,7 +149,7 @@ public interface UserController {
 
     // admin
 
-    @Operation(summary = "Create a user (admin)", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Create a user", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -173,7 +174,7 @@ public interface UserController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
             @RequestBody UserDto user);
 
-    @Operation(summary = "Get any user (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Get any user", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -194,7 +195,7 @@ public interface UserController {
         @Parameter(description = "User id", required = true)
             @PathVariable Integer userId);
 
-    @Operation(summary = "List users (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "List users", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -219,7 +220,7 @@ public interface UserController {
         @Parameter(description = "Sort asc desc (default = desc)")
             @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
-    @Operation(summary = "Update any user (manager)", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Update any user", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -246,7 +247,84 @@ public interface UserController {
         @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User properties and volunteer's (optional)", required = true)
             @RequestBody UserDto user) throws ParseException, JOSEException;
 
-    @Operation(summary = "Delete any user (admin)", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Link any user to a volunteer", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "No changes", value = Messages.Info.NO_CHANGES_PROCESSED)
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User linked", value = Messages.Info.USER_LINKED),
+                @ExampleObject(name = "User linked", value = Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_400,
+        description = SwaggerConfig.HTTP_REASON_400,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not found", value = Messages.Error.VOLUNTEER_ALREADY_LINKED)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not found", value = Messages.Error.USER_PROHIBITED)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not found", value = Messages.Error.USER_NOT_FOUND),
+                @ExampleObject(name = "User not found", value = Messages.Error.VOLUNTEER_NOT_FOUND)
+            })
+    )
+    @PatchMapping("/{userId}/volunteer/{builderAssistantId}")
+    @PreAuthorize(MANAGER_LEVEL)
+    ResponseEntity<?> linkUserToVolunteer(
+        @Parameter(description = "User id", required = true)
+            @PathVariable Integer userId,
+        @Parameter(description = "Builder Assistant id", required = true)
+            @PathVariable String builderAssistantId);
+
+    @Operation(summary = "Unlink any user form current linked volunteer", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "No changes", value = Messages.Info.NO_CHANGES_PROCESSED),
+                @ExampleObject(name = "User linked", value = Messages.Info.USER_UNLINKED)
+            }
+        )
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_404,
+        description = SwaggerConfig.HTTP_REASON_404,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "User not found", value = Messages.Error.USER_NOT_FOUND)
+            })
+    )
+    @DeleteMapping("/{userId}/volunteer")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> unlinkUserToVolunteer(
+        @Parameter(description = "User id", required = true)
+        @PathVariable Integer userId);
+
+    @Operation(summary = "Delete any user", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
