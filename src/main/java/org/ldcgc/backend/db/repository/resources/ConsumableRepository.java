@@ -68,4 +68,6 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
     @Query("SELECT c FROM Consumable c ORDER BY random() LIMIT 1")
     Consumable getRandomConsumable();
 
+    @Query(value = "SELECT count(c) > 0 FROM consumables c WHERE c.brand_id = :brandId", nativeQuery = true)
+    boolean brandUsed(Integer brandId);
 }

@@ -49,4 +49,7 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
 
     List<Tool> findAllByBarcodeIn(List<String> barcodes);
 
+    @Query(value = "SELECT count(t) > 0 FROM tools t WHERE t.brand_id = :brandId", nativeQuery = true)
+    boolean brandUsed(Integer brandId);
+
 }

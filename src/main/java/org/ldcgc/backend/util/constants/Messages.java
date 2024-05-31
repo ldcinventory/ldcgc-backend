@@ -11,6 +11,8 @@ public class Messages {
 
             USER_CREATED = "User created successfully!",
             USER_LISTED = "Found %s user/s",
+            USER_LINKED = "User linked to volunteer with builder assistant id %s",
+            USER_UNLINKED = "User unlinked from volunteer with builder assistant id %s",
             USER_UPDATED = "User details updated",
             USER_CREDENTIALS_UPDATED = "User credentials updated",
             USER_DELETED = "User deleted",
@@ -83,6 +85,8 @@ public class Messages {
             ABSENCE_UPDATED = "Absence updated",
             ABSENCE_DELETED = "Absence deleted",
 
+            NO_CHANGES_PROCESSED = "No changes processed",
+
             CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
 
             TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
@@ -96,7 +100,8 @@ public class Messages {
     public static class Warning {
 
         public static final String
-            VOLUNTEER_LINKED_TO_USER = "This volunteer is linked to a user with id %s, please confirm deletion to unlink both first and delete this one"
+            VOLUNTEER_LINKED_TO_USER = "This volunteer is linked to a user with id %s, please confirm deletion to unlink both first and delete this one",
+            USER_LINKED_VOLUNTEER_NOT_ACTIVE = "User linked to volunteer with builder assistant id %s. Please be aware this volunteer is not active"
 
             ;
     }
@@ -121,6 +126,7 @@ public class Messages {
             USER_PERMISSION_ROLE = "User doesn't have the permission to change its own role, even if it's admin",
             USER_PERMISSION_ROLE_OTHER = "User doesn't have the permission to change other's roles, or elevate them",
             USER_PERMISSION_OTHER = "User doesn't have the permission to change other users",
+            USER_PROHIBITED = "This user is prohibited from this action",
             USER_PASSWORD_DONT_MATCH = "Password provided for this email doesn't match our records",
             USER_VOLUNTEER_ALREADY_ASSIGNED = "This volunteer is already assigned to another user",
             USER_DOESNT_HAVE_VOLUNTEER = "This user doesn't have any volunteer associated",
@@ -138,7 +144,9 @@ public class Messages {
             VOLUNTEER_TOKEN_NOT_EXIST = "The volunteer from this token doesn't exist or is not found",
             VOLUNTEER_NOT_FOUND = "The volunteer you're searching for with this id couldn't be found",
             VOLUNTEER_BAID_NOT_FOUND = "The volunteer with Builder Assistant id %s couldn't be found",
+            VOLUNTEERS_BAID_NOT_FOUND = "These Builder Assistant Ids couldn't be found: %s",
             VOLUNTEER_ID_ALREADY_TAKEN = "Volunteer's Builder Assistant Id already assigned to another volunteer",
+            VOLUNTEER_ALREADY_LINKED = "This volunteer is already linked to another user",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
 
@@ -151,8 +159,6 @@ public class Messages {
 
             TOOL_REGISTER_TOOL_NOT_FOUND = "The tool you are trying to register doesn't exist.",
             TOOL_REGISTER_TOOL_NOT_AVAILABLE = "The tool you are trying to register is not available. Close other registers with this tool before opening a new one.",
-            TOOL_REGISTER_VOLUNTEER_NOT_FOUND = "The volunteer you are trying to register doesn't exist.",
-            TOOL_REGISTER_TOO_MANY_VOLUNTEERS = "There is more than one volunteer with the same builder assistant id: %s. Builder assistant id must be unique, please delete all duplicated volunteers.",
             TOOL_REGISTER_INCORRECT_BUILDER_ASSISTANT_ID = "The volunteer's builder assistant id %s belongs to some other volunteer.",
             TOOL_REGISTER_INCORRECT_BARCODE = "The tool's barcode %s is incorrect.",
             TOOL_REGISTER_NOT_FOUND = "Tool register with id %s not found.",

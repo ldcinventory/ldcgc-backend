@@ -28,6 +28,6 @@ replaceToken:
   POST:
   PUT:
     - "/api/users/me"
-    - "/api/users/{userId}"
+    - "/api/users/[0-9]+$" #e.g. /api/users/11
   PATCH:
   DELETE:

@@ -36,6 +36,7 @@ import org.ldcgc.backend.util.common.ERole;
 import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.process.Files;
 import org.springframework.beans.factory.InitializingBean;
@@ -225,7 +226,7 @@ public class InitializationData {
 
             // RESOURCE TYPES (select name from categories;)
             // --> resources
-            List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura");
+            List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura", "Sin especificar");
 
             resourceNames.stream()
                 .map(c -> ResourceType.builder()
@@ -244,7 +245,7 @@ public class InitializationData {
 
             // --> BRANDS (select name from brands;)
 
-            List<String> brandNames = Arrays.asList("ABAC MONTECARLO", "Bahco", "Bellota", "Blackwire", "bo", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GRESPANIA", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "OPEL", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi negra", "Rubi", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "WERKU", "Wiha", "Würth", "Xiaomi", "Zosi Smart");
+            List<String> brandNames = Arrays.asList("Abac Montecarlo", "Bahco", "Bellota", "Blackwire", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "Grespania", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "Opel", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Werku", "Wiha", "Würth", "Xiaomi", "Zosi Smart", "Sin marca");
 
             List<Brand> brands = brandNames.stream()
                     .map(b -> Brand.builder()
@@ -410,12 +411,13 @@ public class InitializationData {
     private LocalDate calculateNextMaintenance(ETimeUnit timeUnit, Integer period, LocalDate fromDate) {
         LocalDate date = ObjectUtils.defaultIfNull(fromDate, LocalDate.now());
         return switch (timeUnit) {
-            case HOURS  -> date;
-            case DAYS   -> date.plusDays(period);
-            case WEEKS  -> date.plusWeeks(period);
-            case MONTHS -> date.plusMonths(period);
-            case YEARS  -> date.plusYears(period);
-            case NEVER -> null;
+            case HOURS   -> date;
+            case DAYS    -> date.plusDays(period);
+            case WEEKS   -> date.plusWeeks(period);
+            case MONTHS  -> date.plusMonths(period);
+            case YEARS   -> date.plusYears(period);
+            case NEVER,
+                 UNKNOWN -> null;
         };
     }
 
@@ -485,7 +487,7 @@ public class InitializationData {
             .lastName(String.format("%s %s", new Faker().name().lastName(), new Faker().name().lastName()))
             .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
             .availability(getRandomAvailability())
-            .isActive(new Random().nextBoolean())
+            .status(getRandomEnum(EVStatus.class))
             .group(groupRepository.getRandomGroup())
             .build();
         volunteer.setAbsences(getRandomAbsences(volunteer));
@@ -728,14 +730,12 @@ public class InitializationData {
                 return;
 
             Volunteer volunteer = Volunteer.builder()
-                .builderAssistantId(vFieldList.get(1))
-                .name(vFieldList.get(2))
-                .lastName(vFieldList.get(3))
-                .isActive(Boolean.parseBoolean(vFieldList.get(4)))
+                .builderAssistantId(vFieldList.get(0))
+                .name(vFieldList.get(1))
+                .lastName(vFieldList.get(2))
+                .status(EVStatus.ACTIVE)
                 .group(group)
-                .availability(getRandomAvailability())
                 .build();
-            volunteer.setAbsences(getRandomAbsences(volunteer));
             volunteerEntities.put(vFieldList.get(1), volunteer);
         });
 
@@ -875,7 +875,7 @@ public class InitializationData {
 
         volunteerRepository.saveAndFlush(Volunteer.builder()
             .name("null")
-            .isActive(false)
+            .status(EVStatus.LOCKED)
             .build());
 
         toolRepository.saveAndFlush(Tool.builder()
@@ -892,6 +892,17 @@ public class InitializationData {
             .stockType(UNITS)
             .enabled(false)
             .build());
+
+        Location location = Location.builder().name("Sin localización").level(0).storesResources(true).groupId(0).build();
+        Location warehouse = Location.builder().name("Sin almacén").level(0).storesResources(true).groupId(0).build();
+        Location placement = Location.builder().name("Sin ubicación").level(0).storesResources(true).groupId(0).build();
+
+        placement.setParent(warehouse);
+        warehouse.setParent(location);
+        warehouse.setLocations(List.of(placement));
+        location.setLocations(List.of(warehouse));
+
+        locationRepository.saveAndFlush(location);
 
     }
 

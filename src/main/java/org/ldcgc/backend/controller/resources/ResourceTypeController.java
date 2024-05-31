@@ -45,7 +45,7 @@ public interface ResourceTypeController {
     @GetMapping
     @PreAuthorize(USER_LEVEL)
     ResponseEntity<?> getResourceTypes(
-        @Parameter(description = "Name of the resource type")
+        @Parameter(description = "Name of the resource type (could be partial)")
             @RequestParam(required = false) String name,
         @Parameter(description = "Search by locked (true/false/null for not apply)")
             @RequestParam(required = false) Boolean locked
@@ -78,6 +78,15 @@ public interface ResourceTypeController {
     );
 
     @Operation(summary = "Update resource type", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_200,
+        description = SwaggerConfig.HTTP_REASON_200,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "No changes", value = Messages.Info.NO_CHANGES_PROCESSED)
+            }
+        )
+    )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,

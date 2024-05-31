@@ -9,6 +9,7 @@ import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.users.AbsenceRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
 import org.ldcgc.backend.exception.RequestException;
@@ -41,6 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedToken.generateSignedStringToken;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -60,10 +63,11 @@ class VolunteerServiceImplTest {
     @Mock UserRepository userRepository;
     @Mock JwtUtils jwtUtils;
     @Mock GroupRepository groupRepository;
+    @Mock AbsenceRepository absenceRepository;
 
     @BeforeEach
     public void init() {
-        volunteerService = new VolunteerServiceImpl(jwtUtils, volunteerRepository, userRepository, groupRepository);
+        volunteerService = new VolunteerServiceImpl(jwtUtils, volunteerRepository, userRepository, groupRepository, absenceRepository);
     }
 
     private final User USER_WITHOUT_VOLUNTEER = UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDtoWithoutVolunteer());
@@ -314,7 +318,7 @@ class VolunteerServiceImplTest {
         String builderAssistantId = MockedUserVolunteer.getRandomBuilderAssistantId();
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.deleteVolunteer(builderAssistantId));
+        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.deleteVolunteer(builderAssistantId, null));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.VOLUNTEER_NOT_FOUND, ex.getMessage());
@@ -323,11 +327,16 @@ class VolunteerServiceImplTest {
     }
 
     @Test
+    public void whenDeleteVolunteer_returnVolunteerLinkedToUser() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
     public void whenDeleteVolunteer_returnVolunteerDeleted() {
         String builderAssistantId = VOLUNTEER.getBuilderAssistantId();
         doReturn(Optional.of(VOLUNTEER)).when(volunteerRepository).findByBuilderAssistantId(builderAssistantId);
 
-        ResponseEntity<?> response = volunteerService.deleteVolunteer(builderAssistantId);
+        ResponseEntity<?> response = volunteerService.deleteVolunteer(builderAssistantId, null);
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -339,6 +348,7 @@ class VolunteerServiceImplTest {
         verify(volunteerRepository, atMostOnce()).delete(any(Volunteer.class));
     }
 
+    // upload
     @Test
     public void whenUploadVolunteers_returnGroupNotFound() {
         MockMultipartFile document = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());

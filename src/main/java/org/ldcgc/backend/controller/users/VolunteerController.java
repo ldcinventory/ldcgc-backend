@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ldcgc.backend.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.util.common.EVStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.MediaType;
@@ -125,8 +126,8 @@ public interface VolunteerController {
             @RequestParam(required = false) String builderAssistantId,
         @Parameter(description = "Filter to search user name OR last name")
             @RequestParam(required = false) String filterString,
-        @Parameter(description = "Volunteer Filter by active/inactive (true for active)")
-            @RequestParam(required = false) Boolean isActive,
+        @Parameter(description = "Volunteer Filter by status (ACTIVE,INACTIVE)")
+            @RequestParam(required = false) EVStatus status,
         @Parameter(description = "Page index")
             @RequestParam(required = false, defaultValue = "0") Integer pageIndex,
         @Parameter(description = "Size of every page (default = 25)")
@@ -180,6 +181,14 @@ public interface VolunteerController {
             })
     )
     @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_300,
+        description = SwaggerConfig.HTTP_REASON_300,
+        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            examples = {
+                @ExampleObject(name = "Volunteer linked to user", value = Messages.Warning.VOLUNTEER_LINKED_TO_USER)
+            })
+    )
+    @ApiResponse(
         responseCode = SwaggerConfig.HTTP_404,
         description = SwaggerConfig.HTTP_REASON_404,
         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -191,7 +200,9 @@ public interface VolunteerController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> deleteVolunteer(
         @Parameter(description = "Volunteer Builder Assistant Id", required = true)
-            @PathVariable String builderAssistantId);
+            @PathVariable String builderAssistantId,
+        @Parameter(description = "Confirm deletion of volunteer (necessary only if volunteer is linked to any user)")
+            @RequestParam(required = false) Boolean confirmDeletion);
 
     @Operation(summary = "Upload volunteers from CSV", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(

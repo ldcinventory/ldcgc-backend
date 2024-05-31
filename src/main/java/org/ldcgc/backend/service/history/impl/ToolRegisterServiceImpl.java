@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -43,11 +44,9 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
 
     public ResponseEntity<?> createToolRegister(ToolRegisterDto toolRegisterDto) {
         String builderAssistantId = toolRegisterDto.getVolunteerBuilderAssistantId();
-        List<Volunteer> volunteers = volunteerRepository.findAllByBuilderAssistantId(builderAssistantId);
-        if (volunteers.isEmpty())
-            throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_VOLUNTEER_NOT_FOUND);
-        else if (volunteers.size() > 1)
-            throw new RequestException(HttpStatus.BAD_REQUEST, String.format(Messages.Error.TOOL_REGISTER_TOO_MANY_VOLUNTEERS, builderAssistantId));
+
+        if(!volunteerRepository.existsByBuilderAssistantId(builderAssistantId))
+            throw new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND);
 
         Tool tool = toolRepository.findFirstByBarcode(toolRegisterDto.getToolBarcode()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_TOOL_NOT_FOUND));
@@ -154,10 +153,10 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         List<Volunteer> volunteers = volunteerRepository.findAllByBuilderAssistantIdIn(builderAssistantIds);
         if (builderAssistantIds.size() != volunteers.size())
             throw new RequestException(HttpStatus.NOT_FOUND,
-                Messages.Error.VOLUNTEER_BAID_NOT_FOUND.formatted(builderAssistantIds.stream()
-                    .filter(b -> volunteers.stream().noneMatch(t -> t.getBuilderAssistantId().equals(b)))
-                    .findFirst()
-                    .orElse(StringUtils.EMPTY)
+                Messages.Error.VOLUNTEERS_BAID_NOT_FOUND.formatted(volunteers.stream()
+                    .map(Volunteer::getBuilderAssistantId)
+                    .filter(builderAssistantId -> !builderAssistantIds.contains(builderAssistantId))
+                    .collect(Collectors.joining(", "))
                 ));
 
         List<ToolRegister> registers = toolRegistersDto.stream()

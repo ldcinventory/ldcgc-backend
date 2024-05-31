@@ -21,16 +21,16 @@ public class UserControllerImpl implements UserController {
         return userService.getMyUser(token);
     }
 
-    public ResponseEntity<?> updateMyUser(String token, UserDto user) throws ParseException, JOSEException {
-        return userService.updateMyUser(token, user);
+    public ResponseEntity<?> updateMyUser(String token, UserDto userDto) throws ParseException, JOSEException {
+        return userService.updateMyUser(token, userDto);
     }
 
     public ResponseEntity<?> deleteMyUser(String token) throws ParseException {
         return userService.deleteMyUser(token);
     }
 
-    public ResponseEntity<?> createUser(String token, UserDto user) {
-        return userService.createUser(token, user);
+    public ResponseEntity<?> createUser(String token, UserDto userDto) {
+        return userService.createUser(token, userDto);
     }
 
     public ResponseEntity<?> getUser(Integer userId) {
@@ -43,6 +43,14 @@ public class UserControllerImpl implements UserController {
 
     public ResponseEntity<?> updateUser(String token, Integer userId, UserDto user) throws ParseException, JOSEException {
         return userService.updateUser(token, userId, user);
+    }
+
+    public ResponseEntity<?> linkUserToVolunteer(Integer userId, String builderAssistantId) {
+        return userService.linkUserToVolunteer(userId, builderAssistantId);
+    }
+
+    public ResponseEntity<?> unlinkUserToVolunteer(Integer userId) {
+        return userService.unlinkUserToVolunteer(userId);
     }
 
     public ResponseEntity<?> deleteUser(Integer userId) {

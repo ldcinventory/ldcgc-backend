@@ -61,7 +61,8 @@ public class Endpoint {
     }
 
     public static boolean isReplaceTokenEndpoint(String method, String endpoint) {
-        return replaceToken.get(method).contains(endpoint);
+        return replaceToken.get(method).contains(endpoint) ||
+            replaceToken.get(method).stream().anyMatch(endpoint::matches);
     }
 
     public static boolean isNotReplaceTokenEndpoint(String method, String endpoint) {

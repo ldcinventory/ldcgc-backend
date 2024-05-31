@@ -36,8 +36,10 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.ldcgc.backend.base.Authentication.setAuthenticationForRequest;
 import static org.ldcgc.backend.base.Constants.API_ROOT;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.deleteRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.getRequest;
 import static org.ldcgc.backend.base.factory.TestRequestFactory.postRequest;
@@ -251,6 +253,16 @@ public class UserControllerImplTest {
             .andExpect(status().isCreated())
             .andExpect(content().json(mapper.writeValueAsString(responseDTO)))
             .andExpect(content().encoding(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void linkUserToVolunteer() throws Exception {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    public void unlinkUserToVolunteer() throws Exception {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
     @Test

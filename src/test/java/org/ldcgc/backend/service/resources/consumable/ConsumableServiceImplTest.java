@@ -13,6 +13,7 @@ import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.group.impl.GroupServiceImpl;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.location.impl.LocationServiceImpl;
+import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableExcelServiceImpl;
 import org.ldcgc.backend.service.resources.consumable.impl.ConsumableServiceImpl;
 import org.mockito.Mock;
@@ -36,13 +37,14 @@ class ConsumableServiceImplTest {
     private ConsumableService consumableService;
     private LocationService locationService;
     private GroupService groupService;
+    @Mock private BrandService brandService;
 
     @BeforeEach
     void init() {
         consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationService, groupService);
         locationService = new LocationServiceImpl(locationRepository, groupRepository);
         groupService = new GroupServiceImpl(groupRepository);
-        consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, consumableExcelService);
+        consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, brandService, consumableExcelService);
     }
 
     @Test

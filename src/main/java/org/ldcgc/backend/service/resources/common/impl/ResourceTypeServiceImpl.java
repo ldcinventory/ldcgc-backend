@@ -34,7 +34,7 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
             String.format(Messages.Info.RESOURCE_TYPE_FOUND, resourceTypes.size()),
-            NonPaged.of(resourceTypes));
+            NonPaged.of(resourceTypes.stream().map(ResourceTypeMapper.MAPPER::toDto).toList()));
     }
 
     public ResponseEntity<?> createResourceType(ResourceTypeDto resourceTypeDto) {
@@ -55,9 +55,16 @@ public class ResourceTypeServiceImpl implements ResourceTypeService {
         ResourceType resourceType = resourceTypeRepository.findById(resourceTypeId).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.RESOURCE_TYPE_NOT_FOUND, resourceTypeId)));
 
-        ResourceType resourceTypeCheck = resourceTypeRepository.findByName(resourceTypeDto.getName()).orElse(null);
+        if(resourceType.getName().equals(resourceTypeDto.getName())
+            && resourceType.getLocked().equals(resourceTypeDto.getLocked()))
+            return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.NO_CHANGES_PROCESSED);
 
-        if(resourceTypeCheck != null && !Objects.equals(resourceTypeCheck.getId(), resourceTypeId) && resourceTypeCheck.getName().equals(resourceTypeDto.getName()))
+        ResourceType existingResourceType = resourceTypeRepository.findByName(resourceTypeDto.getName()).orElse(null);
+
+        // check duplicates
+        if(existingResourceType != null
+            && !Objects.equals(existingResourceType.getId(), resourceTypeId)
+            && existingResourceType.getName().equals(resourceTypeDto.getName()))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.RESOURCE_TYPE_EXISTS);
 
         resourceType.setName(resourceTypeDto.getName());
