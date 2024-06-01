@@ -252,10 +252,21 @@ public interface ToolController {
 
     @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
+            responseCode = SwaggerConfig.HTTP_201,
+            description = SwaggerConfig.HTTP_REASON_201,
             content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)))
+                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)),
+                    examples = {
+                        @ExampleObject(name = "Tools uploaded", value = Messages.Info.TOOLS_UPLOADED)
+                    })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
+            })
     )
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_404,

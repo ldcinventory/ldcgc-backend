@@ -240,9 +240,12 @@ public interface ConsumableController {
             array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)))
     )
     @ApiResponse(
-        responseCode = SwaggerConfig.HTTP_404,
-        description = SwaggerConfig.HTTP_REASON_404,
-        content = @Content(mediaType = "application/json")
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
+            })
     )
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_422,
@@ -252,7 +255,6 @@ public interface ConsumableController {
                 @ExampleObject(name = "Error parsing consumable", value = Messages.Error.EXCEL_PARSE_ERROR),
                 @ExampleObject(name = "Error parsing consumable (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
                 @ExampleObject(name = "Error parsing consumable (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
-                @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_EXCEL),
                 @ExampleObject(name = "Error parsing consumable (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),
                 @ExampleObject(name = "Error parsing consumable (type)", value = Messages.Error.EXCEL_CELL_TYPE_INCORRECT)
             })
