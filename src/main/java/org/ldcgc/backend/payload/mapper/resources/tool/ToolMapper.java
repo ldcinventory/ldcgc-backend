@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.mapper.resources.tool;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
@@ -44,13 +45,6 @@ public interface ToolMapper {
     @Mapping(target = "nextMaintenance", source = ".", qualifiedByName = "calculateNextMaintenance")
     Tool toMo(ToolDto toolDto);
 
-    @Named("mapToolBarcode")
-    static String mapBarcode(String barcodeDto) {
-        return isBlank(barcodeDto)
-            ? RandomStringUtils.randomAlphanumeric(10)
-            : barcodeDto;
-    }
-
     @Named("calculateNextMaintenance")
     static LocalDate calculateNextMaintenance(ToolDto toolDto) {
         return switch (toolDto.getMaintenanceTime()) {
@@ -83,5 +77,11 @@ public interface ToolMapper {
         return Stream.of(urlImages)
                 .map(url -> url.substring(url.lastIndexOf("id=") + 3))
                 .toArray(String[]::new);
+    }
+
+    @Named("mapToolBarcode")
+    static String mapToolBarcode(String barcode) {
+        return StringUtils.defaultIfBlank(barcode,
+            "#" + RandomStringUtils.randomAlphanumeric(8).toUpperCase());
     }
 }

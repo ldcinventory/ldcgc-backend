@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.mapper.resources.consumable;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.util.constants.Google;
@@ -47,13 +48,6 @@ public interface ConsumableMapper {
     @Mapping(target = "group", ignore = true)
     Consumable toMo(ConsumableDto consumableDto);
 
-    @Named("mapConsumableBarcode")
-    static String mapBarcode(String barcodeDto) {
-        return isBlank(barcodeDto)
-            ? RandomStringUtils.randomAlphanumeric(10)
-            : barcodeDto;
-    }
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "resourceType", ignore = true)
@@ -68,6 +62,12 @@ public interface ConsumableMapper {
         return Arrays.stream(urlImages)
             .map(url -> String.format(Google.DRIVE_IMAGES_URL, url))
             .toArray(String[]::new);
+    }
+
+    @Named("mapConsumableBarcode")
+    static String mapToolBarcode(String barcode) {
+        return StringUtils.defaultIfBlank(barcode,
+            "#" + RandomStringUtils.randomAlphanumeric(8).toUpperCase());
     }
 
 }
