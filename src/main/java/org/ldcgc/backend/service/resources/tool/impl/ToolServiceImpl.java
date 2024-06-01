@@ -172,9 +172,9 @@ public class ToolServiceImpl implements ToolService {
         int toolsSkipped = toolsToSave.size() - toolsInserted;
 
         return Constructor.buildResponseMessageObject(
-            HttpStatus.OK,
-            String.format(Messages.Info.TOOL_UPLOADED, toolsInserted, toolsSkipped),
-            toolsToSave.stream().map(ToolMapper::cleanProps).toList());
+            HttpStatus.CREATED,
+            String.format(Messages.Info.TOOLS_UPLOADED, toolsInserted, toolsSkipped),
+            toolEntities.stream().map(ToolMapper.MAPPER::toDto).map(ToolMapper::cleanProps).toList());
     }
 
     public Tool updateToolStatus(Tool tool, EStatus status){
