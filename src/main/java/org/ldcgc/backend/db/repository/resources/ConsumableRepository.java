@@ -39,11 +39,12 @@ public interface ConsumableRepository extends JpaRepository<Consumable, Integer>
             SELECT c.* FROM consumables c
             JOIN "resource-types" r on c.resource_type_id = r.id
             JOIN brands b on c.brand_id = b.id
-            WHERE unaccent(r.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+            WHERE (unaccent(r.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(b.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(c.description) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+              OR c.barcode = :filterString)
               AND (
                   CASE WHEN :hasStock IS NOT NULL THEN
                     CASE
