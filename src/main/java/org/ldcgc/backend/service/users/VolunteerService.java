@@ -2,7 +2,7 @@ package org.ldcgc.backend.service.users;
 
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +18,7 @@ public interface VolunteerService {
 
     ResponseEntity<?> createVolunteer(VolunteerDto volunteerDto);
 
-    ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, EVStatus status, Integer pageIndex, Integer size, String sortField, EOrder order);
+    ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, EVolunteerStatus status, Integer pageIndex, Integer size, String sortField, EOrder order);
 
     ResponseEntity<?> updateVolunteer(String builderAssistantId, VolunteerDto volunteer);
 

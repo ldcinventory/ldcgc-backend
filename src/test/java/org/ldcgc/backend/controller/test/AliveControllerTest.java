@@ -9,7 +9,7 @@ import org.ldcgc.backend.configuration.ContextConstants;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mock;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -95,7 +95,7 @@ public class AliveControllerTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(messageAlive)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_NULL))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_NULL))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(messageAlive))

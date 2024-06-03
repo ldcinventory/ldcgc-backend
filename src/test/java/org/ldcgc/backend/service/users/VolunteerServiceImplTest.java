@@ -21,7 +21,7 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.VolunteerServiceImpl;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -78,7 +78,7 @@ class VolunteerServiceImplTest {
     //get my volunteer
     @Test
     public void whenGetMyVolunteer_returnVolunteerNotFound() throws ParseException {
-        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(EUserRole.ROLE_USER)));
 
         doReturn(USER_WITHOUT_VOLUNTEER.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.empty()).when(userRepository).findById(USER_WITHOUT_VOLUNTEER.getId());
@@ -94,7 +94,7 @@ class VolunteerServiceImplTest {
 
     @Test
     public void whenGetMyVolunteer_returnMyVolunteer() throws ParseException {
-        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        final String mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(EUserRole.ROLE_USER)));
 
         doReturn(VOLUNTEER.getId()).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(USER_WITH_VOLUNTEER)).when(userRepository).findById(VOLUNTEER.getId());

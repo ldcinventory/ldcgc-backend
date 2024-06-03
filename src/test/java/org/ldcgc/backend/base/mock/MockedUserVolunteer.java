@@ -16,8 +16,8 @@ import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.category.ResponsibilityMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
-import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -70,14 +70,14 @@ public class MockedUserVolunteer {
                     .url("https://maps.app.goo.gl/" + RandomStringUtils.randomAlphanumeric(10))
                     .build())
                 .build())
-            .role(getRandomEnum(ERole.class))
+            .role(getRandomEnum(EUserRole.class))
             .volunteer(VolunteerDto.builder()
                 .id(0)
                 .name(new Faker().name().firstName())
                 .lastName(new Faker().name().lastName())
                 .availability(getRandomAvailabilityForMocked())
                 .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
-                .status(getRandomEnum(EVStatus.class))
+                .status(getRandomEnum(EVolunteerStatus.class))
                 .build())
             .build();
     }
@@ -108,17 +108,17 @@ public class MockedUserVolunteer {
                 .lastName(new Faker().name().lastName())
                 .availability(new HashSet<>(getRandomAvailabilityForMocked()))
                 .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
-                .status(getRandomEnum(EVStatus.class))
+                .status(getRandomEnum(EVolunteerStatus.class))
                 .build())
             .build();
     }
 
-    public static UserDetailsImpl getMockedUserDetailsImpl(ERole userRole, boolean acceptEULAs) {
+    public static UserDetailsImpl getMockedUserDetailsImpl(EUserRole userRole, boolean acceptEULAs) {
         return getMockedUserDetailsImpl(userRole, acceptEULAs, acceptEULAs);
     }
 
-    public static UserDetailsImpl getMockedUserDetailsImpl(ERole userRole, boolean acceptStandardEULA, boolean accceptManagerEULA) {
-        String role = userRole == null ? getRandomEnum(ERole.class).getRoleName().toUpperCase() : userRole.getRoleName().toUpperCase();
+    public static UserDetailsImpl getMockedUserDetailsImpl(EUserRole userRole, boolean acceptStandardEULA, boolean accceptManagerEULA) {
+        String role = userRole == null ? getRandomEnum(EUserRole.class).getRoleName().toUpperCase() : userRole.getRoleName().toUpperCase();
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(Objects.requireNonNull(userRole).name()));
@@ -175,15 +175,15 @@ public class MockedUserVolunteer {
             .build();
     }
 
-    public static UserDto getRandomMockedUserDto(ERole eRole) {
-        return getRandomMockedUserDto().toBuilder().role(eRole).build();
+    public static UserDto getRandomMockedUserDto(EUserRole EUserRole) {
+        return getRandomMockedUserDto().toBuilder().role(EUserRole).build();
     }
 
     public static UserDto getRandomMockedUserDtoWithoutVolunteer() {
         return getRandomMockedUserDto().toBuilder().volunteer(null).build();
     }
 
-    public static UserDto getRandomMockedUpdatingUserDto(ERole role) {
+    public static UserDto getRandomMockedUpdatingUserDto(EUserRole role) {
         return getMockedUserDto().toBuilder()
             .id(getRandomId())
             .email(new Faker().internet().emailAddress())
@@ -207,7 +207,7 @@ public class MockedUserVolunteer {
         return UserMapper.MAPPER.toEntity(getRandomMockedUserDto());
     }
 
-    public static User getRandomMockedUser(ERole role) {
+    public static User getRandomMockedUser(EUserRole role) {
         return UserMapper.MAPPER.toEntity(getRandomMockedUserDto().toBuilder().role(role).build());
     }
 
@@ -236,8 +236,8 @@ public class MockedUserVolunteer {
         return weekdays;
     }
 
-    private static ERole getRandomRole() {
-        List<ERole> roles = Arrays.asList(ERole.values());
+    private static EUserRole getRandomRole() {
+        List<EUserRole> roles = Arrays.asList(EUserRole.values());
         return roles.get(new Random().nextInt(roles.size()));
     }
 

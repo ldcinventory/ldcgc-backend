@@ -17,7 +17,7 @@ import org.ldcgc.backend.service.history.ToolRegisterService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EOrder;
 import org.ldcgc.backend.util.common.ERegisterStatus;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EToolStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.springframework.data.domain.Page;
@@ -51,11 +51,11 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         Tool tool = toolRepository.findFirstByBarcode(toolRegisterDto.getToolBarcode()).orElseThrow(() ->
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_TOOL_NOT_FOUND));
 
-        if (!tool.getStatus().equals(EStatus.AVAILABLE))
+        if (!tool.getStatus().equals(EToolStatus.AVAILABLE))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
         ToolRegister register = toolRegisterRepository.saveAndFlush(ToolRegisterMapper.MAPPER.toMo(toolRegisterDto));
-        toolService.updateToolStatus(register.getTool(), EStatus.NOT_AVAILABLE);
+        toolService.updateToolStatus(register.getTool(), EToolStatus.NOT_AVAILABLE);
 
         return Constructor.buildResponseMessageObject(HttpStatus.OK, Messages.Info.TOOL_REGISTER_CREATED, ToolRegisterMapper.MAPPER.toDto(register));
     }
@@ -93,7 +93,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
         register = toolRegisterRepository.saveAndFlush(register);
 
         if (Objects.nonNull(register.getRegisterFrom()))
-            toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
+            toolService.updateToolStatus(register.getTool(), EToolStatus.AVAILABLE);
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.OK,
@@ -118,7 +118,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             new RequestException(HttpStatus.NOT_FOUND, Messages.Error.TOOL_REGISTER_NOT_FOUND.formatted(registerId)));
 
         toolRegisterRepository.delete(register);
-        toolService.updateToolStatus(register.getTool(), EStatus.AVAILABLE);
+        toolService.updateToolStatus(register.getTool(), EToolStatus.AVAILABLE);
 
         return Constructor.buildResponseMessage(
             HttpStatus.OK,
@@ -143,7 +143,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
                     .orElse(StringUtils.EMPTY)
                 ));
 
-        if (tools.stream().anyMatch(tool -> !tool.getStatus().equals(EStatus.AVAILABLE)))
+        if (tools.stream().anyMatch(tool -> !tool.getStatus().equals(EToolStatus.AVAILABLE)))
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.TOOL_REGISTER_TOOL_NOT_AVAILABLE);
 
         List<String> builderAssistantIds = toolRegistersDto.stream()
@@ -166,7 +166,7 @@ public class ToolRegisterServiceImpl implements ToolRegisterService {
             .toList();
 
         toolRegisterRepository.saveAllAndFlush(registers);
-        tools.forEach(tool -> tool.setStatus(EStatus.NOT_AVAILABLE));
+        tools.forEach(tool -> tool.setStatus(EToolStatus.NOT_AVAILABLE));
         toolRepository.saveAllAndFlush(tools);
 
         return Constructor.buildResponseObject(HttpStatus.CREATED, registers);

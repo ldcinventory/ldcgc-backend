@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.Builder;
 import lombok.Getter;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ public class TokenDto {
     private LocalDateTime expiresAt;
     private LocalDateTime issuedAt;
     private Integer userId;
-    private ERole role;
+    private EUserRole role;
     private SignedJWT signedJWT;
     private boolean isRecoveryToken;
     private boolean isRefreshToken;

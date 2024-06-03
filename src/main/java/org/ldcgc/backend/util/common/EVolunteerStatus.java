@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EVStatus implements EnumMethods {
+public enum EVolunteerStatus implements EnumMethods {
 
     ACTIVE,
     INACTIVE,

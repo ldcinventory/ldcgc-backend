@@ -24,7 +24,7 @@ import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EToolStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EXlsxToolPos;
@@ -161,7 +161,7 @@ public class ToolExcelServiceImpl implements ToolExcelService {
             ? lastMaintenance.plus(Objects.requireNonNull(maintenancePeriod), maintenanceTime.getChronoUnit())
             : getDateCellValue(row, EXlsxToolPos.NEXT_MAINTENANCE.getColumnNumber());
 
-        EStatus status = EStatus.getStatusByName(StringUtils.defaultIfBlank(getStringCellValue(row, EXlsxToolPos.STATUS.getColumnNumber()), "Disponible"));
+        EToolStatus status = EToolStatus.getStatusByName(StringUtils.defaultIfBlank(getStringCellValue(row, EXlsxToolPos.STATUS.getColumnNumber()), "Disponible"));
 
         String locationName = StringUtils.defaultIfBlank(
             row.getCell(EXlsxToolPos.LOCATION.getColumnNumber()).getStringCellValue(),

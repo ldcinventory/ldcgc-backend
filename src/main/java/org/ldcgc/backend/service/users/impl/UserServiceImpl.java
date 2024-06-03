@@ -25,8 +25,8 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.slf4j.MDC;
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
         userEntity = userRepository.saveAndFlush(userEntity);
 
         String warningIfVolunteerNotEnabled = "";
-        if(userEntity.getVolunteer() != null && userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE))
+        if(userEntity.getVolunteer() != null && userEntity.getVolunteer().getStatus().equals(EVolunteerStatus.ACTIVE))
             warningIfVolunteerNotEnabled += ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
 
         return Constructor.buildResponseMessageObject(
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            String.format(volunteer.getStatus().equals(EVStatus.ACTIVE)
+            String.format(volunteer.getStatus().equals(EVolunteerStatus.ACTIVE)
                 ? Messages.Info.USER_LINKED
                 : Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, builderAssistantId),
             UserMapper.MAPPER.toDTO(user));
@@ -219,7 +219,7 @@ public class UserServiceImpl implements UserService {
 
             setVolunteer(userEntity, userDto);
 
-            if(!userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE))
+            if(!userEntity.getVolunteer().getStatus().equals(EVolunteerStatus.ACTIVE))
                 warningIfVolunteerNotEnabled = ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
         }
 
@@ -292,10 +292,10 @@ public class UserServiceImpl implements UserService {
 
         // when updating an admin user being manager
         // -> do not allow to change an admin user or become someone admin
-        if(userFromToken.getRole().equals(ERole.ROLE_MANAGER)) {
-            if(userEntity.getRole().equals(ERole.ROLE_ADMIN))
+        if(userFromToken.getRole().equals(EUserRole.ROLE_MANAGER)) {
+            if(userEntity.getRole().equals(EUserRole.ROLE_ADMIN))
                 throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PERMISSION_OTHER);
-            if(userDto.getRole().equals(ERole.ROLE_ADMIN))
+            if(userDto.getRole().equals(EUserRole.ROLE_ADMIN))
                 throw new RequestException(HttpStatus.FORBIDDEN, Messages.Error.USER_PERMISSION_ROLE_OTHER);
         }
 

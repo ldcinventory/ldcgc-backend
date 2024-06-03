@@ -3,7 +3,6 @@ package org.ldcgc.backend.service.users.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
@@ -19,7 +18,7 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -76,7 +75,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessageObject(HttpStatus.CREATED, Messages.Info.VOLUNTEER_CREATED, VolunteerMapper.MAPPER.toDto(volunteerEntity));
     }
 
-    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, EVStatus status, Integer pageIndex, Integer size, String sortField, EOrder order) {
+    public ResponseEntity<?> listVolunteers(String builderAssistantId, String filterString, EVolunteerStatus status, Integer pageIndex, Integer size, String sortField, EOrder order) {
 
         if (builderAssistantId != null)
             return Constructor.buildResponseMessageObject(
@@ -128,7 +127,7 @@ public class VolunteerServiceImpl implements VolunteerService {
         }
 
         Volunteer volunteer = getVolunteerFromDB(builderAssistantId);
-        volunteer.setStatus(EVStatus.DELETED);
+        volunteer.setStatus(EVolunteerStatus.DELETED);
 
         // unlink absences and delete them all
         absenceRepository.deleteAllByVolunteerId(volunteer.getId());
@@ -155,7 +154,7 @@ public class VolunteerServiceImpl implements VolunteerService {
                 .builderAssistantId(vData.get(0))
                 .name(vData.get(1))
                 .lastName(vData.get(2))
-                .status(EVStatus.valueOf(vData.get(3)))
+                .status(EVolunteerStatus.valueOf(vData.get(3)))
                 .availability(availability)
                 .group(group)
                 .build();

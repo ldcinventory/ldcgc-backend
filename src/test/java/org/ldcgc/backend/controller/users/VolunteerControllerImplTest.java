@@ -17,7 +17,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.VolunteerService;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
@@ -124,7 +124,7 @@ public class VolunteerControllerImplTest {
         given(volunteerService.getMyVolunteer(Mockito.anyString())).will(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(response)))
@@ -143,7 +143,7 @@ public class VolunteerControllerImplTest {
         given(volunteerService.getVolunteer(Mockito.anyString())).will(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER, "0"))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_MANAGER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(response)))
@@ -156,14 +156,14 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
-        VolunteerDto mockedVolunteer = MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_ADMIN).getVolunteer();
+        VolunteerDto mockedVolunteer = MockedUserVolunteer.getRandomMockedUserDto(EUserRole.ROLE_ADMIN).getVolunteer();
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.VOLUNTEER_CREATED).data(mockedVolunteer).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
         given(volunteerService.createVolunteer(any(VolunteerDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(mockedUser)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -186,7 +186,7 @@ public class VolunteerControllerImplTest {
         given(volunteerService.listVolunteers(isNull(), anyString(), isNull(), anyInt(), anyInt(), anyString(), any(EOrder.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER)
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_MANAGER)
                 .param("filterString", "ad")
                 .param("pageIndex", "0")
                 .param("size", "5")
@@ -205,13 +205,13 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
-        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(EUserRole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
         given(volunteerService.updateVolunteer(Mockito.anyString(), any(VolunteerDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_ADMIN, "0")
                 .content(mapper.writeValueAsString(mockedUser)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -228,7 +228,7 @@ public class VolunteerControllerImplTest {
         given(volunteerService.deleteVolunteer(Mockito.anyString(), null))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_ADMIN, "0"))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_ADMIN, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.USER_DELETED))
@@ -246,7 +246,7 @@ public class VolunteerControllerImplTest {
 
         MockMultipartFile file = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());
 
-        mockMvc.perform(postMultipartRequest(request, file, ERole.ROLE_ADMIN)
+        mockMvc.perform(postMultipartRequest(request, file, EUserRole.ROLE_ADMIN)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .param("groupId", "8"))
             .andDo(print())

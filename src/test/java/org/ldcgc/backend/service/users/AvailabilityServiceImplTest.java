@@ -16,7 +16,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.AvailabilityServiceImpl;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
@@ -56,7 +56,7 @@ class AvailabilityServiceImplTest {
     @BeforeEach
     public void init() {
         availabilityService = new AvailabilityServiceImpl(jwtUtils, userRepository, volunteerRepository);
-        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(EUserRole.ROLE_USER)));
     }
 
     private final User USER_WITHOUT_VOLUNTEER = UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDtoWithoutVolunteer());

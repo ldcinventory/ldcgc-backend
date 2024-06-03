@@ -15,7 +15,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.EulaServiceImpl;
 import org.ldcgc.backend.util.common.EEULAStatus;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -56,12 +56,12 @@ class EulaServiceImplTest {
     }
 
     // mocked users
-    private final User USER_NOT_FOUND = User.builder().id(0).role(ERole.ROLE_USER).build();
-    private final User USER_STANDARD_EULA_NOT_ACCEPTED = User.builder().id(1).role(ERole.ROLE_USER).build();
-    private final User USER_STANDARD_EULA_ACCEPTED = User.builder().id(2).role(ERole.ROLE_USER).acceptedEULA(LocalDateTime.now()).build();
-    private final User USER_MANAGER_EULA_STANDARD_NOT_ACCEPTED = User.builder().id(3).role(ERole.ROLE_MANAGER).build();
-    private final User USER_MANAGER_EULA_STANDARD_ACCEPTED_EULA_MANAGER_NOT = User.builder().id(4).role(ERole.ROLE_MANAGER).acceptedEULA(LocalDateTime.now()).build();
-    private final User USER_MANAGER_EULA_STANDARD_AND_MANAGER_ACCEPTED = User.builder().id(5).role(ERole.ROLE_MANAGER).acceptedEULA(LocalDateTime.now()).acceptedEULAManager(LocalDateTime.now()).build();
+    private final User USER_NOT_FOUND = User.builder().id(0).role(EUserRole.ROLE_USER).build();
+    private final User USER_STANDARD_EULA_NOT_ACCEPTED = User.builder().id(1).role(EUserRole.ROLE_USER).build();
+    private final User USER_STANDARD_EULA_ACCEPTED = User.builder().id(2).role(EUserRole.ROLE_USER).acceptedEULA(LocalDateTime.now()).build();
+    private final User USER_MANAGER_EULA_STANDARD_NOT_ACCEPTED = User.builder().id(3).role(EUserRole.ROLE_MANAGER).build();
+    private final User USER_MANAGER_EULA_STANDARD_ACCEPTED_EULA_MANAGER_NOT = User.builder().id(4).role(EUserRole.ROLE_MANAGER).acceptedEULA(LocalDateTime.now()).build();
+    private final User USER_MANAGER_EULA_STANDARD_AND_MANAGER_ACCEPTED = User.builder().id(5).role(EUserRole.ROLE_MANAGER).acceptedEULA(LocalDateTime.now()).acceptedEULAManager(LocalDateTime.now()).build();
 
     // getEula
 

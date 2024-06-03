@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +23,7 @@ public class UserDto {
     private String email;
     @Schema(requiredMode = REQUIRED)
     private String password;
-    private ERole role;
+    private EUserRole role;
     private VolunteerDto volunteer;
     private ResponsibilityDto responsibility;
     private GroupDto group;

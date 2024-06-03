@@ -19,7 +19,7 @@ import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.AccountServiceImpl;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Email;
 import org.mockito.Mock;
@@ -79,17 +79,17 @@ class AccountServiceImplTest {
     @BeforeEach
     public void init() {
         accountService = new AccountServiceImpl(authenticationManager, jwtUtils, userRepository, tokenRepository, passwordEncoder);
-        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(EUserRole.ROLE_USER)));
     }
 
     // mocked users
-    private final User USER_NOT_FOUND = User.builder().id(0).role(ERole.ROLE_USER).email("invalid@email.com").build();
-    private final User USER_NOT_ENABLED = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test1").build();
-    private final User USER_PASSWORD_DONT_MATCH = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test1").enabled(true).build();
+    private final User USER_NOT_FOUND = User.builder().id(0).role(EUserRole.ROLE_USER).email("invalid@email.com").build();
+    private final User USER_NOT_ENABLED = User.builder().id(0).role(EUserRole.ROLE_USER).email("test@test.com").password("test1").build();
+    private final User USER_PASSWORD_DONT_MATCH = User.builder().id(0).role(EUserRole.ROLE_USER).email("test@test.com").password("test1").enabled(true).build();
     private final UserCredentialsDto USER_PASSWORD_DONT_MATCH_CR = UserCredentialsDto.builder().email("test@test.com").password("test2").build();
-    private final User USER_NOT_EULA_STANDARD = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test").enabled(true).build();
-    private final User USER_NOT_EULA_MANAGER = User.builder().id(0).role(ERole.ROLE_MANAGER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).enabled(true).build();
-    private final User USER_STANDARD = User.builder().id(0).role(ERole.ROLE_USER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).enabled(true).build();
+    private final User USER_NOT_EULA_STANDARD = User.builder().id(0).role(EUserRole.ROLE_USER).email("test@test.com").password("test").enabled(true).build();
+    private final User USER_NOT_EULA_MANAGER = User.builder().id(0).role(EUserRole.ROLE_MANAGER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).enabled(true).build();
+    private final User USER_STANDARD = User.builder().id(0).role(EUserRole.ROLE_USER).email("test@test.com").password("test").acceptedEULA(LocalDateTime.now()).enabled(true).build();
 
     // -> login
     @Test

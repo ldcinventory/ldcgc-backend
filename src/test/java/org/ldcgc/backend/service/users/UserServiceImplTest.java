@@ -33,7 +33,7 @@ import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.UserServiceImpl;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.mockito.Mock;
@@ -95,9 +95,9 @@ class UserServiceImplTest {
 
     }
     private final UserDto NOT_FOUND_USER = UserDto.builder().id(-1).build();
-    private final UserDto STANDARD_USER = UserDto.builder().id(0).role(ERole.ROLE_USER).email("user").password("user").build();
-    private final UserDto MANAGER_USER = UserDto.builder().id(1).role(ERole.ROLE_MANAGER).email("manager").password("manager").build();
-    private final UserDto ADMIN_USER = UserDto.builder().id(2).role(ERole.ROLE_ADMIN).email("admin").password("admin").build();
+    private final UserDto STANDARD_USER = UserDto.builder().id(0).role(EUserRole.ROLE_USER).email("user").password("user").build();
+    private final UserDto MANAGER_USER = UserDto.builder().id(1).role(EUserRole.ROLE_MANAGER).email("manager").password("manager").build();
+    private final UserDto ADMIN_USER = UserDto.builder().id(2).role(EUserRole.ROLE_ADMIN).email("admin").password("admin").build();
 
     // get my user
     @Test
@@ -284,8 +284,8 @@ class UserServiceImplTest {
 
     private void configureToken() {
         try {
-            mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
-            mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+            mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(EUserRole.ROLE_USER)));
+            mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(EUserRole.ROLE_USER)));
         } catch (ParseException | JOSEException e) {
             log.error("Error generating mockedSignedJWT");
             throw new RuntimeException(e.getMessage());
@@ -551,7 +551,7 @@ class UserServiceImplTest {
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(MANAGER_USER);
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(MANAGER_USER);
         // user details to update the entity
-        final UserDto userDtoUpdating = MANAGER_USER.toBuilder().role(ERole.ROLE_ADMIN).build();
+        final UserDto userDtoUpdating = MANAGER_USER.toBuilder().role(EUserRole.ROLE_ADMIN).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userEntityUpdating)).when(userRepository).findById(userId);
@@ -576,7 +576,7 @@ class UserServiceImplTest {
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(ADMIN_USER);
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(ADMIN_USER);
         // user details to update the entity
-        final UserDto userDtoUpdating = ADMIN_USER.toBuilder().role(ERole.ROLE_ADMIN).build();
+        final UserDto userDtoUpdating = ADMIN_USER.toBuilder().role(EUserRole.ROLE_ADMIN).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -603,7 +603,7 @@ class UserServiceImplTest {
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_ADMIN).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_ADMIN).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -630,7 +630,7 @@ class UserServiceImplTest {
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         final VolunteerDto volunteerDto = VolunteerDto.builder().id(0).build();
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).volunteer(volunteerDto).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).volunteer(volunteerDto).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -663,7 +663,7 @@ class UserServiceImplTest {
         final Volunteer volunteer = VolunteerMapper.MAPPER.toEntity(volunteerDto);
         final User checkUserVolunteer = UserMapper.MAPPER.toEntity(MANAGER_USER).toBuilder().volunteer(volunteer).build();
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).volunteer(volunteerDto).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).volunteer(volunteerDto).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -696,7 +696,7 @@ class UserServiceImplTest {
         // responsibility
         final ResponsibilityDto responsibilityDto = ResponsibilityDto.builder().id(0).build();
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).responsibility(responsibilityDto).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).responsibility(responsibilityDto).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -732,7 +732,7 @@ class UserServiceImplTest {
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER.toBuilder().responsibility(responsibilityDtoOrigin).build());
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).responsibility(responsibilityDtoUpdating).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).responsibility(responsibilityDtoUpdating).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -767,7 +767,7 @@ class UserServiceImplTest {
         // group
         final GroupDto groupDto = GroupDto.builder().id(0).build();
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).group(groupDto).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).group(groupDto).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -802,7 +802,7 @@ class UserServiceImplTest {
         final User userEntityUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER.toBuilder().group(groupDtoOrigin).build());
         final User checkUserUpdating = UserMapper.MAPPER.toEntity(STANDARD_USER);
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).group(groupDtoUpdating).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).group(groupDtoUpdating).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
         doReturn(Optional.of(userToken)).when(userRepository).findById(userIdFromToken);
@@ -843,7 +843,7 @@ class UserServiceImplTest {
         final GroupDto groupDto = GroupDto.builder().id(0).build();
         final Group group = GroupMapper.MAPPER.toMo(groupDto);
         // user details to update the entity
-        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(ERole.ROLE_MANAGER).volunteer(volunteerDtoUpdating).responsibility(responsibilityDto).group(groupDto).build();
+        final UserDto userDtoUpdating = STANDARD_USER.toBuilder().role(EUserRole.ROLE_MANAGER).volunteer(volunteerDtoUpdating).responsibility(responsibilityDto).group(groupDto).build();
         final UserDto userDtoExpected = userDtoUpdating.toBuilder().password(null).build();
 
         doReturn(userIdFromToken).when(jwtUtils).getUserIdFromStringToken(mockedToken);
@@ -861,7 +861,7 @@ class UserServiceImplTest {
         // group
         doReturn(Optional.of(group)).when(groupRepository).findById(userDtoUpdating.getGroup().getId());
 
-        mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedSignedJWT = generateSignedToken(UserMapper.MAPPER.toEntity(getRandomMockedUserDto(EUserRole.ROLE_USER)));
 
         HttpHeaders headers = new HttpHeaders();
         final String headerPayLoad = String.format("%s.%s", mockedSignedJWT.getParsedParts()[0], mockedSignedJWT.getParsedParts()[1]);

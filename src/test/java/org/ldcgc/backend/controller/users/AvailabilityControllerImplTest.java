@@ -13,7 +13,7 @@ import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.AvailabilityService;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
@@ -112,7 +112,7 @@ public class AvailabilityControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAvailability)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedAvailability)))
@@ -133,7 +133,7 @@ public class AvailabilityControllerImplTest {
         given(availabilityService.updateMyAvailability(Mockito.anyString(), Mockito.any()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(mockedAvailability)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -155,7 +155,7 @@ public class AvailabilityControllerImplTest {
         given(availabilityService.clearMyAvailability(Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_USER, "0"))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_USER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(response)))
@@ -176,7 +176,7 @@ public class AvailabilityControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAvailability)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_ADMIN))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_ADMIN))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedAvailability)))
@@ -197,7 +197,7 @@ public class AvailabilityControllerImplTest {
         given(availabilityService.updateAvailability(Mockito.anyString(), Mockito.any()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(mockedAvailability)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -219,7 +219,7 @@ public class AvailabilityControllerImplTest {
         given(availabilityService.clearAvailability(Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_ADMIN, "0"))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_ADMIN, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(response)))

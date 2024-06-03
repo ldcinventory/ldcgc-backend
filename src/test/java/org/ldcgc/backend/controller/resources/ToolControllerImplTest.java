@@ -14,7 +14,7 @@ import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.resources.tool.ToolService;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
@@ -115,7 +115,7 @@ class ToolControllerImplTest {
 
         given(toolService.createTool(Mockito.any(ToolDto.class))).will(invocation -> response);
 
-        mockMvc.perform(postRequest(requestRoot, ERole.ROLE_ADMIN)
+        mockMvc.perform(postRequest(requestRoot, EUserRole.ROLE_ADMIN)
                     .content(mapper.writeValueAsString(tool)))
                 .andDo(print())
                 .andExpect(status().isCreated())

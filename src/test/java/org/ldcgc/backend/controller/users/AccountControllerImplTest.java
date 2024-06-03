@@ -22,7 +22,7 @@ import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.AccountService;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
 import org.ldcgc.backend.util.creation.Email;
@@ -154,7 +154,7 @@ public class AccountControllerImplTest {
         given(accountService.logout(Mockito.anyString())).willAnswer(
             invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.LOGOUT_SUCCESSFUL));
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.LOGOUT_SUCCESSFUL))
@@ -253,7 +253,7 @@ public class AccountControllerImplTest {
         String tokenExpires = localDateTimeToTimeStampString(userDto.getTokenExpires());
         String refreshExpires = localDateTimeToTimeStampString(userDto.getRefreshExpires());
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_USER)
                 .headers(headers))
             .andDo(print())
             .andExpect(status().isCreated())

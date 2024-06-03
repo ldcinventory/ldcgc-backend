@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum ERole implements EnumMethods {
+public enum EUserRole implements EnumMethods {
 
     @JsonProperty("null")
     ROLE_NULL("null"),
@@ -19,16 +19,16 @@ public enum ERole implements EnumMethods {
 
     private final String roleName;
 
-    public static ERole getEnumFromRoleName(String roleName) {
-        for(ERole role : ERole.values())
+    public static EUserRole getEnumFromRoleName(String roleName) {
+        for(EUserRole role : EUserRole.values())
             if(role.getRoleName().equals(roleName))
                 return role;
 
         return null;
     }
 
-    public static ERole getEnumFromAuthority(String authority) {
-        for(ERole role : ERole.values())
+    public static EUserRole getEnumFromAuthority(String authority) {
+        for(EUserRole role : EUserRole.values())
             if(role.name().equalsIgnoreCase(authority))
                 return role;
 

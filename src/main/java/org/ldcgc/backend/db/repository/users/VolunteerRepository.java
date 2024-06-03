@@ -1,7 +1,6 @@
 package org.ldcgc.backend.db.repository.users;
 
 import org.ldcgc.backend.db.model.users.Volunteer;
-import org.ldcgc.backend.util.common.EVStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

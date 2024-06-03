@@ -2,7 +2,7 @@ package org.ldcgc.backend.db.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EToolStatus;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -19,7 +19,7 @@ public class StatusConverterTest {
 
     @Test
     void convertToDatabaseColumnValidStatus() {
-        assertNotNull(statusConverter.convertToDatabaseColumn(EStatus.AVAILABLE));
+        assertNotNull(statusConverter.convertToDatabaseColumn(EToolStatus.AVAILABLE));
     }
 
     @Test

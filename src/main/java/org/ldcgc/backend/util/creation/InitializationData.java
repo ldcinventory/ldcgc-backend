@@ -32,11 +32,11 @@ import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
-import org.ldcgc.backend.util.common.ERole;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.util.common.EToolStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.process.Files;
 import org.springframework.beans.factory.InitializingBean;
@@ -437,7 +437,7 @@ public class InitializationData {
             .maintenanceTime(maintenanceTime)
             .lastMaintenance(lastMaintenanceDate)
             .nextMaintenance(nextMaintenance)
-            .status(getRandomEnum(EStatus.class))
+            .status(getRandomEnum(EToolStatus.class))
             .location(locationRepository.getRandomLocation())
             .group(groupRepository.getRandomGroup())
             .build();
@@ -469,7 +469,7 @@ public class InitializationData {
             .lastName(String.format("%s %s", new Faker().name().lastName(), new Faker().name().lastName()))
             .builderAssistantId(RandomStringUtils.randomAlphanumeric(8))
             .availability(getRandomAvailability())
-            .status(getRandomEnum(EVStatus.class))
+            .status(getRandomEnum(EVolunteerStatus.class))
             .group(groupRepository.getRandomGroup())
             .build();
         volunteer.setAbsences(getRandomAbsences(volunteer));
@@ -550,8 +550,8 @@ public class InitializationData {
                         .urlImages(new Faker().internet().url())
                         .tool(tool)
                         .volunteer(volunteer)
-                        .inStatus(getRandomEnum(EStatus.class))
-                        .outStatus(getRandomEnum(EStatus.class))
+                        .inStatus(getRandomEnum(EToolStatus.class))
+                        .outStatus(getRandomEnum(EToolStatus.class))
                         .build());
         });
     }
@@ -590,7 +590,7 @@ public class InitializationData {
             .email("admin@admin")
             .password(passwordEncoder.encode("admin"))
             .group(group)
-            .role(ERole.ROLE_ADMIN)
+            .role(EUserRole.ROLE_ADMIN)
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
                 .orElse(null))
@@ -601,7 +601,7 @@ public class InitializationData {
             .email("noeula@admin")
             .password(passwordEncoder.encode("admin"))
             .group(group)
-            .role(ERole.ROLE_ADMIN)
+            .role(EUserRole.ROLE_ADMIN)
             .acceptedEULA(LocalDateTime.now())
             .acceptedEULAManager(LocalDateTime.now())
             .responsibility(responsibilities.stream()
@@ -614,7 +614,7 @@ public class InitializationData {
             .email("noeula@adminv")
             .password(passwordEncoder.encode("admin"))
             .group(group)
-            .role(ERole.ROLE_ADMIN)
+            .role(EUserRole.ROLE_ADMIN)
             .acceptedEULA(LocalDateTime.now())
             .acceptedEULAManager(LocalDateTime.now())
             .volunteer(volunteerRepository.getRandomVolunteer())
@@ -628,7 +628,7 @@ public class InitializationData {
             .email("manager@manager")
             .password(passwordEncoder.encode("manager"))
             .group(group)
-            .role(ERole.ROLE_MANAGER)
+            .role(EUserRole.ROLE_MANAGER)
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Auxiliar de coordinador")).findFirst()
                 .orElse(null))
@@ -639,7 +639,7 @@ public class InitializationData {
             .email("noeula@manager")
             .password(passwordEncoder.encode("manager"))
             .group(group)
-            .role(ERole.ROLE_MANAGER)
+            .role(EUserRole.ROLE_MANAGER)
             .acceptedEULA(LocalDateTime.now())
             .acceptedEULAManager(LocalDateTime.now())
             .responsibility(responsibilities.stream()
@@ -652,7 +652,7 @@ public class InitializationData {
             .email("noeula@managerv")
             .password(passwordEncoder.encode("manager"))
             .group(group)
-            .role(ERole.ROLE_MANAGER)
+            .role(EUserRole.ROLE_MANAGER)
             .acceptedEULA(LocalDateTime.now())
             .acceptedEULAManager(LocalDateTime.now())
             .volunteer(volunteerRepository.getRandomVolunteer())
@@ -666,7 +666,7 @@ public class InitializationData {
             .email("user@user")
             .password(passwordEncoder.encode("user"))
             .group(group)
-            .role(ERole.ROLE_USER)
+            .role(EUserRole.ROLE_USER)
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Voluntario")).findFirst()
                 .orElse(null))
@@ -677,7 +677,7 @@ public class InitializationData {
             .email("noeula@user")
             .password(passwordEncoder.encode("user"))
             .group(group)
-            .role(ERole.ROLE_USER)
+            .role(EUserRole.ROLE_USER)
             .acceptedEULA(LocalDateTime.now())
             .responsibility(responsibilities.stream()
                 .filter(r -> r.getName().equals("Coordinador")).findFirst()
@@ -689,7 +689,7 @@ public class InitializationData {
             .email("noeula@userv")
             .password(passwordEncoder.encode("user"))
             .group(group)
-            .role(ERole.ROLE_USER)
+            .role(EUserRole.ROLE_USER)
             .acceptedEULA(LocalDateTime.now())
             .volunteer(volunteerRepository.getRandomVolunteer())
             .responsibility(responsibilities.stream()
@@ -715,7 +715,7 @@ public class InitializationData {
                 .builderAssistantId(vFieldList.get(0))
                 .name(vFieldList.get(1))
                 .lastName(vFieldList.get(2))
-                .status(EVStatus.ACTIVE)
+                .status(EVolunteerStatus.ACTIVE)
                 .group(group)
                 .build();
             volunteerEntities.put(vFieldList.get(1), volunteer);
@@ -758,7 +758,7 @@ public class InitializationData {
                 .location(location)
                 .group(group8)
                 .resourceType(resourceTypeMap.get(tFieldList.get(5)))
-                .status(EStatus.AVAILABLE)
+                .status(EToolStatus.AVAILABLE)
                 .weight(toFloat(tFieldList.get(6)))
                 .stockWeightType(KILOGRAMS)
                 .price(toFloat(tFieldList.get(7)))
@@ -831,9 +831,9 @@ public class InitializationData {
             User user = User.builder()
                 .email(userFields.get(4))
                 .password(passwordEncoder.encode(userFields.get(3)))
-                .role(Integer.parseInt(userFields.get(6)) == 3 ? ERole.ROLE_ADMIN :
-                    Integer.parseInt(userFields.get(6)) == 2 ? ERole.ROLE_MANAGER :
-                        ERole.ROLE_USER)
+                .role(Integer.parseInt(userFields.get(6)) == 3 ? EUserRole.ROLE_ADMIN :
+                    Integer.parseInt(userFields.get(6)) == 2 ? EUserRole.ROLE_MANAGER :
+                        EUserRole.ROLE_USER)
                 .responsibility(responsibilityRepository.findByName("Voluntario").orElse(null))
                 .group(group8)
                 .acceptedEULA(LocalDateTime.now())
@@ -851,13 +851,13 @@ public class InitializationData {
         userRepository.saveAndFlush(User.builder()
             .email("null")
             .password(passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(20)))
-            .role(ERole.ROLE_NULL)
+            .role(EUserRole.ROLE_NULL)
             .enabled(false)
             .build());
 
         volunteerRepository.saveAndFlush(Volunteer.builder()
             .name("null")
-            .status(EVStatus.LOCKED)
+            .status(EVolunteerStatus.LOCKED)
             .build());
 
         toolRepository.saveAndFlush(Tool.builder()

@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 
 import java.time.LocalDateTime;
 
@@ -46,7 +46,7 @@ public class User {
     @NotNull @NonNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ERole role;
+    private EUserRole role;
 
     private LocalDateTime acceptedEULA;
 

@@ -3,7 +3,7 @@ package org.ldcgc.backend.service.resources.tool;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EToolStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,5 +17,5 @@ public interface ToolService {
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
     ResponseEntity<?> uploadToolsExcel(MultipartFile file);
-    Tool updateToolStatus(Tool tool, EStatus status);
+    Tool updateToolStatus(Tool tool, EToolStatus status);
 }

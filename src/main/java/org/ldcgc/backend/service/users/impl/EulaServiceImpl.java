@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
-import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
-import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
-import static org.ldcgc.backend.util.common.ERole.ROLE_USER;
+import static org.ldcgc.backend.util.common.EUserRole.ROLE_ADMIN;
+import static org.ldcgc.backend.util.common.EUserRole.ROLE_MANAGER;
+import static org.ldcgc.backend.util.common.EUserRole.ROLE_USER;
 
 @Component
 @RequiredArgsConstructor

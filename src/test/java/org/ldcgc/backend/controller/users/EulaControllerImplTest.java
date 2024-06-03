@@ -13,7 +13,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.EulaService;
 import org.ldcgc.backend.util.common.EEULAStatus;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.mockito.Mockito;
@@ -103,7 +103,7 @@ public class EulaControllerImplTest {
         given(eulaService.getEULA(Mockito.anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(url));
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(url))
@@ -119,7 +119,7 @@ public class EulaControllerImplTest {
         given(eulaService.putEULA(Mockito.anyString(), Mockito.any(EEULAStatus.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Error.EULA_ACTION_INVALID));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_USER)
                 .param("action", EEULAStatus.ACCEPT.name()))
             .andDo(print())
             .andExpect(status().isOk())
