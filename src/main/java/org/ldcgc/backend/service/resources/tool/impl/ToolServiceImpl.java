@@ -177,6 +177,10 @@ public class ToolServiceImpl implements ToolService {
             toolEntities.stream().map(ToolMapper.MAPPER::toDto).map(ToolMapper::cleanProps).toList());
     }
 
+    public ResponseEntity<?> loadGSheetTemplate(String url) {
+        return Constructor.buildResponseMessage(HttpStatus.NOT_IMPLEMENTED, Messages.Warning.ENDPOINT_NOT_IMPLEMENTED);
+    }
+
     public Tool updateToolStatus(Tool tool, EToolStatus status){
         tool.setStatus(status);
 

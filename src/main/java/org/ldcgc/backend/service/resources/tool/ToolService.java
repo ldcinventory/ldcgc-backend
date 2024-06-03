@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface ToolService {
+
     ResponseEntity<?> getTool(Integer toolId);
     ResponseEntity<?> getAllTools(String resourceType, String brand, String name, String model, String description, String barcode, String location, String status, Integer pageIndex, Integer size, String sortField, EOrder order);
     ResponseEntity<?> getAllToolsLoose(String filterString, String status, Integer pageIndex, Integer size, String sortField, EOrder order);
@@ -17,5 +18,8 @@ public interface ToolService {
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
     ResponseEntity<?> uploadToolsExcel(MultipartFile file);
+    ResponseEntity<?> loadGSheetTemplate(String url);
+
     Tool updateToolStatus(Tool tool, EToolStatus status);
+
 }

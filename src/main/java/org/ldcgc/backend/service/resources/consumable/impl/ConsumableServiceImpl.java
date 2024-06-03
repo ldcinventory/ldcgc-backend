@@ -145,7 +145,7 @@ public class ConsumableServiceImpl implements ConsumableService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_DELETED);
     }
 
-    public ResponseEntity<?> loadExcel(Integer groupId, MultipartFile file) {
+    public ResponseEntity<?> loadExcel(MultipartFile file) {
         List<ConsumableDto> consumablesToSave = consumableExcelService.excelToConsumables(file);
 
         // calc inserted and skipped
@@ -169,6 +169,10 @@ public class ConsumableServiceImpl implements ConsumableService {
             HttpStatus.CREATED,
             String.format(Messages.Info.CONSUMABLES_UPLOADED, toolsInserted, toolsSkipped),
             consumables.stream().map(ConsumableMapper.MAPPER::toDto).map(ConsumableMapper::cleanProps).toList());
+    }
+
+    public ResponseEntity<?> loadGSheetTemplate(String url) {
+        return Constructor.buildResponseMessage(HttpStatus.NOT_IMPLEMENTED, Messages.Warning.ENDPOINT_NOT_IMPLEMENTED);
     }
 
     private Consumable getOrElseThrowNotFound(Integer consumableId) {
