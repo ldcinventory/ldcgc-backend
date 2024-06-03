@@ -105,10 +105,10 @@ public class UserServiceImpl implements UserService {
 
         userEntity = userRepository.saveAndFlush(userEntity);
 
-        String warningIfVolunteerNotEnabled = userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE)
-            ? ""
-            : ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
-        
+        String warningIfVolunteerNotEnabled = "";
+        if(userEntity.getVolunteer() != null && userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE))
+            warningIfVolunteerNotEnabled += ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
+
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
             Messages.Info.USER_CREATED + warningIfVolunteerNotEnabled,
