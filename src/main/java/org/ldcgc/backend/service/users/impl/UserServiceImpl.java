@@ -313,7 +313,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private void setVolunteer(User userEntity, UserDto userDto) {
-        if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getId).isPresent()){
+        if(userDto.getVolunteer() == null) return;
+
+        if(userDto.getVolunteer().getId() != null){
             Volunteer volunteer = volunteerRepository.findById(userDto.getVolunteer().getId())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
@@ -326,7 +328,7 @@ public class UserServiceImpl implements UserService {
             return;
         }
 
-        if(Optional.ofNullable(userDto.getVolunteer()).map(VolunteerDto::getBuilderAssistantId).isPresent()){
+        if(userDto.getVolunteer().getBuilderAssistantId() != null){
             Volunteer volunteer = volunteerRepository.findByBuilderAssistantId(userDto.getVolunteer().getBuilderAssistantId())
                 .orElseThrow(() -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.VOLUNTEER_NOT_FOUND));
 
