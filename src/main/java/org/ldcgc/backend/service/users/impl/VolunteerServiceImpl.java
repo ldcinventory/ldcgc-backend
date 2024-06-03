@@ -2,6 +2,7 @@ package org.ldcgc.backend.service.users.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
@@ -116,10 +117,10 @@ public class VolunteerServiceImpl implements VolunteerService {
     public ResponseEntity<?> deleteVolunteer(String builderAssistantId, Boolean confirmDeletion) {
         User userLinked = userRepository.findByVolunteerBAId(builderAssistantId).orElse(null);
 
-        if(userLinked != null && Boolean.FALSE.equals(confirmDeletion))
+        if(userLinked != null && BooleanUtils.isNotTrue(confirmDeletion))
             return Constructor.buildResponseMessage(
                 HttpStatus.MULTIPLE_CHOICES,
-                Messages.Warning.VOLUNTEER_LINKED_TO_USER);
+                String.format(Messages.Warning.VOLUNTEER_LINKED_TO_USER, builderAssistantId));
         else if(Optional.ofNullable(userLinked).map(User::getVolunteer).isPresent()) {
             userLinked.setVolunteer(null);
             userRepository.saveAndFlush(userLinked);

@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.mapper.resources.consumable;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.util.constants.Google;
@@ -13,8 +14,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.Arrays;
 
-import static org.apache.poi.util.StringUtil.isBlank;
-
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ConsumableMapper {
 
@@ -23,36 +22,21 @@ public interface ConsumableMapper {
     @Mapping(target = "location.locations", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "resourceType.locked", ignore = true)
-    @Mapping(target = "brand.locked", qualifiedByName = "mapBooleanToNull")
+    @Mapping(target = "brand.locked", ignore = true)
     @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapConsumableUrlImagesToDto")
     ConsumableDto toDto(Consumable consumable);
 
-    @Named("mapBooleanToNull")
-    static Boolean mapBooleanToNull(Boolean prop) {
-        return null;
-    }
-
     static ConsumableDto cleanProps(ConsumableDto consumableDto) {
         consumableDto.getLocation().setLocations(null);
-        consumableDto.getGroup().getLocation().setLocations(null);
+        consumableDto.getLocation().setStoresResources(null);
+        consumableDto.getGroup().setLocation(null);
         consumableDto.getBrand().setLocked(null);
         consumableDto.getResourceType().setLocked(null);
         return consumableDto;
     }
 
     @Mapping(target = "barcode", source = "barcode", qualifiedByName = "mapConsumableBarcode")
-    @Mapping(target = "brand", ignore = true)
-    @Mapping(target = "resourceType", ignore = true)
-    @Mapping(target = "location", ignore = true)
-    @Mapping(target = "group", ignore = true)
     Consumable toMo(ConsumableDto consumableDto);
-
-    @Named("mapConsumableBarcode")
-    static String mapBarcode(String barcodeDto) {
-        return isBlank(barcodeDto)
-            ? RandomStringUtils.randomAlphanumeric(10)
-            : barcodeDto;
-    }
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "brand", ignore = true)
@@ -68,6 +52,12 @@ public interface ConsumableMapper {
         return Arrays.stream(urlImages)
             .map(url -> String.format(Google.DRIVE_IMAGES_URL, url))
             .toArray(String[]::new);
+    }
+
+    @Named("mapConsumableBarcode")
+    static String mapToolBarcode(String barcode) {
+        return StringUtils.defaultIfBlank(barcode,
+            "#" + RandomStringUtils.randomAlphanumeric(8).toUpperCase());
     }
 
 }

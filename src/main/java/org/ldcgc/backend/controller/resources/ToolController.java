@@ -252,10 +252,21 @@ public interface ToolController {
 
     @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
-            responseCode = SwaggerConfig.HTTP_200,
-            description = SwaggerConfig.HTTP_REASON_200,
+            responseCode = SwaggerConfig.HTTP_201,
+            description = SwaggerConfig.HTTP_REASON_201,
             content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)))
+                    array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)),
+                    examples = {
+                        @ExampleObject(name = "Tools uploaded", value = Messages.Info.TOOLS_UPLOADED)
+                    })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
+            })
     )
     @ApiResponse(
             responseCode = SwaggerConfig.HTTP_404,
@@ -265,6 +276,18 @@ public interface ToolController {
                             @ExampleObject(name = "Brand not found", value = Messages.Error.RESOURCE_TYPE_PARENT_NOT_FOUND),
                             @ExampleObject(name = "Location not found", value = Messages.Error.LOCATION_NOT_FOUND)
                     })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_REASON_422,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing tool", value = Messages.Error.EXCEL_PARSE_ERROR),
+                @ExampleObject(name = "Error parsing tool (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
+                @ExampleObject(name = "Error parsing tool (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
+                @ExampleObject(name = "Error parsing tool (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),
+                @ExampleObject(name = "Error parsing tool (type)", value = Messages.Error.EXCEL_CELL_TYPE_INCORRECT)
+            })
     )
     @PostMapping("/excel")
     @PreAuthorize(ADMIN_LEVEL)

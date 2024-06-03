@@ -55,7 +55,7 @@ public class ExcelFunctions {
 
         if (cellType.equals(ERROR))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
 
         try {
@@ -68,7 +68,7 @@ public class ExcelFunctions {
             };
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
         }
 
@@ -85,7 +85,7 @@ public class ExcelFunctions {
 
         if (excelCellNotValid(0, cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
         try {
             return switch (cellType) {
@@ -97,7 +97,7 @@ public class ExcelFunctions {
 
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
         }
 
@@ -109,7 +109,7 @@ public class ExcelFunctions {
 
         if (excelCellNotValid(0.0f, cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
 
         try {
@@ -121,7 +121,7 @@ public class ExcelFunctions {
             };
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()})));
         }
 
@@ -133,7 +133,7 @@ public class ExcelFunctions {
 
         if (excelCellNotValid(LocalDate.now(), cellType))
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
 
         try {
@@ -145,7 +145,7 @@ public class ExcelFunctions {
             };
         } catch (Exception e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY,
-                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum(), columnNumber, getExcelAlphabetColumn(columnNumber),
+                Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(row.getRowNum() + 1, columnNumber + 1, getExcelAlphabetColumn(columnNumber),
                     String.join(", ", new String[]{STRING.name(), FORMULA.name(), BLANK.name()})));
         }
 
@@ -178,5 +178,12 @@ public class ExcelFunctions {
         if(evaluator.evaluate(checkCell).getCellType().equals(ERROR))
             throw new RequestException(Messages.Error.EXCEL_CELL_TYPE_ERROR.formatted(
                 cell.getRowIndex() + 1, cell.getColumnIndex() + 1, getExcelAlphabetColumn(cell.getColumnIndex())));
+    }
+
+    public static int getLastRowByColumn(Sheet sheet, int column) {
+        for(int i = sheet.getLastRowNum(); i > 0; i--)
+            if (sheet.getRow(i).getCell(column).getCellType() != CellType.BLANK)
+                return i;
+        return 0;
     }
 }

@@ -9,8 +9,6 @@ import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
-import org.ldcgc.backend.service.group.GroupService;
-import org.ldcgc.backend.service.group.impl.GroupServiceImpl;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.location.impl.LocationServiceImpl;
 import org.ldcgc.backend.service.resources.common.BrandService;
@@ -36,14 +34,12 @@ class ConsumableServiceImplTest {
     private ConsumableExcelService consumableExcelService;
     private ConsumableService consumableService;
     private LocationService locationService;
-    private GroupService groupService;
     @Mock private BrandService brandService;
 
     @BeforeEach
     void init() {
-        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationService, groupService);
+        consumableExcelService = new ConsumableExcelServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationService, groupRepository);
         locationService = new LocationServiceImpl(locationRepository, groupRepository);
-        groupService = new GroupServiceImpl(groupRepository);
         consumableService = new ConsumableServiceImpl(consumableRepository, brandRepository, resourceTypeRepository, locationRepository, groupRepository, brandService, consumableExcelService);
     }
 

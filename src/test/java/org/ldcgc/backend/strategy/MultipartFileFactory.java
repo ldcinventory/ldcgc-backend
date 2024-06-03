@@ -48,21 +48,19 @@ public class MultipartFileFactory {
                 row.createCell(EXlsxToolPos.STOCK_WEIGHT_TYPE.getColumnNumber()).setCellValue(toolDto.getStockWeightType().name());
                 row.createCell(EXlsxToolPos.PRICE.getColumnNumber()).setCellValue(toolDto.getPrice());
                 row.createCell(EXlsxToolPos.PURCHASE_DATE.getColumnNumber()).setCellValue(toolDto.getPurchaseDate());
-                row.createCell(EXlsxToolPos.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", toolDto.getUrlImages()));
-                row.createCell(EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(toolDto.getMaintenancePeriod());
-                row.createCell(EXlsxToolPos.MAINTENANCE_TIME.getColumnNumber()).setCellValue(toolDto.getMaintenanceTime().getName());
+                row.createCell(EXlsxToolPos.MAINTENANCE_FREQUENCY.getColumnNumber()).setCellValue(toolDto.getMaintenancePeriod());
+                row.createCell(EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()).setCellValue(toolDto.getMaintenanceTime().getName());
                 row.createCell(EXlsxToolPos.LAST_MAINTENANCE.getColumnNumber()).setCellValue(toolDto.getLastMaintenance());
                 row.createCell(EXlsxToolPos.NEXT_MAINTENANCE.getColumnNumber()).setCellValue(toolDto.getNextMaintenance());
                 row.createCell(EXlsxToolPos.STATUS.getColumnNumber()).setCellValue(toolDto.getStatus().getDesc());
                 row.createCell(EXlsxToolPos.LOCATION.getColumnNumber()).setCellValue(toolDto.getLocation().getName());
-                row.createCell(EXlsxToolPos.GROUP.getColumnNumber()).setCellValue(toolDto.getGroup().getName());
             }
 
             switch (wrongPosition) {
-                case BARCODE, NAME, MODEL, DESCRIPTION, WEIGHT, PRICE, URL_IMAGES, MAINTENANCE_TIME ->
+                case BARCODE, NAME, MODEL, DESCRIPTION, WEIGHT, PRICE, MAINTENANCE_PERIOD ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
                         .ifPresent(c -> c.setCellFormula("1/0")));
-                case RESOURCE_TYPE, BRAND, STOCK_WEIGHT_TYPE, PURCHASE_DATE, MAINTENANCE_PERIOD, LAST_MAINTENANCE, NEXT_MAINTENANCE, STATUS, LOCATION, GROUP ->
+                case RESOURCE_TYPE, BRAND, STOCK_WEIGHT_TYPE, PURCHASE_DATE, MAINTENANCE_FREQUENCY, LAST_MAINTENANCE, NEXT_MAINTENANCE, STATUS, LOCATION ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
                         .ifPresent(c -> c.setCellValue("mocked " + wrongPosition.name().toLowerCase())));
                 case null -> log.info("No wrong position");
@@ -102,7 +100,6 @@ public class MultipartFileFactory {
                 row.createCell(EXlsxConsumablePos.DESCRIPTION.getColumnNumber()).setCellValue(consumableDto.getDescription());
                 row.createCell(EXlsxConsumablePos.PRICE.getColumnNumber()).setCellValue(consumableDto.getPrice());
                 row.createCell(EXlsxConsumablePos.PURCHASE_DATE.getColumnNumber()).setCellValue(consumableDto.getPurchaseDate());
-                row.createCell(EXlsxConsumablePos.URL_IMAGES.getColumnNumber()).setCellValue(String.join(", ", consumableDto.getUrlImages()));
                 row.createCell(EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber()).setCellValue(consumableDto.getQuantityEachItem());
                 row.createCell(EXlsxConsumablePos.STOCK.getColumnNumber()).setCellValue(consumableDto.getStock());
                 row.createCell(EXlsxConsumablePos.MIN_STOCK.getColumnNumber()).setCellValue(consumableDto.getMinStock());
@@ -112,7 +109,7 @@ public class MultipartFileFactory {
             }
 
             switch (wrongPosition) {
-                case BARCODE, NAME, MODEL, DESCRIPTION, URL_IMAGES ->
+                case BARCODE, NAME, MODEL, DESCRIPTION ->
                     sheet.rowIterator().forEachRemaining(r -> Optional.ofNullable(r.getCell(wrongPosition.getColumnNumber()))
                         .ifPresent(c -> c.setCellValue(RandomStringUtils.randomAlphanumeric(8))));
                 case MIN_STOCK, PRICE, STOCK, QTY_EACH_ITEM ->

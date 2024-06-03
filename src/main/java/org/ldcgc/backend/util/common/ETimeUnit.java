@@ -6,19 +6,22 @@ import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.util.constants.Messages;
 import org.springframework.http.HttpStatus;
 
+import java.time.temporal.ChronoUnit;
+
 @Getter
 @RequiredArgsConstructor
 public enum ETimeUnit implements EnumMethods {
 
-    DAYS("días", 1),
-    WEEKS("semanas", 2),
-    MONTHS("meses", 3),
-    YEARS("años", 4),
-    HOURS("horas", 5),
-    NEVER("nunca", 6),
-    UNKNOWN("nunca", 99);
+    DAYS("días", ChronoUnit.DAYS, 1),
+    WEEKS("semanas", ChronoUnit.WEEKS, 2),
+    MONTHS("meses", ChronoUnit.MONTHS, 3),
+    YEARS("años", ChronoUnit.YEARS, 4),
+    HOURS("horas", ChronoUnit.HOURS, 5),
+    NEVER("nunca", null, 6),
+    UNKNOWN("desconocido", null, 99);
 
     private final String name;
+    private final ChronoUnit chronoUnit;
     private final Integer id;
 
     public static ETimeUnit getTimeUnitFromId(Integer id) {

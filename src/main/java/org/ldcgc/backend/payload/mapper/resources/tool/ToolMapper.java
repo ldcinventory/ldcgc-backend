@@ -1,6 +1,7 @@
 package org.ldcgc.backend.payload.mapper.resources.tool;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.apache.poi.util.StringUtil.isBlank;
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
 import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
 
@@ -36,20 +36,15 @@ public interface ToolMapper {
 
     static ToolDto cleanProps(ToolDto toolDto) {
         toolDto.getLocation().setLocations(null);
-        toolDto.getGroup().getLocation().setLocations(null);
+        toolDto.getLocation().setStoresResources(null);
+        toolDto.getGroup().setLocation(null);
+        toolDto.getResourceType().setLocked(null);
         return toolDto;
     }
 
     @Mapping(target = "barcode", source = "barcode", qualifiedByName = "mapToolBarcode")
     @Mapping(target = "nextMaintenance", source = ".", qualifiedByName = "calculateNextMaintenance")
     Tool toMo(ToolDto toolDto);
-
-    @Named("mapToolBarcode")
-    static String mapBarcode(String barcodeDto) {
-        return isBlank(barcodeDto)
-            ? RandomStringUtils.randomAlphanumeric(10)
-            : barcodeDto;
-    }
 
     @Named("calculateNextMaintenance")
     static LocalDate calculateNextMaintenance(ToolDto toolDto) {
@@ -83,5 +78,11 @@ public interface ToolMapper {
         return Stream.of(urlImages)
                 .map(url -> url.substring(url.lastIndexOf("id=") + 3))
                 .toArray(String[]::new);
+    }
+
+    @Named("mapToolBarcode")
+    static String mapToolBarcode(String barcode) {
+        return StringUtils.defaultIfBlank(barcode,
+            "#" + RandomStringUtils.randomAlphanumeric(8).toUpperCase());
     }
 }

@@ -245,7 +245,7 @@ public class InitializationData {
 
             // --> BRANDS (select name from brands;)
 
-            List<String> brandNames = Arrays.asList("Abac Montecarlo", "Bahco", "Bellota", "Blackwire", "Bosch", "Climaver", "Deltaplus", "Desa", "Dewalt", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "Grespania", "Hermin", "Hilti", "HP", "IFAM", "INDEX", "Irazola", "Irimo", "Kartcher", "Knipex", "Lenovo", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "Ninguna", "Novipro", "Nusac", "Opel", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Proiman", "Quilosa", "Retevis", "Rothenberger", "Rubi", "Rubi negra", "Samsung", "Schneider", "Stanley", "Stayer", "Svelt", "Tacklife", "Testo", "UNI-T", "Urceri", "Velour", "Vorel", "Werku", "Wiha", "Würth", "Xiaomi", "Zosi Smart", "Sin marca");
+            List<String> brandNames = Arrays.asList("Sin marca", "ABAC", "Acesa", "Alyco", "Anean", "Argoco", "Bahco", "Bellota", "Blackwire", "BM-RS", "Boll", "Bosch", "Bossram", "Brüder Mannesmann", "Butsir", "Climaver", "Daher", "Delta", "Deltaplus", "Desa", "Dewalt", "Dexter", "DIN", "Dogher", "DURO", "Duro Meister", "Electrovolt", "ERGO", "Expert", "Ez Fasten", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GICNAC2", "Grespania", "Hermin", "Hilti", "HP", "HR", "IFAM", "IKEA", "Imcoinsa", "INDEX", "Indiuka", "Intercable", "Irazola", "Irimo", "Isover", "Jar", "Kartcher", "Klein Tools", "Knipex", "Kreator", "LEMAN", "Lenovo", "Letratag", "LIMIT", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "MT", "Multi Star", "Ninguna", "Novipro", "Nusac", "Opel", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Profi", "Proiman", "Quilosa", "Retevis", "Rigo", "Rothenberger", "Rubi", "Rubi negra", "Ruvi", "Samsung", "Sanyipace", "Savage", "Schneider", "Sofamel", "SREMTCH", "Stanley", "Starrett", "Stayer", "Stayer Welding", "Svelt", "Syntesi", "Tacklife", "Termiser", "Testo", "TUV", "UKACA", "UNI-T", "UniGrip", "Urceri", "Velour", "Vevor", "Vorel", "Wera", "Werku", "Western Knipex", "Wiesman", "Wiha", "Witte", "Wolfpack", "Würth", "Xiaomi", "Zosi Smart");
 
             List<Brand> brands = brandNames.stream()
                     .map(b -> Brand.builder()
@@ -304,38 +304,20 @@ public class InitializationData {
 
     private @NotNull Location createFerreteria() {
         // location
-        Location ferreteria = new Location("Ferretería", "Ferretería local", 0, group8.getId());
+        Location colmenarViejo = new Location("Colmenar Viejo", "Proyecto Colmenar Viejo", 0, group8.getId());
 
-        Location warehouseStorage1 = new Location("Almacén 1", ferreteria, 1, group8.getId());
-        Location warehouseStorage2 = new Location("Almacén 2", ferreteria, 1, group8.getId());
+        Location ferreteria = new Location("Ferreteria", colmenarViejo, 1, group8.getId());
 
         // placements
-        List<Location> placementsShelving = List.of(
-            new Location("Chest 2", warehouseStorage1, 2, group8.getId()),
-            new Location("Chest 3", warehouseStorage1, 2, group8.getId()),
-            new Location("Chest 5", warehouseStorage1, 2, group8.getId())
-        );
-        warehouseStorage1.setLocations(placementsShelving);
-        List<Location> placementsStorage = List.of(
-            new Location("Chest 1", warehouseStorage2, 2, group8.getId()),
-            new Location("Chest 4", warehouseStorage2, 2, group8.getId())
-        );
-        warehouseStorage2.setLocations(placementsStorage);
+        List<Location> placementsShelving = Stream.of("Albañilería", "Baúl Acabados", "Baúl Albañilería 1", "Baúl Albañilería 2", "Baúl Albañilería Fina", "Baúl Arneses", "Baúl Clima", "Baúl Electricidad", "Baúl Fontanería", "Baúl Iluminación", "Baúl Pintura", "Baúl Pladur", "Baúl Seguridad Y Salud", "Baúl Soldadura", "Caja De Plástico", "Cajonera Negra", "Carro Rojo Con Cajones", "Estantería")
+            .map(p -> new Location(p, ferreteria, 2, group8.getId()))
+            .toList();
+        ferreteria.setLocations(placementsShelving);
 
-        ferreteria.setLocations(List.of(
-            // more warehouses
-            warehouseStorage1,
-            warehouseStorage2,
-            new Location("Estantería 1", ferreteria, 1, group8.getId()),
-            new Location("Estantería 2", ferreteria, 1, group8.getId()),
-            new Location("Arcón-suelo 1", ferreteria, 1, group8.getId()),
-            new Location("Arcón-suelo 2", ferreteria, 1, group8.getId()),
-            new Location("Arcón-medio 1", ferreteria, 1, group8.getId()),
-            new Location("Arcón-medio 2", ferreteria, 1, group8.getId())
-        ));
+        colmenarViejo.setLocations(List.of(ferreteria));
 
-        ferreteria.setGroupId(group8.getId());
-        return ferreteria;
+        colmenarViejo.setGroupId(group8.getId());
+        return colmenarViejo;
     }
 
     private Set<EWeekday> getRandomAvailability() {
