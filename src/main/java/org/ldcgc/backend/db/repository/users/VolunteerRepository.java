@@ -32,16 +32,18 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Integer>, 
 
     @Query(value = """
             SELECT v.* FROM volunteers v
-            WHERE (unaccent(v.name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-               OR unaccent(v.last_name) ILIKE unaccent(CONCAT('%', :filterString,'%'))
-               OR unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(:filterString))
+            WHERE (unaccent(v.name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+               OR  unaccent(v.last_name) ILIKE unaccent(CONCAT('%', :filterString, '%'))
+               OR  unaccent(CONCAT(v.name, ' ', v.last_name)) ILIKE unaccent(CONCAT('%', :filterString, '%')))
             AND (
-                  CASE WHEN :status IS NOT NULL THEN v.status = :status
+                  CASE WHEN :status IS NOT NULL
+                        AND :status != 'DELETED'
+                        AND :status != 'LOCKED' THEN v.status = :status
                   ELSE v.status != 'DELETED' AND v.status != 'LOCKED'
                   END
               )
             """, nativeQuery = true)
-    Page<Volunteer> findAllFiltered(String filterString, EVStatus status, Pageable pageable);
+    Page<Volunteer> findAllFiltered(String filterString, String status, Pageable pageable);
 
     @Query("""
             SELECT count(v) > 0 FROM Volunteer v
