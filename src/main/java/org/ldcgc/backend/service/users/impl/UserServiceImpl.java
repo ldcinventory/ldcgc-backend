@@ -101,14 +101,14 @@ public class UserServiceImpl implements UserService {
 
         setCurrentGroup(userEntity);
 
+        userEntity.setEnabled(true);
+
         userEntity = userRepository.saveAndFlush(userEntity);
 
         String warningIfVolunteerNotEnabled = userEntity.getVolunteer().getStatus().equals(EVStatus.ACTIVE)
             ? ""
             : ". " + String.format(Messages.Warning.USER_LINKED_VOLUNTEER_NOT_ACTIVE, userEntity.getVolunteer().getBuilderAssistantId());
-
-        userEntity.setEnabled(true);
-
+        
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
             Messages.Info.USER_CREATED + warningIfVolunteerNotEnabled,
