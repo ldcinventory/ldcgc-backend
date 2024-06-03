@@ -3,6 +3,7 @@ package org.ldcgc.backend.service.users.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.users.User;
@@ -88,7 +89,7 @@ public class VolunteerServiceImpl implements VolunteerService {
             : Sort.by(sortField).ascending());
         Page<VolunteerDto> pagedVolunteers = StringUtils.isBlank(filterString) && status == null ?
             volunteerRepository.findAll(pageable).map(VolunteerMapper.MAPPER::toDto) :
-            volunteerRepository.findAllFiltered(filterString, status, pageable).map(VolunteerMapper.MAPPER::toDto);
+            volunteerRepository.findAllFiltered(filterString, Optional.ofNullable(status).map(Enum::name).orElse(null), pageable).map(VolunteerMapper.MAPPER::toDto);
 
         if (pageIndex > pagedVolunteers.getTotalPages())
             throw new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.PAGE_INDEX_REQUESTED_EXCEEDED_TOTAL);
