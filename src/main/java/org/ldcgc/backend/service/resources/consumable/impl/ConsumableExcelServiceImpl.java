@@ -1,6 +1,9 @@
 package org.ldcgc.backend.service.resources.consumable.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -9,6 +12,7 @@ import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.BrandDto;
@@ -20,14 +24,15 @@ import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.category.BrandMapper;
 import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
-import org.ldcgc.backend.service.group.GroupService;
 import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.EXlsxConsumablePos;
 import org.ldcgc.backend.util.constants.Messages;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -35,13 +40,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getDateCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getFloatCellValue;
-import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringArrayCellValue;
+import static org.ldcgc.backend.util.conversion.ExcelFunctions.getLastRowByColumn;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getStringCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.processExcelArray;
 
@@ -53,7 +57,7 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
     private final BrandRepository brandRepository;
     private final ResourceTypeRepository resourceTypeRepository;
     private final LocationService locationService;
-    private final GroupService groupService;
+    private final GroupRepository groupRepository;
 
     private ConsumableExcelMasterDto master;
 
@@ -64,24 +68,23 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
 
         try {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheet("consumibles");
             master = ConsumableExcelMasterDto.builder()
                 .consumables(consumableRepository.findAll().stream()
                     .map(ConsumableMapper.MAPPER::toDto)
-                    .collect(Collectors.toMap(ConsumableDto::getBarcode, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .brands(brandRepository.findAll().stream().map(BrandMapper.MAPPER::toDto)
-                    .collect(Collectors.toMap(BrandDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .resourceTypes(resourceTypeRepository.findAll().stream().map(ResourceTypeMapper.MAPPER::toDto)
-                    .collect(Collectors.toMap(ResourceTypeDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                    .collect(toMap(ConsumableDto::getBarcode, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
+                .brands(brandRepository.findAll().stream()
+                    .map(BrandMapper.MAPPER::toDto)
+                    .collect(toMap(BrandDto::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
+                .resourceTypes(resourceTypeRepository.findAll().stream()
+                    .map(ResourceTypeMapper.MAPPER::toDto)
+                    .collect(toMap(ResourceTypeDto::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
                 .locations(locationService.getAllLocations()
-                    .stream().collect(Collectors.toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
-                .groups(groupService.getAllGroups()
-                    .stream().collect(Collectors.toMap(GroupDto::getName, Function.identity(), (existing, replacement) -> existing, TreeMap::new)))
+                    .stream().collect(toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
                 .build();
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                consumables.add(parseRowToTool(sheet.getRow(i)));
-            }
+            for (int i = 2; i <= getLastRowByColumn(sheet, 3); i++)
+                Optional.ofNullable(parseRowToTool(sheet.getRow(i))).ifPresent(consumables::add);
 
         } catch (IOException e) {
             throw new RequestException(HttpStatus.UNPROCESSABLE_ENTITY, Messages.Error.EXCEL_PARSE_ERROR);
@@ -91,27 +94,38 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
     }
 
     private ConsumableDto parseRowToTool(Row row) {
-        String barcode = getStringCellValue(row, EXlsxConsumablePos.BARCODE.getColumnNumber());
+        // MANDATORY. If this field is not present then don't proceed
+        String name = getStringCellValue(row, EXlsxConsumablePos.NAME.getColumnNumber());
+        if(StringUtils.isBlank(name)) return null;
+
+        // barcode provided or generate random new
+        String barcode = StringUtils.defaultIfBlank(
+            getStringCellValue(row, EXlsxConsumablePos.BARCODE.getColumnNumber()),
+            "#" + RandomStringUtils.randomAlphanumeric(8).toUpperCase());
 
         Integer id = Optional.ofNullable(master.getConsumables().get(barcode)).map(ConsumableDto::getId).orElse(null);
 
-        String resourceType = getStringCellValue(row, EXlsxConsumablePos.RESOURCE_TYPE.getColumnNumber());
-        if(master.getResourceTypes().get(resourceType) == null) {
+        // resource type provided or set "sin especificar" as default
+        String resourceType = StringUtils.defaultIfBlank(
+            getStringCellValue(row, EXlsxConsumablePos.RESOURCE_TYPE.getColumnNumber()),
+            "Sin especificar");
+        if(StringUtils.isNotBlank(resourceType) && master.getResourceTypes().get(resourceType) == null) {
             ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
             ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
             master.getResourceTypes().put(newResourceType.getName(), ResourceTypeMapper.MAPPER.toDto(newResourceType));
         }
         ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
 
-        String brandName = getStringCellValue(row, EXlsxConsumablePos.BRAND.getColumnNumber());
-        if(master.getBrands().get(brandName) == null) {
+        // brand provided or set "sin marca" as default
+        String brandName = StringUtils.defaultIfBlank(
+            getStringCellValue(row, EXlsxConsumablePos.BRAND.getColumnNumber()),
+            "Sin marca");
+        if(StringUtils.isNotBlank(brandName) && master.getBrands().get(brandName) == null) {
             BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
             Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
             master.getBrands().put(newBrand.getName(), BrandMapper.MAPPER.toDto(newBrand));
         }
         BrandDto brand = master.getBrands().get(brandName);
-
-        String name = getStringCellValue(row, EXlsxConsumablePos.NAME.getColumnNumber());
 
         String model = getStringCellValue(row, EXlsxConsumablePos.MODEL.getColumnNumber());
 
@@ -121,25 +135,27 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
 
         LocalDate purchaseDate = getDateCellValue(row, EXlsxConsumablePos.PURCHASE_DATE.getColumnNumber());
 
-        String[] urlImages = getStringArrayCellValue(row, EXlsxConsumablePos.URL_IMAGES.getColumnNumber());
+        Float quantityEachItem = ObjectUtils.defaultIfNull(getFloatCellValue(row, EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber()), 1.0f);
 
-        Float quantityEachItem = getFloatCellValue(row, EXlsxConsumablePos.QTY_EACH_ITEM.getColumnNumber());
+        Float stock = ObjectUtils.defaultIfNull(getFloatCellValue(row, EXlsxConsumablePos.STOCK.getColumnNumber()), 1.0f);
 
-        Float stock = getFloatCellValue(row, EXlsxConsumablePos.STOCK.getColumnNumber());
+        Float minStock = ObjectUtils.defaultIfNull(getFloatCellValue(row, EXlsxConsumablePos.MIN_STOCK.getColumnNumber()), 1.0f);
 
-        Float minStock = getFloatCellValue(row, EXlsxConsumablePos.MIN_STOCK.getColumnNumber());
+        EStockType stockType = EStockType.getStockTypeByDesc(
+            StringUtils.defaultIfBlank(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber()),
+            "unidades"));
 
-        EStockType stockType = EStockType.getStockTypeByDesc(getStringCellValue(row, EXlsxConsumablePos.STOCK_TYPE.getColumnNumber()));
-
-        String locationName = row.getCell(EXlsxConsumablePos.LOCATION.getColumnNumber()).getStringCellValue();
+        String locationName = StringUtils.defaultIfBlank(
+            row.getCell(EXlsxConsumablePos.LOCATION.getColumnNumber()).getStringCellValue(),
+            "Sin ubicación");
         LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
-            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(locationName, row.getRowNum(), EXlsxConsumablePos.LOCATION.getColumnNumber(),
+            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(
+                locationName, row.getRowNum() + 1, EXlsxConsumablePos.LOCATION.getColumnNumber() + 1,
                 Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
 
-        String groupName = getStringCellValue(row, EXlsxConsumablePos.GROUP.getColumnNumber());
-        GroupDto group = Optional.ofNullable(master.getGroups().get(groupName))
-            .orElseThrow(() -> new RequestException(generateExcelErrorMessage(groupName, row.getRowNum(), EXlsxConsumablePos.GROUP.getColumnNumber(),
-                Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted(groupName, master.getGroups().values().stream().map(GroupDto::getName).toList()))));
+        Integer groupId = Integer.valueOf(Optional.ofNullable(MDC.get("groupId")).orElseThrow(() ->
+            new RequestException(HttpStatus.FORBIDDEN, Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)));
+        GroupDto group = GroupDto.builder().id(groupId).build();
 
         return ConsumableDto.builder()
             .id(id)
@@ -151,7 +167,6 @@ public class ConsumableExcelServiceImpl implements ConsumableExcelService {
             .description(description)
             .price(price)
             .purchaseDate(purchaseDate)
-            .urlImages(urlImages)
             .quantityEachItem(quantityEachItem)
             .stock(stock)
             .minStock(minStock)

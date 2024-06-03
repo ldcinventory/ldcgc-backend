@@ -161,14 +161,14 @@ public class ConsumableServiceImpl implements ConsumableService {
             }
         }
 
-        consumableRepository.saveAll(consumablesToSaveMap.values().stream().map(ConsumableMapper.MAPPER::toMo).toList());
+        List<Consumable> consumables = consumableRepository.saveAll(consumablesToSaveMap.values().stream().map(ConsumableMapper.MAPPER::toMo).toList());
         int toolsInserted = consumablesToSaveMap.size();
         int toolsSkipped = consumablesToSave.size() - toolsInserted;
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
             String.format(Messages.Info.CONSUMABLES_UPLOADED, toolsInserted, toolsSkipped),
-            consumablesToSave.stream().map(ConsumableMapper::cleanProps).toList());
+            consumables.stream().map(ConsumableMapper.MAPPER::toDto).map(ConsumableMapper::cleanProps).toList());
     }
 
     private Consumable getOrElseThrowNotFound(Integer consumableId) {

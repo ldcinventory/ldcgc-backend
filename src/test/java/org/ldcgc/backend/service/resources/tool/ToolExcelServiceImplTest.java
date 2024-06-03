@@ -34,8 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.poi.ss.usermodel.CellType.BLANK;
@@ -44,6 +42,8 @@ import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.ldcgc.backend.base.Constants.NOT_YET_IMPLEMENTED;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomBrand;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomResourceType;
 import static org.ldcgc.backend.base.mock.MockedResources.getRandomToolDto;
@@ -130,31 +130,14 @@ class ToolExcelServiceImplTest {
     }
 
     @Test
-    void excelToToolsShouldThrowGroupNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.GROUP);
-
-        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
-
-        String expectedMessage = Messages.Error.EXCEL_VALUE_INCORRECT.formatted("mocked group", 1, EXlsxToolPos.GROUP.getColumnNumber())
-            .concat("\n")
-            .concat(Messages.Error.GROUP_NOT_FOUND_EXCEL.formatted("mocked group", groupsDto.stream()
-                .sorted(Comparator.comparing(GroupDto::getName))
-                .map(GroupDto::getName)
-                .collect(Collectors.toCollection(TreeSet::new))
-                .toString()));
-
-        assertEquals(expectedMessage, requestException.getMessage());
-    }
-
-    @Test
     void excelToToolsShouldThrowMaintenancePeriodNotFound() throws IOException {
-        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_PERIOD);
+        MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_FREQUENCY);
 
         RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
 
         String expectedMessage = Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1,
-            EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber(),
-            getExcelAlphabetColumn(EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber()),
+            EXlsxToolPos.MAINTENANCE_FREQUENCY.getColumnNumber(),
+            getExcelAlphabetColumn(EXlsxToolPos.MAINTENANCE_FREQUENCY.getColumnNumber()),
             String.join(", ", new String[]{NUMERIC.name(), STRING.name(), FORMULA.name()}));
 
         assertEquals(expectedMessage, requestException.getMessage());
@@ -162,7 +145,7 @@ class ToolExcelServiceImplTest {
 
     @Test
     void excelToToolsShouldThrowExcelParseException() throws IOException {
-        MockMultipartFile file = spy(MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_PERIOD));
+        MockMultipartFile file = spy(MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_FREQUENCY));
 
         doThrow(new IOException()).when(file).getInputStream();
 
@@ -199,6 +182,71 @@ class ToolExcelServiceImplTest {
         List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
 
         assertEquals(toolsDto.size(), toolsExcelResponse.size());
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankName_thenReturnNullTool() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankBarcode_thenReturnToolWithRandomBarcode() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankResourceType_thenReturnToolWithUnknownResourceType() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankBrand_thenReturnToolWithUnknownBrand() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankWeightUnits_thenReturnToolWithDefaultUnits() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankWeightType_thenReturnToolWithUnknownLocation() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankBrand_thenReturnToolWithDefaultBrand() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankMaintenanceFrequency_thenReturnToolWithPeriod0() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithBlankMaintenanceFrequency_thenReturnToolWithMaintenanceTimeNever() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithLastMaintenanceNullAndMaintenanceFrequency_thenReturnToolWithMaintenanceTimeNever() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithLastMaintenanceIsNow_thenReturnToolWithCalculatedMaintenanceTime() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToToolsWithoutLocation_thenReturnToolWithoutLocation() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenExcelToTools_thenReturnGroupNotFoundInToken() {
+        fail(NOT_YET_IMPLEMENTED);
     }
 
 }

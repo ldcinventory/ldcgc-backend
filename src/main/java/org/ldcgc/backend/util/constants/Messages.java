@@ -53,16 +53,16 @@ public class Messages {
             TOOL_LISTED = "Found %s tool/s",
             TOOL_UPDATED = "Tool details updated",
             TOOL_UNTOUCHED = "Tool untouched",
-            TOOL_IMAGES_UPDATED = "Tool details for attached images updated",
-            TOOL_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools. Skipped %s tools",
             TOOL_DELETED = "Tool deleted",
+            TOOL_IMAGES_UPDATED = "Tool details for attached images updated",
+            TOOLS_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools. Skipped %s tools",
 
             CONSUMABLE_CREATED = "Consumable created successfully!",
+            CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_UPDATED = "Consumable details updated",
             CONSUMABLE_UNTOUCHED = "Consumable untouched",
-            CONSUMABLE_IMAGES_UPDATED = "Consumable details for attached images updated",
-            CONSUMABLE_LISTED = "Found %s consumable/s",
             CONSUMABLE_DELETED = "Consumable deleted",
+            CONSUMABLE_IMAGES_UPDATED = "Consumable details for attached images updated",
             CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables. Skipped %s consumables",
 
             CONSUMABLE_REGISTER_CREATED = "Consumable register created",
@@ -198,7 +198,7 @@ public class Messages {
             LOCATION_MAIN_GROUP = "This location is the main location assigned to a group",
 
             GROUP_NOT_FOUND = "Group with id/name '%s' not found.",
-            GROUP_NOT_FOUND_EXCEL = "Group '%s' not found. Please, fix the excel sheet or add it. Valid groups: %s",
+            GROUP_NOT_FOUND_IN_TOKEN = "Group id couldn't be found from token",
 
             RESOURCE_TYPE_PARENT_NOT_FOUND = "%s with id '%s' not found.",
             RESOURCE_TYPE_SON_NOT_FOUND = "%s %s not found. Please, use a valid one or add it. Valid %ss: %s",

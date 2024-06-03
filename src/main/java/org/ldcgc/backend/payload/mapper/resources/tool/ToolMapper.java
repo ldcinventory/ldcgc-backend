@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.apache.poi.util.StringUtil.isBlank;
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
 import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
 
@@ -37,7 +36,9 @@ public interface ToolMapper {
 
     static ToolDto cleanProps(ToolDto toolDto) {
         toolDto.getLocation().setLocations(null);
-        toolDto.getGroup().getLocation().setLocations(null);
+        toolDto.getLocation().setStoresResources(null);
+        toolDto.getGroup().setLocation(null);
+        toolDto.getResourceType().setLocked(null);
         return toolDto;
     }
 

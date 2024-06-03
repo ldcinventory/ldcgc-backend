@@ -14,8 +14,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.Arrays;
 
-import static org.apache.poi.util.StringUtil.isBlank;
-
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ConsumableMapper {
 
@@ -24,28 +22,20 @@ public interface ConsumableMapper {
     @Mapping(target = "location.locations", ignore = true)
     @Mapping(target = "group.location.locations", ignore = true)
     @Mapping(target = "resourceType.locked", ignore = true)
-    @Mapping(target = "brand.locked", qualifiedByName = "mapBooleanToNull")
+    @Mapping(target = "brand.locked", ignore = true)
     @Mapping(target = "urlImages", source = "urlImages", qualifiedByName = "mapConsumableUrlImagesToDto")
     ConsumableDto toDto(Consumable consumable);
 
-    @Named("mapBooleanToNull")
-    static Boolean mapBooleanToNull(Boolean prop) {
-        return null;
-    }
-
     static ConsumableDto cleanProps(ConsumableDto consumableDto) {
         consumableDto.getLocation().setLocations(null);
-        consumableDto.getGroup().getLocation().setLocations(null);
+        consumableDto.getLocation().setStoresResources(null);
+        consumableDto.getGroup().setLocation(null);
         consumableDto.getBrand().setLocked(null);
         consumableDto.getResourceType().setLocked(null);
         return consumableDto;
     }
 
     @Mapping(target = "barcode", source = "barcode", qualifiedByName = "mapConsumableBarcode")
-    @Mapping(target = "brand", ignore = true)
-    @Mapping(target = "resourceType", ignore = true)
-    @Mapping(target = "location", ignore = true)
-    @Mapping(target = "group", ignore = true)
     Consumable toMo(ConsumableDto consumableDto);
 
     @Mapping(target = "id", ignore = true)

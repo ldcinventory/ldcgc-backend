@@ -31,6 +31,7 @@ public class LocationDto {
     private List<LocationDto> locations;
     @Schema(requiredMode = REQUIRED)
     private Integer groupId;
-    private boolean storesResources;
+    @Schema(requiredMode = REQUIRED) @Setter
+    private Boolean storesResources;
 
 }

@@ -277,6 +277,18 @@ public interface ToolController {
                             @ExampleObject(name = "Location not found", value = Messages.Error.LOCATION_NOT_FOUND)
                     })
     )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_REASON_422,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing tool", value = Messages.Error.EXCEL_PARSE_ERROR),
+                @ExampleObject(name = "Error parsing tool (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
+                @ExampleObject(name = "Error parsing tool (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
+                @ExampleObject(name = "Error parsing tool (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),
+                @ExampleObject(name = "Error parsing tool (type)", value = Messages.Error.EXCEL_CELL_TYPE_INCORRECT)
+            })
+    )
     @PostMapping("/excel")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);

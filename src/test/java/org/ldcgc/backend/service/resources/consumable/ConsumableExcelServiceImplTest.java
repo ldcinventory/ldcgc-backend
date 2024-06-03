@@ -83,11 +83,6 @@ class ConsumableExcelServiceImplTest {
     }
 
     @Test
-    void whenUploadConsumablesFromExcel_returnGroupNotFound() {
-        fail(NOT_YET_IMPLEMENTED);
-    }
-
-    @Test
     void whenUploadConsumablesFromExcel_returnConsumablesNewBrand() {
         fail(NOT_YET_IMPLEMENTED);
     }
@@ -97,4 +92,33 @@ class ConsumableExcelServiceImplTest {
         fail(NOT_YET_IMPLEMENTED);
     }
 
+    @Test
+    void whenUploadConsumablesFromExcelWithoutName_returnNull() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenUploadConsumablesFromExcelWithotBarcode_returnConsumableWithRandomBarcode() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenUploadConsumablesFromExcelWithoutResourceCode_returnConsumableWithDefaultResourceCode() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenUploadConsumablesFromExcelWithoutBrandName_returnConsumableWithoutBrandName() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenUploadConsumablesFromExcelWithoutLocation_returnConsumableWithNoLocation() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
+
+    @Test
+    void whenUploadConsumablesFromExcel_returnGroupNotFoundInToken() {
+        fail(NOT_YET_IMPLEMENTED);
+    }
 }
