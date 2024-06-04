@@ -87,7 +87,7 @@ public class Messages {
 
             NO_CHANGES_PROCESSED = "No changes processed",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers and %s skipped.",
 
             TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
             TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
