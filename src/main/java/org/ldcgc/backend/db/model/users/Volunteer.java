@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -67,7 +66,7 @@ public class Volunteer {
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
 
-    @OneToOne
-    private Role role;
+    @OneToMany
+    private List<RoleRegister> roleRegisters;
 
 }

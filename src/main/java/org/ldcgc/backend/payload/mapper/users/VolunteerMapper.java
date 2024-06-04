@@ -16,7 +16,8 @@ import java.util.Set;
 
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
-@Mapper(nullValuePropertyMappingStrategy = IGNORE, uses = { AbsenceMapper.class })
+@Mapper(nullValuePropertyMappingStrategy = IGNORE,
+    uses = { AbsenceMapper.class, RoleMapper.class })
 public interface VolunteerMapper {
 
     VolunteerMapper MAPPER = Mappers.getMapper(VolunteerMapper.class);
