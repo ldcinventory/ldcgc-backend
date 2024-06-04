@@ -704,7 +704,7 @@ public class InitializationData {
         // VOLUNTEERS
         // select builderAssistantId, name, surname, active from volunteers;
 
-        List<List<String>> volunteers = Files.getContentFromCSV(volunteersCSV, ',', true);
+        List<List<String>> volunteers = Files.getListContentFromCSV(volunteersCSV, ',', true);
 
         Map<String, Volunteer> volunteerEntities = new HashMap<>();
         volunteers.forEach(vFieldList -> {
@@ -742,7 +742,7 @@ public class InitializationData {
 
         Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
-        List<List<String>> tools = Files.getContentFromCSV(toolsCSV, ',', false);
+        List<List<String>> tools = Files.getListContentFromCSV(toolsCSV, ',', false);
         Map<String, Tool> toolEntities = new HashMap<>();
         tools.forEach(tFieldList -> {
             Tool tool = Tool.builder()
@@ -784,7 +784,7 @@ public class InitializationData {
 
         Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
-        List<List<String>> consumables = Files.getContentFromCSV(consumablesCSV, ',', false);
+        List<List<String>> consumables = Files.getListContentFromCSV(consumablesCSV, ',', false);
         Map<String, Consumable> consumableEntities = new HashMap<>();
         for (List<String> cFieldList : consumables) {
             int stockInt = getRandomIntegerFromRange(2, 10);
@@ -826,7 +826,7 @@ public class InitializationData {
     }
 
     private void loadUsersCSV() {
-        List<List<String>> users = Files.getContentFromCSV(usersCSV, ',', true);
+        List<List<String>> users = Files.getListContentFromCSV(usersCSV, ',', true);
         users.forEach(userFields -> {
             User user = User.builder()
                 .email(userFields.get(4))

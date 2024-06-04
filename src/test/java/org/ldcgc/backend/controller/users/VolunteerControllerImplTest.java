@@ -241,7 +241,7 @@ public class VolunteerControllerImplTest {
 
         log.info("Testing a POST Request to %s%s\n".formatted(API_ROOT, request));
 
-        given(volunteerService.uploadVolunteers(anyInt(), any(MultipartFile.class)))
+        given(volunteerService.uploadVolunteers(any(MultipartFile.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, 10)));
 
         MockMultipartFile file = new MockMultipartFile("document", "volunteers.csv", "text/csv", "50280100,Daniel,Albert,true,,x,,x,x,,,x".getBytes());

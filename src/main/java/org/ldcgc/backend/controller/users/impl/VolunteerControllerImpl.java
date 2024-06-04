@@ -42,7 +42,7 @@ public class VolunteerControllerImpl implements VolunteerController {
         return volunteerService.deleteVolunteer(builderAssistantId, confirmDeletion);
     }
 
-    public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {
-        return volunteerService.uploadVolunteers(groupId, document);
+    public ResponseEntity<?> uploadVolunteers(MultipartFile document) {
+        return volunteerService.uploadVolunteers(document);
     }
 }

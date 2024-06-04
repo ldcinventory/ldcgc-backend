@@ -30,6 +30,18 @@ public class Messages {
             VOLUNTEER_UPDATED = "Volunteer details updated",
             VOLUNTEER_DELETED = "Volunteer deleted",
 
+            ROLE_CREATED = "Role created",
+            ROLE_FOUND = "Role found",
+            ROLES_FOUND = "Found %s role/s",
+            ROLE_UPDATED = "Role details updated",
+            ROLE_DELETED = "Role deleted",
+
+            ROLE_REGISTER_CREATED = "Role register created",
+            ROLE_REGISTER_FOUND = "Role register found",
+            ROLE_REGISTERS_FOUND = "Found %s role register/s",
+            ROLE_REGISTER_UPDATED = "Role register details updated",
+            ROLE_REGISTER_DELETED = "Role register deleted",
+
             CREDENTIALS_EMAIL_SENT = "Credentials email sent",
             EMAIL_SENT = "Email sent",
 
@@ -87,7 +99,7 @@ public class Messages {
 
             NO_CHANGES_PROCESSED = "No changes processed",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers.",
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers and %s skipped.",
 
             TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
             TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
@@ -151,6 +163,10 @@ public class Messages {
             VOLUNTEER_ALREADY_LINKED = "This volunteer is already linked to another user",
             VOLUNTEER_WITHOUT_BA_ID = "Volunteer hasn't Builder Assistant Id assigned",
             VOLUNTEER_ABSENCES_EMPTY = "Volunter hasn't informed any absence",
+
+            ROLE_NOT_FOUND = "Role not found",
+
+            ROLE_REGISTER_NOT_FOUND = "Role register not found",
 
             TOOL_ID_NOT_FOUND = "Tool with id '%s' not found",
             TOOL_NOT_FOUND_BARCODE = "Tool with barcode %s not found",

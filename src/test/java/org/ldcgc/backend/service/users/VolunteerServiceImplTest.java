@@ -355,7 +355,7 @@ class VolunteerServiceImplTest {
 
         doReturn(Optional.empty()).when(groupRepository).findById(8);
 
-        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.uploadVolunteers(8, document));
+        RequestException ex = assertThrows(RequestException.class, () -> volunteerService.uploadVolunteers(document));
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getHttpStatus());
         assertEquals(Messages.Error.GROUP_NOT_FOUND, ex.getMessage());
@@ -372,7 +372,7 @@ class VolunteerServiceImplTest {
         doReturn(Optional.of(group)).when(groupRepository).findById(8);
         doReturn(Optional.empty()).when(volunteerRepository).findByBuilderAssistantId(anyString());
 
-        ResponseEntity<?> response = volunteerService.uploadVolunteers(8, document);
+        ResponseEntity<?> response = volunteerService.uploadVolunteers(document);
         Response.DTO responseBody = (Response.DTO) response.getBody();
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());

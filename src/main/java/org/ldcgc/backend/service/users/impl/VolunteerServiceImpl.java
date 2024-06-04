@@ -22,6 +22,7 @@ import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,11 +35,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.ldcgc.backend.util.process.Files.getContentFromCSV;
+import static org.ldcgc.backend.util.process.Files.getMapContentFromCSV;
 
 @Component
 @RequiredArgsConstructor
@@ -139,31 +141,41 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
     }
 
-    public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {
-        AtomicInteger volunteers = new AtomicInteger();
+    public ResponseEntity<?> uploadVolunteers(MultipartFile document) {
+        AtomicInteger volunteersListed = new AtomicInteger();
+        AtomicInteger volunteersRegistered = new AtomicInteger();
+        Integer groupId = Integer.valueOf(Optional.ofNullable(MDC.get("groupId")).orElseThrow(() ->
+            new RequestException(HttpStatus.FORBIDDEN, Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)));
         Group group = groupRepository.findById(groupId).orElseThrow(
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.GROUP_NOT_FOUND));
 
-        List<List<String>> volunteersData = getContentFromCSV(document.getResource(), ',', true);
-        volunteersData.forEach(vData -> {
-            if (volunteerRepository.findByBuilderAssistantId(vData.get(0)).isPresent())
+        Map<String, List<String>> volunteersMap = getMapContentFromCSV(document.getResource(), ',', true, 0);
+        volunteersMap.entrySet().parallelStream().forEach(v -> {
+            volunteersListed.getAndIncrement();
+            List<String> _v = v.getValue();
+            if (volunteerRepository.existsByBuilderAssistantId(_v.get(0)))
                 return;
+
             // vData[4] Monday - vData[10] Sunday, vData[11] Holiday
-            Set<EWeekday> availability = getAvailabilityFromCSVData(List.of(vData.get(4), vData.get(5), vData.get(6), vData.get(7), vData.get(8), vData.get(9), vData.get(10), vData.get(11)));
+            Set<EWeekday> availability = _v.size() > 4
+                ? getAvailabilityFromCSVData(List.of(_v.get(4), _v.get(5), _v.get(6), _v.get(7), _v.get(8), _v.get(9), _v.get(10), _v.get(11)))
+                : null;
             Volunteer volunteer = Volunteer.builder()
-                .builderAssistantId(vData.get(0))
-                .name(vData.get(1))
-                .lastName(vData.get(2))
-                .status(EVolunteerStatus.valueOf(vData.get(3)))
+                .builderAssistantId(_v.get(0))
+                .name(_v.get(1))
+                .lastName(_v.get(2))
+                .status(_v.size() > 3 ? EVolunteerStatus.valueOf(_v.get(3)) : EVolunteerStatus.ACTIVE)
                 .availability(availability)
                 .group(group)
                 .build();
 
             volunteerRepository.saveAndFlush(volunteer);
-            volunteers.getAndIncrement();
+            volunteersRegistered.getAndIncrement();
         });
 
-        return Constructor.buildResponseMessage(HttpStatus.CREATED, String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, volunteers));
+        Integer volunteersSkipped = volunteersListed.get() - volunteersRegistered.get();
+        return Constructor.buildResponseMessage(HttpStatus.CREATED,
+            String.format(Messages.Info.CSV_VOLUNTEERS_CREATED, volunteersRegistered, volunteersSkipped));
     }
 
     private Volunteer getVolunteerFromDB(String builderAssistantId) {

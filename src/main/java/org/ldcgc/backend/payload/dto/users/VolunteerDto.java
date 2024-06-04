@@ -26,6 +26,7 @@ public class VolunteerDto {
     private EVolunteerStatus status;
     private List<EWeekday> availability;
     private List<AbsenceDto> absences;
-    private GroupDto groupDto;
+    private List<RoleRegisterDto> roles;
+    private GroupDto group;
 
 }
