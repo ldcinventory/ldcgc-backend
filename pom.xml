@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.5</version>
+		<version>3.3.0</version>
 		<relativePath/>
 	</parent>
 
 	<groupId>org.ldcgc</groupId>
 	<artifactId>gc8inventory-backend</artifactId>
-	<version>0.1.0</version>
+	<version>1.0b1</version>
 	<name>backend</name>
 	<description>LDC-GC Backend</description>
 	<url>https://gc8inventory.es</url>
@@ -22,14 +22,13 @@
 		<maven.compiler.release>21</maven.compiler.release>
 		<maven-compiler.version>3.13.0</maven-compiler.version>
 		<spring-boot.version>3.2.5</spring-boot.version>
-		<guava.version>33.2.0-jre</guava.version>
-		<snakeyaml.version>2.2</snakeyaml.version>
+		<guava.version>33.2.1-jre</guava.version>
 		<apache-poi.version>5.2.5</apache-poi.version>
-		<commons-compress.version>1.26.1</commons-compress.version>
-		<nimbus.version>9.39</nimbus.version>
+		<commons-compress.version>1.26.2</commons-compress.version>
+		<nimbus.version>9.39.3</nimbus.version>
 		<tink.version>1.13.0</tink.version>
 		<openapi.version>2.5.0</openapi.version>
-		<simple-java-mail.version>8.10.1</simple-java-mail.version>
+		<simple-java-mail.version>8.11.1</simple-java-mail.version>
 		<lombok.version>1.18.32</lombok.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
@@ -37,9 +36,12 @@
 		<google-oauth.version>1.36.0</google-oauth.version>
 		<google-auth.version>1.23.0</google-auth.version>
 		<slf4j.version>2.0.13</slf4j.version>
+		<!-- test -->
 		<junit-platform-suite.version>1.10.2</junit-platform-suite.version>
 		<datafaker.version>2.2.2</datafaker.version>
 		<json-path.version>2.9.0</json-path.version>
+		<podam.version>8.0.1.RELEASE</podam.version>
+		<jackson-datatype-jsr310>2.17.1</jackson-datatype-jsr310>
 	</properties>
 
 	<dependencies>
@@ -182,11 +184,6 @@
 			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>${snakeyaml.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>${apache-poi.version}</version>
@@ -196,19 +193,19 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${apache-poi.version}</version>
 		</dependency>
-		<!-- while poi-ooxml is vulnerable -->
+		<!-- while poi-ooxml is vulnerable, use latest from commons-compress -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>${commons-compress.version}</version>
 		</dependency>
+
+		<!-- Test -->
 		<dependency>
 			<groupId>net.datafaker</groupId>
 			<artifactId>datafaker</artifactId>
 			<version>${datafaker.version}</version>
 		</dependency>
-
-		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -234,12 +231,13 @@
 		<dependency>
 			<groupId>uk.co.jemos.podam</groupId>
 			<artifactId>podam</artifactId>
-			<version>8.0.0.RELEASE</version>
+			<version>${podam.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.13.0</version>
+			<version>${jackson-datatype-jsr310}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
