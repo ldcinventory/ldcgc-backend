@@ -1,7 +1,7 @@
 package org.ldcgc.backend.security.user;
 
 import lombok.Getter;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,11 +32,11 @@ public class UserDetailsImpl extends User implements UserDetails {
         return o instanceof UserDetailsImpl && this.id.equals(((UserDetailsImpl) o).getId());
     }
 
-    public ERole[] getRolesFromAuthorities() {
+    public EUserRole[] getRolesFromAuthorities() {
         return this.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
-            .map(ERole::getEnumFromAuthority)
-            .toArray(ERole[]::new);
+            .map(EUserRole::getEnumFromAuthority)
+            .toArray(EUserRole[]::new);
     }
 
 }

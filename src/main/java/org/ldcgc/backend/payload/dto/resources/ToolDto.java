@@ -9,9 +9,9 @@ import org.ldcgc.backend.payload.dto.category.BrandDto;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
-import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EToolStatus;
 import org.ldcgc.backend.util.common.EUploadStatus;
 
 import java.time.LocalDate;
@@ -46,7 +46,7 @@ public class ToolDto {
     private LocalDate nextMaintenance;
     private boolean modifyNextMaintenance;
     @Schema(requiredMode = REQUIRED)
-    private EStatus status;
+    private EToolStatus status;
     @Schema(requiredMode = REQUIRED)
     private LocationDto location;
     @Schema(requiredMode = REQUIRED)

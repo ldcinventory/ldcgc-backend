@@ -36,7 +36,7 @@ import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
 @Tag(name = "Consumable", description = "Consumables methods with CRUD functions and load from Excel")
 public interface ConsumableController {
 
-    @Operation(summary = "Get any consumable by providing its id.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Get any consumable by id", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -57,7 +57,7 @@ public interface ConsumableController {
         @Parameter(description = "Consumable Id to get an existing consumable entity", required = true)
             @PathVariable Integer consumableId);
 
-    @Operation(summary = "Create a new consumable.", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Create a new consumable", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -101,7 +101,7 @@ public interface ConsumableController {
         content = @Content(mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)),
             examples = {
-                @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+                @ExampleObject(name = "Consumables found", value = Messages.Info.CONSUMABLE_LISTED, description = "%s will be replaced by the number of consumables found")
             }
         )
     )
@@ -133,7 +133,7 @@ public interface ConsumableController {
         @Parameter(description = "Sort asc desc (default = desc)")
             @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
-    @Operation(summary = "List consumables", description = """
+    @Operation(summary = "List consumables and filter by just a filterString", description = """
         Get all consumables, paginated and sorted. You can also include 6 filters:
         - category
         - brand
@@ -149,7 +149,7 @@ public interface ConsumableController {
         content = @Content(mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)),
             examples = {
-                @ExampleObject(name = "Tools found", value = Messages.Info.TOOL_LISTED, description = "%s will be replaced by the number of tools found")
+                @ExampleObject(name = "Consumables found", value = Messages.Info.CONSUMABLE_LISTED, description = "%s will be replaced by the number of consumables found")
             }
         )
     )
@@ -169,7 +169,7 @@ public interface ConsumableController {
         @Parameter(description = "Sort asc desc (default = desc)")
             @RequestParam(required = false, defaultValue = "desc") EOrder order);
 
-    @Operation(summary = "List consumable registers and filter by just a filterString", description = SWAGGER_ROLE_OPERATION_MANAGER)
+    @Operation(summary = "Update a consumable", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_201,
         description = SwaggerConfig.HTTP_REASON_201,
@@ -208,7 +208,7 @@ public interface ConsumableController {
         @Parameter(description = "Consumable Id to update", required = true)
             @PathVariable Integer consumableId);
 
-    @Operation(summary = "Delete an existing consumable.", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @Operation(summary = "Delete a consumable", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
         responseCode = SwaggerConfig.HTTP_200,
         description = SwaggerConfig.HTTP_REASON_200,
@@ -262,9 +262,40 @@ public interface ConsumableController {
     @PostMapping("/excel")
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> loadExcel(
-        @Parameter(description = "The group id in which all the volunteers will be included", required = true)
-            @RequestParam Integer groupId,
         @Parameter(description = "The XLS file with all the consumables to upload", required = true)
             @RequestPart MultipartFile file);
+
+    @Operation(summary = "Load the consumables from Google Spreadsheet", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ConsumableDto.class)))
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_REASON_422,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing consumable", value = Messages.Error.EXCEL_PARSE_ERROR),
+                @ExampleObject(name = "Error parsing consumable (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
+                @ExampleObject(name = "Error parsing consumable (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
+                @ExampleObject(name = "Error parsing consumable (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),
+                @ExampleObject(name = "Error parsing consumable (type)", value = Messages.Error.EXCEL_CELL_TYPE_INCORRECT)
+            })
+    )
+    @PostMapping("/gsheet")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> loadGSheetTemplate(
+        @Parameter(description = "The XLS file with all the consumables to upload", required = true)
+            @RequestParam String url);
 
 }

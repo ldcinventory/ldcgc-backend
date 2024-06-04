@@ -9,9 +9,9 @@ import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EToolStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,7 +88,7 @@ public class MockedResources {
             .maintenanceTime(getRandomEnum(ETimeUnit.class))
             .lastMaintenance(null)
             .nextMaintenance(getRandomLocalDateFromNow())
-            .status(getRandomEnum(EStatus.class))
+            .status(getRandomEnum(EToolStatus.class))
             .location(getRandomLocation())
             .group(getRandomGroup())
             .build();

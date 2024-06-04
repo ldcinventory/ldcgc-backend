@@ -15,6 +15,7 @@ public interface ConsumableService {
     ResponseEntity<?> listConsumablesLoose(String filterString, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order);
     ResponseEntity<?> updateConsumable(ConsumableDto consumableDto, Integer consumableId);
     ResponseEntity<?> deleteConsumable(Integer consumableId);
-    ResponseEntity<?> loadExcel(Integer groupId, MultipartFile file);
+    ResponseEntity<?> loadExcel(MultipartFile file);
+    ResponseEntity<?> loadGSheetTemplate(String url);
 
 }

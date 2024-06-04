@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -22,7 +23,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class Volunteer {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EVStatus status;
+    private EVolunteerStatus status;
 
     // this converter gets the natural string from DB, which is formatted as an array ['L','M','X',...]
     // and instantiate it in backend as a List of EWeekday enum
@@ -65,5 +66,8 @@ public class Volunteer {
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
+
+    @OneToOne
+    private Role role;
 
 }

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EToolStatus;
 
 import java.time.LocalDate;
 
@@ -53,10 +53,10 @@ public class Maintenance {
 
     @Convert(converter = StatusConverter.class)
     @Column(columnDefinition = "int")
-    private EStatus inStatus;
+    private EToolStatus inStatus;
 
     @Convert(converter = StatusConverter.class)
     @Column(columnDefinition = "int")
-    private EStatus outStatus;
+    private EToolStatus outStatus;
 
 }

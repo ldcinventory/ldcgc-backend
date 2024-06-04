@@ -19,7 +19,7 @@ import org.ldcgc.backend.payload.mapper.users.AbsenceMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.impl.AbsenceServiceImpl;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -69,7 +69,7 @@ class AbsenceServiceImplTest {
     @BeforeEach
     public void init() {
         absenceService = new AbsenceServiceImpl(jwtUtils, userRepository, volunteerRepository, absenceRepository);
-        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(ERole.ROLE_USER)));
+        mockedToken = generateSignedStringToken(UserMapper.MAPPER.toEntity(MockedUserVolunteer.getRandomMockedUserDto(EUserRole.ROLE_USER)));
 
     }
 

@@ -24,9 +24,9 @@ import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
-import org.ldcgc.backend.util.common.EStatus;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.util.common.EToolStatus;
 
 import java.time.LocalDate;
 
@@ -93,7 +93,7 @@ public class Tool {
 
     @Convert(converter = StatusConverter.class)
     @Column(columnDefinition = "int")
-    private EStatus status;
+    private EToolStatus status;
 
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")

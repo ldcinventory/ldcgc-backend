@@ -21,7 +21,7 @@ import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.service.resources.tool.ToolService;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EStatus;
+import org.ldcgc.backend.util.common.EToolStatus;
 import org.ldcgc.backend.util.common.EUploadStatus;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
@@ -108,8 +108,8 @@ public class ToolServiceImpl implements ToolService {
         Integer statusId = StringUtils.isEmpty(status)
             ? null
             : Optional.of(status)
-                .map(EStatus::getStatusByName)
-                .map(EStatus::getId)
+                .map(EToolStatus::getStatusByName)
+                .map(EToolStatus::getId)
                 .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
@@ -131,8 +131,8 @@ public class ToolServiceImpl implements ToolService {
         Integer statusId = StringUtils.isEmpty(status)
             ? null
             : Optional.of(status)
-            .map(EStatus::getStatusByName)
-            .map(EStatus::getId)
+            .map(EToolStatus::getStatusByName)
+            .map(EToolStatus::getId)
             .orElseThrow(() -> new RequestException(HttpStatus.BAD_REQUEST, Messages.Error.STATUS_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
@@ -177,7 +177,11 @@ public class ToolServiceImpl implements ToolService {
             toolEntities.stream().map(ToolMapper.MAPPER::toDto).map(ToolMapper::cleanProps).toList());
     }
 
-    public Tool updateToolStatus(Tool tool, EStatus status){
+    public ResponseEntity<?> loadGSheetTemplate(String url) {
+        return Constructor.buildResponseMessage(HttpStatus.NOT_IMPLEMENTED, Messages.Warning.ENDPOINT_NOT_IMPLEMENTED);
+    }
+
+    public Tool updateToolStatus(Tool tool, EToolStatus status){
         tool.setStatus(status);
 
         return toolRepository.saveAndFlush(tool);

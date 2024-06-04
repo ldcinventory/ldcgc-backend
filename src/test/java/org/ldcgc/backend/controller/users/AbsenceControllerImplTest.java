@@ -15,7 +15,7 @@ import org.ldcgc.backend.payload.dto.users.AbsenceDto;
 import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.AbsenceService;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +122,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAbsence)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedAbsence)))
@@ -145,7 +145,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(response)))
@@ -168,7 +168,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER)
                 .param("dateFrom", "2024-09-30")
                 .param("dateTo", "2024-01-01")
             )
@@ -191,7 +191,7 @@ public class AbsenceControllerImplTest {
         given(absenceService.createMyAbsence(anyString(), any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(mockedAbsence)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -212,7 +212,7 @@ public class AbsenceControllerImplTest {
         given(absenceService.updateMyAbsence(anyString(), anyInt(), any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(mockedAbsence)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -231,7 +231,7 @@ public class AbsenceControllerImplTest {
         given(absenceService.deleteMyAbsence(anyString(), anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.ABSENCE_DELETED));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_USER, "0"))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_USER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.ABSENCE_DELETED))
@@ -250,7 +250,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedAbsence)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_MANAGER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_MANAGER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedAbsence)))
@@ -272,7 +272,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(response)))
@@ -295,7 +295,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER)
                 .param("dateFrom", "2024-01-01")
                 .param("dateTo", "2024-09-30")
             )
@@ -320,7 +320,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER)
                 .param("builderAssistantIds", "12345","67890")
             )
             .andDo(print())
@@ -344,7 +344,7 @@ public class AbsenceControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(response)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER)
                 .param("dateFrom", "2024-01-01")
                 .param("dateTo", "2024-09-30")
                 .param("builderAssistantIds", "12345","67890")
@@ -369,7 +369,7 @@ public class AbsenceControllerImplTest {
         given(absenceService.createAbsence(any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_MANAGER)
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_MANAGER)
                 .content(mapper.writeValueAsString(mockedAbsence)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -390,7 +390,7 @@ public class AbsenceControllerImplTest {
         given(absenceService.updateAbsence(anyInt(), any(AbsenceDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_MANAGER)
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_MANAGER)
                 .content(mapper.writeValueAsString(mockedAbsence)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -409,7 +409,7 @@ public class AbsenceControllerImplTest {
         given(absenceService.deleteAbsence(anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.ABSENCE_DELETED));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_MANAGER, "0"))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_MANAGER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.ABSENCE_DELETED))

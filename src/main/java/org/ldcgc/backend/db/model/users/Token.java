@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 
 import java.time.LocalDateTime;
 
@@ -53,7 +53,7 @@ public class Token {
 
     @NotNull
     @Column(nullable = false)
-    private ERole role;
+    private EUserRole role;
 
     @NotNull
     private boolean isRecoveryToken;

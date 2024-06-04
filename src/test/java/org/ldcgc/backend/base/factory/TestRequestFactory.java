@@ -1,6 +1,6 @@
 package org.ldcgc.backend.base.factory;
 
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -22,7 +22,7 @@ public class TestRequestFactory {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static MockHttpServletRequestBuilder defaultRequestValues(MockHttpServletRequestBuilder requestBuilder, ERole tokenUserRole) {
+    private static MockHttpServletRequestBuilder defaultRequestValues(MockHttpServletRequestBuilder requestBuilder, EUserRole tokenUserRole) {
 
         if(tokenUserRole == null)
             return requestBuilder
@@ -41,12 +41,12 @@ public class TestRequestFactory {
 
     // get
 
-    public static MockHttpServletRequestBuilder getRequest(String url, ERole tokenUserRole, Object... uriVariables) {
+    public static MockHttpServletRequestBuilder getRequest(String url, EUserRole tokenUserRole, Object... uriVariables) {
         MockHttpServletRequestBuilder request = uriVariables == null ? get(url) : get(url, uriVariables);
         return defaultRequestValues(request, tokenUserRole);
     }
 
-    public static MockHttpServletRequestBuilder getRequest(String url, ERole tokenUserRole) {
+    public static MockHttpServletRequestBuilder getRequest(String url, EUserRole tokenUserRole) {
         return getRequest(url, tokenUserRole, (Object[]) null);
     }
 
@@ -60,12 +60,12 @@ public class TestRequestFactory {
 
     // post
 
-    public static MockHttpServletRequestBuilder postRequest(String url, ERole tokenUserRole, Object... uriVariables) {
+    public static MockHttpServletRequestBuilder postRequest(String url, EUserRole tokenUserRole, Object... uriVariables) {
         MockHttpServletRequestBuilder request = uriVariables == null ? post(url) : post(url, uriVariables);
         return defaultRequestValues(request, tokenUserRole);
     }
 
-    public static MockHttpServletRequestBuilder postRequest(String url, ERole tokenUserRole) {
+    public static MockHttpServletRequestBuilder postRequest(String url, EUserRole tokenUserRole) {
         return postRequest(url, tokenUserRole, (Object[]) null);
     }
 
@@ -77,7 +77,7 @@ public class TestRequestFactory {
         return postRequest(url, null, (Object[]) null);
     }
 
-    public static MockHttpServletRequestBuilder postMultipartRequest(String url, MockMultipartFile file, ERole tokenUserRole) {
+    public static MockHttpServletRequestBuilder postMultipartRequest(String url, MockMultipartFile file, EUserRole tokenUserRole) {
 
         return MockMvcRequestBuilders.multipart(url)
             .file(file)
@@ -95,12 +95,12 @@ public class TestRequestFactory {
 
     // put
 
-    public static MockHttpServletRequestBuilder putRequest(String url, ERole tokenUserRole, Object... uriVariables) {
+    public static MockHttpServletRequestBuilder putRequest(String url, EUserRole tokenUserRole, Object... uriVariables) {
         MockHttpServletRequestBuilder request = uriVariables == null ? put(url) : put(url, uriVariables);
         return defaultRequestValues(request, tokenUserRole);
     }
 
-    public static MockHttpServletRequestBuilder putRequest(String url, ERole tokenUserRole) {
+    public static MockHttpServletRequestBuilder putRequest(String url, EUserRole tokenUserRole) {
         return putRequest(url, tokenUserRole, (Object[]) null);
     }
 
@@ -114,12 +114,12 @@ public class TestRequestFactory {
 
     // patch
 
-    public static MockHttpServletRequestBuilder patchRequest(String url, ERole tokenUserRole, Object... uriVariables) {
+    public static MockHttpServletRequestBuilder patchRequest(String url, EUserRole tokenUserRole, Object... uriVariables) {
         MockHttpServletRequestBuilder request = uriVariables == null ? patch(url) : patch(url, uriVariables);
         return defaultRequestValues(request, tokenUserRole);
     }
 
-    public static MockHttpServletRequestBuilder patchRequest(String url, ERole tokenUserRole) {
+    public static MockHttpServletRequestBuilder patchRequest(String url, EUserRole tokenUserRole) {
         return patchRequest(url, tokenUserRole, (Object[]) null);
     }
 
@@ -133,12 +133,12 @@ public class TestRequestFactory {
 
     // delete
 
-    public static MockHttpServletRequestBuilder deleteRequest(String url, ERole tokenUserRole, Object... uriVariables) {
+    public static MockHttpServletRequestBuilder deleteRequest(String url, EUserRole tokenUserRole, Object... uriVariables) {
         MockHttpServletRequestBuilder request = uriVariables == null ? delete(url) : delete(url, uriVariables);
         return defaultRequestValues(request, tokenUserRole);
     }
 
-    public static MockHttpServletRequestBuilder deleteRequest(String url, ERole tokenUserRole) {
+    public static MockHttpServletRequestBuilder deleteRequest(String url, EUserRole tokenUserRole) {
         return deleteRequest(url, tokenUserRole, (Object[]) null);
     }
 

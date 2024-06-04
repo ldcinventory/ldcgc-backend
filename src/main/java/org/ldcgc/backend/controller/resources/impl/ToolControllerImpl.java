@@ -41,4 +41,8 @@ public class ToolControllerImpl implements ToolController {
 
     public ResponseEntity<?> uploadToolsExcel(MultipartFile file) { return toolService.uploadToolsExcel(file); }
 
+    public ResponseEntity<?> loadGSheetTemplate(String url) {
+        return toolService.loadGSheetTemplate(url);
+    }
+
 }

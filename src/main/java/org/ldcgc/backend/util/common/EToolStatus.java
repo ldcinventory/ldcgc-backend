@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum EStatus implements EnumMethods {
+public enum EToolStatus implements EnumMethods {
 
     AVAILABLE("Disponible", 0),
     NOT_AVAILABLE("No disponible", 1),
@@ -21,16 +21,16 @@ public enum EStatus implements EnumMethods {
     private final String desc;
     private final Integer id;
 
-    public static EStatus getStatusFromId(Integer id) {
-        for (EStatus status : EStatus.values())
+    public static EToolStatus getStatusFromId(Integer id) {
+        for (EToolStatus status : EToolStatus.values())
             if (status.getId().equals(id))
                 return status;
 
         throw new RequestException(HttpStatus.NOT_FOUND, String.format(Messages.Error.STATUS_NOT_FOUND, id));
     }
 
-    public static EStatus getStatusByName(String name) {
-        for (EStatus status : EStatus.values())
+    public static EToolStatus getStatusByName(String name) {
+        for (EToolStatus status : EToolStatus.values())
             if (status.getDesc().equalsIgnoreCase(name) || status.name().equalsIgnoreCase(name))
                 return status;
 

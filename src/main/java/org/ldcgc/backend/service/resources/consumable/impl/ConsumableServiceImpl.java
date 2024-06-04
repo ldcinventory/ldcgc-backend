@@ -79,8 +79,9 @@ public class ConsumableServiceImpl implements ConsumableService {
 
     public ResponseEntity<?> listConsumables(String barcode, String category, String brand, String name, String model, String description, String location, Boolean hasStock, Integer pageIndex, Integer size, String sortField, EOrder order) {
         if(StringUtils.isNotBlank(barcode))
-            return Constructor.buildResponseObject(HttpStatus.OK,
-                ConsumableMapper.MAPPER.toDto(getOrElseThrowNotFound(barcode)));
+            return Constructor.buildResponseMessageObject(HttpStatus.OK,
+                String.format(Messages.Info.CONSUMABLE_LISTED, 1),
+                PaginationDetails.pagingOneObject(ConsumableMapper.MAPPER.toDto(getOrElseThrowNotFound(barcode))));
 
         Pageable pageable = PageRequest.of(pageIndex, size, order.equals(EOrder.DESC)
             ? Sort.by(sortField).descending()
@@ -145,7 +146,7 @@ public class ConsumableServiceImpl implements ConsumableService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_DELETED);
     }
 
-    public ResponseEntity<?> loadExcel(Integer groupId, MultipartFile file) {
+    public ResponseEntity<?> loadExcel(MultipartFile file) {
         List<ConsumableDto> consumablesToSave = consumableExcelService.excelToConsumables(file);
 
         // calc inserted and skipped
@@ -169,6 +170,10 @@ public class ConsumableServiceImpl implements ConsumableService {
             HttpStatus.CREATED,
             String.format(Messages.Info.CONSUMABLES_UPLOADED, toolsInserted, toolsSkipped),
             consumables.stream().map(ConsumableMapper.MAPPER::toDto).map(ConsumableMapper::cleanProps).toList());
+    }
+
+    public ResponseEntity<?> loadGSheetTemplate(String url) {
+        return Constructor.buildResponseMessage(HttpStatus.NOT_IMPLEMENTED, Messages.Warning.ENDPOINT_NOT_IMPLEMENTED);
     }
 
     private Consumable getOrElseThrowNotFound(Integer consumableId) {

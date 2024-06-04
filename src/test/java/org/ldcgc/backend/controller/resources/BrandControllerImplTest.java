@@ -20,7 +20,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +137,7 @@ public class BrandControllerImplTest {
 
         given(brandService.getBrands(null, null)).willAnswer(invocation -> response);
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message", Matchers.is(message)))
@@ -161,7 +161,7 @@ public class BrandControllerImplTest {
 
         given(brandService.createBrand(any(BrandDto.class))).willAnswer(invocation -> response);
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(brandDto)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -187,7 +187,7 @@ public class BrandControllerImplTest {
 
         given(brandService.deleteBrand(anyInt())).willAnswer(invocation -> response);
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_ADMIN, brandDto.getId()))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_ADMIN, brandDto.getId()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message", Matchers.is(message)))

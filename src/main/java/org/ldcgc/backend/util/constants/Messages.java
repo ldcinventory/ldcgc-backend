@@ -100,6 +100,8 @@ public class Messages {
     public static class Warning {
 
         public static final String
+            ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
+
             VOLUNTEER_LINKED_TO_USER = "This volunteer is linked to a user with id %s, please confirm deletion to unlink both first and delete this one",
             USER_LINKED_VOLUNTEER_NOT_ACTIVE = "User linked to volunteer with builder assistant id %s. Please be aware this volunteer is not active"
 
@@ -214,7 +216,6 @@ public class Messages {
             TIME_UNIT_NOT_FOUND = "Time unit '%s' not found",
 
             RUNTIME_EXCEPTION = "Error processing data, check your request",
-            ENDPOINT_NOT_IMPLEMENTED = "This endpoint is not implemented yet",
 
             ABSENCE_VOLUNTEER_NOT_FOUND = "This absence was not found for this volunteer",
             VOLUNTEER_FROM_ABSENCE_NOT_FOUND = "The volunteer informed in the absence is not found (maybe not linked?)",

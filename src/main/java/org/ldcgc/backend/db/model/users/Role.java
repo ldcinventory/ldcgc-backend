@@ -8,62 +8,49 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.ldcgc.backend.db.model.category.Responsibility;
-import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.util.common.ERoleStatus;
+import org.ldcgc.backend.util.common.EVolunteerRole;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    @Column(nullable = false)
-    private String email;
+    private Integer linkedId;
 
-    @Column(nullable = false)
-    private String password;
+    private String linkedTableName;
 
-    @NotNull @NonNull
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EUserRole role;
+    private EVolunteerRole role;
 
-    private LocalDateTime acceptedEULA;
+    private Integer location;
 
-    private LocalDateTime acceptedEULAManager;
+    private LocalDate validFrom;
+
+    private LocalDate validUntil;
+
+    @Enumerated(EnumType.STRING)
+    private ERoleStatus status;
 
     @OneToOne
     @JoinColumn(name = "volunteer_id", referencedColumnName = "id")
     private Volunteer volunteer;
-
-    @ManyToOne
-    @JoinColumn(name = "responsibility_id", referencedColumnName = "id")
-    private Responsibility responsibility;
-
-    @ManyToOne
-    @JoinColumn(name = "group_id", referencedColumnName = "id")
-    private Group group;
-
-    private boolean enabled = true;
 
 }

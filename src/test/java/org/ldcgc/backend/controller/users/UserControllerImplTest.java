@@ -16,7 +16,7 @@ import org.ldcgc.backend.security.jwt.JwtUtils;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
 import org.ldcgc.backend.service.users.UserService;
 import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.validator.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +123,7 @@ public class UserControllerImplTest {
             invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedUser)))
@@ -136,14 +136,14 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
-        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_USER);
+        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(EUserRole.ROLE_USER);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
         given(userService.updateMyUser(anyString(), any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_USER)
                 .content(mapper.writeValueAsString(mockedUser)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -160,7 +160,7 @@ public class UserControllerImplTest {
         given(userService.deleteMyUser(anyString()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_USER))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_USER))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.USER_DELETED))
@@ -175,14 +175,14 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
-        UserDto mockedUser = getRandomMockedUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = getRandomMockedUserDto(EUserRole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_CREATED).data(mockedUser).build();
         ResponseEntity<Response.DTO> response = ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
         given(userService.createUser(anyString(), any(UserDto.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.CREATED).body(response));
 
-        mockMvc.perform(postRequest(request, ERole.ROLE_ADMIN)
+        mockMvc.perform(postRequest(request, EUserRole.ROLE_ADMIN)
                 .content(mapper.writeValueAsString(mockedUser)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -200,7 +200,7 @@ public class UserControllerImplTest {
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(mockedUser)
         );
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER, "0"))
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(mockedUser)))
@@ -222,7 +222,7 @@ public class UserControllerImplTest {
         given(userService.listUsers(anyString(), isNull(), isNull(), anyInt(), anyInt(), anyString(), any(EOrder.class)))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(response));
 
-        mockMvc.perform(getRequest(request, ERole.ROLE_USER)
+        mockMvc.perform(getRequest(request, EUserRole.ROLE_USER)
                 .param("filterString", "ad")
                 .param("pageIndex", "0")
                 .param("size", "5")
@@ -241,13 +241,13 @@ public class UserControllerImplTest {
 
         log.info("Testing a PUT Request to %s%s\n".formatted(API_ROOT, request));
 
-        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(ERole.ROLE_ADMIN);
+        UserDto mockedUser = MockedUserVolunteer.getRandomMockedUpdatingUserDto(EUserRole.ROLE_ADMIN);
         Response.DTO responseDTO = Response.DTO.builder().message(Messages.Info.USER_UPDATED).data(mockedUser).build();
 
         given(userService.updateUser(anyString(), anyInt(), any(UserDto.class))).will(
             invocation -> ResponseEntity.status(HttpStatus.CREATED).body(responseDTO));
 
-        mockMvc.perform(putRequest(request, ERole.ROLE_ADMIN, "0")
+        mockMvc.perform(putRequest(request, EUserRole.ROLE_ADMIN, "0")
                 .content(mapper.writeValueAsString(mockedUser)))
             .andDo(print())
             .andExpect(status().isCreated())
@@ -274,7 +274,7 @@ public class UserControllerImplTest {
         given(userService.deleteUser(anyInt()))
             .willAnswer(invocation -> ResponseEntity.status(HttpStatus.OK).body(Messages.Info.USER_DELETED));
 
-        mockMvc.perform(deleteRequest(request, ERole.ROLE_USER, "0"))
+        mockMvc.perform(deleteRequest(request, EUserRole.ROLE_USER, "0"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().string(Messages.Info.USER_DELETED))

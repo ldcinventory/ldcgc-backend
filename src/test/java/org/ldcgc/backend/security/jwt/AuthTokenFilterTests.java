@@ -16,7 +16,7 @@ import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.security.user.UserDetailsImpl;
 import org.ldcgc.backend.security.user.UserDetailsServiceImpl;
-import org.ldcgc.backend.util.common.ERole;
+import org.ldcgc.backend.util.common.EUserRole;
 import org.ldcgc.backend.util.constants.Messages;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -65,7 +65,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalNormal_returnOK() throws ServletException, IOException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -87,7 +87,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalRefresh_returnOK() throws ServletException, IOException, IllegalAccessException, ParseException, JOSEException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -121,7 +121,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalNonTokenEndpoint_returnOK() throws ServletException, IOException, IllegalAccessException, ParseException, JOSEException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -155,7 +155,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalNotExemptedEndpoint_returnStandardEulaNotAccepted() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -182,7 +182,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalNotExemptedEndpoint_returnManagerEulaNotAccepted() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_MANAGER, true, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_MANAGER, true, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -209,7 +209,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalNotExemptedEndpoint_returnAdminEulaNotAccepted() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -236,7 +236,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternal_returnParseException() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -259,7 +259,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternal_returnJOSEException() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -282,7 +282,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternal_returnIllegalArgumentException() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -305,7 +305,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternal_returnNullPointerException() throws RequestException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true, false);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true, false);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 
@@ -328,7 +328,7 @@ public class AuthTokenFilterTests {
 
     @Test
     public void doFilterInternalSetExpirationTimeFromLocalDateTime_returnOK() throws ServletException, IOException, ParseException, JOSEException, IllegalAccessException {
-        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(ERole.ROLE_ADMIN, true);
+        UserDetailsImpl userDetails = MockedUserVolunteer.getMockedUserDetailsImpl(EUserRole.ROLE_ADMIN, true);
 
         User user = getMockedUserFromMockedUserDetailsImpl(userDetails);
 

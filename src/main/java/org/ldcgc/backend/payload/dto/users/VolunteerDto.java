@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.util.common.EVStatus;
+import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class VolunteerDto {
     private String lastName;
     @Schema(requiredMode = REQUIRED)
     private String builderAssistantId;
-    private EVStatus status;
+    private EVolunteerStatus status;
     private List<EWeekday> availability;
     private List<AbsenceDto> absences;
     private GroupDto groupDto;

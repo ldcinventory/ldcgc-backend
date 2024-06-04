@@ -38,8 +38,8 @@ import java.util.Map;
 
 import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
-import static org.ldcgc.backend.util.common.ERole.ROLE_ADMIN;
-import static org.ldcgc.backend.util.common.ERole.ROLE_MANAGER;
+import static org.ldcgc.backend.util.common.EUserRole.ROLE_ADMIN;
+import static org.ldcgc.backend.util.common.EUserRole.ROLE_MANAGER;
 import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDateTime;
 import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
 

@@ -52,7 +52,9 @@ public interface ToolController {
     )
     @GetMapping("/{toolId}")
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> getTool(@PathVariable Integer toolId);
+    ResponseEntity<?> getTool(
+        @Parameter(description = "Tool id to get details", required = true)
+            @PathVariable Integer toolId);
 
     @Operation(summary = "Get all tools, paginated and sorted.", description = """
         You can also include some filters:
@@ -199,7 +201,9 @@ public interface ToolController {
     )
     @PostMapping
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> createTool(@RequestBody ToolDto toolDto);
+    ResponseEntity<?> createTool(
+        @Parameter(description = "Tool details to create a new one", required = true)
+            @RequestBody ToolDto toolDto);
 
     @Operation(summary = "Update a tool. If another tool has the barcode, an exception will be thrown", description = SWAGGER_ROLE_OPERATION_MANAGER)
     @ApiResponse(
@@ -226,7 +230,11 @@ public interface ToolController {
     )
     @PutMapping("/{toolId}")
     @PreAuthorize(MANAGER_LEVEL)
-    ResponseEntity<?> updateTool(@PathVariable Integer toolId, @RequestBody ToolDto toolDto);
+    ResponseEntity<?> updateTool(
+        @Parameter(description = "Tool id to update", required = true)
+            @PathVariable Integer toolId,
+        @Parameter(description = "Tool details to update", required = true)
+            @RequestBody ToolDto toolDto);
 
     @Operation(summary = "Delete an existing tool", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -248,7 +256,9 @@ public interface ToolController {
     )
     @DeleteMapping("/{toolId}")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> deleteTool(@PathVariable Integer toolId);
+    ResponseEntity<?> deleteTool(
+        @Parameter(description = "Tool id to delete", required = true)
+            @PathVariable Integer toolId);
 
     @Operation(summary = "Upload tools from Excel file", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -265,7 +275,7 @@ public interface ToolController {
         description = SwaggerConfig.HTTP_REASON_403,
         content = @Content(mediaType = "application/json",
             examples = {
-                @ExampleObject(name = "Error parsing consumable (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
+                @ExampleObject(name = "Error parsing tool (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
             })
     )
     @ApiResponse(
@@ -291,6 +301,41 @@ public interface ToolController {
     )
     @PostMapping("/excel")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> uploadToolsExcel(@RequestParam("excel") MultipartFile file);
+    ResponseEntity<?> uploadToolsExcel(
+        @Parameter(description = "The XLS file with all the tools to upload", required = true)
+            @RequestParam("excel") MultipartFile file);
+
+    @Operation(summary = "Load the tools from Google Spreadsheet", description = SWAGGER_ROLE_OPERATION_ADMIN)
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_201,
+        description = SwaggerConfig.HTTP_REASON_201,
+        content = @Content(mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ToolDto.class)))
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_403,
+        description = SwaggerConfig.HTTP_REASON_403,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing tool (group)", value = Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)
+            })
+    )
+    @ApiResponse(
+        responseCode = SwaggerConfig.HTTP_422,
+        description = SwaggerConfig.HTTP_REASON_422,
+        content = @Content(mediaType = "application/json",
+            examples = {
+                @ExampleObject(name = "Error parsing tool", value = Messages.Error.EXCEL_PARSE_ERROR),
+                @ExampleObject(name = "Error parsing tool (category)", value = Messages.Error.RESOURCE_TYPE_SON_NOT_FOUND),
+                @ExampleObject(name = "Error parsing tool (location)", value = Messages.Error.LOCATION_NOT_FOUND_EXCEL),
+                @ExampleObject(name = "Error parsing tool (value)", value = Messages.Error.EXCEL_VALUE_INCORRECT),
+                @ExampleObject(name = "Error parsing tool (type)", value = Messages.Error.EXCEL_CELL_TYPE_INCORRECT)
+            })
+    )
+    @PostMapping("/gsheet")
+    @PreAuthorize(ADMIN_LEVEL)
+    ResponseEntity<?> loadGSheetTemplate(
+        @Parameter(description = "The XLS file with all the tools to upload", required = true)
+        @RequestParam String url);
 
 }
