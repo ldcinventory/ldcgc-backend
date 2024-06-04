@@ -22,6 +22,7 @@ import org.ldcgc.backend.util.common.EVolunteerStatus;
 import org.ldcgc.backend.util.common.EWeekday;
 import org.ldcgc.backend.util.constants.Messages;
 import org.ldcgc.backend.util.creation.Constructor;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -139,8 +140,10 @@ public class VolunteerServiceImpl implements VolunteerService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.VOLUNTEER_DELETED);
     }
 
-    public ResponseEntity<?> uploadVolunteers(Integer groupId, MultipartFile document) {
+    public ResponseEntity<?> uploadVolunteers(MultipartFile document) {
         AtomicInteger volunteers = new AtomicInteger();
+        Integer groupId = Integer.valueOf(Optional.ofNullable(MDC.get("groupId")).orElseThrow(() ->
+            new RequestException(HttpStatus.FORBIDDEN, Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)));
         Group group = groupRepository.findById(groupId).orElseThrow(
             () -> new RequestException(HttpStatus.NOT_FOUND, Messages.Error.GROUP_NOT_FOUND));
 
