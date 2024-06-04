@@ -224,7 +224,7 @@ public class InitializationData {
                     .build());
             log.info("Created rest of locations");
 
-            // RESOURCE TYPES (select name from categories;)
+            // RESOURCE TYPES
             // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura", "Sin especificar");
 
@@ -243,7 +243,7 @@ public class InitializationData {
 
             // CONSUMABLES + TOOLS
 
-            // --> BRANDS (select name from brands;)
+            // --> BRANDS
 
             List<String> brandNames = Arrays.asList("Sin marca", "ABAC", "Acesa", "Alyco", "Anean", "Argoco", "Bahco", "Bellota", "Blackwire", "BM-RS", "Boll", "Bosch", "Bossram", "Brüder Mannesmann", "Butsir", "Climaver", "Daher", "Delta", "Deltaplus", "Desa", "Dewalt", "Dexter", "DIN", "Dogher", "DURO", "Duro Meister", "Electrovolt", "ERGO", "Expert", "Ez Fasten", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GICNAC2", "Grespania", "Hermin", "Hilti", "HP", "HR", "IFAM", "IKEA", "Imcoinsa", "INDEX", "Indiuka", "Intercable", "Irazola", "Irimo", "Isover", "Jar", "Kartcher", "Klein Tools", "Knipex", "Kreator", "LEMAN", "Lenovo", "Letratag", "LIMIT", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "MT", "Multi Star", "Ninguna", "Novipro", "Nusac", "Opel", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Profi", "Proiman", "Quilosa", "Retevis", "Rigo", "Rothenberger", "Rubi", "Rubi negra", "Ruvi", "Samsung", "Sanyipace", "Savage", "Schneider", "Sofamel", "SREMTCH", "Stanley", "Starrett", "Stayer", "Stayer Welding", "Svelt", "Syntesi", "Tacklife", "Termiser", "Testo", "TUV", "UKACA", "UNI-T", "UniGrip", "Urceri", "Velour", "Vevor", "Vorel", "Wera", "Werku", "Western Knipex", "Wiesman", "Wiha", "Witte", "Wolfpack", "Würth", "Xiaomi", "Zosi Smart");
 
@@ -702,43 +702,24 @@ public class InitializationData {
     // load from CSV
     private void loadVolunteersCSV(Group group) {
         // VOLUNTEERS
-        // select builderAssistantId, name, surname, active from volunteers;
+        Map<String, List<String>> volunteers = Files.getMapContentFromCSV(volunteersCSV, ',', true, 0);
 
-        List<List<String>> volunteers = Files.getListContentFromCSV(volunteersCSV, ',', true);
+        volunteers.entrySet().parallelStream().forEach(v -> {
+            List<String> _v = v.getValue();
 
-        Map<String, Volunteer> volunteerEntities = new HashMap<>();
-        volunteers.forEach(vFieldList -> {
-            if(Objects.nonNull(volunteerEntities.get(vFieldList.get(1))))
-                return;
-
-            Volunteer volunteer = Volunteer.builder()
-                .builderAssistantId(vFieldList.get(0))
-                .name(vFieldList.get(1))
-                .lastName(vFieldList.get(2))
+            volunteerRepository.saveAndFlush(Volunteer.builder()
+                .builderAssistantId(_v.get(0))
+                .name(_v.get(1))
+                .lastName(_v.get(2))
                 .status(EVolunteerStatus.ACTIVE)
                 .group(group)
-                .build();
-            volunteerEntities.put(vFieldList.get(1), volunteer);
+                .build());
         });
 
-        List<Volunteer> volunteerEntitiesList = volunteerEntities.values().stream().toList();
-
-        for(int i = 0; i < volunteerEntitiesList.size(); i += 500) {
-            if(i + 500 > volunteerEntitiesList.size()) {
-                volunteerRepository.saveAllAndFlush(volunteerEntitiesList.subList(i, volunteerEntitiesList.size() - 1));
-                continue;
-            }
-            volunteerRepository.saveAllAndFlush(volunteerEntitiesList.subList(i, i + 500));
-        }
     }
 
     private void loadToolsCSV() {
         // --> TOOLS
-        // select t.Barcode, b.Name as brand, t.Model, t.Name as name,
-        //                   t.Description, c.Name as category, t.Weight, t.Price, t.PurchaseDate
-        //            from Tools t, Brands b, Categories c
-        //            where t.BrandId = b.BrandId
-        //            and t.CategoryId = c.CategoryId;
 
         Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
@@ -775,12 +756,6 @@ public class InitializationData {
 
     private void loadConsumablesCSV() {
         // --> CONSUMABLES
-        // select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
-        //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
-        //                         cn.Stock, cn.MinimumStock
-        //                  from Consumables cn, Brands b, Categories c
-        //                  where cn.BrandId = b.BrandId
-        //                  and cn.CategoryId = c.CategoryId;
 
         Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
