@@ -26,6 +26,7 @@ public interface VolunteerMapper {
 
     @Mapping(target = "availability", qualifiedByName = "mapAvailability")
     @Mapping(target = "absences", ignore = true)
+    @Mapping(target = "group.location.locations", ignore = true)
     VolunteerDto toDto(Volunteer volunteer);
 
     void update(@MappingTarget Volunteer volunteer, VolunteerDto volunteerDto);
