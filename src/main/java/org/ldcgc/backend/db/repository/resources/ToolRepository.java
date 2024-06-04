@@ -40,7 +40,12 @@ public interface ToolRepository extends JpaRepository<Tool, Integer> {
               OR unaccent(t.model) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR unaccent(t.description) ILIKE unaccent(CONCAT('%', :filterString, '%'))
               OR t.barcode = :filterString)
-              AND t.status = :statusId
+              AND (
+                CASE
+                    WHEN :statusId IS NOT NULL THEN t.status = :statusId
+                    ELSE TRUE
+                END
+              )
             """, nativeQuery = true)
     Page<Tool> findAllFiltered(String filterString, Integer statusId, Pageable pageable);
 
