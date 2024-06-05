@@ -141,7 +141,12 @@
 			<artifactId>google-auth-library-oauth2-http</artifactId>
 			<version>${google-auth.version}</version>
 		</dependency>
-		<!-- presumably final version (this one is the latest from 2020) -->
+		<!-- presumably final version (these two from Google are from late 2020) -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-sheets</artifactId>
+			<version>v4-rev493-1.23.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-drive</artifactId>
@@ -182,6 +187,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>33.2.1-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
