@@ -59,14 +59,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -487,10 +488,14 @@ public class InitializationData {
     }
 
     private void loadToolsRegistration() {
-        List<Integer> openedToolRegisters = new ArrayList<>();
+        Set<Integer> openedToolRegisters = new ConcurrentSkipListSet<>();
+        int numOfTools = (int) toolRepository.count();
         IntStream.range(0, 3_000)
             .parallel()
             .forEach(i -> {
+                if(openedToolRegisters.size() == numOfTools)
+                    return;
+
                 Tool tool = toolRepository.getRandomTool();
                 boolean isOpen = !openedToolRegisters.contains(tool.getId());
 
@@ -557,7 +562,7 @@ public class InitializationData {
     }
 
     private void loadConsumablesRegistration() {
-        List<Integer> openedConsumableRegisters = new ArrayList<>();
+        Set<Integer> openedConsumableRegisters = new HashSet<>();
         IntStream.range(0, 3_000)
             .parallel()
             .forEach(i -> {
@@ -731,7 +736,7 @@ public class InitializationData {
                     ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
                     : tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
-                    ? brandsMap.get("<empty>")
+                    ? brandsMap.get("Sin marca")
                     : brandsMap.get(tFieldList.get(1)))
                 .model(tFieldList.get(2))
                 .name(tFieldList.get(3))
@@ -744,7 +749,6 @@ public class InitializationData {
                 .stockWeightType(KILOGRAMS)
                 .price(toFloat(tFieldList.get(7)))
                 .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
-                .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                 .maintenanceTime(getRandomEnum(ETimeUnit.class))
                 .maintenancePeriod(getRandomIntegerFromRange(1,30))
                 .lastMaintenance(getRandomPastDate(true))
@@ -780,7 +784,9 @@ public class InitializationData {
                 .barcode(consumableEntities.get(cFieldList.get(0)) != null
                     ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
                     : cFieldList.get(0))
-                .brand(brandsMap.get(cFieldList.get(1)))
+                .brand(StringUtils.isBlank(cFieldList.get(1))
+                    ? brandsMap.get("Sin marca")
+                    : brandsMap.get(cFieldList.get(1)))
                 .model(cFieldList.get(2))
                 .name(cFieldList.get(3))
                 .description(cFieldList.get(4))
@@ -793,7 +799,6 @@ public class InitializationData {
                 .stock(stock)
                 .stockType(getRandomEnum(EStockType.class))
                 .minStock(minStock)
-                .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                 .build();
             consumableEntities.put(consumable.getBarcode(), consumable);
         }

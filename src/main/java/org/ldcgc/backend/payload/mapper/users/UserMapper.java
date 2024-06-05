@@ -3,17 +3,16 @@ package org.ldcgc.backend.payload.mapper.users;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
-import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import static org.ldcgc.backend.util.creation.EncryptedPassword.getEncryptedPassword;
+import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(uses = { LocationMapper.class, VolunteerMapper.class })
 public interface UserMapper {
@@ -31,7 +30,7 @@ public interface UserMapper {
 
     UserCredentialsDto toCredentialsDTO(User user);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "password", target = "password", qualifiedByName = "mapPasswordToEncryptedPassword")
     void update(UserDto userFrom, @MappingTarget User userTo);

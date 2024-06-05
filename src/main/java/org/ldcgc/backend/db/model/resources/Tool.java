@@ -36,7 +36,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "tools")
-public class Tool {
+public class Tool extends Resource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

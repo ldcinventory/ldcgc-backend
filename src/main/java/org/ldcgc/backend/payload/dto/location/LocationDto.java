@@ -26,6 +26,7 @@ public class LocationDto {
     private ELocationType locationType;
     @Schema(requiredMode = REQUIRED)
     private Integer level;
+    private LocationDto parent;
     private Integer parentLocationId;
     @JsonInclude(NON_EMPTY) @Setter
     private List<LocationDto> locations;

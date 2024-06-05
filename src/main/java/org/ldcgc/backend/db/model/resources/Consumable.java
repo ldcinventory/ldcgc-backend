@@ -30,7 +30,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
 @Table(name = "consumables")
-public class Consumable {
+public class Consumable extends Resource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

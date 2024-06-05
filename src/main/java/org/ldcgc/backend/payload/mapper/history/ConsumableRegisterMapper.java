@@ -5,28 +5,29 @@ import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
+import org.ldcgc.backend.payload.mapper.common.MapperMethods;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
 import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
+import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
-@Mapper(uses = { ConsumableMapper.class, VolunteerMapper.class },
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(uses = { ConsumableMapper.class, VolunteerMapper.class, MapperMethods.class },
+        nullValuePropertyMappingStrategy = IGNORE)
 public interface ConsumableRegisterMapper {
 
     ConsumableRegisterMapper MAPPER = Mappers.getMapper(ConsumableRegisterMapper.class);
 
     @Mapping(target = "consumableBarcode", source = "consumable.barcode")
-    @Mapping(target = "consumableName", source = "consumable", qualifiedByName = "mapConsumableName")
+    @Mapping(target = "consumableName", source = "consumable", qualifiedByName = "mapResourceName")
     @Mapping(target = "consumableUrlImages", source = "consumable", qualifiedByName = "mapConsumableRegisterUrlImagesToDto")
     @Mapping(target = "volunteerBuilderAssistantId", source = "volunteer.builderAssistantId")
     @Mapping(target = "volunteerName", source = "volunteer.name")
@@ -54,15 +55,6 @@ public interface ConsumableRegisterMapper {
     @Named("mapConsumableRegisterUrlImagesToDto")
     static String[] mapConsumableRegisterUrlImagesToDto(Consumable consumable){
         return mapStringArrayWithPrefix(consumable.getUrlImages(), DRIVE_IMAGES_URL);
-    }
-
-    @Named("mapConsumableName")
-    static String mapConsumableName(Consumable consumable) {
-        return String.format("%s # %s # %s%s",
-            consumable.getBarcode(),
-            consumable.getBrand().getName(),
-            consumable.getName(),
-            StringUtils.isBlank(consumable.getModel()) ? "" : " # " + consumable.getModel());
     }
 
 }
