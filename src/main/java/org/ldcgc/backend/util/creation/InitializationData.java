@@ -59,14 +59,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -224,7 +225,7 @@ public class InitializationData {
                     .build());
             log.info("Created rest of locations");
 
-            // RESOURCE TYPES (select name from categories;)
+            // RESOURCE TYPES
             // --> resources
             List<String> resourceNames = Arrays.asList("Acabados", "Accesorios", "Alargos", "Albañilería", "Alicatado y solado", "Clima", "Electricidad", "Fontanería", "Herramientas de mano", "Iluminación", "Maquinaria", "Oficina", "Pintura", "Pladur", "Seguridad", "Soldadura", "Sin especificar");
 
@@ -243,7 +244,7 @@ public class InitializationData {
 
             // CONSUMABLES + TOOLS
 
-            // --> BRANDS (select name from brands;)
+            // --> BRANDS
 
             List<String> brandNames = Arrays.asList("Sin marca", "ABAC", "Acesa", "Alyco", "Anean", "Argoco", "Bahco", "Bellota", "Blackwire", "BM-RS", "Boll", "Bosch", "Bossram", "Brüder Mannesmann", "Butsir", "Climaver", "Daher", "Delta", "Deltaplus", "Desa", "Dewalt", "Dexter", "DIN", "Dogher", "DURO", "Duro Meister", "Electrovolt", "ERGO", "Expert", "Ez Fasten", "EZ-Fasten", "Femi", "Fischer Darex", "Forged ", "GICNAC2", "Grespania", "Hermin", "Hilti", "HP", "HR", "IFAM", "IKEA", "Imcoinsa", "INDEX", "Indiuka", "Intercable", "Irazola", "Irimo", "Isover", "Jar", "Kartcher", "Klein Tools", "Knipex", "Kreator", "LEMAN", "Lenovo", "Letratag", "LIMIT", "Loria", "Makita", "Mannesmann", "Metal Works", "Milwaukee", "Mirka", "ML-OK", "MT", "Multi Star", "Ninguna", "Novipro", "Nusac", "Opel", "Palmera", "Panduit", "Pentrilo", "Petzl", "Powerfix", "Profi", "Proiman", "Quilosa", "Retevis", "Rigo", "Rothenberger", "Rubi", "Rubi negra", "Ruvi", "Samsung", "Sanyipace", "Savage", "Schneider", "Sofamel", "SREMTCH", "Stanley", "Starrett", "Stayer", "Stayer Welding", "Svelt", "Syntesi", "Tacklife", "Termiser", "Testo", "TUV", "UKACA", "UNI-T", "UniGrip", "Urceri", "Velour", "Vevor", "Vorel", "Wera", "Werku", "Western Knipex", "Wiesman", "Wiha", "Witte", "Wolfpack", "Würth", "Xiaomi", "Zosi Smart");
 
@@ -487,10 +488,14 @@ public class InitializationData {
     }
 
     private void loadToolsRegistration() {
-        List<Integer> openedToolRegisters = new ArrayList<>();
+        Set<Integer> openedToolRegisters = new ConcurrentSkipListSet<>();
+        int numOfTools = (int) toolRepository.count();
         IntStream.range(0, 3_000)
             .parallel()
             .forEach(i -> {
+                if(openedToolRegisters.size() == numOfTools)
+                    return;
+
                 Tool tool = toolRepository.getRandomTool();
                 boolean isOpen = !openedToolRegisters.contains(tool.getId());
 
@@ -557,7 +562,7 @@ public class InitializationData {
     }
 
     private void loadConsumablesRegistration() {
-        List<Integer> openedConsumableRegisters = new ArrayList<>();
+        Set<Integer> openedConsumableRegisters = new HashSet<>();
         IntStream.range(0, 3_000)
             .parallel()
             .forEach(i -> {
@@ -702,43 +707,24 @@ public class InitializationData {
     // load from CSV
     private void loadVolunteersCSV(Group group) {
         // VOLUNTEERS
-        // select builderAssistantId, name, surname, active from volunteers;
+        Map<String, List<String>> volunteers = Files.getMapContentFromCSV(volunteersCSV, ',', true, 0);
 
-        List<List<String>> volunteers = Files.getListContentFromCSV(volunteersCSV, ',', true);
+        volunteers.entrySet().parallelStream().forEach(v -> {
+            List<String> _v = v.getValue();
 
-        Map<String, Volunteer> volunteerEntities = new HashMap<>();
-        volunteers.forEach(vFieldList -> {
-            if(Objects.nonNull(volunteerEntities.get(vFieldList.get(1))))
-                return;
-
-            Volunteer volunteer = Volunteer.builder()
-                .builderAssistantId(vFieldList.get(0))
-                .name(vFieldList.get(1))
-                .lastName(vFieldList.get(2))
+            volunteerRepository.saveAndFlush(Volunteer.builder()
+                .builderAssistantId(_v.get(0))
+                .name(_v.get(1))
+                .lastName(_v.get(2))
                 .status(EVolunteerStatus.ACTIVE)
                 .group(group)
-                .build();
-            volunteerEntities.put(vFieldList.get(1), volunteer);
+                .build());
         });
 
-        List<Volunteer> volunteerEntitiesList = volunteerEntities.values().stream().toList();
-
-        for(int i = 0; i < volunteerEntitiesList.size(); i += 500) {
-            if(i + 500 > volunteerEntitiesList.size()) {
-                volunteerRepository.saveAllAndFlush(volunteerEntitiesList.subList(i, volunteerEntitiesList.size() - 1));
-                continue;
-            }
-            volunteerRepository.saveAllAndFlush(volunteerEntitiesList.subList(i, i + 500));
-        }
     }
 
     private void loadToolsCSV() {
         // --> TOOLS
-        // select t.Barcode, b.Name as brand, t.Model, t.Name as name,
-        //                   t.Description, c.Name as category, t.Weight, t.Price, t.PurchaseDate
-        //            from Tools t, Brands b, Categories c
-        //            where t.BrandId = b.BrandId
-        //            and t.CategoryId = c.CategoryId;
 
         Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
@@ -750,7 +736,7 @@ public class InitializationData {
                     ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
                     : tFieldList.get(0))
                 .brand(StringUtils.isBlank(tFieldList.get(1))
-                    ? brandsMap.get("<empty>")
+                    ? brandsMap.get("Sin marca")
                     : brandsMap.get(tFieldList.get(1)))
                 .model(tFieldList.get(2))
                 .name(tFieldList.get(3))
@@ -763,7 +749,6 @@ public class InitializationData {
                 .stockWeightType(KILOGRAMS)
                 .price(toFloat(tFieldList.get(7)))
                 .purchaseDate(tFieldList.get(8).length() < 10 ? null : stringToLocalDate(tFieldList.get(8).substring(0, 10), "yyyy-MM-dd"))
-                .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                 .maintenanceTime(getRandomEnum(ETimeUnit.class))
                 .maintenancePeriod(getRandomIntegerFromRange(1,30))
                 .lastMaintenance(getRandomPastDate(true))
@@ -775,12 +760,6 @@ public class InitializationData {
 
     private void loadConsumablesCSV() {
         // --> CONSUMABLES
-        // select cn.Barcode, b.Name as brand, cn.Model, cn.Name as name,
-        //                         cn.Description, c.Name as category, cn.Price, cn.PurchaseDate,
-        //                         cn.Stock, cn.MinimumStock
-        //                  from Consumables cn, Brands b, Categories c
-        //                  where cn.BrandId = b.BrandId
-        //                  and cn.CategoryId = c.CategoryId;
 
         Location location = locationRepository.getLocationByName("Ferretería").orElse(null);
 
@@ -805,7 +784,9 @@ public class InitializationData {
                 .barcode(consumableEntities.get(cFieldList.get(0)) != null
                     ? RandomStringUtils.randomAlphanumeric(10).toUpperCase()
                     : cFieldList.get(0))
-                .brand(brandsMap.get(cFieldList.get(1)))
+                .brand(StringUtils.isBlank(cFieldList.get(1))
+                    ? brandsMap.get("Sin marca")
+                    : brandsMap.get(cFieldList.get(1)))
                 .model(cFieldList.get(2))
                 .name(cFieldList.get(3))
                 .description(cFieldList.get(4))
@@ -818,7 +799,6 @@ public class InitializationData {
                 .stock(stock)
                 .stockType(getRandomEnum(EStockType.class))
                 .minStock(minStock)
-                .urlImages(new String[]{"url-imagen-1", "url-imagen-2"})
                 .build();
             consumableEntities.put(consumable.getBarcode(), consumable);
         }

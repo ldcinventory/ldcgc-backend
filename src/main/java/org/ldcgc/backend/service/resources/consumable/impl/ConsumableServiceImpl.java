@@ -34,10 +34,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.ldcgc.backend.util.process.Excel.getExcelResourcesAmount;
 
 @Slf4j
 @Component
@@ -146,33 +148,40 @@ public class ConsumableServiceImpl implements ConsumableService {
         return Constructor.buildResponseMessage(HttpStatus.OK, Messages.Info.CONSUMABLE_DELETED);
     }
 
-    public ResponseEntity<?> loadExcel(MultipartFile file) {
-        List<ConsumableDto> consumablesToSave = consumableExcelService.excelToConsumables(file);
+    public ResponseEntity<?> uploadExcelConsumables(MultipartFile file, Integer initialRow) {
+        int excelConsumables = getExcelResourcesAmount(file, "consumibles", 2, 3);
+        Map<String, Consumable> consumablesMap = consumableExcelService.excelToConsumables(file, initialRow);
+
+        List<Consumable> consumablesList = consumableRepository.saveAll(consumablesMap.entrySet()
+            .parallelStream()
+            .map(Map.Entry::getValue)
+            .toList());
 
         // calc inserted and skipped
-        Map<String, ConsumableDto> consumablesToSaveMap = new HashMap<>();
-        for(ConsumableDto consumableDto : consumablesToSave) {
-            if (consumablesToSaveMap.get(consumableDto.getBarcode()) != null
-                || consumableRepository.existsByBarcode(consumableDto.getBarcode())
-                || consumableDto.getId() != null)
-                consumableDto.setUploadStatus(EUploadStatus.SKIPPED);
-            else {
-                consumablesToSaveMap.put(consumableDto.getBarcode(), consumableDto);
-                consumableDto.setUploadStatus(EUploadStatus.INSERTED);
+        AtomicInteger consumablesInserted = new AtomicInteger(0);
+        consumablesList.parallelStream().forEach(c -> {
+            if (consumablesMap.get(c.getBarcode()) != null) {
+                consumablesMap.get(c.getBarcode()).setUploadStatus(EUploadStatus.INSERTED);
+                consumablesInserted.getAndIncrement();
             }
-        }
+        });
 
-        List<Consumable> consumables = consumableRepository.saveAll(consumablesToSaveMap.values().stream().map(ConsumableMapper.MAPPER::toMo).toList());
-        int toolsInserted = consumablesToSaveMap.size();
-        int toolsSkipped = consumablesToSave.size() - toolsInserted;
+        int consumablesSkipped = excelConsumables - consumablesInserted.get();
+
+        List<ConsumableDto> consumablesEntitiesProcessed = consumablesList.parallelStream()
+            .map(ConsumableMapper.MAPPER::toDto)
+            .map(ConsumableMapper::cleanProps)
+            .toList();
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            String.format(Messages.Info.CONSUMABLES_UPLOADED, toolsInserted, toolsSkipped),
-            consumables.stream().map(ConsumableMapper.MAPPER::toDto).map(ConsumableMapper::cleanProps).toList());
+            String.format("%s. %s",
+                String.format(Messages.Info.CONSUMABLES_UPLOADED, consumablesInserted, consumablesSkipped),
+                String.format(Messages.Info.CONSUMABLES_IN_DB, consumableRepository.count())),
+            consumablesEntitiesProcessed);
     }
 
-    public ResponseEntity<?> loadGSheetTemplate(String url) {
+    public ResponseEntity<?> uploadGSheetTemplate(String url, Integer initialRow) {
         return Constructor.buildResponseMessage(HttpStatus.NOT_IMPLEMENTED, Messages.Warning.ENDPOINT_NOT_IMPLEMENTED);
     }
 

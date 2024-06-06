@@ -4,10 +4,12 @@ import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = LocationMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+import static org.mapstruct.NullValuePropertyMappingStrategy.SET_TO_NULL;
+
+@Mapper(uses = LocationMapper.class,
+        nullValuePropertyMappingStrategy = SET_TO_NULL)
 public interface GroupMapper {
 
     GroupMapper MAPPER = Mappers.getMapper(GroupMapper.class);

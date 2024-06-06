@@ -9,20 +9,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
+import org.ldcgc.backend.db.model.group.Group;
+import org.ldcgc.backend.db.model.location.Location;
+import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
+import org.ldcgc.backend.db.repository.group.GroupRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.payload.dto.category.BrandDto;
-import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
-import org.ldcgc.backend.payload.dto.excel.ToolExcelMasterDto;
-import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.payload.dto.location.LocationDto;
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.payload.mapper.category.BrandMapper;
-import org.ldcgc.backend.payload.mapper.category.ResourceTypeMapper;
-import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
-import org.ldcgc.backend.service.location.LocationService;
+import org.ldcgc.backend.payload.dto.excel.ResourceExcelMasterDto;
 import org.ldcgc.backend.service.resources.tool.ToolExcelService;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
@@ -37,13 +33,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getDateCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getFloatCellValue;
 import static org.ldcgc.backend.util.conversion.ExcelFunctions.getIntegerCellValue;
@@ -58,31 +56,47 @@ public class ToolExcelServiceImpl implements ToolExcelService {
     private final ToolRepository toolRepository;
     private final BrandRepository brandRepository;
     private final ResourceTypeRepository resourceTypeRepository;
-    private final LocationService locationService;
+    private final LocationRepository locationRepository;
+    private final GroupRepository groupRepository;
 
-    private ToolExcelMasterDto master;
+    private ResourceExcelMasterDto master;
+    private Group group;
 
-    public List<ToolDto> excelToTools(MultipartFile excel) {
+    public Map<String, Tool> excelToTools(MultipartFile excel, int initialRow) {
         processExcelArray();
 
-        List<ToolDto> tools = new ArrayList<>();
+        Map<String, Tool> tools = new HashMap<>();
+
+        Integer groupId = Integer.valueOf(Optional.ofNullable(MDC.get("groupId")).orElseThrow(() ->
+            new RequestException(HttpStatus.FORBIDDEN, Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)));
+        group = groupRepository.findById(groupId).orElseThrow(() ->
+            new RequestException(HttpStatus.FORBIDDEN, String.format(Messages.Error.GROUP_NOT_FOUND, groupId)));
+
+        Map<String, Integer> toolsMap = toolRepository.findAll().stream().collect(
+            toMap(Tool::getBarcode, Tool::getId, (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new));
+
+        Map<String, Brand> brandsMap = brandRepository.findAll().stream().collect(
+            toMap(Brand::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new));
+
+        Map<String, ResourceType> resourceTypesMap = resourceTypeRepository.findAll().stream().collect(
+            toMap(ResourceType::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new));
+
+        Map<String, Location> locationsMap = locationRepository.findAll().stream().collect(
+            toMap(Location::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new));
 
         try {
             Workbook workbook = new XSSFWorkbook(excel.getInputStream());
             Sheet sheet = workbook.getSheet("herramientas");
-            master = ToolExcelMasterDto.builder()
-                .tools(toolRepository.findAll().stream().map(ToolMapper.MAPPER::toDto)
-                    .collect(toMap(ToolDto::getBarcode, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
-                .brands(brandRepository.findAll().stream().map(BrandMapper.MAPPER::toDto)
-                    .collect(toMap(BrandDto::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
-                .resourceTypes(resourceTypeRepository.findAll().stream().map(ResourceTypeMapper.MAPPER::toDto)
-                    .collect(toMap(ResourceTypeDto::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
-                .locations(locationService.getAllLocations()
-                    .stream().collect(toMap(LocationDto::getName, Function.identity(), (existing, replacement) -> existing, LinkedCaseInsensitiveMap::new)))
+
+            master = ResourceExcelMasterDto.builder()
+                .tools(toolsMap)
+                .brands(brandsMap)
+                .resourceTypes(resourceTypesMap)
+                .locations(locationsMap)
                 .build();
 
-            for (int i = 2; i <= getLastRowByColumn(sheet, 3) ; i++)
-                Optional.ofNullable(parseRowToTool(sheet.getRow(i))).ifPresent(tools::add);
+            for (int i = initialRow; i <= getLastRowByColumn(sheet, 3) ; i++)
+                Optional.ofNullable(parseRowToTool(sheet.getRow(i))).ifPresent(t -> tools.put(t.getBarcode(), t));
 
         } catch (IOException e) {
             throw new RequestException(Messages.Error.EXCEL_PARSE_ERROR);
@@ -91,39 +105,39 @@ public class ToolExcelServiceImpl implements ToolExcelService {
         return tools;
     }
 
-    private ToolDto parseRowToTool(Row row) {
+    private Tool parseRowToTool(Row row) {
         // MANDATORY. If this field is not present then don't proceed
         String name = getStringCellValue(row, EXlsxToolPos.NAME.getColumnNumber());
         if(StringUtils.isBlank(name)) return null;
 
         // barcode provided or generate random new
-        String barcode = StringUtils.defaultIfBlank(
+        String barcode = defaultIfBlank(
             getStringCellValue(row, EXlsxToolPos.BARCODE.getColumnNumber()),
             "#" + RandomStringUtils.randomAlphanumeric(8).toUpperCase());
 
-        Integer id = Optional.ofNullable(master.getTools().get(barcode)).map(ToolDto::getId).orElse(null);
+        Integer id = master.getTools().get(barcode);
 
         // resource type provided or set "sin especificar" as default
-        String resourceType = StringUtils.defaultIfBlank(
+        String resourceType = defaultIfBlank(
             getStringCellValue(row, EXlsxToolPos.RESOURCE_TYPE.getColumnNumber()),
             "Sin especificar");
-        if(StringUtils.isNotBlank(resourceType) && master.getResourceTypes().get(resourceType) == null) {
-            ResourceTypeDto newResourceTypeDto = ResourceTypeDto.builder().name(resourceType).locked(false).build();
-            ResourceType newResourceType = resourceTypeRepository.saveAndFlush(ResourceTypeMapper.MAPPER.toEntity(newResourceTypeDto));
-            master.getResourceTypes().put(newResourceType.getName(), ResourceTypeMapper.MAPPER.toDto(newResourceType));
+        if(isNotBlank(resourceType) && master.getResourceTypes().get(resourceType) == null) {
+            ResourceType newResourceType = resourceTypeRepository.saveAndFlush(
+                ResourceType.builder().name(resourceType).locked(false).build());
+            master.getResourceTypes().put(newResourceType.getName(), newResourceType);
         }
-        ResourceTypeDto resourceTypeDto = master.getResourceTypes().get(resourceType);
+        ResourceType resourceTypeDto = master.getResourceTypes().get(resourceType);
 
         // brand provided or set "sin marca" as default
-        String brandName = StringUtils.defaultIfBlank(
+        String brandName = defaultIfBlank(
             getStringCellValue(row, EXlsxToolPos.BRAND.getColumnNumber()),
             "Sin marca");
         if(master.getBrands().get(brandName) == null) {
-            BrandDto newBrandDto = BrandDto.builder().name(brandName).locked(false).build();
-            Brand newBrand = brandRepository.saveAndFlush(BrandMapper.MAPPER.toEntity(newBrandDto));
-            master.getBrands().put(newBrand.getName(), BrandMapper.MAPPER.toDto(newBrand));
+            Brand newBrand = brandRepository.saveAndFlush(
+                Brand.builder().name(brandName).locked(false).build());
+            master.getBrands().put(newBrand.getName(), newBrand);
         }
-        BrandDto brand = master.getBrands().get(brandName);
+        Brand brand = master.getBrands().get(brandName);
 
         String model = getStringCellValue(row, EXlsxToolPos.MODEL.getColumnNumber());
 
@@ -131,11 +145,11 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
         String stockType = getStringCellValue(row, EXlsxToolPos.STOCK_WEIGHT_TYPE.getColumnNumber());
 
-        Float weight = StringUtils.isNotBlank(stockType)
+        Float weight = isNotBlank(stockType)
             ? getFloatCellValue(row, EXlsxToolPos.WEIGHT.getColumnNumber())
-            : Float.valueOf(1.0f);
+            : null;
 
-        EStockType stockWeightType = StringUtils.isNotBlank(stockType)
+        EStockType stockWeightType = isNotBlank(stockType)
             ? EStockType.getStockTypeByDesc(stockType)
             : EStockType.UNKNOWN;
 
@@ -145,11 +159,11 @@ public class ToolExcelServiceImpl implements ToolExcelService {
 
         String maintenanceFreq = getStringCellValue(row, EXlsxToolPos.MAINTENANCE_PERIOD.getColumnNumber());
 
-        Integer maintenancePeriod = StringUtils.isNotBlank(maintenanceFreq)
+        Integer maintenancePeriod = isNotBlank(maintenanceFreq)
             ? getIntegerCellValue(row, EXlsxToolPos.MAINTENANCE_FREQUENCY.getColumnNumber())
             : Integer.valueOf(0);
 
-        ETimeUnit maintenanceTime = StringUtils.isNotBlank(maintenanceFreq)
+        ETimeUnit maintenanceTime = isNotBlank(maintenanceFreq)
             ? ETimeUnit.getTimeUnitByName(maintenanceFreq)
             : ETimeUnit.NEVER;
 
@@ -161,21 +175,17 @@ public class ToolExcelServiceImpl implements ToolExcelService {
             ? lastMaintenance.plus(Objects.requireNonNull(maintenancePeriod), maintenanceTime.getChronoUnit())
             : getDateCellValue(row, EXlsxToolPos.NEXT_MAINTENANCE.getColumnNumber());
 
-        EToolStatus status = EToolStatus.getStatusByName(StringUtils.defaultIfBlank(getStringCellValue(row, EXlsxToolPos.STATUS.getColumnNumber()), "Disponible"));
+        EToolStatus status = EToolStatus.getStatusByName(defaultIfBlank(getStringCellValue(row, EXlsxToolPos.STATUS.getColumnNumber()), "Disponible"));
 
-        String locationName = StringUtils.defaultIfBlank(
+        String locationName = defaultIfBlank(
             row.getCell(EXlsxToolPos.LOCATION.getColumnNumber()).getStringCellValue(),
             "Sin ubicación");
-        LocationDto location = Optional.ofNullable(master.getLocations().get(locationName))
+        Location location = Optional.ofNullable(master.getLocations().get(locationName))
             .orElseThrow(() -> new RequestException(generateExcelErrorMessage(
                 locationName, row.getRowNum() + 1, EXlsxToolPos.LOCATION.getColumnNumber() + 1,
-                Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations().values().stream().map(LocationDto::getName).toList()))));
+                Messages.Error.LOCATION_NOT_FOUND_EXCEL.formatted(locationName, master.getLocations()))));
 
-        Integer groupId = Integer.valueOf(Optional.ofNullable(MDC.get("groupId")).orElseThrow(() ->
-            new RequestException(HttpStatus.FORBIDDEN, Messages.Error.GROUP_NOT_FOUND_IN_TOKEN)));
-        GroupDto group = GroupDto.builder().id(groupId).build();
-
-        return ToolDto.builder()
+        return Tool.builder()
             .id(id)
             .barcode(barcode)
             .name(name)

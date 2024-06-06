@@ -10,10 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.mapper.StockTypeConverter;
@@ -27,24 +30,25 @@ import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.util.common.EStockType;
 import org.ldcgc.backend.util.common.ETimeUnit;
 import org.ldcgc.backend.util.common.EToolStatus;
+import org.ldcgc.backend.util.common.EUploadStatus;
 
 import java.time.LocalDate;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
+@Transactional
 @Table(name = "tools")
-public class Tool {
+public class Tool extends Resource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Integer id;
 
-    // TODO validation to not allow null nor duplications once a barcode is registered
-    //  (i.e. after batch a tool could have a null barcode)
     @Column(unique = true)
     //@GeneratedValue //TODO: make generator class
     private String barcode;
@@ -87,7 +91,7 @@ public class Tool {
 
     private LocalDate nextMaintenance;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "lastMaintenanceDetails_id", referencedColumnName = "id")
     private Maintenance lastMaintenanceDetails;
 
@@ -102,6 +106,9 @@ public class Tool {
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "id")
     private Group group;
+
+    @Transient
+    private EUploadStatus uploadStatus;
 
     private boolean enabled = true;
 

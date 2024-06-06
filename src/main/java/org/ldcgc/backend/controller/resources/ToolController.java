@@ -303,7 +303,9 @@ public interface ToolController {
     @PreAuthorize(ADMIN_LEVEL)
     ResponseEntity<?> uploadToolsExcel(
         @Parameter(description = "The XLS file with all the tools to upload", required = true)
-            @RequestParam("excel") MultipartFile file);
+            @RequestParam("excel") MultipartFile file,
+        @Parameter(description = "Initial row to start parsing objects")
+            @RequestParam(required = false, defaultValue = "0") Integer initialRow);
 
     @Operation(summary = "Load the tools from Google Spreadsheet", description = SWAGGER_ROLE_OPERATION_ADMIN)
     @ApiResponse(
@@ -334,8 +336,10 @@ public interface ToolController {
     )
     @PostMapping("/gsheet")
     @PreAuthorize(ADMIN_LEVEL)
-    ResponseEntity<?> loadGSheetTemplate(
+    ResponseEntity<?> uploadGSheetTemplate(
         @Parameter(description = "The XLS file with all the tools to upload", required = true)
-        @RequestParam String url);
+            @RequestParam String url,
+        @Parameter(description = "Initial row to start parsing objects")
+            @RequestParam(required = false, defaultValue = "0") Integer initialRow);
 
 }

@@ -39,10 +39,10 @@ public class ToolControllerImpl implements ToolController {
         return toolService.deleteTool(toolId);
     }
 
-    public ResponseEntity<?> uploadToolsExcel(MultipartFile file) { return toolService.uploadToolsExcel(file); }
+    public ResponseEntity<?> uploadToolsExcel(MultipartFile file, Integer initialRow) { return toolService.uploadToolsExcel(file, initialRow); }
 
-    public ResponseEntity<?> loadGSheetTemplate(String url) {
-        return toolService.loadGSheetTemplate(url);
+    public ResponseEntity<?> uploadGSheetTemplate(String url, Integer initialRow) {
+        return toolService.uploadGSheetTemplate(url, initialRow);
     }
 
 }

@@ -9,10 +9,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import static org.ldcgc.backend.util.creation.EncryptedPassword.getEncryptedPassword;
+import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(uses = { LocationMapper.class, VolunteerMapper.class })
 public interface UserMapper {
@@ -21,15 +21,16 @@ public interface UserMapper {
 
     @Mapping(source = "password", target = "password", qualifiedByName = "mapPasswordToEncryptedPassword")
     @Mapping(target = "group.location.locations", ignore = true)
-    User toEntity(UserDto userRequest);
+    User toEntity(UserDto userDto);
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "volunteer.absences", ignore = true)
+    @Mapping(target = "volunteer.group", ignore = true)
     UserDto toDTO(User user);
 
     UserCredentialsDto toCredentialsDTO(User user);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "password", target = "password", qualifiedByName = "mapPasswordToEncryptedPassword")
     void update(UserDto userFrom, @MappingTarget User userTo);

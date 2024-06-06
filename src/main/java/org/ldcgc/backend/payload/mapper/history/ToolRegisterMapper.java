@@ -1,31 +1,33 @@
 package org.ldcgc.backend.payload.mapper.history;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ToolRegister;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
+import org.ldcgc.backend.payload.mapper.common.MapperMethods;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
+import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
 import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
+import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 
-@Mapper(uses = ToolMapper.class, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(uses = { ToolMapper.class, VolunteerMapper.class, MapperMethods.class },
+        nullValuePropertyMappingStrategy = IGNORE)
 public interface ToolRegisterMapper {
     ToolRegisterMapper MAPPER = Mappers.getMapper(ToolRegisterMapper.class);
 
     @Mapping(target = "toolBarcode", source = "tool.barcode")
-    @Mapping(target = "toolName", source = "tool", qualifiedByName = "mapToolName")
+    @Mapping(target = "toolName", source = "tool", qualifiedByName = "mapResourceName")
     @Mapping(target = "toolUrlImages", source = "tool", qualifiedByName = "mapToolRegisterUrlImagesToDto")
     @Mapping(target = "volunteerName", source = "volunteer.name")
     @Mapping(target = "volunteerLastName", source = "volunteer.lastName")
@@ -61,15 +63,6 @@ public interface ToolRegisterMapper {
     @Named("mapToolRegisterUrlImagesToDto")
     static String[] mapToolRegisterUrlImagesToDto(Tool tool){
         return mapStringArrayWithPrefix(tool.getUrlImages(), DRIVE_IMAGES_URL);
-    }
-
-    @Named("mapToolName")
-    static String mapToolName(Tool tool) {
-        return String.format("%s # %s # %s%s",
-            tool.getBarcode(),
-            tool.getBrand().getName(),
-            tool.getName(),
-            StringUtils.isBlank(tool.getModel()) ? "" : " # " + tool.getModel());
     }
 
 }

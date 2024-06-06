@@ -9,10 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StockTypeConverter;
 import org.ldcgc.backend.db.mapper.StringArrayConverter;
@@ -25,12 +27,14 @@ import org.ldcgc.backend.util.common.EStockType;
 import java.time.LocalDate;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Entity
+@Transactional
 @Table(name = "consumables")
-public class Consumable {
+public class Consumable extends Resource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

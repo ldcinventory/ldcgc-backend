@@ -39,11 +39,11 @@ public class ConsumableControllerImpl implements ConsumableController {
         return consumableService.deleteConsumable(consumableId);
     }
 
-    public ResponseEntity<?> loadExcel(MultipartFile file) {
-        return consumableService.loadExcel(file);
+    public ResponseEntity<?> uploadExcelConsumables(MultipartFile file, Integer initialRow) {
+        return consumableService.uploadExcelConsumables(file, initialRow);
     }
 
-    public ResponseEntity<?> loadGSheetTemplate(String url) {
-        return consumableService.loadGSheetTemplate(url);
+    public ResponseEntity<?> uploadGSheetTemplate(String url, Integer initialRow) {
+        return consumableService.uploadGSheetTemplate(url, initialRow);
     }
 }

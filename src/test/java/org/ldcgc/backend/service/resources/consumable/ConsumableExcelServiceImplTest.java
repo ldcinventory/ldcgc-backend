@@ -62,7 +62,7 @@ class ConsumableExcelServiceImplTest {
         doReturn(consumablesDB).when(consumableRepository).findAll();
         doReturn(brandsDB).when(brandRepository).findAll();
         doReturn(resourceTypesDB).when(resourceTypeRepository).findAll();
-        doReturn(locationsDto).when(locationService).getAllLocations();
+        // TODO doReturn(locationsDto).when(locationService).getAllLocationsMap();
         doReturn(groupsDto).when(groupService).getAllGroups();
 
     }

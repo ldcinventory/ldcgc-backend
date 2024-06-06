@@ -9,6 +9,7 @@ import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.repository.category.BrandRepository;
 import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
+import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ToolRepository;
 import org.ldcgc.backend.exception.RequestException;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
@@ -20,7 +21,6 @@ import org.ldcgc.backend.payload.mapper.group.GroupMapper;
 import org.ldcgc.backend.payload.mapper.location.LocationMapper;
 import org.ldcgc.backend.payload.mapper.resources.tool.ToolMapper;
 import org.ldcgc.backend.service.group.GroupService;
-import org.ldcgc.backend.service.location.LocationService;
 import org.ldcgc.backend.service.resources.tool.impl.ToolExcelServiceImpl;
 import org.ldcgc.backend.strategy.MultipartFileFactory;
 import org.ldcgc.backend.util.common.EXlsxToolPos;
@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static org.apache.poi.ss.usermodel.CellType.BLANK;
@@ -62,7 +63,7 @@ class ToolExcelServiceImplTest {
     @Mock private ToolRepository toolRepository;
     @Mock private BrandRepository brandRepository;
     @Mock private ResourceTypeRepository resourceTypeRepository;
-    @Mock private LocationService locationService;
+    @Mock private LocationRepository locationRepository;
     @Mock private GroupService groupService;
 
     private List<ToolDto> toolsDto;
@@ -84,7 +85,8 @@ class ToolExcelServiceImplTest {
         lenient().doReturn(toolsDB).when(toolRepository).findAll();
         lenient().doReturn(brandsDB).when(brandRepository).findAll();
         lenient().doReturn(resourceTypesDB).when(resourceTypeRepository).findAll();
-        lenient().doReturn(locationsDto).when(locationService).getAllLocations();
+        // TODO
+        lenient().doReturn(locationsDto).when(locationRepository).findAll();
         lenient().doReturn(groupsDto).when(groupService).getAllGroups();
 
     }
@@ -93,7 +95,7 @@ class ToolExcelServiceImplTest {
     void excelToToolsShouldReturnTools() throws IOException {
         MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, null);
 
-        List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
+        Map<String, Tool> toolsExcelResponse = toolExcelService.excelToTools(file, 0);
 
         assertEquals(toolsDto.size(), toolsExcelResponse.size());
     }
@@ -102,7 +104,7 @@ class ToolExcelServiceImplTest {
     void excelToToolsShouldReturnWhatCellIsWrong() throws IOException {
         MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.BARCODE);
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file, 0));
 
         String expectedMessage = Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1,
             EXlsxToolPos.BARCODE.getColumnNumber(),
@@ -116,7 +118,7 @@ class ToolExcelServiceImplTest {
     void excelToToolsShouldThrowLocationNotFound() throws IOException {
         MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.LOCATION);
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file, 0));
 
         String expectedMessage = Messages.Error.EXCEL_VALUE_INCORRECT.formatted("mocked location", 1, EXlsxToolPos.LOCATION.getColumnNumber())
             .concat("\n")
@@ -133,7 +135,7 @@ class ToolExcelServiceImplTest {
     void excelToToolsShouldThrowMaintenancePeriodNotFound() throws IOException {
         MultipartFile file = MultipartFileFactory.getXLSXFromTools(toolsDto, EXlsxToolPos.MAINTENANCE_FREQUENCY);
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file, 0));
 
         String expectedMessage = Messages.Error.EXCEL_CELL_TYPE_INCORRECT.formatted(1,
             EXlsxToolPos.MAINTENANCE_FREQUENCY.getColumnNumber(),
@@ -149,7 +151,7 @@ class ToolExcelServiceImplTest {
 
         doThrow(new IOException()).when(file).getInputStream();
 
-        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file));
+        RequestException requestException = assertThrows(RequestException.class, () -> toolExcelService.excelToTools(file, 0));
 
         assertEquals(Messages.Error.EXCEL_PARSE_ERROR, requestException.getMessage());
     }
@@ -164,7 +166,7 @@ class ToolExcelServiceImplTest {
 
         doReturn(BrandMapper.MAPPER.toEntity(getRandomBrand())).when(brandRepository).saveAndFlush(any(Brand.class));
 
-        List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
+        Map<String, Tool> toolsExcelResponse = toolExcelService.excelToTools(file, 0);
 
         assertEquals(toolsDto.size(), toolsExcelResponse.size());
     }
@@ -179,7 +181,7 @@ class ToolExcelServiceImplTest {
 
         doReturn(ResourceTypeMapper.MAPPER.toEntity(getRandomResourceType())).when(resourceTypeRepository).saveAndFlush(any(ResourceType.class));
 
-        List<ToolDto> toolsExcelResponse = toolExcelService.excelToTools(file);
+        Map<String, Tool> toolsExcelResponse = toolExcelService.excelToTools(file, 0);
 
         assertEquals(toolsDto.size(), toolsExcelResponse.size());
     }

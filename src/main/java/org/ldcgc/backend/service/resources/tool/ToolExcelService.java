@@ -1,12 +1,12 @@
 package org.ldcgc.backend.service.resources.tool;
 
-import org.ldcgc.backend.payload.dto.resources.ToolDto;
+import org.ldcgc.backend.db.model.resources.Tool;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Map;
 
 @Service
 public interface ToolExcelService {
-    List<ToolDto> excelToTools(MultipartFile excel);
+    Map<String, Tool> excelToTools(MultipartFile excel, int initialRow);
 }

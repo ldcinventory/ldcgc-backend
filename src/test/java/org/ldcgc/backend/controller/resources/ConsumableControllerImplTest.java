@@ -131,7 +131,7 @@ public class ConsumableControllerImplTest {
     }
 
     @Test
-    void loadExcel() {
+    void uploadExcelConsumables() {
 
     }
 
