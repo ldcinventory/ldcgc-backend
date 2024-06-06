@@ -35,11 +35,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.ldcgc.backend.util.process.Excel.getExcelResourcesAmount;
 
 @Component
 @RequiredArgsConstructor
@@ -151,33 +153,40 @@ public class ToolServiceImpl implements ToolService {
             PaginationDetails.fromPaging(pageable, pagedTools));
     }
 
-    public ResponseEntity<?> uploadToolsExcel(MultipartFile file) {
-        List<ToolDto> toolsToSave = toolExcelService.excelToTools(file);
+    public ResponseEntity<?> uploadToolsExcel(MultipartFile file, Integer initialRow) {
+        int excelConsumables = getExcelResourcesAmount(file, "herramientas",2, 3);
+        Map<String, Tool> toolsMap = toolExcelService.excelToTools(file, initialRow);
+
+        List<Tool> toolsList = toolRepository.saveAll(toolsMap.entrySet()
+            .parallelStream()
+            .map(Map.Entry::getValue)
+            .toList());
 
         // calc inserted and skipped
-        Map<String, ToolDto> toolsToSaveMap = new HashMap<>();
-        for(ToolDto toolDto : toolsToSave) {
-            if (toolsToSaveMap.get(toolDto.getBarcode()) != null
-                || toolRepository.existsByBarcode(toolDto.getBarcode())
-                || toolDto.getId() != null)
-                toolDto.setUploadStatus(EUploadStatus.SKIPPED);
-            else {
-                toolsToSaveMap.put(toolDto.getBarcode(), toolDto);
-                toolDto.setUploadStatus(EUploadStatus.INSERTED);
+        AtomicInteger toolsInserted = new AtomicInteger(0);
+        toolsList.parallelStream().forEach(t -> {
+            if (toolsMap.get(t.getBarcode()) != null) {
+                toolsMap.get(t.getBarcode()).setUploadStatus(EUploadStatus.INSERTED);
+                toolsInserted.getAndIncrement();
             }
-        }
+        });
 
-        List<Tool> toolEntities = toolRepository.saveAll(toolsToSaveMap.values().stream().map(ToolMapper.MAPPER::toMo).toList());
-        int toolsInserted = toolsToSaveMap.size();
-        int toolsSkipped = toolsToSave.size() - toolsInserted;
+        int toolsSkipped = excelConsumables - toolsInserted.get();
+
+        List<ToolDto> toolEntitiesProcessed = toolsList.parallelStream()
+            .map(ToolMapper.MAPPER::toDto)
+            .map(ToolMapper::cleanProps)
+            .toList();
 
         return Constructor.buildResponseMessageObject(
             HttpStatus.CREATED,
-            String.format(Messages.Info.TOOLS_UPLOADED, toolsInserted, toolsSkipped),
-            toolEntities.stream().map(ToolMapper.MAPPER::toDto).map(ToolMapper::cleanProps).toList());
+            String.format("%s. %s",
+                String.format(Messages.Info.TOOLS_UPLOADED, toolsInserted, toolsSkipped),
+                String.format(Messages.Info.TOOLS_IN_DB, toolRepository.count())),
+            toolEntitiesProcessed);
     }
 
-    public ResponseEntity<?> loadGSheetTemplate(String url) {
+    public ResponseEntity<?> uploadGSheetTemplate(String url, Integer initialRow) {
         return Constructor.buildResponseMessage(HttpStatus.NOT_IMPLEMENTED, Messages.Warning.ENDPOINT_NOT_IMPLEMENTED);
     }
 

@@ -29,12 +29,6 @@ public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;
     private final GroupRepository groupRepository;
 
-    public List<LocationDto> getAllLocations() {
-        return locationRepository.findAll().stream()
-            .map(LocationMapper.MAPPER::toDto)
-            .toList();
-    }
-
     public ResponseEntity<?> getLocations(String location, String warehouse, String placement) {
         List<LocationDto> locations = new ArrayList<>(locationRepository.findAllLevel0().stream()
             .map(LocationMapper.MAPPER::toDtoDetailed)

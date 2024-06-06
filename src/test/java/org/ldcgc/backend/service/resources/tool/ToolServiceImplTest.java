@@ -308,12 +308,12 @@ class ToolServiceImplTest {
         List<Tool> toolEntities = factory.manufacturePojo(ArrayList.class, Tool.class);
         MultipartFile file = MultipartFileFactory.getXLSXFromTools(tools, null);
 
-        doReturn(tools).when(toolExcelService).excelToTools(file);
+        doReturn(tools).when(toolExcelService).excelToTools(file, 0);
         doReturn(toolEntities).when(toolRepository).saveAll(any());
 
-        ResponseEntity<?> response = toolService.uploadToolsExcel(file);
+        ResponseEntity<?> response = toolService.uploadToolsExcel(file, 0);
 
-        verify(toolExcelService, times(1)).excelToTools(any());
+        verify(toolExcelService, times(1)).excelToTools(any(), anyInt());
         verify(toolRepository, times(1)).saveAll(any());
 
         assertNotNull(response);

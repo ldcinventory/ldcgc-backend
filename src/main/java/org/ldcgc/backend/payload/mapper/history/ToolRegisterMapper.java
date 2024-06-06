@@ -1,7 +1,6 @@
 package org.ldcgc.backend.payload.mapper.history;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ToolRegister;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;

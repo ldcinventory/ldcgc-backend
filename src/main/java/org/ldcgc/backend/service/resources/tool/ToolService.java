@@ -17,8 +17,8 @@ public interface ToolService {
     ResponseEntity<?> createTool(ToolDto toolDto);
     ResponseEntity<?> updateTool(Integer toolId, ToolDto toolDto);
     ResponseEntity<?> deleteTool(Integer toolId);
-    ResponseEntity<?> uploadToolsExcel(MultipartFile file);
-    ResponseEntity<?> loadGSheetTemplate(String url);
+    ResponseEntity<?> uploadToolsExcel(MultipartFile file, Integer initialRow);
+    ResponseEntity<?> uploadGSheetTemplate(String url, Integer initialRow);
 
     Tool updateToolStatus(Tool tool, EToolStatus status);
 

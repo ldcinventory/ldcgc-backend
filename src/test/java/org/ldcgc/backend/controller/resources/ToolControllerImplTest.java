@@ -182,8 +182,8 @@ class ToolControllerImplTest {
     @Test
     void uploadToolsExcelShouldCallService(){
         MultipartFile file = factory.manufacturePojo(MultipartFile.class);
-        toolController.uploadToolsExcel(file);
-        verify(toolService, times(1)).uploadToolsExcel(file);
+        toolController.uploadToolsExcel(file, 0);
+        verify(toolService, times(1)).uploadToolsExcel(file, 0);
     }
 
     @Test

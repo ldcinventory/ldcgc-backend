@@ -2,9 +2,7 @@ package org.ldcgc.backend.payload.mapper.common;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.db.model.resources.Resource;
-import org.ldcgc.backend.db.model.resources.Tool;
 import org.mapstruct.Named;
 
 import java.util.Arrays;

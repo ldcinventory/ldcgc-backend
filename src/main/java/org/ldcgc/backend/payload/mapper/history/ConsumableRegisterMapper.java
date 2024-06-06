@@ -1,7 +1,6 @@
 package org.ldcgc.backend.payload.mapper.history;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.ldcgc.backend.db.model.history.ConsumableRegister;
 import org.ldcgc.backend.db.model.resources.Consumable;
 import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;

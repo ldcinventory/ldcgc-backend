@@ -4,12 +4,8 @@ import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public interface LocationService {
-
-    List<LocationDto> getAllLocations();
 
     ResponseEntity<?> getLocations(String location, String warehouse, String placement);
 

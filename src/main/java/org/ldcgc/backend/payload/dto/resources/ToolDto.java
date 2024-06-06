@@ -21,7 +21,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @Getter
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ToolDto {
+public class ToolDto extends ResourceDto {
 
     private Integer id;
     @Schema(requiredMode = REQUIRED)

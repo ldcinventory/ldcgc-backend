@@ -68,6 +68,7 @@ public class Messages {
             TOOL_DELETED = "Tool deleted",
             TOOL_IMAGES_UPDATED = "Tool details for attached images updated",
             TOOLS_UPLOADED = "Tools uploaded from Excel file successfully. Imported %s tools. Skipped %s tools",
+            TOOLS_IN_DB = "Total tools in DB: %s.",
 
             CONSUMABLE_CREATED = "Consumable created successfully!",
             CONSUMABLE_LISTED = "Found %s consumable/s",
@@ -76,6 +77,7 @@ public class Messages {
             CONSUMABLE_DELETED = "Consumable deleted",
             CONSUMABLE_IMAGES_UPDATED = "Consumable details for attached images updated",
             CONSUMABLES_UPLOADED = "Consumables uploaded from Excel file successfully. Imported %s consumables. Skipped %s consumables",
+            CONSUMABLES_IN_DB = "Total consumables in DB: %s.",
 
             CONSUMABLE_REGISTER_CREATED = "Consumable register created",
             CONSUMABLE_REGISTERS_CREATED = "Consumable registers created.",
@@ -99,11 +101,7 @@ public class Messages {
 
             NO_CHANGES_PROCESSED = "No changes processed",
 
-            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers and %s skipped.",
-
-            TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
-            TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
-            TEST_ACCESS_WITH_ADMIN_CREDENTIALS = "Everything OK with admin credentials!"
+            CSV_VOLUNTEERS_CREATED = "Volunteers created from CSV. There were imported %s volunteers and %s skipped."
 
             ;
 
@@ -270,9 +268,14 @@ public class Messages {
             EMAIL_IMAGE_PARAMETER = "image",
             EMAIL_IMAGE_PNG = "image/png",
 
-            COPYRIGHT = "© gc8inventory %d"
+            COPYRIGHT = "© gc8inventory %d",
 
-            ;
+            TEST_ACCESS_WITH_CREDENTIALS = "Everything OK with credentials!",
+            TEST_ACCESS_WITH_MANAGER_CREDENTIALS = "Everything OK with manager credentials!",
+            TEST_ACCESS_WITH_ADMIN_CREDENTIALS = "Everything OK with admin credentials!"
+
+
+                ;
 
     }
 
