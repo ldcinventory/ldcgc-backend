@@ -9,16 +9,16 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.model.users.User;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
-import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.app.exception.RequestException;
 import org.ldcgc.backend.payload.dto.users.TokenDto;
 import org.ldcgc.backend.payload.dto.users.UserCredentialsDto;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.mapper.users.TokenMapper;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
-import org.ldcgc.backend.security.jwt.JwtUtils;
+import org.ldcgc.backend.app.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
-import org.ldcgc.backend.util.constants.Messages;
-import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.shared.constants.Messages;
+import org.ldcgc.backend.shared.creation.Constructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +36,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
-import static org.ldcgc.backend.security.jwt.JwtUtils.getBySignedJwtFromLocal;
-import static org.ldcgc.backend.util.common.EUserRole.ROLE_ADMIN;
-import static org.ldcgc.backend.util.common.EUserRole.ROLE_MANAGER;
-import static org.ldcgc.backend.util.conversion.Convert.dateToLocalDateTime;
-import static org.ldcgc.backend.util.creation.Email.sendRecoveringCredentials;
+import static org.ldcgc.backend.app.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
+import static org.ldcgc.backend.app.security.jwt.JwtUtils.getBySignedJwtFromLocal;
+import static org.ldcgc.backend.shared.enums.EUserRole.ROLE_ADMIN;
+import static org.ldcgc.backend.shared.enums.EUserRole.ROLE_MANAGER;
+import static org.ldcgc.backend.shared.conversion.Convert.dateToLocalDateTime;
+import static org.ldcgc.backend.shared.creation.Email.sendRecoveringCredentials;
 
 @Component
 @RequiredArgsConstructor

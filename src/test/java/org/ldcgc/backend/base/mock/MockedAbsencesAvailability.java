@@ -2,7 +2,7 @@ package org.ldcgc.backend.base.mock;
 
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.payload.dto.users.AbsenceDto;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EWeekday;
 import org.springframework.boot.test.context.TestConfiguration;
 
 import java.time.LocalDate;

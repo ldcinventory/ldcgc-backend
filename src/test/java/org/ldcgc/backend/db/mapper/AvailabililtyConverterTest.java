@@ -3,7 +3,7 @@ package org.ldcgc.backend.db.mapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ldcgc.backend.base.GlobalTestConfig;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EWeekday;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 

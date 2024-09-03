@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.util.common.ERoleStatus;
+import org.ldcgc.backend.shared.enums.ERoleStatus;
 
 import java.time.LocalDate;
 

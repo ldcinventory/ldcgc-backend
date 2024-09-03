@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.ldcgc.backend.util.common.ELocationType;
+import org.ldcgc.backend.shared.enums.ELocationType;
 
 import java.util.List;
 

@@ -6,10 +6,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.ldcgc.backend.configuration.SwaggerConfig;
-import org.ldcgc.backend.util.common.EEULAStatus;
-import org.ldcgc.backend.util.constants.Messages;
-import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
+import org.ldcgc.backend.app.configuration.SwaggerConfig;
+import org.ldcgc.backend.shared.enums.EEULAStatus;
+import org.ldcgc.backend.shared.constants.Messages;
+import org.ldcgc.backend.shared.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
-import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
-import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+import static org.ldcgc.backend.app.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
+import static org.ldcgc.backend.app.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/eula")

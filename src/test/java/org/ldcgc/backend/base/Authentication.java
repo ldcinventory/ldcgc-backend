@@ -1,8 +1,8 @@
 package org.ldcgc.backend.base;
 
 import org.ldcgc.backend.db.repository.users.UserRepository;
-import org.ldcgc.backend.security.jwt.JwtUtils;
-import org.ldcgc.backend.validator.UserValidation;
+import org.ldcgc.backend.app.security.jwt.JwtUtils;
+import org.ldcgc.backend.shared.validator.UserValidation;
 import org.mockito.Mockito;
 
 import java.text.ParseException;

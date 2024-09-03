@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
-import org.ldcgc.backend.util.common.ERoleStatus;
+import org.ldcgc.backend.shared.enums.ERoleStatus;
 
 import java.time.LocalDate;
 

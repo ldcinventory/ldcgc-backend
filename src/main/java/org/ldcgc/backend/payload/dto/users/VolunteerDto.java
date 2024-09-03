@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.util.common.EVolunteerStatus;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EVolunteerStatus;
+import org.ldcgc.backend.shared.enums.EWeekday;
 
 import java.util.List;
 

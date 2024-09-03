@@ -1,0 +1,38 @@
+package org.ldcgc.backend.shared.enums;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public enum EUserRole implements EnumMethods {
+
+    @JsonProperty("null")
+    ROLE_NULL("null"),
+    @JsonProperty("user")
+    ROLE_USER("USER"),
+    @JsonProperty("manager")
+    ROLE_MANAGER("MANAGER"),
+    @JsonProperty("admin")
+    ROLE_ADMIN("ADMIN");
+
+    private final String roleName;
+
+    public static EUserRole getEnumFromRoleName(String roleName) {
+        for(EUserRole role : EUserRole.values())
+            if(role.getRoleName().equals(roleName))
+                return role;
+
+        return null;
+    }
+
+    public static EUserRole getEnumFromAuthority(String authority) {
+        for(EUserRole role : EUserRole.values())
+            if(role.name().equalsIgnoreCase(authority))
+                return role;
+
+        return null;
+    }
+
+}

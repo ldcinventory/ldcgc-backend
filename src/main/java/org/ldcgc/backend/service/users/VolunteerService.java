@@ -1,8 +1,8 @@
 package org.ldcgc.backend.service.users;
 
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EVolunteerStatus;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.EVolunteerStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

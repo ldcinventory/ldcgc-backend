@@ -3,7 +3,7 @@ package org.ldcgc.backend.controller.users.impl;
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.users.AvailabilityController;
 import org.ldcgc.backend.service.users.AvailabilityService;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EWeekday;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 

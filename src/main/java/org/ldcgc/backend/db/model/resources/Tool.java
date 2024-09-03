@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
@@ -27,10 +26,10 @@ import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.history.Maintenance;
 import org.ldcgc.backend.db.model.location.Location;
-import org.ldcgc.backend.util.common.EStockType;
-import org.ldcgc.backend.util.common.ETimeUnit;
-import org.ldcgc.backend.util.common.EToolStatus;
-import org.ldcgc.backend.util.common.EUploadStatus;
+import org.ldcgc.backend.shared.enums.EStockType;
+import org.ldcgc.backend.shared.enums.ETimeUnit;
+import org.ldcgc.backend.shared.enums.EToolStatus;
+import org.ldcgc.backend.shared.enums.EUploadStatus;
 
 import java.time.LocalDate;
 

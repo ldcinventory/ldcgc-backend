@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.shared.enums.EUserRole;
 
 import java.time.LocalDateTime;
 

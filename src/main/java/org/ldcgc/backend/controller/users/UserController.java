@@ -9,11 +9,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.ldcgc.backend.configuration.SwaggerConfig;
+import org.ldcgc.backend.app.configuration.SwaggerConfig;
 import org.ldcgc.backend.payload.dto.users.UserDto;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.constants.Messages;
-import org.ldcgc.backend.validator.annotations.UserFromTokenInDb;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.constants.Messages;
+import org.ldcgc.backend.shared.validator.annotations.UserFromTokenInDb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 
-import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
-import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
-import static org.ldcgc.backend.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
-import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
-import static org.ldcgc.backend.security.Authority.Role.MANAGER_LEVEL;
-import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+import static org.ldcgc.backend.app.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_ADMIN;
+import static org.ldcgc.backend.app.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_MANAGER;
+import static org.ldcgc.backend.app.configuration.SwaggerConfig.SWAGGER_ROLE_OPERATION_USER;
+import static org.ldcgc.backend.app.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.app.security.Authority.Role.MANAGER_LEVEL;
+import static org.ldcgc.backend.app.security.Authority.Role.USER_LEVEL;
 
 @Controller
 @RequestMapping("/users")

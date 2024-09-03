@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
-import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.shared.enums.EUserRole;
 
 import java.time.LocalDateTime;
 

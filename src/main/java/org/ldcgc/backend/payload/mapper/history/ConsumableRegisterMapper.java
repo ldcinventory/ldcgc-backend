@@ -16,7 +16,7 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 
 import static org.ldcgc.backend.payload.mapper.common.MapperMethods.mapStringArrayWithPrefix;
-import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
+import static org.ldcgc.backend.shared.constants.Google.DRIVE_IMAGES_URL;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(uses = { ConsumableMapper.class, VolunteerMapper.class, MapperMethods.class },

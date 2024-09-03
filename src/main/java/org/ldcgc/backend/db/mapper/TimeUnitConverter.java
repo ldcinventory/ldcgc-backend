@@ -1,7 +1,7 @@
 package org.ldcgc.backend.db.mapper;
 
 import jakarta.persistence.AttributeConverter;
-import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.shared.enums.ETimeUnit;
 
 import java.util.Optional;
 

@@ -3,6 +3,7 @@ package org.ldcgc.backend.security.jwt;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.app.security.jwt.ArgonPassword;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;

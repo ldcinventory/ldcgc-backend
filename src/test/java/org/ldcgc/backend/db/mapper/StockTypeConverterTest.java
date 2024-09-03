@@ -1,8 +1,8 @@
 package org.ldcgc.backend.db.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.util.common.EStockType;
+import org.ldcgc.backend.app.exception.RequestException;
+import org.ldcgc.backend.shared.enums.EStockType;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

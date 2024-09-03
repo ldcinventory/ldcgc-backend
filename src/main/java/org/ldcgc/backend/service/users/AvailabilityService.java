@@ -1,6 +1,6 @@
 package org.ldcgc.backend.service.users;
 
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EWeekday;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

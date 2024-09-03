@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.ldcgc.backend.db.model.category.Responsibility;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.shared.enums.EUserRole;
 
 import java.time.LocalDateTime;
 

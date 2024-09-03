@@ -14,17 +14,17 @@ import org.ldcgc.backend.db.repository.category.ResourceTypeRepository;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.location.LocationRepository;
 import org.ldcgc.backend.db.repository.resources.ConsumableRepository;
-import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.app.exception.RequestException;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.mapper.resources.consumable.ConsumableMapper;
 import org.ldcgc.backend.service.resources.common.BrandService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableExcelService;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EUploadStatus;
-import org.ldcgc.backend.util.constants.Messages;
-import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.EUploadStatus;
+import org.ldcgc.backend.shared.constants.Messages;
+import org.ldcgc.backend.shared.creation.Constructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.ldcgc.backend.util.process.Excel.getExcelResourcesAmount;
+import static org.ldcgc.backend.shared.process.Excel.getExcelResourcesAmount;
 
 @Slf4j
 @Component

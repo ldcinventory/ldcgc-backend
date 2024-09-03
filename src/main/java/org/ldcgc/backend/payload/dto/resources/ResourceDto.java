@@ -5,7 +5,7 @@ import org.ldcgc.backend.payload.dto.category.BrandDto;
 import org.ldcgc.backend.payload.dto.category.ResourceTypeDto;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
-import org.ldcgc.backend.util.common.EUploadStatus;
+import org.ldcgc.backend.shared.enums.EUploadStatus;
 
 import java.time.LocalDate;
 

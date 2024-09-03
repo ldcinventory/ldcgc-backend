@@ -1,8 +1,8 @@
 package org.ldcgc.backend.service.history;
 
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERegisterStatus;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.ERegisterStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

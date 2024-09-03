@@ -3,7 +3,7 @@ package org.ldcgc.backend.db.mapper;
 import jakarta.persistence.AttributeConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EWeekday;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;

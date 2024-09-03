@@ -14,21 +14,21 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.TokenRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
-import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.app.exception.RequestException;
 import org.ldcgc.backend.payload.dto.category.ResponsibilityDto;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.other.Response;
 import org.ldcgc.backend.payload.dto.users.UserDto;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.UserMapper;
-import org.ldcgc.backend.security.jwt.JwtUtils;
+import org.ldcgc.backend.app.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.AccountService;
 import org.ldcgc.backend.service.users.UserService;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EUserRole;
-import org.ldcgc.backend.util.common.EVolunteerStatus;
-import org.ldcgc.backend.util.constants.Messages;
-import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.EUserRole;
+import org.ldcgc.backend.shared.enums.EVolunteerStatus;
+import org.ldcgc.backend.shared.constants.Messages;
+import org.ldcgc.backend.shared.creation.Constructor;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +42,7 @@ import java.text.ParseException;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.ldcgc.backend.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
+import static org.ldcgc.backend.app.security.jwt.JwtUtils.cleanLocalTokensFromUserId;
 
 @Component
 @RequiredArgsConstructor

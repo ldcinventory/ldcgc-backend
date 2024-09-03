@@ -2,8 +2,8 @@ package org.ldcgc.backend.service.resources.tool;
 
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EToolStatus;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.EToolStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

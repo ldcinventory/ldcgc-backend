@@ -6,7 +6,7 @@ import org.ldcgc.backend.db.model.category.Brand;
 import org.ldcgc.backend.db.model.category.ResourceType;
 import org.ldcgc.backend.db.model.group.Group;
 import org.ldcgc.backend.db.model.location.Location;
-import org.ldcgc.backend.util.common.EUploadStatus;
+import org.ldcgc.backend.shared.enums.EUploadStatus;
 
 import java.time.LocalDate;
 

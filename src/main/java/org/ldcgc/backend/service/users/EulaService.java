@@ -1,6 +1,6 @@
 package org.ldcgc.backend.service.users;
 
-import org.ldcgc.backend.util.common.EEULAStatus;
+import org.ldcgc.backend.shared.enums.EEULAStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

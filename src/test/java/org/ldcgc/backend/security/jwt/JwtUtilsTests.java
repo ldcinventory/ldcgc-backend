@@ -6,6 +6,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ldcgc.backend.app.security.jwt.JwtUtils;
 import org.ldcgc.backend.base.GlobalTestConfig;
 import org.ldcgc.backend.base.mock.MockedToken;
 import org.ldcgc.backend.base.mock.MockedUserVolunteer;

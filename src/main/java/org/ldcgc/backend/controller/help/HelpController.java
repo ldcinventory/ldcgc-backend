@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import static org.ldcgc.backend.security.Authority.Role.ADMIN_LEVEL;
-import static org.ldcgc.backend.security.Authority.Role.USER_LEVEL;
+import static org.ldcgc.backend.app.security.Authority.Role.ADMIN_LEVEL;
+import static org.ldcgc.backend.app.security.Authority.Role.USER_LEVEL;
 
 public interface HelpController {
 

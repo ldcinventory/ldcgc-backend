@@ -2,7 +2,7 @@ package org.ldcgc.backend.base.annotation;
 
 import jakarta.validation.ConstraintValidator;
 import lombok.RequiredArgsConstructor;
-import org.ldcgc.backend.validator.UserValidation;
+import org.ldcgc.backend.shared.validator.UserValidation;
 import org.springframework.web.bind.support.SpringWebConstraintValidatorFactory;
 import org.springframework.web.context.WebApplicationContext;
 

@@ -1,6 +1,6 @@
 package org.ldcgc.backend.base.factory;
 
-import org.ldcgc.backend.util.common.EUserRole;
+import org.ldcgc.backend.shared.enums.EUserRole;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;

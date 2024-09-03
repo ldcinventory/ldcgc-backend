@@ -7,7 +7,7 @@ import org.mapstruct.Named;
 
 import java.util.Arrays;
 
-import static org.ldcgc.backend.util.constants.Google.DRIVE_IMAGES_URL;
+import static org.ldcgc.backend.shared.constants.Google.DRIVE_IMAGES_URL;
 
 public interface MapperMethods {
 

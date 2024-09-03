@@ -3,7 +3,7 @@ package org.ldcgc.backend.payload.dto.users;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
-import org.ldcgc.backend.util.common.EEULAStatus;
+import org.ldcgc.backend.shared.enums.EEULAStatus;
 
 import java.util.List;
 

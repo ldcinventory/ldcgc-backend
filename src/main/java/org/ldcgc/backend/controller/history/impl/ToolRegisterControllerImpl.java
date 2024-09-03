@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.history.ToolRegisterController;
 import org.ldcgc.backend.payload.dto.history.ToolRegisterDto;
 import org.ldcgc.backend.service.history.ToolRegisterService;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.ERegisterStatus;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.ERegisterStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 

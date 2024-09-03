@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.StatusConverter;
 import org.ldcgc.backend.db.model.resources.Tool;
 import org.ldcgc.backend.db.model.users.Volunteer;
-import org.ldcgc.backend.util.common.EToolStatus;
+import org.ldcgc.backend.shared.enums.EToolStatus;
 
 import java.time.LocalDate;
 

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.controller.resources.ConsumableController;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.service.resources.consumable.ConsumableService;
-import org.ldcgc.backend.util.common.EOrder;
+import org.ldcgc.backend.shared.enums.EOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;

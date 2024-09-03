@@ -22,8 +22,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ldcgc.backend.db.mapper.AvailabilityConverter;
 import org.ldcgc.backend.db.model.group.Group;
-import org.ldcgc.backend.util.common.EVolunteerStatus;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EVolunteerStatus;
+import org.ldcgc.backend.shared.enums.EWeekday;
 
 import java.util.List;
 import java.util.Set;

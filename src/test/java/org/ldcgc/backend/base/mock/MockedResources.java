@@ -9,9 +9,9 @@ import org.ldcgc.backend.payload.dto.history.ConsumableRegisterDto;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
 import org.ldcgc.backend.payload.dto.resources.ConsumableDto;
 import org.ldcgc.backend.payload.dto.resources.ToolDto;
-import org.ldcgc.backend.util.common.EStockType;
-import org.ldcgc.backend.util.common.ETimeUnit;
-import org.ldcgc.backend.util.common.EToolStatus;
+import org.ldcgc.backend.shared.enums.EStockType;
+import org.ldcgc.backend.shared.enums.ETimeUnit;
+import org.ldcgc.backend.shared.enums.EToolStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

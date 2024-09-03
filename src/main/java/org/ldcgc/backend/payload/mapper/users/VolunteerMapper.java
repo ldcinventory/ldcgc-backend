@@ -2,7 +2,7 @@ package org.ldcgc.backend.payload.mapper.users;
 
 import org.ldcgc.backend.db.model.users.Volunteer;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
-import org.ldcgc.backend.util.common.EWeekday;
+import org.ldcgc.backend.shared.enums.EWeekday;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

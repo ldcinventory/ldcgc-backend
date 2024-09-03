@@ -3,7 +3,7 @@ package org.ldcgc.backend.payload.mapper.location;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ldcgc.backend.db.model.location.Location;
 import org.ldcgc.backend.payload.dto.location.LocationDto;
-import org.ldcgc.backend.util.common.ELocationType;
+import org.ldcgc.backend.shared.enums.ELocationType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

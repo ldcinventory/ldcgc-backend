@@ -11,17 +11,17 @@ import org.ldcgc.backend.db.repository.group.GroupRepository;
 import org.ldcgc.backend.db.repository.users.AbsenceRepository;
 import org.ldcgc.backend.db.repository.users.UserRepository;
 import org.ldcgc.backend.db.repository.users.VolunteerRepository;
-import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.app.exception.RequestException;
 import org.ldcgc.backend.payload.dto.other.PaginationDetails;
 import org.ldcgc.backend.payload.dto.users.VolunteerDto;
 import org.ldcgc.backend.payload.mapper.users.VolunteerMapper;
-import org.ldcgc.backend.security.jwt.JwtUtils;
+import org.ldcgc.backend.app.security.jwt.JwtUtils;
 import org.ldcgc.backend.service.users.VolunteerService;
-import org.ldcgc.backend.util.common.EOrder;
-import org.ldcgc.backend.util.common.EVolunteerStatus;
-import org.ldcgc.backend.util.common.EWeekday;
-import org.ldcgc.backend.util.constants.Messages;
-import org.ldcgc.backend.util.creation.Constructor;
+import org.ldcgc.backend.shared.enums.EOrder;
+import org.ldcgc.backend.shared.enums.EVolunteerStatus;
+import org.ldcgc.backend.shared.enums.EWeekday;
+import org.ldcgc.backend.shared.constants.Messages;
+import org.ldcgc.backend.shared.creation.Constructor;
 import org.slf4j.MDC;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.ldcgc.backend.util.process.Files.getMapContentFromCSV;
+import static org.ldcgc.backend.shared.process.Files.getMapContentFromCSV;
 
 @Component
 @RequiredArgsConstructor

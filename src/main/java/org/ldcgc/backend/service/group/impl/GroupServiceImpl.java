@@ -2,11 +2,11 @@ package org.ldcgc.backend.service.group.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.ldcgc.backend.db.repository.group.GroupRepository;
-import org.ldcgc.backend.exception.RequestException;
+import org.ldcgc.backend.app.exception.RequestException;
 import org.ldcgc.backend.payload.dto.group.GroupDto;
 import org.ldcgc.backend.payload.mapper.group.GroupMapper;
 import org.ldcgc.backend.service.group.GroupService;
-import org.ldcgc.backend.util.constants.Messages;
+import org.ldcgc.backend.shared.constants.Messages;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 

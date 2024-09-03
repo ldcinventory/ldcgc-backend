@@ -2,8 +2,8 @@ package org.ldcgc.backend.db.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.ldcgc.backend.exception.RequestException;
-import org.ldcgc.backend.util.common.ETimeUnit;
+import org.ldcgc.backend.app.exception.RequestException;
+import org.ldcgc.backend.shared.enums.ETimeUnit;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

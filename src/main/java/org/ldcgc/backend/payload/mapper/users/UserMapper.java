@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import static org.ldcgc.backend.util.creation.EncryptedPassword.getEncryptedPassword;
+import static org.ldcgc.backend.shared.creation.EncryptedPassword.getEncryptedPassword;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(uses = { LocationMapper.class, VolunteerMapper.class })

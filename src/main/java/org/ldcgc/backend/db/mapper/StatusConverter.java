@@ -1,7 +1,7 @@
 package org.ldcgc.backend.db.mapper;
 
 import jakarta.persistence.AttributeConverter;
-import org.ldcgc.backend.util.common.EToolStatus;
+import org.ldcgc.backend.shared.enums.EToolStatus;
 
 import java.util.Optional;
 
